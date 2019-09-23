@@ -102,9 +102,11 @@ bool MCommandBase::isNoChildrenSingleNode(const XMLElement * wind, const std::st
 {
 	const XMLElement * pwind = getWindNode(wind);
 	if(pwind != nullptr){
-		const XMLElement * cmd = pwind->FirstChildElement();
-		return  (std::string(cmd->Value()).compare(nodeName) == 0 &&
-				 cmd->NoChildren());
+		const XMLElement * cmd = pwind->FirstChildElement(nodeName.c_str());
+		if (cmd != nullptr){
+			return  (std::string(cmd->Value()).compare(nodeName) == 0 &&
+					 cmd->NoChildren());
+		}
 	}
 	return false;
 }
@@ -112,9 +114,10 @@ bool MCommandBase::isNoChildrenSingleNode(const XMLElement * wind, const std::st
 XMLElement *MCommandBase::textElement(const std::string &name, const std::string &content, XMLElement **parentNode)
 {
 	XMLElement* element = newElement(name, parentNode);
-	XMLText * text = _doc.NewText(content.c_str());
-	element->InsertEndChild(text);
-
+	if (element != nullptr){
+		XMLText * text = _doc.NewText(content.c_str());
+		element->InsertEndChild(text);
+	}
 	return element;
 }
 

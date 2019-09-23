@@ -1,12 +1,17 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 #include "mprotocol/mcommands.h"
+#include "mprotocol/mprotocol.h"
 #include "printer/printer.h"
 #include "mcommandmock.h"
 
 using namespace Macsa::MProtocol;
 using namespace Macsa::Printers;
 using namespace tinyxml2;
+
+#define MOCK_ELEMENT		"MOCK_ELEMENT"
+#define NOT_MOCK_ELEMENT	"NOT_MOCK_ELEMENT"
+#define MOCK_TEXT			"MOCKED ELEMENT"
 
 class MCommandsUT: public ::testing::Test {
 	public:
@@ -150,29 +155,29 @@ TEST_F(MCommandsUT, isElementWithNullptr_returnsFalse)
 
 TEST_F(MCommandsUT, isElementWithNode_returnsFalse)
 {
-	const char* mockElement = "MOCK_ELEMENT";
+	const char* mockElement = MOCK_ELEMENT;
 	XMLNode* node  = _cmd->doc()->NewText(mockElement);
 	EXPECT_FALSE(_cmd->isElement(dynamic_cast<XMLElement*>(node), mockElement));
 }
 
 TEST_F(MCommandsUT, isElementWithIncorrectName_returnsFalse)
 {
-	const char* mockElement = "MOCK_ELEMENT";
-	const char* notMockElement = "NOT_MOCK_ELEMENT";
+	const char* mockElement = MOCK_ELEMENT;
+	const char* notMockElement = NOT_MOCK_ELEMENT;
 	XMLElement* element  = _cmd->doc()->NewElement(mockElement);
 	EXPECT_FALSE(_cmd->isElement(element, notMockElement));
 }
 
 TEST_F(MCommandsUT, isElement_returnsTrue)
 {
-	const char* mockElement = "MOCK_ELEMENT";
+	const char* mockElement = MOCK_ELEMENT;
 	XMLElement* element  = _cmd->doc()->NewElement(mockElement);
 	EXPECT_TRUE(_cmd->isElement(element, mockElement));
 }
 
 TEST_F(MCommandsUT, newElement_returnValidElement)
 {
-	const char* mockElement = "MOCK_ELEMENT";
+	const char* mockElement = MOCK_ELEMENT;
 	XMLElement* mock = _cmd->newElement(mockElement);
 	bool notnull = (mock != nullptr);
 	EXPECT_TRUE(notnull);
@@ -188,6 +193,59 @@ TEST_F(MCommandsUT, newNullElement_returnNullElement)
 	XMLElement* mock = _cmd->newElement(nullElement);
 	bool notnull = (mock != nullptr);
 	EXPECT_FALSE(notnull);
+}
+
+TEST_F(MCommandsUT, isNoChildrenSingleNodeWithNullElement_returnFalse)
+{
+	XMLElement * elem = nullptr;
+	EXPECT_FALSE(_cmd->isNoChildrenSingleNode(elem,""));
+}
+
+TEST_F(MCommandsUT, isNoChildrenSingleNodeWithEmptyWind_returnFalse)
+{
+	XMLElement * wind = _cmd->doc()->NewElement(MWIND);
+	wind->SetAttribute(MWIND_ID_ATTR, 0);
+	EXPECT_FALSE(_cmd->isNoChildrenSingleNode(wind,MWIND));
+}
+
+TEST_F(MCommandsUT, isNoChildrenSingleNodeWithWindWithoutErroNode_returnFalse)
+{
+	XMLElement * wind = _cmd->doc()->NewElement(MWIND);
+	wind->SetAttribute(MWIND_ID_ATTR, 0);
+	XMLElement * element = _cmd->doc()->NewElement(MOCK_ELEMENT);
+	wind->InsertEndChild(element);
+
+	EXPECT_FALSE(_cmd->isNoChildrenSingleNode(wind,MOCK_ELEMENT));
+}
+
+TEST_F(MCommandsUT, isNoChildrenSingleNodeWithValidWindAndIncorrectName_returnFalse)
+{
+	XMLElement * wind = _cmd->doc()->NewElement(MWIND);
+	wind->SetAttribute(MWIND_ID_ATTR, 0);
+
+	XMLElement * error = _cmd->doc()->NewElement(MERROR);
+	error->SetAttribute(MERROR_CODE_ATTR, MErrorCode(MErrorCode::Success).toString().c_str());
+	wind->InsertEndChild(error);
+
+	XMLElement * element = _cmd->doc()->NewElement(MOCK_ELEMENT);
+	wind->InsertEndChild(element);
+
+	EXPECT_FALSE(_cmd->isNoChildrenSingleNode(wind, NOT_MOCK_ELEMENT));
+}
+
+TEST_F(MCommandsUT, isNoChildrenSingleNodeWithValidWind_returnTrue)
+{
+	XMLElement * wind = _cmd->doc()->NewElement(MWIND);
+	wind->SetAttribute(MWIND_ID_ATTR, 0);
+
+	XMLElement * error = _cmd->doc()->NewElement(MERROR);
+	error->SetAttribute(MERROR_CODE_ATTR, MErrorCode(MErrorCode::Success).toString().c_str());
+	wind->InsertEndChild(error);
+
+	XMLElement * element = _cmd->doc()->NewElement(MOCK_ELEMENT);
+	wind->InsertEndChild(element);
+
+	EXPECT_TRUE(_cmd->isNoChildrenSingleNode(wind,MOCK_ELEMENT));
 }
 
 TEST_F(MCommandsUT, getWind_returnEmptyWind)
@@ -208,7 +266,7 @@ TEST_F(MCommandsUT, getWind_returnEditableWind)
 {
 	XMLElement* wind = _cmd->getWind();
 	XMLDocument doc;
-	wind->SetText("MOCKED ELEMENT");
+	wind->SetText(MOCK_TEXT);
 
 	std::string xml = _cmd->toString();
 
@@ -233,10 +291,9 @@ TEST_F(MCommandsUT, setWindWithNullPointer_returnNullWind)
 	EXPECT_TRUE(wind == nullptr);
 }
 
-
 TEST_F(MCommandsUT, setWindWithValidCommand_returnValidWind)
 {
-	const char* mockElement = "MOCK_ELEMENT";
+	const char* mockElement = MOCK_ELEMENT;
 	XMLDocument doc;
 	XMLElement* mock = _cmd->newElement(mockElement);
 	XMLElement* wind = _cmd->setWind(&mock);
@@ -244,7 +301,7 @@ TEST_F(MCommandsUT, setWindWithValidCommand_returnValidWind)
 	bool validWind = (wind != nullptr);
 	EXPECT_TRUE(validWind);
 	if(validWind) {
-		EXPECT_TRUE(std::string(wind->Name()).compare("WIND") == 0);
+		EXPECT_TRUE(std::string(wind->Name()).compare(MWIND) == 0);
 		XMLElement* element = wind->FirstChildElement(mockElement);
 		EXPECT_TRUE(element != nullptr);
 
@@ -257,3 +314,59 @@ TEST_F(MCommandsUT, setWindWithValidCommand_returnValidWind)
 	}
 	doc.Clear();
 }
+
+TEST_F(MCommandsUT, setWindWithErrorCode_returnValidWindWithExpectedErrorCode)
+{
+	const char* mockElement = MOCK_ELEMENT;
+	XMLElement* mock = _cmd->newElement(mockElement);
+	XMLElement* wind = _cmd->setWind(&mock, MErrorCode(MErrorCode::FileInUse));
+
+	bool validWind = (wind != nullptr);
+	EXPECT_TRUE(validWind);
+	if(validWind) {
+		EXPECT_TRUE(std::string(wind->Name()).compare(MWIND) == 0);
+		XMLElement* error = wind->FirstChildElement();
+		XMLElement* element = wind->FirstChildElement(mockElement);
+		bool valid = ((error != nullptr) && (element != nullptr));
+		EXPECT_TRUE(valid);
+		if(valid) {
+			EXPECT_TRUE(std::string(error->Name()).compare(MERROR) == 0);
+			const XMLAttribute* attr = error->FirstAttribute();
+			bool hasAttribute = (attr != nullptr);
+			EXPECT_TRUE(hasAttribute);
+			if(hasAttribute){
+				std::string errorCode = attr->Value();
+				EXPECT_EQ(errorCode, MErrorCode(MErrorCode::FileInUse).toString());
+			}
+		}
+	}
+}
+
+TEST_F(MCommandsUT, textElementWithNullName_returnNullElement)
+{
+	XMLElement* text = _cmd->textElement("", MOCK_TEXT);
+	EXPECT_TRUE(text == nullptr);
+}
+
+TEST_F(MCommandsUT, textElement_returnValidElement)
+{
+	XMLElement* text = _cmd->textElement(MOCK_ELEMENT, MOCK_TEXT);
+	bool validElement = (text != nullptr);
+	EXPECT_TRUE(validElement);
+	if(validElement) {
+		EXPECT_TRUE(std::string(text->Name()).compare(MOCK_ELEMENT) == 0);
+		EXPECT_TRUE(text->FirstChild() != nullptr);
+		if(text->FirstChild() != nullptr) {
+			std::string content = text->FirstChild()->Value();
+			EXPECT_TRUE(content.compare(MOCK_TEXT) == 0);
+		}
+	}
+}
+
+/**********************
+TEST_F(MCommandsUT, testname)
+{
+
+}
+*/
+
