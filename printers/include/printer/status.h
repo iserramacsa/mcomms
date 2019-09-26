@@ -1,5 +1,5 @@
-#ifndef PRINTER_STATUS_H
-#define PRINTER_STATUS_H
+#ifndef MACSA_PRINTERS_STATUS_H
+#define MACSA_PRINTERS_STATUS_H
 
 #include "configuration.h"
 
@@ -22,5 +22,5 @@ namespace Macsa {
 	}
 }
 
-#endif
+#endif	//MACSA_PRINTERS_STATUS_H
 

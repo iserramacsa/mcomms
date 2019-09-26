@@ -2,48 +2,9 @@
 
 using namespace Macsa::MProtocol;
 
-std::string MTools::toLower(std::string &str)
+std::string MErrorCode::toString() const
 {
-	for (std::string::iterator c = str.begin(); c != str.end(); c++){
-		*c = static_cast<char>(std::tolower(*c));
-	}
-	return str;
-}
-
-std::string MTools::toLower(const std::string &str)
-{
-	std::string s = str;
-	for (std::string::iterator c = s.begin(); c != s.end(); c++){
-		*c = static_cast<char>(std::tolower(*c));
-	}
-	return s;
-}
-
-std::string MTools::toUpper(std::string &str)
-{
-	for (std::string::iterator c = str.begin(); c != str.end(); c++){
-		*c = static_cast<char>(std::toupper(*c));
-	}
-	return str;
-}
-
-std::string MTools::toUpper(const std::string &str)
-{
-	std::string s = str;
-	for (std::string::iterator c = s.begin(); c != s.end(); c++){
-		*c = static_cast<char>(std::toupper(*c));
-	}
-	return s;
-}
-
-std::string MTools::toString(bool value)
-{
-	return (value ? "true" : "false");
-}
-
-std::string MErrorCode::toString()
-{
-	switch (_code) {
+	switch (_val) {
 		case Success:					return "SUCCESS";
 
 			// FILES ERRORS
@@ -99,7 +60,7 @@ std::string MErrorCode::toString()
 	return "UNKNOWN";
 }
 
-MErrorCode::code_n MErrorCode::fromString(const std::string &code)
+MErrorCode::N MErrorCode::fromString(const std::string &code) const
 {
 	if (code.compare("SUCCESS") == 0) {	return Success;}
 
@@ -131,9 +92,9 @@ MErrorCode::code_n MErrorCode::fromString(const std::string &code)
 	if (code.compare("PARAM.INVALID_PROP_COUNT")		== 0) {	return ParamInvalidPropCount;}
 
 	// OTHER GENERIC ERRORS
-	if (code.compare("GEN.UNEXPECTED_TAG") 	== 0) {		return GenUnexpectedTag;}
-	if (code.compare("GEN.NOT_IMPLEMENTED") == 0) {		return GenNotImplemented;}
-	if (code.compare("GEN.LOCK_TIMEOUT") 	== 0) {		return GenLockTimeout;}
+	if (code.compare("GEN.UNEXPECTED_TAG")			== 0) {		return GenUnexpectedTag;}
+	if (code.compare("GEN.NOT_IMPLEMENTED")			== 0) {		return GenNotImplemented;}
+	if (code.compare("GEN.LOCK_TIMEOUT")			== 0) {		return GenLockTimeout;}
 
 	// NEOTIJ ERRORS
 	if (code.compare("PCA.NOTDETECTED") 			== 0) {		return PcaNotdetected;}
@@ -154,8 +115,3 @@ MErrorCode::code_n MErrorCode::fromString(const std::string &code)
 	return UnknownError;
 }
 
-
-bool MTools::boolfromString(const std::string &value)
-{
-	return (toLower(value).compare("true") == 0);
-}

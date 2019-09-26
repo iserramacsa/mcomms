@@ -23,14 +23,12 @@ namespace  Macsa {
 #define MLIVE_FONTS_ATTR	"FontsChanged"
 #define MLIVE_ERRORS_ATTR	"HaveError"
 
-
 #define MSTATUS				"STATUS"
 #define MSTATUS_DT				"DATETIME"
 #define MSTATUS_VERSION			"VERSIONS"
 #define MSTATUS_VERSION_CTRL		"CONTROLLER"
 #define MSTATUS_VERSION_FPGA		"FPGA"
 #define MSTATUS_VERSION_API			"API"
-
 
 #define MCONFIG_GET				"GETCONFIGURATION"
 #define MCONFIG_SET				"SETCONFIGURATION"
@@ -48,6 +46,7 @@ namespace  Macsa {
 #define MCONFIG_CONNECTIONS			"CONNECTIONS"
 #define MCONFIG_CONN_NETWORK			"NETWORK"
 #define MCONFIG_CONN_NETWORK_ADAPTER		"ADAPTER"
+#define MCONFIG_CONN_NETWORK_ADAPTER_ID_ATTR	"id"
 #define MCONFIG_CONN_NETWORK_IP					"IP_ADDRESS"
 #define MCONFIG_CONN_NETWORK_SUBNET				"SUBNET_MASK"
 #define MCONFIG_CONN_NETWORK_GATEWAY			"GATEWAY"
@@ -93,7 +92,6 @@ namespace  Macsa {
 #define MPRINTER_BOARD_PROPERTY_KEY_ATTR	"Key"
 #define MPRINTER_BOARD_PROPERTY_VALUE_ATTR	"Value"
 
-
 #define FONTS_FILTER	".ttf"
 #define NISX_FILTER		".nisx"
 #define IMG_FILTER		".png,.jpg,.jpeg,.bmp"
@@ -114,10 +112,52 @@ namespace  Macsa {
 #define MUPDATE_HMI_BIN_VERSION_ATTR	"Version"
 #define MUPDATE_HMI_BIN_MD5SUM_ATTR		"MD5"
 
+// /////////////////////////////////////////////////////////////////// //
+#define key_prop_status_general_printer_vendor				"PRINTER.VENDOR"
+#define key_prop_status_general_printer_sn					"PRINTER.SERIAL_NUM"
 
-		class MErrorCode{
+#define key_prop_status_general_print_speed					"GENERAL.CURRENT_PRINT_SPEED"
+#define key_prop_status_general_print_remain				"GENERAL.NUM_PRINTS_REMAIN"
+#define key_prop_status_general_prod_rate					"GENERAL.PROD_RATE"
+#define key_prop_status_general_header_type					"GENERAL.HeaderType"
+
+#define key_prop_status_cartridge_connected					"HP.SmartCardSessionOpened"
+#define key_prop_status_cartridge_trademark					"HP.ManufactureId"
+#define key_prop_status_cartridge_part_number				"HP.PartNumber"
+#define key_prop_status_cartridge_id						"HP.CartridgeId"
+#define key_prop_status_cartridge_chip_tag					"HP.SmartCardChipTag"
+#define key_prop_status_cartridge_firing_frequency			"HP.FiringFrequency"
+#define key_prop_status_cartridge_firing_voltage			"HP.FiringVoltage"
+#define key_prop_status_cartridge_pulse_width				"HP.PulseWidth"
+#define key_prop_status_cartridge_pulse_warming				"HP.PulseWarming"
+#define key_prop_status_cartridge_max_temperature			"HP.MaxTemperature"
+#define key_prop_status_cartridge_turn_on_energy			"HP.TurnOnEnergy"
+#define key_prop_status_cartridge_drop_volume				"HP.DropVolume"
+#define key_prop_status_cartridge_tank_volume				"HP.TankVolume"
+#define key_prop_status_cartridge_ink_level_gauge			"HP.InkLevelGauge"
+#define key_prop_status_cartridge_total_usage_gauge			"HP.TotalUsageGauge"
+#define key_prop_status_cartridge_altered_supply			"HP.AlteredSupply"
+#define key_prop_status_cartridge_altered_supply_notif_lvl	"HP.AlteredSupplyNotificationLevel"
+#define key_prop_status_cartridge_out_of_ink				"HP.OutOfInk"
+#define key_prop_status_cartridge_first_platform_id			"HP.FirstPlatformId"
+//	#define key_prop_status_cartridge_manufacture_date			"HP.ManufactureDate" //Same as fill date
+#define key_prop_status_cartridge_fill_date					"HP.FillDate"
+#define key_prop_status_cartridge_first_install_date		"HP.FirstInstall"
+#define key_prop_status_cartridge_last_use_date				"HP.LastDayOfUse"
+#define key_prop_status_cartridge_shelf_days				"HP.ShelfDays"
+#define key_prop_status_cartridge_shelf_weeks				"HP.ShelfWeeks"
+#define key_prop_status_cartridge_expiration_date			"HP.ExpirationDate"
+#define key_prop_status_cartridge_expiration_flag			"HP.ExpiredInk"
+
+#define key_counter_system_total "SYSTEM.TOTAL"
+#define key_counter_system_user  "SYSTEM.USER"
+#define key_counter_system_bcd	 "BCD."
+// /////////////////////////////////////////////////////////////////// //
+
+		class MErrorCode
+		{
 			public:
-				enum code_n
+				enum N
 				{
 					Success						, // No error
 
@@ -173,24 +213,25 @@ namespace  Macsa {
 
 					UnknownError
 				};
-				MErrorCode(code_n code){_code = code;}
-				std::string toString();
-				code_n fromString(const std::string& code);
+				MErrorCode(){_val = Success;}
+				MErrorCode(enum N v){_val = v;}
+				enum N operator()() const {return _val;}
+				std::string toString() const;
+
+				void operator = (const MErrorCode& other){_val = other._val;}
+				void operator = (enum N v){_val = v;}
+				void operator = (const std::string& val){_val = fromString(val);}
+				bool operator == (const MErrorCode& other)const {return _val == other._val;}
+				bool operator == (const std::string& other)const {return (toString().compare(other) == 0);}
+				bool operator == (enum N other)const {return _val == other;}
+				bool operator != (const MErrorCode& other)const {return _val != other._val;}
+				bool operator != (const std::string& other)const {return (toString().compare(other) != 0);}
+				bool operator != (enum N other)const {return _val != other;}
+
 			private:
-				code_n _code;
-		};
+				N _val;
 
-		class MTools {
-			public:
-			static std::string toLower(std::string& str);
-			static std::string toLower(const std::string& str);
-			static std::string toUpper(std::string& str);
-			static std::string toUpper(const std::string& str);
-
-			static std::string toString(bool value);
-			static std::string toString(const MErrorCode& code);
-
-			static bool boolfromString(const std::string& value);
+				MErrorCode::N fromString(const std::string &code) const;
 		};
 	}
 }

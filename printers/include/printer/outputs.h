@@ -2,34 +2,37 @@
 #define OUTPUTS_H
 
 #include "iobase.h"
-#include "printerTypes.h"
+#include "datatypes.h"
 
 namespace Macsa {
 	namespace Printers {
-		class Outputs : public IOBase
+		class Output : public IOBase
 		{
 			public:
-				Outputs(uint32_t id);
-				virtual ~Outputs();
+				Output(uint32_t id);
+				virtual ~Output();
 
 				bool initialValue() const;
 				void setInitialValue(bool initialValue);
 
-				OutputType_n type() const;
-				void setType(const OutputType_n &type);
+				OutputType type() const;
+				void setType(const OutputType& type);
+				void setType(OutputType::N type);
+				void setType(const std::string& type);
 
 				uint32_t time() const;
 				void setTime(const uint32_t &time);
 
-				virtual bool operator != (const Outputs&) const;
-				virtual bool operator == (const Outputs&) const;
+				virtual void operator  = (const Output& other);
+				virtual bool operator != (const Output& other) const{return  equal(other);}
+				virtual bool operator == (const Output& other) const{return !equal(other);}
 
 			private:
 				bool _initialValue;
-				OutputType_n _type;
-				uint32_t _time;
+				OutputType	_type;
+				uint32_t	_time;
 
-				virtual bool equal(const Outputs &other )const;
+				virtual bool equal(const Output &other )const;
 		};
 	}
 }

@@ -1,4 +1,6 @@
 #include "mprotocol/mconfig.h"
+#include "mtools.h"
+#include "xmlboard.h"
 
 using namespace Macsa::MProtocol;
 using namespace tinyxml2;
@@ -26,6 +28,7 @@ bool MGetConfig::parse(const XMLElement * root)
 {
 	return isNoChildrenSingleNode(root, MCONFIG_GET);
 }
+#endif
 
 XMLElement * MGetConfig::getPrinterGenerals()
 {
@@ -62,7 +65,7 @@ XMLElement * MGetConfig::getPrinterBoards()
 	board->InsertEndChild(textElement(MPRINTER_BOARD_TYPE,			_printer.type()));
 	board->InsertEndChild(textElement(MPRINTER_BOARD_AUTOSTART,		MTools::toString(false))); //TODO: Add printer management
 	board->InsertEndChild(textElement(MPRINTER_BOARD_ENABLED,		MTools::toString(false))); //TODO: Add printer management
-	board->InsertEndChild(textElement(MPRINTER_BOARD_CURRENT_MSG,	_printer.currentMessage())); //TODO: Add printer management
+//	board->InsertEndChild(textElement(MPRINTER_BOARD_CURRENT_MSG,	_printer.currentMessage())); //TODO: Add printer management
 
 	/* ****************************************	*/
 	/*	 TODO (Fill with all printer config)	*/
@@ -73,7 +76,7 @@ XMLElement * MGetConfig::getPrinterBoards()
 	return boards;
 
 }
-#elif defined (MCLIENT)
+#if defined (MCLIENT)
 void MGetConfig::build()
 {
 	XMLElement* cmd = _doc.NewElement(MCONFIG_GET);
@@ -112,6 +115,19 @@ bool MSetConfig::parse(const XMLElement * /*root*/)
 }
 
 void MSetConfig::build()
+{
+	XMLElement *cmd = _doc.NewElement(MCONFIG_SET);
+	//TODO: fill setConfig response
+	cmd->InsertEndChild(boardConnectionsToXml(_printer.comms(), _doc));
+
+	setWind(&cmd);
+}
+
+MSetDateTime::MSetDateTime(Macsa::Printers::Printer &printer):
+	MSetConfig(printer)
+{}
+
+void MSetDateTime::build()
 {
 	XMLElement *cmd = _doc.NewElement(MCONFIG_SET);
 	//TODO: fill setConfig response

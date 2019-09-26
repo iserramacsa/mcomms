@@ -21,7 +21,7 @@ namespace Macsa {
 				virtual void setValue(bool value);
 
 			protected:
-				const uint32_t _id;
+				uint32_t _id;
 				std::string _descriptor;
 				bool _value;
 		};

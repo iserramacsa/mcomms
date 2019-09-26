@@ -1,12 +1,11 @@
 #ifndef TIJ_PRINTER_H
 #define TIJ_PRINTER_H
 
-#include "printer.h"
+#include "printer/printer.h"
 
 namespace Macsa {
-	namespace Printer {
-
-		class TIJPrinter : public TijPrinter{
+	namespace Printers {
+		class TIJPrinter : public Printer{
 			public:
 				TIJPrinter();
 				virtual ~TIJPrinter();

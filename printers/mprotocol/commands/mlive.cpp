@@ -52,7 +52,7 @@ bool MLive::parse(const XMLElement *wind)
             const char* dt = cmd->Attribute(MLIVE_DT_ATTR);
             valid = (!cmd->NoChildren() && dt != nullptr);
             if (valid){
-                _printer.setDateTime(dt);
+				_printer.setDateTime(dtFromString(dt));
                 _printer.setStatusChanged(cmd->BoolAttribute(MLIVE_STATUS_ATTR));
                 _printer.setConfigChanged(cmd->BoolAttribute(MLIVE_CONFIG_ATTR));
                 _printer.setFilesChanged(cmd->BoolAttribute(MLIVE_FILES_ATTR));
@@ -68,3 +68,20 @@ bool MLive::parse(const XMLElement *wind)
 }
 
 #endif
+
+time_t MLive::dtFromString(const std::string &datetime)
+{
+	//24/09/2019 11:07:47
+	time_t dt;
+	struct tm date;
+	date.tm_mday = std::atoi(datetime.substr( 0, 2).c_str());
+	date.tm_mon  = std::atoi(datetime.substr( 2, 2).c_str()) - 1;
+	date.tm_year = std::atoi(datetime.substr( 4, 4).c_str()) - 1900;
+	date.tm_hour = std::atoi(datetime.substr( 8, 2).c_str());
+	date.tm_min  = std::atoi(datetime.substr(10, 2).c_str());
+	date.tm_sec  = std::atoi(datetime.substr(12, 2).c_str());
+
+	dt = mktime(&date);
+
+	return dt;
+}

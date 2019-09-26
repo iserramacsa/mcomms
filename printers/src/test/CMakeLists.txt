@@ -3,7 +3,7 @@
 ##################################
 
 set(SOURCES ${SOURCES}
-#	${CMAKE_CURRENT_SOURCE_DIR}/foo_ut.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/printer_ut.cpp
 	PARENT_SCOPE
 	)
 

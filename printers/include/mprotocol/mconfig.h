@@ -11,17 +11,13 @@ namespace Macsa {
 				virtual std::string commandName() const;
 				virtual bool parse(const tinyxml2::XMLElement* );
 
-	#if defined (MSERVER)
+			access:
+				virtual void build();
+
 			private:
 				tinyxml2::XMLElement* getPrinterGenerals();
 				tinyxml2::XMLElement* getPrinterConnections();
 				tinyxml2::XMLElement* getPrinterBoards();
-				virtual void build();
-	#elif defined (MCLIENT)
-			public:
-				virtual void build();
-	#endif
-
 		};
 
 		class MSetConfig : public MCommandBase
@@ -30,10 +26,19 @@ namespace Macsa {
 				MSetConfig(Printers::Printer& printer);
 				virtual std::string commandName() const;
 				virtual bool parse(const tinyxml2::XMLElement *);
-
-			private:
+			access:
 				virtual void build();
 		};
+
+		class MSetDateTime : public MSetConfig
+		{
+			public:
+				MSetDateTime(Printers::Printer& printer);
+			access:
+				virtual void build() override;
+
+		};
+
 	}
 }
 

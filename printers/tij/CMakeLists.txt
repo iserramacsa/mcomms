@@ -55,6 +55,8 @@ set(PRINTERS_HEADERS)
 set(PRINTERS_INCLUDES)
 set(PROTOCOL_SOURCES)
 set(PROTOCOL_HEADERS)
+set(TIJ_SOURCES)
+set(TIJ_HEADERS)
 
 SET (PRINTERS_INCLUDES
 	${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -68,9 +70,9 @@ include_directories(${PRINTERS_INCLUDES})
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../src ${CMAKE_BINARY_DIR}/printers/src)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../include ${CMAKE_BINARY_DIR}/printers/include)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../mprotocol ${CMAKE_BINARY_DIR}/mprotocol)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/tij/src)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/tij/include)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../mprotocol ${CMAKE_BINARY_DIR}/mprotocol)
 
 ######################################
 ##			Targets					##
@@ -80,10 +82,10 @@ if (NOT INCLUDE_TESTS)
 	#######		TIJ Libraries		######
 	message("lib" ${TIJ_LIBRARY_NAME} " definition")
 	set(SOVERSION ${TIJ_LIBRARY_VERSION})
-	add_library(${TIJ_LIBRARY_NAME} SHARED  ${TIJ_SOURCES} ${PRINTERS_SOURCES} ${PROTOCOL_SOURCES}
-											${TIJ_HEADERS} ${PRINTERS_HEADERS} ${PROTOCOL_HEADERS})
-	add_library(${TIJ_LIBRARY_NAME}-static STATIC ${TIJ_SOURCES} ${PRINTERS_SOURCES} ${PROTOCOL_SOURCES}
-												  ${TIJ_HEADERS} ${PRINTERS_HEADERS} ${PROTOCOL_HEADERS})
+	add_library(${TIJ_LIBRARY_NAME} SHARED  ${TIJ_SOURCES} ${PRINTERS_SOURCES} ${PROTOCOL_SOURCES} ${TIJ_SOURCES}
+											${TIJ_HEADERS} ${PRINTERS_HEADERS} ${PROTOCOL_HEADERS} ${TIJ_HEADERS})
+	add_library(${TIJ_LIBRARY_NAME}-static STATIC ${TIJ_SOURCES} ${PRINTERS_SOURCES} ${PROTOCOL_SOURCES} ${TIJ_SOURCES}
+												  ${TIJ_HEADERS} ${PRINTERS_HEADERS} ${PROTOCOL_HEADERS} ${TIJ_HEADERS})
 	set_target_properties(${TIJ_LIBRARY_NAME}
 		PROPERTIES SOVERSION ${SOVERSION})
 
@@ -100,11 +102,13 @@ else()
 	set(SOURCES			${SOURCES}
 						${PRINTERS_SOURCES}
 						${PROTOCOL_SOURCES}
+						${TIJ_SOURCES}
 						PARENT_SCOPE)
 
 	set(HEADERS			${HEADERS}
 						${PRINTERS_HEADERS}
 						${PROTOCOL_HEADERS}
+						${TIJ_HEADERS}
 						PARENT_SCOPE)
 endif()
 

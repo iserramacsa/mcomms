@@ -19,6 +19,7 @@ namespace Macsa
 			public:
 				virtual void build();
 	#endif
+				time_t dtFromString(const std::string& datetime);
 		};
 	}
 }

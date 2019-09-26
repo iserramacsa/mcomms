@@ -1,4 +1,5 @@
 #include "printer/printer.h"
+#include <sstream>
 
 using namespace Macsa;
 using namespace Macsa::Printers;
@@ -13,14 +14,14 @@ Printer::Printer() :
 	_filesChanged = false;
 	_fontsChanged = false;
 	_errorsChanged = false;
-	_type = "SM200";
-	_currentMessage = "";
+	_dateTime = 0;
+	_lastUpdate = 0;
 }
 
 Printer::~Printer()
 {}
 
-std::string Printer::type() const {	return _type;}
+std::string Printer::type() const {return _type;}
 
 int Printer::id() const {return _id;}
 void Printer::setId(int id) { _id = id;}
@@ -40,38 +41,69 @@ void Printer::setFontsChanged(bool changed) {_fontsChanged = changed;}
 bool Printer::errorsChanged() const {return _errorsChanged;}
 void Printer::setErrorsChanged(bool changed) {_errorsChanged = changed;}
 
-std::string Printer::currentMessage() const {return _currentMessage;}
-void Printer::setCurrentMessage(std::string currentMessage){_currentMessage = currentMessage;}
-
-std::string Printer::dateTime() const { return _dateTime; }
-void Printer::setDateTime(const std::string &dateTime) { _dateTime = dateTime; }
-
-Configuration *Printer::configuration()
+std::time_t Printer::dateTime() const
 {
-	return &_configuration;
+	double diff = difftime(_lastUpdate, time(nullptr));
+	return (_dateTime + static_cast<long>(diff));
 }
 
-const Configuration *Printer::configuration() const
+std::string Printer::formatedDateTime() const
 {
-	return &_configuration;
+	std::stringstream dt;
+	std::time_t time = dateTime();
+
+	struct tm *date = localtime(&time);
+	dt <<  date->tm_mday;
+	dt << (date->tm_mon + 1);
+	dt << (date->tm_year + 1900);
+	dt <<  date->tm_hour;
+	dt <<  date->tm_min;
+	dt <<  date->tm_sec;
+
+	return dt.str();
+}
+void Printer::setDateTime(const time_t &dateTime)
+{
+	_dateTime = dateTime;
+	_lastUpdate = time(nullptr);
 }
 
-Status *Printer::status()
+Configuration& Printer::configuration()
 {
-	return &_status;
+	return _configuration;
 }
 
-const Status *Printer::status() const
+const Configuration& Printer::configuration() const
 {
-	return &_status;
+	return _configuration;
 }
 
-PrinterFiles *Printer::files()
+Status& Printer::status()
 {
-	return &_files;
+	return _status;
 }
 
-const PrinterFiles *Printer::files() const
+const Status& Printer::status() const
 {
-	return &_files;
+	return _status;
+}
+
+PrinterFiles& Printer::files()
+{
+	return _files;
+}
+
+const PrinterFiles& Printer::files() const
+{
+	return _files;
+}
+
+PrinterComms& Printer::comms()
+{
+	return _comms;
+}
+
+const PrinterComms &Printer::comms() const
+{
+	return _comms;
 }

@@ -2,44 +2,64 @@
 
 using namespace Macsa::Printers;
 
-Inputs::Inputs(uint32_t id) :
+Input::Input(uint32_t id) :
 	IOBase (id)
 {}
 
-Inputs::~Inputs()
+Input::~Input()
 {}
 
-InputMode_n Inputs::mode() const
+InputMode Input::mode() const
 {
 	return _mode;
 }
 
-void Inputs::setMode(const InputMode_n &mode)
+void Input::setMode(const InputMode& mode)
 {
 	_mode = mode;
 }
 
-bool Inputs::inverted() const
+void Input::setMode(InputMode::N mode)
+{
+	_mode = mode;
+}
+
+void Input::setMode(const std::string &mode)
+{
+	_mode = mode;
+}
+
+bool Input::inverted() const
 {
 	return _inverted;
 }
 
-void Inputs::setInverted(bool inverted)
+void Input::setInverted(bool inverted)
 {
 	_inverted = inverted;
 }
 
-uint32_t Inputs::filter() const
+uint32_t Input::filter() const
 {
 	return _filter;
 }
 
-void Inputs::setFilter(const uint32_t &filter)
+void Input::setFilter(const uint32_t &filter)
 {
 	_filter = filter;
 }
 
-bool Inputs::equal(const Inputs &other) const
+void Input::operator =(const Input &other)
+{
+	_id = other._id;
+	_descriptor = other._descriptor;
+	_value = other._value;
+	_filter = other._filter;
+	_mode = other._mode;
+	_inverted = other._inverted;
+}
+
+bool Input::equal(const Input &other) const
 {
 	bool eq = false;
 	eq = (_id == other._id);

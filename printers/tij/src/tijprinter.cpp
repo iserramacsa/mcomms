@@ -1,7 +1,7 @@
-#include "printer/tijprinter.h"
+#include "tij/tijprinter.h"
 
 using namespace Macsa;
-using namespace Macsa::Printer;
+using namespace Macsa::Printers;
 
 
 TIJPrinter::TIJPrinter()
@@ -13,7 +13,6 @@ TIJPrinter::TIJPrinter()
 	_fontsChanged = false;
 	_errorsChanged = false;
 	_type = "SM200";
-	_currentMessage = "";
 }
 
 TIJPrinter::~TIJPrinter()

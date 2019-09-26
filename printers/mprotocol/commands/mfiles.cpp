@@ -91,9 +91,9 @@ bool MGetFilesList::parse(const XMLElement *wind)
 				unit = unit->NextSiblingElement(MFILES_DEVICE_UNIT);
 			}
 			/* remove all filtered files */
-			_printer.files()->updateDrives(drives);
+			_printer.files().updateDrives(drives);
 			for (unsigned int i = 0; i < drives.size(); ++i) {
-				_printer.files()->clearFilesOfType(drives.at(i), exts);
+				_printer.files().clearFilesOfType(drives.at(i), exts);
 			}
 
 			/* Insert new files */
@@ -136,13 +136,13 @@ void MGetFilesList::insertFileToPrinterData(const std::string &pwd)
 	std::string drive, folder, file;
 	splitFilePwd(pwd, drive, folder, file);
 
-	if (!_printer.files()->driveExist(drive)) {
-		_printer.files()->addNewDrive(drive);
+	if (!_printer.files().driveExist(drive)) {
+		_printer.files().addNewDrive(drive);
 	}
-	if (!_printer.files()->folderExist(drive, folder)) {
-		_printer.files()->addNewFolder(drive, folder);
+	if (!_printer.files().folderExist(drive, folder)) {
+		_printer.files().addNewFolder(drive, folder);
 	}
-	_printer.files()->addNewFile(drive, folder, file);
+	_printer.files().addNewFile(drive, folder, file);
 }
 
 #endif

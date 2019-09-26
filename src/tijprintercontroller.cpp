@@ -1,5 +1,5 @@
 #include "tijprintercontroller.h"
-#include "printer/printer.h"
+#include "mprotocol/mcommandsfactory.h"
 #include "network/tcpsocket.h"
 
 #define MPROTOCOL_PORT	9991
@@ -8,10 +8,10 @@ using namespace Macsa;
 using namespace Macsa::Network;
 
 TijPrinterController::TijPrinterController(const std::string &id, const std::string &address) :
-	Network::NetworkNode(id, address)
+	Network::NetworkNode(id, address),
+	_factory(_printer)
 {
 	_running.store(false);
-
 	addConnection(ISocket::TCP_SOCKET, MPROTOCOL_PORT);
 }
 
@@ -42,8 +42,36 @@ bool TijPrinterController::disconnect()
 	}
 }
 
-
-void TijPrinterController::run()
+time_t TijPrinterController::getDateTime()
 {
-	//TODO
+	time_t dt = _printer.dateTime();
+	if(send(_factory.getLiveCommand())){
+		dt = _printer.dateTime();
+	}
+
+	return dt;
+}
+
+bool TijPrinterController::setDateTime(tm dt)
+{
+
+}
+
+
+bool TijPrinterController::send(MProtocol::MCommandBase* cmd)
+{
+	bool success = false;
+	ISocket* socket = NetworkNode::socket(ISocket::TCP_SOCKET, MPROTOCOL_PORT);
+	if(socket->status() == ISocket::CONNECTED)
+	{
+		if (socket->send(cmd->toString()) == ISocket::FRAME_SUCCESS)
+		{
+			std::string resp = "";
+			if(socket->receive(resp) == ISocket::FRAME_SUCCESS)
+			{
+				success = _factory.parse(resp, cmd);
+			}
+		}
+	}
+	return success;
 }

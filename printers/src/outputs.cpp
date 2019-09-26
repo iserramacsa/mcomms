@@ -1,53 +1,63 @@
 #include "printer/outputs.h"
 using namespace Macsa::Printers;
 
-Outputs::Outputs(uint32_t id) : IOBase (id)
+Output::Output(uint32_t id) : IOBase (id)
 {}
 
-Outputs::~Outputs()
+Output::~Output()
 {}
 
-bool Outputs::initialValue() const
+bool Output::initialValue() const
 {
 	return _initialValue;
 }
 
-void Outputs::setInitialValue(bool initialValue)
+void Output::setInitialValue(bool initialValue)
 {
 	_initialValue = initialValue;
 }
 
-OutputType_n Outputs::type() const
+OutputType Output::type() const
 {
 	return _type;
 }
 
-void Outputs::setType(const OutputType_n &type)
+void Output::setType(const OutputType &type)
 {
 	_type = type;
 }
 
-uint32_t Outputs::time() const
+void Output::setType(OutputType::N type)
+{
+	_type = type;
+}
+
+void Output::setType(const std::string &type)
+{
+	_type = type;
+}
+
+uint32_t Output::time() const
 {
 	return _time;
 }
 
-void Outputs::setTime(const uint32_t &time)
+void Output::setTime(const uint32_t &time)
 {
 	_time = time;
 }
 
-bool Outputs::operator !=(const Outputs &other) const
+void Output::operator =(const Output &other)
 {
-	return equal(other);
+	_id = other._id;
+	_descriptor = other._descriptor;
+	_value = other._value;
+	_time = other._time;
+	_type = other._type;
+	_initialValue = other._initialValue;
 }
 
-bool Outputs::operator ==(const Outputs &other) const
-{
-	return !equal(other);
-}
-
-bool Outputs::equal(const Outputs &other) const
+bool Output::equal(const Output &other) const
 {
 	bool eq = false;
 	eq = (_id == other._id);

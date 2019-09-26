@@ -16,9 +16,6 @@ set(SOURCES ${SOURCES}
 	)
 
 set(HEADERS ${HEADERS}
-	${CMAKE_CURRENT_SOURCE_DIR}/core.h
-	${CMAKE_CURRENT_SOURCE_DIR}/tijprintermonitor.h
-	${CMAKE_CURRENT_SOURCE_DIR}/tijprintercontroller.h
 #	${CMAKE_CURRENT_SOURCE_DIR}/
 	PARENT_SCOPE
 	)

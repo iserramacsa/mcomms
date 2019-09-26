@@ -11,6 +11,15 @@
 	#define VIRTUAL_MOCK
 #endif
 
+#if defined (MSERVER)
+	#define access	private
+#elif defined (MCLIENT)
+	#define access	public
+#else
+	#define access	public
+#endif
+
+
 namespace Macsa{
 	namespace MProtocol {
 		class MGetFilesList;
@@ -35,7 +44,7 @@ namespace Macsa{
 				tinyxml2::XMLDocument _doc;
 
 				VIRTUAL_MOCK tinyxml2::XMLElement* getWind();
-				VIRTUAL_MOCK tinyxml2::XMLElement* setWind(tinyxml2::XMLElement **cmd, MErrorCode error = MErrorCode(MErrorCode::Success));
+				VIRTUAL_MOCK tinyxml2::XMLElement* setWind(tinyxml2::XMLElement **cmd, MErrorCode error = MErrorCode());
 				VIRTUAL_MOCK const tinyxml2::XMLElement *getWindNode(const tinyxml2::XMLElement*);
 				VIRTUAL_MOCK bool isNoChildrenSingleNode(const tinyxml2::XMLElement* wind, const std::string& nodeName);
 				VIRTUAL_MOCK std::string dateTime() const;

@@ -9,61 +9,17 @@ ShotMode::ShotMode()
 	clear();
 }
 
-ShotMode::ShotMode(ShotMode_n mode, unsigned int numPrints, const std::vector<Delay> &delays, bool repeat)
+ShotMode::ShotMode(ShootingMode mode, unsigned int numPrints, const std::vector<Delay> &delays, bool repeat)
 {
-	_mode = mode;
-	_delays.clear();
-	unsigned int nDelays = static_cast<unsigned int>(delays.size());
-	switch (_mode) {
-		case MULTI_SHOT_REL:
-			if(nDelays) {
-				_delays.push_back(delays.at(0));
-				if (nDelays > 1){
-					_delays.push_back(delays.at(1));
-				}
-				else{
-					Delay delay;
-					_delays.push_back(delay);
-				}
-			}
-			else{
-				Delay delay;
-				_delays.push_back(delay);
-			}
-			_numPrints = numPrints;
-			break;
-		case MULTI_SHOT_ABS:
-			_numPrints = static_cast<unsigned>(delays.size());
-			for (unsigned int i = 0; i < numPrints; i++) {
-				_delays.push_back(delays.at(i));
-			}
-			break;
-		case SINGLE_SHOT:
-			if(delays.size()) {
-				_delays.push_back(delays.at(0));
-			}
-			else{
-				Delay delay;
-				_delays.push_back(delay);
-			}
-			_numPrints = static_cast<unsigned>(delays.size());
-			break;
-	}
-	_repeat = repeat;
+	initByMode(mode(), numPrints, delays, repeat);
 }
 
-void ShotMode::clear()
+ShotMode::ShotMode(ShootingMode::N mode, unsigned int numPrints, const std::vector<Delay> &delays, bool repeat)
 {
-	Delay delay;
-	_delays.clear();
-
-	_mode = SINGLE_SHOT;
-	_delays.push_back(delay);
-	_numPrints = static_cast<unsigned>(_delays.size());
-	_repeat = false;
+	initByMode(mode, numPrints, delays, repeat);
 }
 
-ShotMode::ShotMode_n ShotMode::mode() const
+ShootingMode ShotMode::mode() const
 {
 	return _mode;
 }
@@ -87,11 +43,59 @@ bool ShotMode::repeat() const
 	return _repeat;
 }
 
+void ShotMode::operator = (const ShotMode &other)
+{
+	initByMode(other._mode(), other._numPrints, other._delays, other._repeat);
+}
+
+void ShotMode::initByMode(ShootingMode::N mode, unsigned int numPrints, const std::vector<Delay> &delays, bool repeat)
+{
+	_mode = mode;
+	_delays.clear();
+	unsigned int nDelays = static_cast<unsigned int>(delays.size());
+	switch (_mode()) {
+		case ShootingMode::MULTI_SHOT_REL:
+			if(nDelays) {
+				_delays.push_back(delays.at(0));
+				if (nDelays > 1){
+					_delays.push_back(delays.at(1));
+				}
+				else{
+					Delay delay;
+					_delays.push_back(delay);
+				}
+			}
+			else{
+				Delay delay;
+				_delays.push_back(delay);
+			}
+			_numPrints = numPrints;
+			break;
+		case ShootingMode::MULTI_SHOT_ABS:
+			_numPrints = static_cast<unsigned>(delays.size());
+			for (unsigned int i = 0; i < numPrints; i++) {
+				_delays.push_back(delays.at(i));
+			}
+			break;
+		case ShootingMode::SINGLE_SHOT:
+			if(delays.size()) {
+				_delays.push_back(delays.at(0));
+			}
+			else{
+				Delay delay;
+				_delays.push_back(delay);
+			}
+			_numPrints = static_cast<unsigned>(delays.size());
+			break;
+	}
+	_repeat = repeat;
+}
+
 bool ShotMode::equal(const ShotMode &other) const
 {
     bool equal = false;
 
-	if ((_mode == other._mode) && (_numPrints == other._numPrints) && (_repeat == other._repeat)) {
+	if ((_mode() == other._mode()) && (_numPrints == other._numPrints) && (_repeat == other._repeat)) {
 		if (_delays.size() == other._delays.size()) {
 			unsigned i = 0;
 			for (; i < static_cast<unsigned>(_delays.size()); i++) {
@@ -105,3 +109,15 @@ bool ShotMode::equal(const ShotMode &other) const
 
 	return equal;
 }
+
+void ShotMode::clear()
+{
+	Delay delay;
+	_delays.clear();
+
+	_mode = ShootingMode::SINGLE_SHOT;
+	_delays.push_back(delay);
+	_numPrints = static_cast<unsigned>(_delays.size());
+	_repeat = false;
+}
+

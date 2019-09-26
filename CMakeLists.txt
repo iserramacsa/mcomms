@@ -59,6 +59,7 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	add_definitions(-DDEBUG)
 endif()
 
+add_definitions(-DMCLIENT)
 
 set(SOURCES)
 set(HEADERS)
@@ -77,7 +78,7 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/printers ${CMAKE_BINARY_DIR}/printers)
 
 set(SOURCES ${SOURCES})
 set(HEADERS ${HEADERS})
-SET (INCLUDES ${INCLUDES})
+set(INCLUDES ${INCLUDES})
 
 include_directories(${INCLUDES})
 

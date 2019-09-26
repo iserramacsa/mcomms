@@ -2,18 +2,20 @@
 #define INPUTS_H
 
 #include "iobase.h"
-#include "printerTypes.h"
+#include "datatypes.h"
 
 namespace Macsa {
 	namespace Printers {
-		class Inputs : public IOBase
+		class Input : public IOBase
 		{
 			public:
-				Inputs(uint32_t id);
-				virtual ~Inputs();
+				Input(uint32_t id);
+				virtual ~Input();
 
-				InputMode_n mode() const;
-				void setMode(const InputMode_n &mode);
+				InputMode mode() const;
+				void setMode(const InputMode& mode);
+				void setMode(InputMode::N mode);
+				void setMode(const std::string& mode);
 
 				bool inverted() const;
 				void setInverted(bool inverted);
@@ -21,13 +23,17 @@ namespace Macsa {
 				uint32_t filter() const;
 				void setFilter(const uint32_t &filter);
 
+				virtual void operator  = (const Input& other);
+				virtual bool operator == (const Input& other)const {return  equal(other);}
+				virtual bool operator != (const Input& other)const {return !equal(other);}
+
 			private:
-				InputMode_n	_mode;
+				InputMode	_mode;
 				bool		_inverted;
 				uint32_t	_filter;
 
 
-				virtual bool equal(const Inputs &other )const;
+				virtual bool equal(const Input &other )const;
 		};
 	}
 }

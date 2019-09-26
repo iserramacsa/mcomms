@@ -5,6 +5,7 @@
 #include "files.h"
 #include "configuration.h"
 #include "status.h"
+#include "comms.h"
 
 namespace Macsa {
 	namespace Printers {
@@ -34,27 +35,28 @@ namespace Macsa {
 				virtual bool errorsChanged() const;
 				virtual void setErrorsChanged(bool changed);
 
+				std::time_t dateTime() const;
+				void setDateTime(const std::time_t &dateTime);
+				std::string formatedDateTime() const;
 
-				virtual std::string currentMessage() const;
-				virtual void setCurrentMessage(std::string currentMessage);
+				Configuration& configuration();
+				const Configuration& configuration() const;
 
-                std::string dateTime() const;
-                void setDateTime(const std::string &dateTime);
+				Status& status();
+				const Status& status() const;
 
-				Configuration *configuration();
-				const Configuration *configuration() const;
+				PrinterFiles& files();
+				const PrinterFiles& files() const;
 
-				Status *status();
-				const Status *status() const;
-
-				PrinterFiles *files();
-				const PrinterFiles *files() const;
+				PrinterComms& comms();
+				const PrinterComms& comms() const;
 
 
         protected:
 				Configuration _configuration;
 				Status _status;
 				PrinterFiles _files;
+				PrinterComms _comms;
 
                 int _id;
 
@@ -65,8 +67,8 @@ namespace Macsa {
 				bool _errorsChanged;
 
 				std::string _type;
-				std::string _currentMessage;
-                std::string _dateTime;
+				std::time_t _dateTime;
+				std::time_t _lastUpdate;
 		};
 	}
 }

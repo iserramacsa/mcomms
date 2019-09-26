@@ -115,8 +115,7 @@ XMLElement *MCommandBase::textElement(const std::string &name, const std::string
 {
 	XMLElement* element = newElement(name, parentNode);
 	if (element != nullptr){
-		XMLText * text = _doc.NewText(content.c_str());
-		element->InsertEndChild(text);
+		element->SetText(content.c_str());
 	}
 	return element;
 }

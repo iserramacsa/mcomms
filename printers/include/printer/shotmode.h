@@ -5,11 +5,7 @@
 #include <map>
 #include <vector>
 #include <stdint.h>
-
-// Nozzles columns definition
-#define NOZZLES_COL_A       "COL_A"
-#define NOZZLES_COL_B       "COL_B"
-#define NOZZLES_COL_BOTH    "BOTH"
+#include "datatypes.h"
 
 /****************  ShotMode *****************
 	Mode:
@@ -30,26 +26,20 @@ namespace Macsa {
 		class Delay
 		{
 			public:
-				enum DelayUnits_n {
-					UNITS_MM = 0,
-					UNITS_DOTS,
-				};
-
-			public:
-				Delay(unsigned int	delay = 0, DelayUnits_n units = DelayUnits_n::UNITS_DOTS) {
+				Delay(unsigned int	delay = 0, DelayUnits::N units = DelayUnits::UNITS_DOTS) {
 					_delay = delay;
 					_units = units;
 				}
-				unsigned int delay() const {return _delay;}
-				DelayUnits_n units() const {return _units;}
+				unsigned int delay()const {return _delay;}
+				DelayUnits units()	const {return _units;}
 				bool operator == ( const Delay& other_ ) const { return  isEqual(other_); }
 				bool operator != ( const Delay& other_ ) const { return !isEqual(other_); }
 
 			private:
-				unsigned int	_delay;
-				DelayUnits_n	_units;
+				uint32_t	_delay;
+				DelayUnits	_units;
 
-				bool isEqual( const Delay& other) const {return (_delay == other._delay && _units == other._units);}
+				bool isEqual( const Delay& other) const {return (_delay == other._delay && _units() == other._units());}
 		};
 
 		class ShotMode
@@ -63,24 +53,27 @@ namespace Macsa {
 
 			public:
 				ShotMode();
-				ShotMode(ShotMode_n mode, unsigned int numPrints, const std::vector<Delay>& delays, bool repeat);
+				ShotMode(ShootingMode mode, unsigned int numPrints, const std::vector<Delay>& delays, bool repeat);
+				ShotMode(ShootingMode::N mode, unsigned int numPrints, const std::vector<Delay>& delays, bool repeat);
 
-				ShotMode::ShotMode_n mode() const;
+				ShootingMode mode() const;
 				uint16_t numPrints() const;
 				std::vector<unsigned int> delays() const;
 				bool repeat() const;
 
 				void clear();
 
-				bool operator == ( const ShotMode& other_ ) const { return  equal(other_); }
-				bool operator != ( const ShotMode& other_ ) const { return !equal(other_); }
+				bool operator == (const ShotMode& other) const { return  equal(other); }
+				bool operator != (const ShotMode& other) const { return !equal(other); }
+				void operator = (const ShotMode& other);
 
 			private:
-				uint32_t _numPrints;
-				ShotMode_n _mode;
+				uint32_t	 _numPrints;
+				ShootingMode _mode;
 				std::vector<Delay> _delays;
 				bool _repeat;
 
+				inline void initByMode(ShootingMode::N mode, unsigned int numPrints, const std::vector<Delay>& delays, bool repeat);
 				bool equal( const ShotMode& other_ ) const;
 		};
 	}
