@@ -99,6 +99,11 @@ int DCInterval::getWeekOfYear() const{return weekOfYear;}
 int DCInterval::getMonth() const{return month;}
 int DCInterval::getYear() const{return year;}
 
+void DCInterval::operator =(const DCInterval &other)
+{
+	copy(other);
+}
+
 bool DCInterval::operator <(const tm dateTime) const
 {
 	return  !greaterThan(dateTime);
@@ -107,6 +112,19 @@ bool DCInterval::operator <(const tm dateTime) const
 bool DCInterval::operator >(const tm dateTime) const
 {
 	return greaterThan(dateTime);
+}
+
+void DCInterval::copy(const DCInterval &other)
+{
+	_format = other._format;
+	minute = other.minute;
+	hour = other.hour;
+	dayOfMonth = other.dayOfMonth;
+	dayOfWeek = other.dayOfWeek;
+	dayOfYear = other.dayOfYear; //Julian day
+	weekOfYear = other.weekOfYear;
+	month = other.month;
+	year = other.year;
 }
 
 
@@ -208,6 +226,11 @@ std::string DateCodeGeneric::getFormat() const
 	return _format;
 }
 
+void DateCodeGeneric::operator =(const DateCodeGeneric &other)
+{
+	copy(other);
+}
+
 bool DateCodeGeneric::operator ==(const DateCodeGeneric &other) const
 {
 	return compare(other);
@@ -244,6 +267,13 @@ bool DateCodeGeneric::operator >(const DateCodeGeneric &other) const
 bool DateCodeGeneric::operator >=(const DateCodeGeneric &other) const
 {
 	return (gt(other) || compare(other));
+}
+
+void DateCodeGeneric::copy(const DateCodeGeneric &other)
+{
+	_format = other._format;
+	_code = other._code;
+	_interval = other._interval;
 }
 
 bool DateCodeGeneric::compare(const DateCodeGeneric &other)const
@@ -630,6 +660,11 @@ std::string DateCodes::getCodeByFormat(const std::string &format, const tm date)
 	return  code;
 }
 
+void DateCodes::operator =(const DateCodes &other)
+{
+	copy(other);
+}
+
 bool DateCodes::operator ==(const DateCodes &other) const
 {
 	return equal(other);
@@ -664,6 +699,19 @@ bool DateCodes::equal(const DateCodes& other) const
 			(_yearCodes		  == other._yearCodes)		 &&
 			(_shiftCodes	  == other._shiftCodes) ;
 
+}
+
+void DateCodes::copy(const DateCodes &other)
+{
+	_minuteCodes = other._minuteCodes;
+	_hourCodes = other._hourCodes;
+	_dayCodes = other._dayCodes;
+	_dayOfWeekCodes = other._dayOfWeekCodes;
+	_julianCodes = other._julianCodes;
+	_weekOfYearCodes = other._weekOfYearCodes;
+	_monthCodes	= other._monthCodes;
+	_yearCodes = other._yearCodes;
+	_shiftCodes = other._shiftCodes;
 }
 
 template<class T>

@@ -9,13 +9,11 @@ Printer::Printer() :
 	_status(_configuration)
 {
 	_id = 0;
-	_statusChanged = false;
-	_configChanged = false;
-	_filesChanged = false;
-	_fontsChanged = false;
-	_errorsChanged = false;
-	_dateTime = 0;
-	_lastUpdate = 0;
+//	_statusChanged = false;
+//	_configChanged = false;
+//	_filesChanged = false;
+//	_fontsChanged = false;
+//	_errorsChanged = false;
 }
 
 Printer::~Printer()
@@ -26,26 +24,22 @@ std::string Printer::type() const {return _type;}
 int Printer::id() const {return _id;}
 void Printer::setId(int id) { _id = id;}
 
-bool Printer::statusChanged() const {return _statusChanged;}
-void Printer::setStatusChanged(bool changed){_statusChanged = changed;}
+//bool Printer::statusChanged() const {return _statusChanged;}
+//void Printer::setStatusChanged(bool changed){_statusChanged = changed;}
 
-bool Printer::configChanged() const {return _configChanged;}
-void Printer::setConfigChanged(bool changed){_configChanged = changed;}
+//bool Printer::configChanged() const {return _configChanged;}
+//void Printer::setConfigChanged(bool changed){_configChanged = changed;}
 
-bool Printer::filesChanged() const {return _filesChanged;}
-void Printer::setFilesChanged(bool changed) {_filesChanged = changed;}
+//bool Printer::filesChanged() const {return _filesChanged;}
+//void Printer::setFilesChanged(bool changed) {_filesChanged = changed;}
 
-bool Printer::fontsChanged() const {return _fontsChanged;}
-void Printer::setFontsChanged(bool changed) {_fontsChanged = changed;}
+//bool Printer::fontsChanged() const {return _fontsChanged;}
+//void Printer::setFontsChanged(bool changed) {_fontsChanged = changed;}
 
-bool Printer::errorsChanged() const {return _errorsChanged;}
-void Printer::setErrorsChanged(bool changed) {_errorsChanged = changed;}
+//bool Printer::errorsChanged() const {return _errorsChanged;}
+//void Printer::setErrorsChanged(bool changed) {_errorsChanged = changed;}
 
-std::time_t Printer::dateTime() const
-{
-	double diff = difftime(_lastUpdate, time(nullptr));
-	return (_dateTime + static_cast<long>(diff));
-}
+std::time_t Printer::dateTime() const {return _status.dateTime();}
 
 std::string Printer::formatedDateTime() const
 {
@@ -62,10 +56,19 @@ std::string Printer::formatedDateTime() const
 
 	return dt.str();
 }
+
+std::string Printer::controllerVersion() const {return _status.controllerVersion();}
+std::string Printer::apiVersion() const {return _status.apiVersion();}
+std::string Printer::fpgaVersion() const {return _status.fpgaVersion();}
+
+void Printer::setVersions(const std::string &controllerVersion, const std::string &apiVersion, const std::string &fpgaVersion)
+{
+	_status.setVersions(controllerVersion, apiVersion, fpgaVersion);
+}
+
 void Printer::setDateTime(const time_t &dateTime)
 {
-	_dateTime = dateTime;
-	_lastUpdate = time(nullptr);
+	_status.setDateTime(dateTime);
 }
 
 Configuration& Printer::configuration()

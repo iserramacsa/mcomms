@@ -6,22 +6,18 @@
 namespace Macsa
 {
 	namespace MProtocol {
-		class MLive : public MCommandBase
+		class MLive : public MCommand
 		{
-			public:
 				MLive(Printers::Printer& printer);
-				virtual std::string commandName() const;
-				virtual bool parse(const tinyxml2::XMLElement*);
-	#if defined (MSERVER)
+				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
+				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
+
 			private:
-				virtual void build();
-	#elif defined (MCLIENT)
-			public:
-				virtual void build();
-	#endif
-				time_t dtFromString(const std::string& datetime);
+				virtual void buildRequest();
+				virtual void buildResponse();
 		};
-	}
-}
+
+	} //<< MProtocol
+} //<< Macsa
 
 #endif // MLIVE_COMMANDS_H

@@ -45,9 +45,9 @@ bool TijPrinterController::disconnect()
 time_t TijPrinterController::getDateTime()
 {
 	time_t dt = _printer.dateTime();
-	if(send(_factory.getLiveCommand())){
-		dt = _printer.dateTime();
-	}
+//	if(send(_factory.getLiveCommand()->getRequest())) { //TODO
+//		dt = _printer.dateTime();
+//	}
 
 	return dt;
 }
@@ -58,18 +58,19 @@ bool TijPrinterController::setDateTime(tm dt)
 }
 
 
-bool TijPrinterController::send(MProtocol::MCommandBase* cmd)
+bool TijPrinterController::send(MProtocol::MCommand* cmd)
 {
 	bool success = false;
 	ISocket* socket = NetworkNode::socket(ISocket::TCP_SOCKET, MPROTOCOL_PORT);
 	if(socket->status() == ISocket::CONNECTED)
 	{
-		if (socket->send(cmd->toString()) == ISocket::FRAME_SUCCESS)
+		//TODO check for new command iface funtionality ¿ getRequest or getResponse?
+		if (socket->send(cmd->getResponse()) == ISocket::FRAME_SUCCESS)
 		{
 			std::string resp = "";
 			if(socket->receive(resp) == ISocket::FRAME_SUCCESS)
 			{
-				success = _factory.parse(resp, cmd);
+//				success = _factory.parse(resp, cmd); //Refactor
 			}
 		}
 	}

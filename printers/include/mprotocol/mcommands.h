@@ -1,4 +1,4 @@
-#ifndef MPROTOCOL_COMMANDS_H
+﻿#ifndef MPROTOCOL_COMMANDS_H
 #define MPROTOCOL_COMMANDS_H
 
 #include "printer/printer.h"
@@ -11,53 +11,49 @@
 	#define VIRTUAL_MOCK
 #endif
 
-#if defined (MSERVER)
-	#define access	private
-#elif defined (MCLIENT)
-	#define access	public
-#else
-	#define access	public
-#endif
-
-
 namespace Macsa{
 	namespace MProtocol {
 		class MGetFilesList;
 		class MGetStatus;
-		class MLive;
+		class MLive_;
 		class MGetConfig;
 		class MSetConfig;
 		class MUpdate;
 
-		class MCommandBase
+		class MCommand
 		{
 			public:
-				MCommandBase(Printers::Printer& printer);
-				virtual ~MCommandBase();
-				std::string toString();
-				virtual std::string commandName() const = 0;
-				virtual bool parse(const tinyxml2::XMLElement*) = 0;
+				MCommand(const std::string& commandName, Printers::Printer& printer);
+				virtual ~MCommand();
+
+				virtual std::string getRequest(uint32_t windId);
+				virtual std::string getResponse();
+				virtual bool parseRequest(const tinyxml2::XMLElement* xml) = 0;
+				virtual bool parseResponse(const tinyxml2::XMLElement*xml) = 0;
+
+
+				inline std::string commandName() const{ return _commandName;}
+				inline uint32_t id() const{ return _id;}
+				inline Printers::ErrorCode getError() const{ return _error;}
 
 			protected:
 				uint32_t _id;
-				Printers::Printer& _printer;
 				tinyxml2::XMLDocument _doc;
+				Printers::ErrorCode _error;
+				Printers::Printer& _printer;
 
-				VIRTUAL_MOCK tinyxml2::XMLElement* getWind();
-				VIRTUAL_MOCK tinyxml2::XMLElement* setWind(tinyxml2::XMLElement **cmd, MErrorCode error = MErrorCode());
-				VIRTUAL_MOCK const tinyxml2::XMLElement *getWindNode(const tinyxml2::XMLElement*);
-				VIRTUAL_MOCK bool isNoChildrenSingleNode(const tinyxml2::XMLElement* wind, const std::string& nodeName);
-				VIRTUAL_MOCK std::string dateTime() const;
-				VIRTUAL_MOCK tinyxml2::XMLElement* textElement(const std::string& name, const std::string& content, tinyxml2::XMLElement** parentNode = nullptr);
-				virtual void build() = 0;
-				VIRTUAL_MOCK tinyxml2::XMLError QueryStringAttribute(const tinyxml2::XMLElement *element, const std::string& attr, std::string& value);
-				VIRTUAL_MOCK inline bool isElement(const tinyxml2::XMLElement* element, const std::string& name);
-				VIRTUAL_MOCK tinyxml2::XMLElement* newElement(const std::string& name, tinyxml2::XMLElement** parentNode = nullptr);
+				virtual void buildRequest() = 0;
+				virtual void buildResponse() = 0;
 
-				VIRTUAL_MOCK bool valid(const tinyxml2::XMLElement *wind); //Check error response
+
+				std::string toString(); //return current xml document in a std::string
+				tinyxml2::XMLElement * buildNewFrame();
+				bool parseSingleCommand(const tinyxml2::XMLElement *root);
 
 			private:
-				VIRTUAL_MOCK inline uint32_t nextId() const;
+				const std::string _commandName;
+				VIRTUAL_MOCK inline uint32_t nextId() const; //ToDo: Move to factory
+
 		};
 	}
 }

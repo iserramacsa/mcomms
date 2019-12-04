@@ -18,15 +18,15 @@
 		In mode 1 is always 2 (First delay is the delay for the first print, and the second one is the delay between prints).
 		In mode 2 depends on number of prints (All the Delays are related to the trigger point).
 	Repeat:
-		true to print always the same label.
-		false to change variable fields in the label.
+		true to print the same variable fields value for one trigger.
+		false to update variable fields in the label between prints.
  ********************************************/
 namespace Macsa {
 	namespace Printers {
 		class Delay
 		{
 			public:
-				Delay(unsigned int	delay = 0, DelayUnits::N units = DelayUnits::UNITS_DOTS) {
+				Delay(unsigned int	delay = 0, DelayUnits_n units = DelayUnits_n::UNITS_DOTS) {
 					_delay = delay;
 					_units = units;
 				}
@@ -45,20 +45,13 @@ namespace Macsa {
 		class ShotMode
 		{
 			public:
-				enum ShotMode_n {
-				   SINGLE_SHOT = 0, // for single shot.
-				   MULTI_SHOT_REL,  // for multishot with relative delay.
-				   MULTI_SHOT_ABS   // for multishot with absolute delay.
-				};
-
-			public:
 				ShotMode();
 				ShotMode(ShootingMode mode, unsigned int numPrints, const std::vector<Delay>& delays, bool repeat);
-				ShotMode(ShootingMode::N mode, unsigned int numPrints, const std::vector<Delay>& delays, bool repeat);
+				ShotMode(ShootingMode_n mode, unsigned int numPrints, const std::vector<Delay>& delays, bool repeat);
 
 				ShootingMode mode() const;
 				uint16_t numPrints() const;
-				std::vector<unsigned int> delays() const;
+				std::vector<Delay> delays() const;
 				bool repeat() const;
 
 				void clear();
@@ -66,6 +59,13 @@ namespace Macsa {
 				bool operator == (const ShotMode& other) const { return  equal(other); }
 				bool operator != (const ShotMode& other) const { return !equal(other); }
 				void operator = (const ShotMode& other);
+#if __cplusplus >= 201103L
+				using citDelay=std::vector<Delay>::const_iterator;
+				using itDelay=std::vector<Delay>::iterator;
+#else
+				typedef std::vector<Delay>::const_iterator citDelay;
+				typedef std::vector<Delay>::iterator itDelay;
+#endif
 
 			private:
 				uint32_t	 _numPrints;
@@ -73,7 +73,7 @@ namespace Macsa {
 				std::vector<Delay> _delays;
 				bool _repeat;
 
-				inline void initByMode(ShootingMode::N mode, unsigned int numPrints, const std::vector<Delay>& delays, bool repeat);
+				inline void initByMode(ShootingMode_n mode, unsigned int numPrints, const std::vector<Delay>& delays, bool repeat);
 				bool equal( const ShotMode& other_ ) const;
 		};
 	}

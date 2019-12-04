@@ -14,7 +14,7 @@ namespace Macsa {
 
 				InputMode mode() const;
 				void setMode(const InputMode& mode);
-				void setMode(InputMode::N mode);
+				void setMode(InputMode_n mode);
 				void setMode(const std::string& mode);
 
 				bool inverted() const;

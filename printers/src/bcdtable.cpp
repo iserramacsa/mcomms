@@ -18,7 +18,7 @@ BCDMode BcdTable::mode() const
 	return _bcdMode;
 }
 
-void BcdTable::setMode(const BCDMode::N &bcdMode)
+void BcdTable::setMode(const BCDMode_n &bcdMode)
 {
 	_bcdMode = bcdMode;
 }
@@ -26,6 +26,16 @@ void BcdTable::setMode(const BCDMode::N &bcdMode)
 void BcdTable::setMode(const string &bcdMode)
 {
 	_bcdMode = bcdMode;
+}
+
+uint8_t BcdTable::current() const
+{
+	return _current;
+}
+
+void BcdTable::setCurrent(const uint8_t &current)
+{
+	_current = current;
 }
 
 string BcdTable::message(uint8_t code) const
@@ -44,16 +54,34 @@ void BcdTable::setMessage(const uint8_t &code, const string &message)
 	}
 }
 
+string BcdTable::currentMessage() const
+{
+	if (_bcdMode != BCDMode_n::USER_MODE && _current < MAX_BCD_CODES)
+	{
+		return message(_current);
+	}
+	else
+	{
+		return "";
+	}
+}
+
+uint8_t BcdTable::count() const
+{
+	return MAX_BCD_CODES;
+}
+
 void BcdTable::clear()
 {
 	_table.clear();
 	for (uint8_t code = 0; code < MAX_BCD_CODES; code++) {
 		_table.insert(pair<uint8_t, string>(code, ""));
 	}
-	_bcdMode = BCDMode::USER_MODE;
+	_bcdMode = BCDMode_n::USER_MODE;
+	_current = 0;
 }
 
-void BcdTable::operator =(const BcdTable &other)
+void BcdTable::operator = (const BcdTable &other)
 {
 	_bcdMode = other._bcdMode;
 	_table.clear();

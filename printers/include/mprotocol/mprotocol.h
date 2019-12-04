@@ -9,11 +9,15 @@ namespace  Macsa {
 
 #define M_PROTOCOL_PORT	9991
 
+#define ATTRIBUTE_VALUE		"Value"
+#define ATTRIBUTE_ID		"id"
+
 #define MWIND				"WIND"
-#define MWIND_ID_ATTR		"id"
+#define MWIND_ID_ATTR		ATTRIBUTE_ID
 
 #define MERROR				"ERROR"
 #define MERROR_CODE_ATTR	"Code"
+
 
 #define MLIVE				"LIVE"
 #define MLIVE_DT_ATTR		"DateTime"
@@ -35,18 +39,14 @@ namespace  Macsa {
 #define MCONFIG_GENERAL				"GENERAL"
 #define MCONFIG_GENERAL_DT				MSTATUS_DT
 #define MCONFIG_GENERAL_LOG				"LOG"
-#define MCONFIG_GENERAL_LOG_ERR_ATTR 		"traceErrors"
-#define MCONFIG_GENERAL_LOG_WARN_ATTR 		"traceWarnings"
-#define MCONFIG_GENERAL_LOG_INFO_ATTR 		"traceInfos"
-#define MCONFIG_GENERAL_LOG_SAVE_ERR_ATTR 	"saveErrors"
-#define MCONFIG_GENERAL_LOG_SAVE_WARN_ATTR 	"saveWarnings"
-#define MCONFIG_GENERAL_LOG_SAVE_INFO_ATTR 	"saveInfos"
+#define MCONFIG_GENERAL_LOG_LEVEL_ATTR 		"traceLevel"
+#define MCONFIG_GENERAL_LOG_ENABLED_ATTR 	"traceLogs"
 #define MCONFIG_GENERAL_LOG_COMMS 			"traceComDetails"
 
 #define MCONFIG_CONNECTIONS			"CONNECTIONS"
 #define MCONFIG_CONN_NETWORK			"NETWORK"
 #define MCONFIG_CONN_NETWORK_ADAPTER		"ADAPTER"
-#define MCONFIG_CONN_NETWORK_ADAPTER_ID_ATTR	"id"
+#define MCONFIG_CONN_NETWORK_ADAPTER_ID_ATTR	ATTRIBUTE_ID
 #define MCONFIG_CONN_NETWORK_IP					"IP_ADDRESS"
 #define MCONFIG_CONN_NETWORK_SUBNET				"SUBNET_MASK"
 #define MCONFIG_CONN_NETWORK_GATEWAY			"GATEWAY"
@@ -60,21 +60,56 @@ namespace  Macsa {
 
 #define MPRINTER_BOARDS_LIST	"BOARDS"
 #define MPRINTER_BOARD			"BOARD"
-#define MPRINTER_BOARD_ID_ATTR	"id"
+#define MPRINTER_BOARD_ID_ATTR		ATTRIBUTE_ID
+#define MPRINTER_BOARD_ENABLED_ATTR	"enabled"
+#define MPRINTER_BOARD_PRINT_ATTR	"printing"
 #define MPRINTER_BOARD_TYPE			"TYPE"
 #define MPRINTER_BOARD_ENABLED		"ENABLED"
+#define MPRINTER_BOARD_BLOCKED		"BLOCK"
 #define MPRINTER_BOARD_PRINTING		"PRINTING"
 #define MPRINTER_BOARD_AUTOSTART	"AUTOSTART"
 #define MPRINTER_BOARD_CURRENT_MSG	"CURRENT_MESSAGE"
 
-#define MPRINTER_BOARD_BCD_MODE		"BCD_MODE"
-#define MPRINTER_BOARD_BCD_STATUS	"BCD_STATUS"
-#define MPRINTER_BOARD_COUNTERS		"COUNTERS"
-#define MPRINTER_BOARD_COUNT_ID_ATTR	"id"
-#define MPRINTER_BOARD_COUNT_VAL_ATTR	"Value"
+#define MPRINTER_BOARD_PRINT_SPEED		"PRINT_SPEED"
+#define MPRINTER_BOARD_PRINTS_REMAIN	"NUM_PRINTS_REMAIN"
+
+#define MPRINTER_BOARD_BCD_MODE		 "BCD_MODE"
+#define MPRINTER_BOARD_BCD_STATUS	 "BCD_STATUS"
+#define MPRINTER_BOARD_BCD_TABLE	 "BCD_ASSIGNMENT"
+#define MPRINTER_BOARD_BCD_CODE_ATTR	"Code"
+#define MPRINTER_BOARD_BCD_MSG_ATTR		"FilePath"
+
+#define MPRINTER_BOARD_SHOT_MODE	"SHOT_MODE"
+#define MPRINTER_BOARD_SHOT_MODE_MODE_ATTR	 "Mode"
+#define MPRINTER_BOARD_SHOT_MODE_VALUE_ATTR	 ATTRIBUTE_VALUE
+#define MPRINTER_BOARD_SHOT_MODE_DELAY_ATTR	 "Delays"
+#define MPRINTER_BOARD_SHOT_MODE_REPEAT_ATTR "Repeat"
+#define MPRINTER_BOARD_SHOT_DELAY		"DELAY"
+#define MPRINTER_BOARD_SHOT_DELAY_VALUE_ATTR	ATTRIBUTE_VALUE
+#define MPRINTER_BOARD_SHOT_DELAY_UNITS_ATTR	"Units"
+
+#define MPRINTER_BOARD_ENCODER			"ENCODER"
+#define MPRINTER_BOARD_ENCODER_MODE_ATTR	"CurrentMode"
+#define MPRINTER_BOARD_ENCODER_FIXED	"FIXED_SPEED"
+#define MPRINTER_BOARD_ENCODER_FIXED_VALUE_ATTR	ATTRIBUTE_VALUE
+#define MPRINTER_BOARD_ENCODER_EXTERNAL	"EXTERNAL_ENCODER"
+#define MPRINTER_BOARD_ENCODER_EXT_RESOL_ATTR	"Resolution"
+#define MPRINTER_BOARD_ENCODER_EXT_DIAM_ATTR	"Diameter"
+
+#define MPRINTER_BOARD_PRINT_DIR		"PRINT_DIRECTION"
+#define MPRINTER_BOARD_PRINT_INVERTED	"INVERTED"
+#define MPRINTER_BOARD_NOZZLES_COL		"NOZZLES_COLUMN"
+
+#define MPRINTER_BOARD_COUNTERS_LIST "COUNTERS"
+#define MPRINTER_BOARD_COUNTER			"COUNTER"
+#define MPRINTER_BOARD_COUNT_ID_ATTR	ATTRIBUTE_ID
+#define MPRINTER_BOARD_COUNT_VAL_ATTR	ATTRIBUTE_VALUE
+#define MPRINTER_BOARD_COUNT_TOTAL		"total"
+#define MPRINTER_BOARD_COUNT_USER		"user"
 
 #define MPRINTER_BOARD_ERRORS_LIST		"ERRORS"
 #define MPRINTER_BOARD_ERROR 			"ERROR"
+#define MPRINTER_BOARD_ERR_TSTAMP_ATTR	"When"
 #define MPRINTER_BOARD_ERR_TYPE_ATTR	"Type"
 #define MPRINTER_BOARD_ERR_PRIO_ATTR	"Priority"
 #define MPRINTER_BOARD_ERR_CODE_ATTR	"ErrorCode"
@@ -83,14 +118,14 @@ namespace  Macsa {
 #define MPRINTER_BOARD_INPUT 			"INPUT"
 #define MPRINTER_BOARD_OUTPUTS_LIST		"OUTPUTS"
 #define MPRINTER_BOARD_OUTPUT 			"OUTPUT"
-#define MPRINTER_BOARD_IO_ID_ATTR		"id"
+#define MPRINTER_BOARD_IO_ID_ATTR		ATTRIBUTE_ID
 #define MPRINTER_BOARD_IO_DESCRIPT_ATTR	"Descriptor"
-#define MPRINTER_BOARD_IO_VAL_ATTR		"Value"
+#define MPRINTER_BOARD_IO_VAL_ATTR		ATTRIBUTE_VALUE
 
 #define MPRINTER_BOARD_PROPERTIES_LIST	"PROPERTIES"
 #define MPRINTER_BOARD_PROPERTY			"PROPERTY"
 #define MPRINTER_BOARD_PROPERTY_KEY_ATTR	"Key"
-#define MPRINTER_BOARD_PROPERTY_VALUE_ATTR	"Value"
+#define MPRINTER_BOARD_PROPERTY_VALUE_ATTR	ATTRIBUTE_VALUE
 
 #define FONTS_FILTER	".ttf"
 #define NISX_FILTER		".nisx"
@@ -152,88 +187,8 @@ namespace  Macsa {
 #define key_counter_system_total "SYSTEM.TOTAL"
 #define key_counter_system_user  "SYSTEM.USER"
 #define key_counter_system_bcd	 "BCD."
-// /////////////////////////////////////////////////////////////////// //
 
-		class MErrorCode
-		{
-			public:
-				enum N
-				{
-					Success						, // No error
-
-					// FILES ERRORS
-					FileNotFound				, // the specified file not exist
-					FileAlreadyExist			, // in move or copy operations, if the file already exist...
-					FileCopyFail				, // copy file operation error
-					FileDeleteFail				, // delete file operation error
-					FileMoveFail				, // move operation error
-					FileMoveIncomplete			, // move operation has copied the source to target, but not delete the source
-					FileReadCanNot				, // can't read the file
-					FileWriteCanNot				, // can't write the file
-					FileWriteIncomplete			, // the write on the file is not complete
-					FileUserDataNotFound		, // the name of a user-name-value is not found
-					FileInUse					, // the file is currenty in use
-
-					// PARAMS ERRORS
-					ParamBoardIdNotFound		, // The BoardId specified by the command was not found
-					ParamCounterIdNotFound		, // The CounterId specified by the command was not found
-					ParamCounterValueRejected	, // The device has rejected the counter modification
-					ParamOutputIdNotFound		, // The output id specified by the command was not found
-					ParamCantSetMsgInBcdMode	, // Is not posible set a manual current message if the board is in Bcd mode
-					ParamBoardIsEnabled			, // the command requires a enabled board
-					ParamBoardIsNotEnabled		, // the command requires a disabled board
-					ParamCannotChangeAdapter	, // The server can not change the adapter settings
-					ParamInvalidIpAddress		, // The ip is invalid
-					ParamInvalidMaskAddress		, // The mask is invalid
-					ParamInvalidGatewayAddress	, // The Gateway is invalid
-					ParamInvalidPropCount		, // The client can not change the number of properties
-
-
-					// OTHER GENERIC ERRORS
-					GenUnexpectedTag			, // generic xml error
-
-					GenNotImplemented			, // informs that operation is not implemented on the server
-					GenLockTimeout				, // Lock data fail
-
-					// NEOTIJ ERRORS
-					PcaNotdetected				, // "PCA.NOTDETECTED"				"No connection with PCA"
-					PhOvertemp					, // "PH.OVERTEMP"					"Printhead over temperature"
-					GenOverspeed				, // "GEN.OVERSPEED"				"Overspeed"
-					MsgFormaterror				, // "MSG.FORMATERROR"				"NISX format error"
-					MsgNoexist					, // "MSG.NOEXIST"					"Message doesn't exist"
-					PhNocartridge				, // "PH.NOCARTRIDGE"				"No cartridge loaded"
-					SmcInvalid					, // "SMC.INVALID"					"No valid smartcard on cartridge"
-					PhGenfault					, // "PH.GENFAULT"					"Cartridge fault - not valid"
-					SmcCartridgeEmpty			, // "SMC.CARTRIDGE_EMPTY"			"Cartridge empty"
-					SmcCartridgeOutofdate		, // "SMC.CARTRIDGE_OUTOFDATE"		"Cartridge out of expiration date"
-					SmcCartridgeNearend			, // "SMC.CARTRIDGE_NEAREND"		"Cartridge near empty"
-					SmcCartridgeInvalid			, // "SMC.UNRECOGNIZED_DATA"		"Cartridge invalid Data"
-					SmcInitializingCartridge	, // "PH.INITIALIZING_CARTRIDGE"	"Initializing cartridge "
-					SmcHostInvalid,				  // "SMC.HOST_SMARTCARD"			"Invalid Host Smart Card"
-
-					UnknownError
-				};
-				MErrorCode(){_val = Success;}
-				MErrorCode(enum N v){_val = v;}
-				enum N operator()() const {return _val;}
-				std::string toString() const;
-
-				void operator = (const MErrorCode& other){_val = other._val;}
-				void operator = (enum N v){_val = v;}
-				void operator = (const std::string& val){_val = fromString(val);}
-				bool operator == (const MErrorCode& other)const {return _val == other._val;}
-				bool operator == (const std::string& other)const {return (toString().compare(other) == 0);}
-				bool operator == (enum N other)const {return _val == other;}
-				bool operator != (const MErrorCode& other)const {return _val != other._val;}
-				bool operator != (const std::string& other)const {return (toString().compare(other) != 0);}
-				bool operator != (enum N other)const {return _val != other;}
-
-			private:
-				N _val;
-
-				MErrorCode::N fromString(const std::string &code) const;
-		};
-	}
-}
+	} //namespace Protocol
+}//namespace Macsa
 
 #endif

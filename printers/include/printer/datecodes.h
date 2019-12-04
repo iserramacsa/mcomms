@@ -35,6 +35,7 @@ namespace Macsa {
 					int getMonth()const;
 					int getYear()const;
 
+					void operator = (const DCInterval& other);
 					bool operator < (const tm dateTime) const;
 					bool operator > (const tm dateTime) const;
 
@@ -49,6 +50,7 @@ namespace Macsa {
 					int month;
 					int year;
 
+					void copy (const DCInterval& other);
 					bool formatIs(std::string format)const;
 					bool greaterThan(const tm dateTime)const;
 					template<typename T>
@@ -66,6 +68,8 @@ namespace Macsa {
 					virtual void setCode(std::string code);
 					virtual std::string getCode()const;
 					virtual std::string getFormat()const;
+
+					void operator = (const DateCodeGeneric& other);
 					bool operator == (const DateCodeGeneric& other) const;
 					bool operator != (const DateCodeGeneric& other) const;
 					bool operator < (const DateCodeGeneric& other) const;
@@ -78,6 +82,7 @@ namespace Macsa {
 					std::string _code;
 					DCInterval _interval;
 
+					virtual void copy(const DateCodeGeneric& other);
 					virtual bool compare(const DateCodeGeneric& other)const;
 					virtual bool gt(const DateCodeGeneric& other)const;
 			};
@@ -157,6 +162,7 @@ namespace Macsa {
 				std::string dateTimeCodeFormater(std::string codeFormat) const;
 				std::string getCodeByFormat(const std::string &format, const tm date) const;
 
+				void operator = (const DateCodes& other);
 				bool operator == (const DateCodes& other) const;
 				bool operator != (const DateCodes& other) const;
 
@@ -176,6 +182,7 @@ namespace Macsa {
 				std::string getFormatByCodeFormater(const std::string& formater) const;
 
 				bool equal(const DateCodes& other) const;
+				void copy(const DateCodes& other);
 				template<class T>
 				int find(const std::vector<T>& data, std::string format, std::string interval) const;
 				template<class T>

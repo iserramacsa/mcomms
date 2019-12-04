@@ -1,8 +1,6 @@
 #include "mprotocol/mfiles.h"
-
-#if defined (MCLIENT)
 #include "printer/files.h"
-#endif
+#include "mtools.h"
 
 #define SLASH_CHAR '/'
 #define DRIVE_CHARS "//"
@@ -10,61 +8,61 @@
 using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
-MGetFilesList::MGetFilesList(Printers::Printer &printer):
-	MCommandBase(printer)
-{}
-
-std::string MGetFilesList::commandName() const
-{
-	return MFILES_GET_LIST;
-}
-
-#if defined (MSERVER)
-void MGetFilesList::build()
-{
-	XMLElement* cmd = _doc.NewElement(MFILES_GET_LIST);
-	cmd->SetAttribute(MFILES_GET_LIST_TYPE_ATTR, _filter.c_str());
-	//TODO: Insert requested files
-	setWind(&cmd);
-
-}
-
-bool MGetFilesList::parse(const XMLElement *wind)
-{
-	const XMLElement * pwind = getWindNode(wind);
-	if(pwind != nullptr){
-		const XMLElement * cmd = pwind->FirstChildElement();
-		if (std::string(cmd->Value()).compare(MFILES_GET_LIST) == 0)
-		{
-			QueryStringAttribute(cmd, MFILES_GET_LIST_TYPE_ATTR, _filter);
-			return true;
-		}
-	}
-	return false;
-}
-
-#elif defined (MCLIENT)
-
-void MGetFilesList::build()
-{
-	XMLElement* cmd = _doc.NewElement(MFILES_GET_LIST);
-	cmd->SetAttribute(MFILES_GET_LIST_TYPE_ATTR, _filter.c_str());
-	setWind(&cmd);
-}
-
-void MGetFilesList::setFilter(const std::string& filter)
+MGetFilesList::MGetFilesList(Macsa::Printers::Printer &printer, const std::string &filter) :
+	MCommand(MFILES_GET_LIST, printer)
 {
 	_filter = filter;
 }
 
-bool MGetFilesList::parse(const XMLElement *wind)
+void MGetFilesList::buildRequest()
 {
-	const XMLElement * pwind = getWindNode(wind);
-	bool valid = (pwind != nullptr);
-	if (valid) {
-		const XMLElement * cmd = pwind->FirstChildElement(MFILES_GET_LIST);
-		if ((MCommandBase::valid(pwind) && cmd != nullptr))
+	XMLElement* wind = buildNewFrame();
+	XMLElement* cmd = MTools::XML::newElement(commandName(), _doc, &wind);
+	if (cmd != nullptr && filter().length()) {
+		cmd->SetAttribute(MFILES_GET_LIST_TYPE_ATTR, filter().c_str());
+	}
+}
+
+void MGetFilesList::buildResponse()
+{
+	XMLElement* wind = buildNewFrame();
+	_error = Printers::ErrorCode_n::SUCCESS;
+
+	XMLElement* eCmd = MTools::XML::newElement(MFILES_GET_LIST, _doc, &wind);
+	eCmd->SetAttribute(MFILES_GET_LIST_TYPE_ATTR, _filter.c_str());
+	//TODO: Insert requested files (create files server)
+
+}
+
+bool MGetFilesList::parseRequest(const XMLElement *xml)
+{
+	bool valid = false;
+	int id  = MTools::XML::getWindId(xml);
+	if(id != -1) {
+		const XMLElement *cmd = xml->FirstChildElement(commandName().c_str());
+		valid = (cmd != nullptr && cmd->NoChildren());
+		if (valid){
+			_filter ="*.*";
+			const char* filter = cmd->Attribute(MFILES_GET_LIST_TYPE_ATTR);
+			if (filter != nullptr){
+				_filter = filter;
+			}
+		}
+	}
+
+	return valid;
+}
+
+bool MGetFilesList::parseResponse(const XMLElement *xml)
+{
+	bool valid = false;
+	int id  = MTools::XML::getWindId(xml);
+	if(id != -1) {
+		_id = static_cast<unsigned int>(id);
+		const XMLElement * cmd = xml->FirstChildElement();
+		if (std::string(cmd->Value()).compare(MFILES_GET_LIST) == 0)
 		{
+			valid = true; //TODO: Refactor
 			std::vector<std::string> exts;
 			const char* filter = cmd->Attribute(MFILES_GET_LIST_TYPE_ATTR);
 			if (filter != nullptr && strlen(filter) > 1) {
@@ -105,11 +103,14 @@ bool MGetFilesList::parse(const XMLElement *wind)
 				}
 				xmlfile = xmlfile->NextSiblingElement(MFILES_FILE_PATH);
 			}
-
-
 		}
 	}
 	return valid;
+}
+
+std::string MGetFilesList::filter() const
+{
+	return _filter;
 }
 
 void MGetFilesList::splitFilePwd(const std::string &pwd, std::string &drive, std::string &folder, std::string &file)
@@ -145,4 +146,3 @@ void MGetFilesList::insertFileToPrinterData(const std::string &pwd)
 	_printer.files().addNewFile(drive, folder, file);
 }
 
-#endif

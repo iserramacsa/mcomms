@@ -25,15 +25,15 @@ namespace Macsa {
 
 
 		protected:
-			virtual bool send(MProtocol::MCommandBase *cmd);
+			virtual bool send(MProtocol::MCommand *cmd);
 
 		private:
 			Printers::TIJPrinter _printer;
 			std::atomic_bool _running;
-			std::list<MProtocol::MCommandBase*> _commands;
+			std::list<MProtocol::MCommand*> _commands;
 			MProtocol::MCommandsFactory _factory;
 
-			using itCommand = std::list<MProtocol::MCommandBase*>::iterator;
+			using itCommand = std::list<MProtocol::MCommand*>::iterator;
 	};
 }
 

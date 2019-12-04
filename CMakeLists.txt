@@ -59,8 +59,6 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	add_definitions(-DDEBUG)
 endif()
 
-add_definitions(-DMCLIENT)
-
 set(SOURCES)
 set(HEADERS)
 

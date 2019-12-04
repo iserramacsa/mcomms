@@ -17,7 +17,7 @@ namespace Macsa {
 
 				OutputType type() const;
 				void setType(const OutputType& type);
-				void setType(OutputType::N type);
+				void setType(OutputType_n type);
 				void setType(const std::string& type);
 
 				uint32_t time() const;

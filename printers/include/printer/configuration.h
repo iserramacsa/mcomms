@@ -11,7 +11,15 @@
 #include "comms.h"
 
 namespace Macsa {
-	namespace Printers {		
+	namespace Printers {
+
+#if __cplusplus >= 201103L
+		using itBoard  = std::vector<Board>::iterator;
+		using citBoard = std::vector<Board>::const_iterator;
+#else
+		typedef std::vector<Board>::iterator		itBoard;
+		typedef std::vector<Board>::const_iterator	citBoard;
+#endif
 		class Configuration
 		{
 
@@ -22,8 +30,11 @@ namespace Macsa {
 				virtual Photocell photocell() const;
 				virtual void setPhotocell(const Photocell &photocell);
 
-				virtual const Board* board(unsigned int idx) const;
+				virtual const std::vector<Board>& boards() const;
+				virtual const Board* board(int id) const;
+				virtual Board* board(int id);
 				virtual void setBoards(const std::vector<Board> &boards);
+				virtual void setBoard(const Board &board);
 
 				virtual PrinterComms comms() const;
 				virtual void setComms(const PrinterComms &comms);
@@ -31,6 +42,15 @@ namespace Macsa {
 				//Operators
 				bool operator == (const Configuration& other){return equal(other);}
 				bool operator != (const Configuration& other){return !equal(other);}
+
+				LoggerLevel logLevel() const;
+				void setLogLevel(const LoggerLevel &logLevel);
+
+				bool traceLogs() const;
+				void setTraceLogs(bool traceLogs);
+
+				bool traceComms() const;
+				void setTraceComms(bool traceComms);
 
 			protected:
 				PrinterComms		_comms;
@@ -46,10 +66,7 @@ namespace Macsa {
 //				MLogDef();
 //				void clear();
 
-//				bool isEqualTo( const MLogDef& other_ ) const;
-//				bool operator == ( const MLogDef& other_ ) const { return  isEqualTo(other_); }
-//				bool operator != ( const MLogDef& other_ ) const { return !isEqualTo(other_); }
-
+				Configuration(const Configuration&){}
 				bool equal(const Configuration& other);
 		};
 	}

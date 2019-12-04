@@ -4,14 +4,7 @@ using namespace Macsa::Printers;
 
 Cartridge::Cartridge()
 {
-	_id.clear();
-	_autoconfig		  = true;
-	_pulseWarming     = false ;
-	_voltage          = 0;
-	_pulseWarmingTemp = 0;
-	_columnDistance   = 0;
-	_adjustedCapacity = 100;
-	_pulseWidth       = 0;
+	clear();
 }
 
 Cartridge::~Cartridge()
@@ -95,6 +88,18 @@ bool Cartridge::pulseWarming() const
 void Cartridge::setPulseWarming(bool pulseWarming)
 {
 	_pulseWarming = pulseWarming;
+}
+
+void Cartridge::clear()
+{
+	_id.clear();
+	_autoconfig		  = true;
+	_pulseWarming     = false ;
+	_voltage          = 0;
+	_pulseWarmingTemp = 0;
+	_columnDistance   = 0;
+	_adjustedCapacity = 100;
+	_pulseWidth       = 0;
 }
 
 void Cartridge::operator =(const Cartridge &other)

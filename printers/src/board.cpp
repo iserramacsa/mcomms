@@ -4,7 +4,9 @@ using namespace Macsa::Printers;
 
 Board::Board(const int id) :
 	_id(id)
-{}
+{
+	clear();
+}
 
 Board::~Board()
 {}
@@ -42,6 +44,16 @@ bool Board::lowLevelOutput() const
 void Board::setLowLevelOutput(bool lowLevelOutput)
 {
 	_lowLvlOutput = lowLevelOutput;
+}
+
+bool Board::printing() const
+{
+	return _printing;
+}
+
+void Board::setPrinting(bool printing)
+{
+	_printing = printing;
 }
 
 bool Board::enabled() const
@@ -84,6 +96,26 @@ void Board::setBcdTable(const BcdTable &bcdTable)
 	_bcdTable = bcdTable;
 }
 
+void Board::setBcdMode(const BCDMode &mode)
+{
+	_bcdTable.setMode(mode);
+}
+
+void Board::setBcdMode(const BCDMode_n &mode)
+{
+	_bcdTable.setMode(mode);
+}
+
+void Board::setBcdMode(const std::string &mode)
+{
+	_bcdTable.setMode(mode);
+}
+
+void Board::setBcdCurrent(uint8_t current)
+{
+	_bcdTable.setCurrent(current);
+}
+
 PrinterDir Board::printerDirection() const
 {
 	return _printerDirection;
@@ -94,7 +126,7 @@ void Board::setPrinterDirection(const PrinterDir &printerDirection)
 	_printerDirection = printerDirection;
 }
 
-void Board::setPrinterDirection(const PrinterDir::N& printerDirection)
+void Board::setPrinterDirection(const PrinterDir_n &printerDirection)
 {
 	_printerDirection = printerDirection;
 }
@@ -124,7 +156,7 @@ void Board::setNozzlesCol(const NozzlesCol &nozzlesCol)
 	_nozzlesCol = nozzlesCol;
 }
 
-void Board::setNozzlesCol(const NozzlesCol::N &nozzlesCol)
+void Board::setNozzlesCol(const NozzlesCol_n &nozzlesCol)
 {
 	_nozzlesCol = nozzlesCol;
 }
@@ -164,7 +196,7 @@ void Board::setPhotocell(const Photocell& photocell)
 	_photocell = photocell;
 }
 
-void Board::setPhotocell(const Photocell::N& photocell)
+void Board::setPhotocell(const Photocell_n& photocell)
 {
 	_photocell = photocell;
 }
@@ -172,6 +204,37 @@ void Board::setPhotocell(const Photocell::N& photocell)
 void Board::setPhotocell(const std::string &photocell)
 {
 	_photocell = photocell;
+}
+
+std::map<std::string, int> Board::counters() const
+{
+	return _counters;
+}
+
+int Board::counter(const std::string &name) const
+{
+	int value = -1;
+	if (_counters.find(name) != _counters.end()) {
+		value = _counters.at(name);
+	}
+	return value;
+
+}
+
+void Board::setCounters(const std::map<std::string, int> &counters)
+{
+	_counters.clear();
+	_counters.insert(counters.begin(), counters.end());
+}
+
+void Board::setCounter(const std::string &name, int value)
+{
+	if (_counters.find(name) == _counters.end()) {
+		_counters.insert(std::pair<std::string, int>(name, value));
+	}
+	else{
+		_counters[name] = value;
+	}
 }
 
 std::map<std::string, std::string> Board::properties() const
@@ -275,6 +338,56 @@ void Board::setOutput(unsigned int idx, const Output &output)
 	}
 }
 
+std::vector<Error> Board::errors() const
+{
+	return _errors;
+}
+
+void Board::setErrors(const std::vector<Error> &errors)
+{
+	_errors.clear();
+	_errors.assign(errors.begin(), errors.end());
+}
+
+Error Board::error(unsigned int idx) const
+{
+	if (idx <  _errors.size()){
+		return _errors.at(idx);
+	}
+	return Error();
+}
+
+void Board::setError(unsigned int idx, const Error &error)
+{
+	if (idx < _outputs.size()){
+		_errors[idx] = error;
+	}
+}
+
+void Board::clear()
+{
+	_type.clear();
+	_autostart = false;
+	_lowLvlOutput = false;
+	_printing = false;
+	_enabled = false;
+	_blocked = true;
+	_currentMessage.clear();
+	_bcdTable.clear();
+	_printerDirection = PrinterDir_n::R2L;
+	_printRotated = false;
+	_nozzlesCol = NozzlesCol_n::COL_A;
+	_shotMode.clear();
+	_encoder.clear();
+	_photocell = Photocell_n::PHCELL_A;
+	_cartridge.clear();
+	_properties.clear();
+	_counters.clear();
+	_inputs.clear();
+	_outputs.clear();
+	_errors.clear();
+}
+
 
 bool Board::equal(const Board &other) const
 {
@@ -285,6 +398,8 @@ bool Board::equal(const Board &other) const
 	else if (_autostart != other._autostart)
 		return false;
 	else if (_lowLvlOutput != other._lowLvlOutput)
+		return false;
+	else if (_printing != other._printing)
 		return false;
 	else if (_enabled != other._enabled)
 		return false;
@@ -316,8 +431,34 @@ bool Board::equal(const Board &other) const
 		 return false;
 	else if (!isSameVector(_outputs, other._outputs))
 		return false;
+	else if (!isSameVector(_errors, other._errors))
+		return false;
 
 	return true;
+}
+
+void Board::copy(const Board &other)
+{
+	_type = other._type;
+	_autostart = other._autostart;
+	_lowLvlOutput = other._lowLvlOutput;
+	_printing = other._printing;
+	_enabled = other._enabled;
+	_blocked = other._blocked;
+	_currentMessage = other._currentMessage;
+	_bcdTable = other._bcdTable;
+	_printerDirection = other._printerDirection;
+	_printRotated = other._printRotated;
+	_nozzlesCol = other._nozzlesCol;
+	_shotMode = other._shotMode;
+	_encoder = other._encoder;
+	_photocell = other._photocell;
+	_cartridge = other._cartridge;
+	_dateCodes = other._dateCodes;
+	setProperties(other._properties);
+	setInputs(other._inputs);
+	setOutputs(other._outputs);
+	setErrors(other.errors());
 }
 
 bool Board::checkProperties(const std::map<std::string, std::string> other) const

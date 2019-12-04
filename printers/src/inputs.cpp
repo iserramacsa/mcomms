@@ -19,7 +19,7 @@ void Input::setMode(const InputMode& mode)
 	_mode = mode;
 }
 
-void Input::setMode(InputMode::N mode)
+void Input::setMode(InputMode_n mode)
 {
 	_mode = mode;
 }

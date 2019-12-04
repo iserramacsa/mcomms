@@ -4,15 +4,12 @@ using namespace Macsa::Printers;
 
 Encoder::Encoder()
 {
-	_mode = EncoderMode::INTERNAL_ENCODER;
-	_fixedSpeed = 0.0;
-	_resolution = 0.0;
-	_diameter	= 0.0;
+	clear();
 }
 
 Encoder::Encoder(double fixedspeed)
 {
-	_mode = EncoderMode::INTERNAL_ENCODER;
+	_mode = EncoderMode_n::INTERNAL_ENCODER;
 	_fixedSpeed = fixedspeed;
 	_resolution = 0.0;
 	_diameter	= 0.0;
@@ -20,7 +17,7 @@ Encoder::Encoder(double fixedspeed)
 
 Encoder::Encoder(double resolution, double diameter)
 {
-	_mode = EncoderMode::INTERNAL_ENCODER;
+	_mode = EncoderMode_n::INTERNAL_ENCODER;
 	_fixedSpeed = 0.0;
 	_resolution = resolution;
 	_diameter	= diameter;
@@ -29,7 +26,7 @@ Encoder::Encoder(double resolution, double diameter)
 Encoder::~Encoder()
 {}
 
-EncoderMode Encoder::getMode() const
+EncoderMode Encoder::mode() const
 {
 	return _mode;
 }
@@ -39,7 +36,7 @@ void Encoder::setMode(const EncoderMode &value)
 	_mode = value;
 }
 
-double Encoder::getFixedSpeed() const
+double Encoder::fixedSpeed() const
 {
 	return _fixedSpeed;
 }
@@ -49,7 +46,7 @@ void Encoder::setFixedSpeed(double value)
 	_fixedSpeed = value;
 }
 
-double Encoder::getResolution() const
+double Encoder::resolution() const
 {
 	return _resolution;
 }
@@ -59,7 +56,7 @@ void Encoder::setResolution(double value)
 	_resolution = value;
 }
 
-double Encoder::getDiameter() const
+double Encoder::diameter() const
 {
 	return _diameter;
 }
@@ -67,6 +64,14 @@ double Encoder::getDiameter() const
 void Encoder::setDiameter(double value)
 {
 	_diameter = value;
+}
+
+void Encoder::clear()
+{
+	_mode = EncoderMode_n::INTERNAL_ENCODER;
+	_fixedSpeed = 0.0;
+	_resolution = 0.0;
+	_diameter	= 0.0;
 }
 
 void Encoder::operator = (const Encoder &other)

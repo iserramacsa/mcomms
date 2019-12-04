@@ -4,41 +4,52 @@
 
 namespace Macsa {
 	namespace MProtocol {
-		class MGetConfig : public MCommandBase
+		/**
+		 * @brief The GETCONFIG command class
+		 */
+		class MGetConfig : public MCommand
 		{
 			public:
 				MGetConfig(Printers::Printer& printer);
-				virtual std::string commandName() const;
-				virtual bool parse(const tinyxml2::XMLElement* );
 
-			access:
-				virtual void build();
+				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
+				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
 
 			private:
-				tinyxml2::XMLElement* getPrinterGenerals();
-				tinyxml2::XMLElement* getPrinterConnections();
-				tinyxml2::XMLElement* getPrinterBoards();
+				virtual void buildRequest();
+				virtual void buildResponse();
+
 		};
 
-		class MSetConfig : public MCommandBase
+		/**
+		 * @brief The SETCONFIG command class
+		 */
+		class MSetConfig : public MCommand
 		{
 			public:
 				MSetConfig(Printers::Printer& printer);
-				virtual std::string commandName() const;
-				virtual bool parse(const tinyxml2::XMLElement *);
-			access:
-				virtual void build();
+
+				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
+				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
+
+			protected:
+				virtual void buildRequest();
+				virtual void buildResponse();
 		};
 
+		/**
+		 * @brief The SETCONFIG command class
+		 */
 		class MSetDateTime : public MSetConfig
 		{
 			public:
 				MSetDateTime(Printers::Printer& printer);
-			access:
-				virtual void build() override;
 
+				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
+
+			private:
+				virtual void buildRequest();
 		};
-
 	}
 }
 

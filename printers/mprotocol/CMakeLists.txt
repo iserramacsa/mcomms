@@ -6,14 +6,6 @@ if (INCLUDE_TESTS)
 	add_subdirectory(test)
 endif()
 
-if (CLIENT)
-	add_definitions(-DMCLIENT)
-endif()
-
-if (SERVER)
-	add_definitions(-DMSERVER)
-endif()
-
 set(PROTOCOL_SOURCES ${PROTOCOL_SOURCES}
 	${CMAKE_CURRENT_SOURCE_DIR}/mcommandsfactory.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/mprotocol.cpp

@@ -13,17 +13,19 @@ namespace Macsa {
 				Encoder(double resolution, double diameter); //Constructor to set external encoder by default
 				~Encoder();
 
-				EncoderMode getMode() const;
+				EncoderMode mode() const;
 				void setMode(const EncoderMode &value);
 
-				double getFixedSpeed() const;
+				double fixedSpeed() const;
 				void setFixedSpeed(double value);
 
-				double getResolution() const;
+				double resolution() const;
 				void setResolution(double value);
 
-				double getDiameter() const;
+				double diameter() const;
 				void setDiameter(double value);
+
+				void clear();
 
 				//Operators
 				void operator = (const Encoder& other);

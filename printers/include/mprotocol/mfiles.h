@@ -5,27 +5,26 @@
 
 namespace Macsa {
 	namespace MProtocol {
-		class MGetFilesList : public MCommandBase
+		/**
+		 * @brief The GETCONFIG command class
+		 */
+		class MGetFilesList : public MCommand
 		{
 			public:
-				MGetFilesList(Printers::Printer& printer);
-				virtual std::string commandName() const;
-				virtual bool parse(const tinyxml2::XMLElement*);
-	#if defined (MSERVER)
-			private:
-				virtual void build();
-	#elif defined (MCLIENT)
-			public:
-				virtual void build();
-				void setFilter(const std::string &filter);
-	#endif
+				MGetFilesList(Printers::Printer& printer, const std::string& filter = "");
+				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
+				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
+
+				std::string filter() const;
+
 			private:
 				std::string _filter;
-	#if defined (MCLIENT)
+
+				virtual void buildRequest();
+				virtual void buildResponse();
+
 				void splitFilePwd(const std::string& pwd, std::string& drive, std::string& folder, std::string& file);
 				void insertFileToPrinterData(const std::string& pwd);
-	#endif
-
 		};
 	}
 }

@@ -5,17 +5,19 @@
 
 namespace Macsa {
 	namespace MProtocol {
-		class MGetStatus : public MCommandBase
+
+		class MGetStatus : public MCommand
 		{
 			public:
-				MGetStatus(Printers::Printer &printer);
-				virtual std::string commandName() const;
-				virtual bool parse(const tinyxml2::XMLElement *);
-			private:
-				virtual void build();
+				MGetStatus(Printers::Printer& printer);
+				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
+				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
 
+			private:
+				virtual void buildRequest();
+				virtual void buildResponse();
 		};
 	}
 }
 
-#endif // MLIVE_COMMANDS_H
+#endif // MSTATUS_COMMANDS_H

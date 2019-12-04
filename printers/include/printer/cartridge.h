@@ -35,6 +35,8 @@ namespace Macsa {
 				bool pulseWarming() const;
 				void setPulseWarming(bool pulseWarming);
 
+				void clear();
+
 				//Operators
 				void operator =  (const Cartridge& other);
 				bool operator == (const Cartridge& other) const {return equal(other);}
