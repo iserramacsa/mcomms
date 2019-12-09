@@ -10,7 +10,6 @@ using namespace tinyxml2;
 
 MCommand::MCommand(const std::string& commandName, Printers::TIJPrinter &printer):
 	_printer(printer),
-	_tools(_doc),
 	_commandName(commandName)
 {}
 
@@ -79,11 +78,7 @@ XMLElement *MCommand::buildNewFrame()
 /********************************************************************************/
 /*								XML Tools										*/
 /********************************************************************************/
-XMLTools::XMLTools(XMLDocument &doc) :
-	_doc(doc)
-{}
-
-int XMLTools::getWindId(const XMLElement *wind)
+int MCommand::getWindId(const XMLElement *wind) const
 {
 	int id = -1;
 
@@ -94,21 +89,51 @@ int XMLTools::getWindId(const XMLElement *wind)
 	return id;
 }
 
-std::string XMLTools::getTextFromChildNode(const XMLElement *parent, const std::string &child, const std::string &defaultValue)
+const XMLElement *MCommand::getCommand(const XMLElement *wind, unsigned int& windId) const
+{
+	const XMLElement * cmd = nullptr;
+	if (wind != nullptr){
+		int id = getWindId(wind);
+		if (id != -1){
+			windId = static_cast<unsigned int>(id);
+			cmd = wind->FirstChildElement(_commandName.c_str());
+		}
+	}
+	return cmd;
+}
+
+Printers::ErrorCode MCommand::getCommandError(const XMLElement *wind) const
+{
+	Printers::ErrorCode err;
+	err = Printers::ErrorCode_n::UNKOWN_ERROR;
+	if (wind != nullptr){
+		const XMLElement* error = wind->FirstChildElement(MERROR);
+		if (error != nullptr) {
+			err = error->Attribute(MERROR_CODE_ATTR, err.toString().c_str());
+		}
+	}
+	return err;
+}
+
+std::string MCommand::getTextFromChildNode(const XMLElement *parent, const std::string &child, const std::string &defaultValue) const
 {
 	std::string text = defaultValue;
-	if (parent)
-	{
+	if (parent)	{
 		const XMLElement * node = parent->FirstChildElement(child.c_str());
-		if (node)
-		{
+		if (node) {
 			text = node->GetText();
 		}
 	}
 	return text;
 }
 
-XMLElement *XMLTools::createChildNode(const std::string &child, XMLElement **parent)
+bool MCommand::isSingleCommand(const XMLElement *wind, unsigned int& windId) const
+{
+	const XMLElement* cmd = getCommand(wind, windId);
+	return (cmd != nullptr && cmd->NoChildren());
+}
+
+XMLElement *MCommand::createChildNode(const std::string &child, XMLElement **parent)
 {
 	XMLElement * node = _doc.NewElement(child.c_str());
 	if (parent != nullptr && *parent != nullptr){
@@ -118,7 +143,7 @@ XMLElement *XMLTools::createChildNode(const std::string &child, XMLElement **par
 	return node;
 }
 
-XMLElement *XMLTools::createTextChildNode(const std::string &child, const std::string &text, XMLElement **parent)
+XMLElement *MCommand::createTextChildNode(const std::string &child, const std::string &text, XMLElement **parent)
 {
 	XMLElement * node = createChildNode(child, parent);
 	if (node != nullptr) {
@@ -127,7 +152,7 @@ XMLElement *XMLTools::createTextChildNode(const std::string &child, const std::s
 	return node;
 }
 
-void XMLTools::addWindError(const Printers::ErrorCode &errorCode)
+void MCommand::addWindError(const Printers::ErrorCode &errorCode)
 {
 	XMLElement* wind = _doc.FirstChildElement(MWIND);
 	if (wind != nullptr) {

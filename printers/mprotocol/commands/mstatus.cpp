@@ -36,9 +36,9 @@ bool MGetStatus::parseResponse(const XMLElement *xml)
 			const XMLElement * versionsTag = cmd->FirstChildElement(MSTATUS_VERSION);
 			if (versionsTag != nullptr)
 			{
-				std::string ctrlVersion = _tools.getTextFromChildNode(versionsTag, MSTATUS_VERSION_CTRL);
-				std::string fpgaVersion = _tools.getTextFromChildNode(versionsTag, MSTATUS_VERSION_FPGA);
-				std::string mpkVersion = _tools.getTextFromChildNode(versionsTag, MSTATUS_VERSION_API);
+				std::string ctrlVersion = getTextFromChildNode(versionsTag, MSTATUS_VERSION_CTRL);
+				std::string fpgaVersion = getTextFromChildNode(versionsTag, MSTATUS_VERSION_FPGA);
+				std::string mpkVersion  = getTextFromChildNode(versionsTag, MSTATUS_VERSION_API);
 				_printer.setVersions(ctrlVersion, fpgaVersion, mpkVersion);
 			}
 
@@ -67,7 +67,7 @@ void MGetStatus::buildResponse()
 {
 	XMLElement * cmd = newCommandNode();
 	_error = Printers::ErrorCode_n::SUCCESS;
-	_tools.createTextChildNode(MSTATUS_DT, _printer.formatedDateTime().c_str(), &cmd);
+	createTextChildNode(MSTATUS_DT, _printer.formatedDateTime().c_str(), &cmd);
 	//TODO: fill response
 }
 

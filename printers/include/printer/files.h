@@ -5,6 +5,8 @@
 #include <vector>
 #include <map>
 
+#include "ifilesmanager.h"
+
 #define MESSAGES_FOLDER	"messages"
 #define MESSAGES_FILTER	".nisx"
 
@@ -16,6 +18,9 @@
 #define IMAGES_FILTER_JPG	".jpg"
 #define IMAGES_FILTER_JPEG	".jpeg"
 #define IMAGES_FILTER_BMP	".bmp"
+
+#define ALL_FILES_FILTER	"*.*"
+#define EXTENSIONS_SEPARATOR ","
 
 
 namespace Macsa {
@@ -69,6 +74,7 @@ namespace Macsa {
 				std::vector<std::string> getDrives() const;
 				std::vector<std::string> getFolders(const std::string& drive) const;
 				std::vector<std::string> getFiles(const std::string& drive, const std::string& folder) const;
+				std::vector<std::string> getAllFiles(const std::string& filter) const;
 
 				const Drive* getDrive(const std::string& drive) const;
 				const Folder* getFolder(const std::string& drive, const std::string& folder) const;
@@ -105,8 +111,12 @@ namespace Macsa {
 
 				virtual bool equal (const FileSystemAbstract& other) const override;
 
+				IFilesManager *filesManager() const;
+				void setFilesManager(IFilesManager *filesManager);
+
 			private:
 				std::map<std::string, Drive*> _drives;
+				IFilesManager*	_filesManager;
 		};
 
 		class Drive : public FileSystemAbstract

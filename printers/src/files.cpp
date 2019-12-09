@@ -127,6 +127,7 @@ bool FileSystemAbstract::compare(const std::map<string, T *> &map1, const std::m
 PrinterFiles::PrinterFiles()
 {
 	clear();
+	_filesManager = nullptr;
 }
 
 PrinterFiles::~PrinterFiles()
@@ -155,6 +156,45 @@ std::vector<string> PrinterFiles::getFiles(const string &drive, const string &fo
 		return f->getFilesList();
 	}
 	return std::vector<string>();
+}
+
+std::vector<string> PrinterFiles::getAllFiles(const string &filter) const
+{
+	vector<string> exts;
+
+	size_t comma = 0;
+	while (comma != filter.npos) {
+		const size_t lastComma = comma;
+		comma = filter.find_first_of(EXTENSIONS_SEPARATOR, comma);
+		exts.push_back(filter.substr(lastComma, (comma - lastComma)));
+		if (comma != filter.npos) {
+			comma++;
+		}
+	}
+
+	std::vector<string> files;
+#if __cplusplus >= 201103L
+	for (auto& drive : _drives) {
+		for (auto& file : drive.second->getFiles()) {
+#else
+	for (std::map<std::string, Drive*>::const_iterator d = _drives.begin(); d != _drives.end(); d++) {
+		std::vector<const File*> driveFiles = d->second->getFiles();
+		for (std::vector<const File*>::const_iterator f = driveFiles.begin(); f != driveFiles.end(); f++) {
+			const File* file = *f;
+#endif
+			if (filter.empty() || filter.compare(ALL_FILES_FILTER) == 0) {
+				files.push_back(file->pwd());
+			}
+			else {
+				string extension = file->extension();
+				extension = "*" + extension;
+				if (std::find(exts.begin(), exts.end(), extension) != exts.end()) {
+					files.push_back(file->pwd());
+				}
+			}
+		}
+	}
+	return files;
 }
 
 const Drive *PrinterFiles::getDrive(const string &drive) const
@@ -329,6 +369,16 @@ bool PrinterFiles::equal(const FileSystemAbstract &other) const
 	}
 
 	return equal;
+}
+
+IFilesManager *PrinterFiles::filesManager() const
+{
+	return _filesManager;
+}
+
+void PrinterFiles::setFilesManager(IFilesManager *filesManager)
+{
+	_filesManager = filesManager;
 }
 
 bool PrinterFiles::renameFolder(const string &drive, const string &oldfolder, const string &newFolder)

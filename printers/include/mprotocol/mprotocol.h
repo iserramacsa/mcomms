@@ -133,11 +133,21 @@ namespace  Macsa {
 #define NO_FILTER		"*.*"
 
 #define MFILES_GET_LIST				"GETFILESLIST"
-#define MFILES_GET_LIST_TYPE_ATTR	"type"
+#define MFILES_GET_LIST_TYPE_ATTR	"Type"
 #define MFILES_DEVICE_UNIT			"UNIT"
 #define MFILES_DEVICE_UNIT_ATTR		"Name"
 #define MFILES_FILE_PATH			"FILE"
 #define MFILES_FILE_PATH_ATTR		"Path"
+#define MFILES_COPY					"COPYFILE"
+#define MFILES_SOURCE_PATH_ATTR		"SourceFilePath"
+#define MFILES_TARGET_PATH_ATTR		"TargetFilePath"
+#define MFILES_MOVE					"MOVEFILE"
+#define MFILES_DELETE				"DELETEFILE"
+#define MFILES_GET					"GETFILE"
+#define MFILES_SET					"SETFILE"
+#define MFILES_FILE_FILEPATH_ATTR	"FilePath"
+#define MFILES_FILE_RAW_ATTR		"Raw"
+#define MFILES_FILE_CONTENT			"CONTENT"
 
 #define MUPDATE					"UPDATE"
 #define MUPDATE_PROGRESS_ATTR	"Progress"
@@ -147,7 +157,10 @@ namespace  Macsa {
 #define MUPDATE_HMI_BIN_VERSION_ATTR	"Version"
 #define MUPDATE_HMI_BIN_MD5SUM_ATTR		"MD5"
 
-// /////////////////////////////////////////////////////////////////// //
+#define OPEN_CDATA	"<![CDATA["
+#define CLOSE_CDATA	"]]>"
+
+// /////////////////////////////////////////////////////////////////// //		//MOVE TO PRINTER DEFINITIONS
 #define key_prop_status_general_printer_vendor				"PRINTER.VENDOR"
 #define key_prop_status_general_printer_sn					"PRINTER.SERIAL_NUM"
 

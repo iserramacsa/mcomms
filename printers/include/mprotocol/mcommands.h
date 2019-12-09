@@ -18,23 +18,6 @@ namespace Macsa{
 		class MSetConfig;
 		class MUpdate;
 
-		class XMLTools
-		{
-			public:
-				XMLTools(tinyxml2::XMLDocument& doc);
-
-				int getWindId(const tinyxml2::XMLElement *wind);
-				std::string getTextFromChildNode(const tinyxml2::XMLElement *parent, const std::string &child, const std::string& defaultValue="");
-
-
-				tinyxml2::XMLElement * createChildNode(const std::string &child, tinyxml2::XMLElement **parent);
-				tinyxml2::XMLElement * createTextChildNode(const std::string &child, const std::string& text, tinyxml2::XMLElement **parent);
-				void addWindError(const Printers::ErrorCode& errorCode);
-
-			private:
-				tinyxml2::XMLDocument& _doc;
-		};
-
 		class MCommand
 		{
 			public:
@@ -56,7 +39,6 @@ namespace Macsa{
 				tinyxml2::XMLDocument _doc;
 				Printers::ErrorCode _error;
 				Printers::TIJPrinter& _printer;
-				XMLTools _tools;
 
 				virtual void buildRequest() = 0;
 				virtual void buildResponse() = 0;
@@ -69,6 +51,20 @@ namespace Macsa{
 			private:
 				tinyxml2::XMLElement * buildNewFrame();
 				const std::string _commandName;
+
+				int getWindId(const tinyxml2::XMLElement *wind) const;
+
+			//Tools
+			protected:
+				const tinyxml2::XMLElement * getCommand(const tinyxml2::XMLElement *wind, unsigned int &windId) const;
+				Printers::ErrorCode getCommandError(const tinyxml2::XMLElement *wind) const;
+				std::string getTextFromChildNode(const tinyxml2::XMLElement *parent, const std::string &child, const std::string& defaultValue="") const;
+				bool isSingleCommand(const tinyxml2::XMLElement *wind, unsigned int& windId) const;
+
+
+				tinyxml2::XMLElement * createChildNode(const std::string &child, tinyxml2::XMLElement **parent);
+				tinyxml2::XMLElement * createTextChildNode(const std::string &child, const std::string& text, tinyxml2::XMLElement **parent);
+				void addWindError(const Printers::ErrorCode& errorCode);
 
 		};
 	}

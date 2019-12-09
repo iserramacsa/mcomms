@@ -38,7 +38,7 @@ void MGetConfig::buildResponse()
 		eBoards->InsertEndChild(MPrinter::boardConfigToXml(board, _doc));
 	}
 
-	_tools.addWindError(_error);
+	addWindError(_error);
 }
 
 

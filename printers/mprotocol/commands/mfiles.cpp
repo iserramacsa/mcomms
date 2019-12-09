@@ -1,6 +1,9 @@
 #include "mprotocol/mfiles.h"
 #include "printer/files.h"
 #include "mtools.h"
+#include "base64.h"
+
+#include <sstream>
 
 #define SLASH_CHAR '/'
 #define DRIVE_CHARS "//"
@@ -8,6 +11,7 @@
 using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
+//=============		GET FILES LIST		=============//
 MGetFilesList::MGetFilesList(Printers::TIJPrinter &printer, const std::string &filter) :
 	MCommand(MFILES_GET_LIST, printer)
 {
@@ -24,13 +28,26 @@ void MGetFilesList::buildRequest()
 
 void MGetFilesList::buildResponse()
 {
-	XMLElement* eCmd = newCommandNode();
+	XMLElement* cmd = newCommandNode();
 	_error = Printers::ErrorCode_n::SUCCESS;
 
-	eCmd->SetAttribute(MFILES_GET_LIST_TYPE_ATTR, _filter.c_str());
-	//TODO: Insert requested files (create files server)
+	cmd->SetAttribute(MFILES_GET_LIST_TYPE_ATTR, _filter.c_str());
 
-	_tools.addWindError(_error);
+	Printers::PrinterFiles* rootfs = _printer.files();
+	std::vector<std::string> drives = rootfs->getDrives();
+	for (std::vector<std::string>::const_iterator d = drives.begin(); d != drives.end(); d++)
+	{
+		createChildNode(MFILES_GET_LIST, &cmd);
+		cmd->SetAttribute(MFILES_DEVICE_UNIT_ATTR, d->c_str());
+	}
+	std::vector<std::string> files = rootfs->getAllFiles(_filter);
+	for (std::vector<std::string>::const_iterator f = files.begin(); f != files.end(); f++)
+	{
+		createChildNode(MFILES_FILE_PATH, &cmd);
+		cmd->SetAttribute(MFILES_FILE_PATH_ATTR, f->c_str());
+	}
+
+	addWindError(_error);
 }
 
 bool MGetFilesList::parseRequest(const XMLElement *xml)
@@ -41,9 +58,9 @@ bool MGetFilesList::parseRequest(const XMLElement *xml)
 		const XMLElement *cmd = xml->FirstChildElement(commandName().c_str());
 		valid = (cmd != nullptr && cmd->NoChildren());
 		if (valid){
-			_filter ="*.*";
+			_filter = "*.*";
 			const char* filter = cmd->Attribute(MFILES_GET_LIST_TYPE_ATTR);
-			if (filter != nullptr){
+			if (filter != nullptr) {
 				_filter = filter;
 			}
 		}
@@ -54,14 +71,11 @@ bool MGetFilesList::parseRequest(const XMLElement *xml)
 
 bool MGetFilesList::parseResponse(const XMLElement *xml)
 {
-	bool valid = false;
-	int id  = MTools::XML::getWindId(xml);
-	if(id != -1) {
-		_id = static_cast<unsigned int>(id);
-		const XMLElement * cmd = xml->FirstChildElement();
+	const XMLElement * cmd = getCommand(xml, _id);
+	bool valid = (cmd != nullptr);
+	if (valid) {
 		if (std::string(cmd->Value()).compare(MFILES_GET_LIST) == 0)
 		{
-			valid = true; //TODO: Refactor
 			std::vector<std::string> exts;
 			const char* filter = cmd->Attribute(MFILES_GET_LIST_TYPE_ATTR);
 			if (filter != nullptr && strlen(filter) > 1) {
@@ -145,3 +159,434 @@ void MGetFilesList::insertFileToPrinterData(const std::string &pwd)
 	_printer.files()->addNewFile(drive, folder, file);
 }
 
+//=============		COPY FILES		=============//
+MCopyFile::MCopyFile(Macsa::Printers::TIJPrinter &printer, const std::string &sourceFilename, const std::string &targetFilename)  :
+	MCommand(MFILES_COPY, printer)
+{
+	_sourceFilename = sourceFilename;
+	_targetFilename = targetFilename;
+}
+
+void MCopyFile::buildRequest()
+{
+	XMLElement* cmd = newCommandNode();
+	if (cmd != nullptr) {
+		cmd->SetAttribute(MFILES_SOURCE_PATH_ATTR, _sourceFilename.c_str());
+		cmd->SetAttribute(MFILES_TARGET_PATH_ATTR, _targetFilename.c_str());
+	}
+}
+
+bool MCopyFile::parseRequest(const XMLElement *xml)
+{
+	const XMLElement* cmd = getCommand(xml, _id);
+	bool valid = (cmd != nullptr);
+	if (valid) {
+		_sourceFilename = cmd->Attribute(MFILES_SOURCE_PATH_ATTR, "");
+		_targetFilename = cmd->Attribute(MFILES_TARGET_PATH_ATTR, "");
+	}
+
+	return valid;
+}
+
+void MCopyFile::buildResponse()
+{
+	newCommandNode();
+	_error = Printers::ErrorCode_n::FILE_NOT_FOUND;
+	Printers::IFilesManager * filesManager = _printer.files()->filesManager();
+	if (filesManager != nullptr){
+		//TODO: move out from command class ??
+		_error = filesManager->copyFile(_sourceFilename, _targetFilename);
+	}
+	addWindError(_error);
+}
+
+bool MCopyFile::parseResponse(const XMLElement *xml)
+{
+	const XMLElement* cmd = getCommand(xml, _id);
+	bool valid = (cmd != nullptr);
+	if (valid) {
+		_error = getCommandError(xml);
+	}
+	return valid;
+}
+
+std::string MCopyFile::sourceFilename() const
+{
+	return _sourceFilename;
+}
+
+std::string MCopyFile::targetFilename() const
+{
+	return _targetFilename;
+}
+
+//=============		COPY FILES		=============//
+MMoveFile::MMoveFile(Macsa::Printers::TIJPrinter &printer, const std::string &sourceFilename, const std::string &targetFilename) :
+	MCommand(MFILES_MOVE, printer)
+{
+	_sourceFilename = sourceFilename;
+	_targetFilename = targetFilename;
+}
+
+void MMoveFile::buildRequest()
+{
+	XMLElement* cmd = newCommandNode();
+	if (cmd != nullptr) {
+		cmd->SetAttribute(MFILES_SOURCE_PATH_ATTR, _sourceFilename.c_str());
+		cmd->SetAttribute(MFILES_TARGET_PATH_ATTR, _targetFilename.c_str());
+	}
+}
+
+bool MMoveFile::parseRequest(const XMLElement *xml)
+{
+	const XMLElement* cmd = getCommand(xml, _id);
+	bool valid = (cmd != nullptr);
+	if (valid) {
+		_sourceFilename = cmd->Attribute(MFILES_SOURCE_PATH_ATTR, "");
+		_targetFilename = cmd->Attribute(MFILES_TARGET_PATH_ATTR, "");
+	}
+	return valid;
+}
+
+void MMoveFile::buildResponse()
+{
+	newCommandNode();
+	_error = Printers::ErrorCode_n::FILE_NOT_FOUND;
+	Printers::IFilesManager * filesManager = _printer.files()->filesManager();
+	if (filesManager != nullptr){
+		//TODO: move out from command class ??
+		_error = filesManager->moveFile(_sourceFilename, _targetFilename);
+	}
+	addWindError(_error);
+}
+
+bool MMoveFile::parseResponse(const XMLElement *xml)
+{
+	bool valid = false;
+	const XMLElement* cmd = getCommand(xml, _id);
+	valid = (cmd != nullptr);
+	if (valid) {
+		_error = getCommandError(xml);
+	}
+	return valid;
+}
+
+std::string MMoveFile::sourceFilename() const
+{
+	return _sourceFilename;
+}
+
+std::string MMoveFile::targetFilename() const
+{
+	return _targetFilename;
+}
+
+//=============		DELETE FILE		=============//
+MDeleteFile::MDeleteFile(Macsa::Printers::TIJPrinter &printer, const std::string &filename):
+	MCommand(MFILES_DELETE, printer)
+{
+	_filename = filename;
+}
+
+void MDeleteFile::buildRequest()
+{
+	XMLElement* cmd = newCommandNode();
+	if (cmd != nullptr) {
+		cmd->SetAttribute(MFILES_FILE_FILEPATH_ATTR, _filename.c_str());
+	}
+}
+
+bool MDeleteFile::parseRequest(const XMLElement *xml)
+{
+	const XMLElement* cmd = getCommand(xml, _id);
+	bool valid = (cmd != nullptr);
+	if (valid) {
+		_filename = cmd->Attribute(MFILES_FILE_FILEPATH_ATTR, "");
+	}
+	return valid;
+}
+
+void MDeleteFile::buildResponse()
+{
+	newCommandNode();
+	_error = Printers::ErrorCode_n::FILE_NOT_FOUND;
+	Printers::IFilesManager * filesManager = _printer.files()->filesManager();
+	if (filesManager != nullptr){
+		//TODO: move out from command class ??
+		_error = filesManager->deleteFile(_filename);
+	}
+	addWindError(_error);
+}
+
+bool MDeleteFile::parseResponse(const XMLElement *xml)
+{
+	bool valid = false;
+	const XMLElement* cmd = getCommand(xml, _id);
+	valid = (cmd != nullptr);
+	if (valid) {
+		_error = getCommandError(xml);
+	}
+	return valid;
+}
+
+std::string MDeleteFile::filename() const
+{
+	return _filename;
+}
+
+
+//=============		GET FILE		=============//
+MGetFile::MGetFile(Macsa::Printers::TIJPrinter &printer, const std::string &filename, bool raw) :
+	MCommand(MFILES_GET, printer)
+{
+	_filename = filename;
+	_raw = raw;
+}
+
+void MGetFile::buildRequest()
+{
+	XMLElement* cmd = newCommandNode();
+	if (cmd != nullptr) {
+		cmd->SetAttribute(MFILES_FILE_FILEPATH_ATTR, _filename.c_str());
+		cmd->SetAttribute(MFILES_FILE_RAW_ATTR, MTools::toString(_raw).c_str());
+	}
+}
+
+bool MGetFile::parseRequest(const XMLElement *xml)
+{
+	const XMLElement* cmd = getCommand(xml, _id);
+	bool valid = (cmd != nullptr);
+	if (valid) {
+		_filename = cmd->Attribute(MFILES_FILE_FILEPATH_ATTR, "");
+		_raw = MTools::boolfromString(cmd->Attribute(MFILES_FILE_RAW_ATTR, "false"));
+	}
+	return valid;
+}
+
+void MGetFile::buildResponse()
+{
+	XMLElement * cmd = newCommandNode();
+	_error = Printers::ErrorCode_n::FILE_NOT_FOUND;
+	Printers::IFilesManager * filesManager = _printer.files()->filesManager();
+	if (filesManager != nullptr){
+		//TODO: move out from command class ??
+		std::vector<uint8_t> data;
+		_error = filesManager->getFile(_filename, data);
+		XMLText* content = _doc.NewText(MFILES_FILE_CONTENT);
+		if (content){
+			content->SetCData(_raw);
+			content->SetValue(contentToString(data, _raw).c_str());
+			cmd->InsertEndChild(content);
+		}
+	}
+	addWindError(_error);
+}
+
+bool MGetFile::parseResponse(const XMLElement *xml)
+{
+	bool valid = false;
+	const XMLElement* cmd = getCommand(xml, _id);
+	valid = (cmd != nullptr);
+	if (valid) {
+		_error = getCommandError(xml);
+		const XMLText* content = dynamic_cast<const XMLText*>(cmd->FirstChild());
+		if (content) {
+			_raw = content->CData();
+			_content.clear();
+			_content = contentFromString(content->Value(), _raw);
+		}
+	}
+	return valid;
+}
+
+std::string MGetFile::filename() const
+{
+	return _filename;
+}
+
+bool MGetFile::raw() const
+{
+	return _raw;
+}
+
+std::vector<uint8_t> MGetFile::content() const
+{
+	return _content;
+}
+
+std::string MGetFile::contentToString(const std::vector<uint8_t> content, bool raw) const
+{
+	std::stringstream out;
+	if (raw) {
+		out << OPEN_CDATA;
+		for (std::vector<uint8_t>::const_iterator it = content.begin(); it != content.end(); it++) {
+			out << std::to_string(*it);
+		}
+		out << CLOSE_CDATA;
+	}
+	else {
+		const char* plainData = reinterpret_cast<const char*>(&content[0]);
+
+		int len = Base64encode_len(static_cast<int>(content.size()));
+		char* encodeData = new char[len + 1];
+		if(encodeData) {
+			Base64encode(encodeData, plainData, static_cast<int>(content.size()));
+
+			out << encodeData;
+			delete[]  encodeData;
+		}
+	}
+	return out.str();
+}
+
+std::vector<uint8_t> MGetFile::contentFromString(const char *data, bool raw) const
+{
+	std::vector<uint8_t> content;
+
+	if (raw && data != nullptr) {
+		unsigned int len = strlen(data);
+		for (unsigned int i = 0; i < len; i++) {
+			content.push_back(static_cast<uint8_t>(*(data + i)));
+		}
+	}
+	else if (data != nullptr) {
+		int decodedLen = Base64decode_len(data);
+		char* decodedData = new char[decodedLen + 1];
+		Base64decode(decodedData, data);
+		for (int i = 0; i < decodedLen; i++) {
+			content.push_back(static_cast<uint8_t>(*(decodedData + i)));
+		}
+		delete[]  decodedData;
+	}
+
+	return content;
+}
+
+//=============		SET FILE		=============//
+ ///TODO!!!
+MSetFile::MSetFile(Macsa::Printers::TIJPrinter &printer, const std::string &filename, const std::vector<uint8_t> &content, bool raw) :
+	MCommand(MFILES_SET, printer)
+{
+	_filename = filename;
+	_raw = raw;
+	_content = content;
+}
+
+void MSetFile::buildRequest()
+{
+	XMLElement* cmd = newCommandNode();
+	if (cmd != nullptr) {
+		cmd->SetAttribute(MFILES_FILE_FILEPATH_ATTR, _filename.c_str());
+		cmd->SetAttribute(MFILES_FILE_RAW_ATTR, MTools::toString(_raw).c_str());
+	}
+}
+
+bool MSetFile::parseRequest(const XMLElement *xml)
+{
+	const XMLElement* cmd = getCommand(xml, _id);
+	bool valid = (cmd != nullptr);
+	if (valid) {
+		_filename = cmd->Attribute(MFILES_FILE_FILEPATH_ATTR, "");
+		_raw = MTools::boolfromString(cmd->Attribute(MFILES_FILE_RAW_ATTR, "false"));
+	}
+	return valid;
+}
+
+void MSetFile::buildResponse()
+{
+	XMLElement * cmd = newCommandNode();
+	_error = Printers::ErrorCode_n::FILE_NOT_FOUND;
+	Printers::IFilesManager * filesManager = _printer.files()->filesManager();
+	if (filesManager != nullptr){
+		//TODO: move out from command class ??
+		std::vector<uint8_t> data;
+		_error = filesManager->getFile(_filename, data);
+		XMLText* content = _doc.NewText(MFILES_FILE_CONTENT);
+		if (content){
+			content->SetCData(_raw);
+			content->SetValue(contentToString(data, _raw).c_str());
+			cmd->InsertEndChild(content);
+		}
+	}
+	addWindError(_error);
+}
+
+bool MSetFile::parseResponse(const XMLElement *xml)
+{
+	bool valid = false;
+	const XMLElement* cmd = getCommand(xml, _id);
+	valid = (cmd != nullptr);
+	if (valid) {
+		_error = getCommandError(xml);
+		const XMLText* content = dynamic_cast<const XMLText*>(cmd->FirstChild());
+		if (content) {
+			_raw = content->CData();
+			_content.clear();
+			_content = contentFromString(content->Value(), _raw);
+		}
+	}
+	return valid;
+}
+
+std::string MSetFile::filename() const
+{
+	return _filename;
+}
+
+bool MSetFile::raw() const
+{
+	return _raw;
+}
+
+std::vector<uint8_t> MSetFile::content() const
+{
+	return _content;
+}
+
+std::string MSetFile::contentToString(const std::vector<uint8_t> content, bool raw) const
+{
+	std::stringstream out;
+	if (raw) {
+		out << OPEN_CDATA;
+		for (std::vector<uint8_t>::const_iterator it = content.begin(); it != content.end(); it++) {
+			out << std::to_string(*it);
+		}
+		out << CLOSE_CDATA;
+	}
+	else {
+		const char* plainData = reinterpret_cast<const char*>(&content[0]);
+
+		int len = Base64encode_len(static_cast<int>(content.size()));
+		char* encodeData = new char[len + 1];
+		if(encodeData) {
+			Base64encode(encodeData, plainData, static_cast<int>(content.size()));
+
+			out << encodeData;
+			delete[]  encodeData;
+		}
+	}
+	return out.str();
+}
+
+std::vector<uint8_t> MSetFile::contentFromString(const char *data, bool raw) const
+{
+	std::vector<uint8_t> content;
+
+	if (raw && data != nullptr) {
+		unsigned int len = strlen(data);
+		for (unsigned int i = 0; i < len; i++) {
+			content.push_back(static_cast<uint8_t>(*(data + i)));
+		}
+	}
+	else if (data != nullptr) {
+		int decodedLen = Base64decode_len(data);
+		char* decodedData = new char[decodedLen + 1];
+		Base64decode(decodedData, data);
+		for (int i = 0; i < decodedLen; i++) {
+			content.push_back(static_cast<uint8_t>(*(decodedData + i)));
+		}
+		delete[]  decodedData;
+	}
+
+	return content;
+}

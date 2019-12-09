@@ -59,7 +59,7 @@ void MLive::buildResponse()
 			}
 		}
 	}
-	_tools.addWindError(_error);
+	addWindError(_error);
 }
 
 bool MLive::parseRequest(const XMLElement *xml)
@@ -69,64 +69,59 @@ bool MLive::parseRequest(const XMLElement *xml)
 
 bool MLive::parseResponse(const XMLElement *xml)
 {
-	int id  = MTools::XML::getWindId(xml);
 	bool valid = false;
-	if (id != -1) {
-		const XMLElement * cmd = xml->FirstChildElement(MLIVE);
-		if (cmd != nullptr)
-		{
-			_error = MTools::XML::getWindError(xml);
-			const char* dt = cmd->Attribute(MLIVE_DT_ATTR);
-			valid = (!cmd->NoChildren() && dt != nullptr);
-			if (valid){
-				_id = static_cast<uint32_t>(id);
-				_printer.setDateTime(MTools::dateTime(dt));
-				// _printer.setStatusChanged(cmd->BoolAttribute(MLIVE_STATUS_ATTR));  //TODO refactor live monitor
-				// _printer.setConfigChanged(cmd->BoolAttribute(MLIVE_CONFIG_ATTR));  //TODO refactor live monitor
-				// _printer.setFilesChanged(cmd->BoolAttribute(MLIVE_FILES_ATTR));	  //TODO refactor live monitor
-				// _printer.setFontsChanged(cmd->BoolAttribute(MLIVE_FONTS_ATTR));	  //TODO refactor live monitor
-				// _printer.setErrorsChanged(cmd->BoolAttribute(MLIVE_ERRORS_ATTR));  //TODO refactor live monitor
+	const XMLElement * cmd = getCommand(xml, _id);
+	if (cmd != nullptr)
+	{
+		_error = getCommandError(xml);
+		const char* dt = cmd->Attribute(MLIVE_DT_ATTR);
+		valid = (!cmd->NoChildren() && dt != nullptr);
+		if (valid){
+			_printer.setDateTime(MTools::dateTime(dt));
+			// _printer.setStatusChanged(cmd->BoolAttribute(MLIVE_STATUS_ATTR));  //TODO refactor live monitor
+			// _printer.setConfigChanged(cmd->BoolAttribute(MLIVE_CONFIG_ATTR));  //TODO refactor live monitor
+			// _printer.setFilesChanged(cmd->BoolAttribute(MLIVE_FILES_ATTR));	  //TODO refactor live monitor
+			// _printer.setFontsChanged(cmd->BoolAttribute(MLIVE_FONTS_ATTR));	  //TODO refactor live monitor
+			// _printer.setErrorsChanged(cmd->BoolAttribute(MLIVE_ERRORS_ATTR));  //TODO refactor live monitor
 
-				const XMLElement* eBoards = cmd->FirstChildElement(MPRINTER_BOARDS_LIST);
-				if (eBoards != nullptr) {
-					const XMLElement* eBoard = eBoards->FirstChildElement(MPRINTER_BOARD);
-					while (eBoard != nullptr) {
-						int id = eBoard->IntAttribute(MPRINTER_BOARD_ID_ATTR, -1);
-						Printers::Board* pBoard = _printer.board(id);
-						if  (id != -1 && pBoard != nullptr) {
-							pBoard->setEnabled(eBoard->BoolAttribute(MPRINTER_BOARD_ENABLED_ATTR));
-							pBoard->setPrinting(eBoard->BoolAttribute(MPRINTER_BOARD_PRINT_ATTR));
-							if (pBoard->enabled()) {
-								const XMLElement* eCounters = eBoard->FirstChildElement(MPRINTER_BOARD_COUNTERS_LIST);
-								if (eCounters != nullptr) {
-									int total = eCounters->IntAttribute(MPRINTER_BOARD_COUNT_TOTAL);
-									int partial = eCounters->IntAttribute(MPRINTER_BOARD_COUNT_USER);
-									pBoard->setCounter(key_counter_system_total, total);
-									std::string counterName = key_counter_system_user;
-									if (pBoard->bcdMode() != Printers::BCDMode_n::USER_MODE) {
-										counterName = key_counter_system_bcd;
-										counterName.append(std::to_string(pBoard->currentBcdCode()));
-									}
-									pBoard->setCounter(counterName, partial);
+			const XMLElement* eBoards = cmd->FirstChildElement(MPRINTER_BOARDS_LIST);
+			if (eBoards != nullptr) {
+				const XMLElement* eBoard = eBoards->FirstChildElement(MPRINTER_BOARD);
+				while (eBoard != nullptr) {
+					int id = eBoard->IntAttribute(MPRINTER_BOARD_ID_ATTR, -1);
+					Printers::Board* pBoard = _printer.board(id);
+					if  (id != -1 && pBoard != nullptr) {
+						pBoard->setEnabled(eBoard->BoolAttribute(MPRINTER_BOARD_ENABLED_ATTR));
+						pBoard->setPrinting(eBoard->BoolAttribute(MPRINTER_BOARD_PRINT_ATTR));
+						if (pBoard->enabled()) {
+							const XMLElement* eCounters = eBoard->FirstChildElement(MPRINTER_BOARD_COUNTERS_LIST);
+							if (eCounters != nullptr) {
+								int total = eCounters->IntAttribute(MPRINTER_BOARD_COUNT_TOTAL);
+								int partial = eCounters->IntAttribute(MPRINTER_BOARD_COUNT_USER);
+								pBoard->setCounter(key_counter_system_total, total);
+								std::string counterName = key_counter_system_user;
+								if (pBoard->bcdMode() != Printers::BCDMode_n::USER_MODE) {
+									counterName = key_counter_system_bcd;
+									counterName.append(std::to_string(pBoard->currentBcdCode()));
 								}
-
-								const XMLElement* eSpeed = eBoard->FirstChildElement(MPRINTER_BOARD_PRINT_SPEED);
-								if (eSpeed != nullptr){
-									pBoard->setProperty(key_prop_status_general_print_speed, eSpeed->Attribute(ATTRIBUTE_VALUE));
-								}
-
-								const XMLElement* ePrintsRemain = eBoard->FirstChildElement(MPRINTER_BOARD_PRINTS_REMAIN);
-								if  (ePrintsRemain){
-									pBoard->setProperty(key_prop_status_general_print_remain, ePrintsRemain->Attribute(ATTRIBUTE_VALUE));
-								}
+								pBoard->setCounter(counterName, partial);
 							}
-							_printer.setBoard(*pBoard);
+
+							const XMLElement* eSpeed = eBoard->FirstChildElement(MPRINTER_BOARD_PRINT_SPEED);
+							if (eSpeed != nullptr){
+								pBoard->setProperty(key_prop_status_general_print_speed, eSpeed->Attribute(ATTRIBUTE_VALUE));
+							}
+
+							const XMLElement* ePrintsRemain = eBoard->FirstChildElement(MPRINTER_BOARD_PRINTS_REMAIN);
+							if  (ePrintsRemain){
+								pBoard->setProperty(key_prop_status_general_print_remain, ePrintsRemain->Attribute(ATTRIBUTE_VALUE));
+							}
 						}
-						eBoard = eBoard->NextSiblingElement(MPRINTER_BOARD);
+						_printer.setBoard(*pBoard);
 					}
+					eBoard = eBoard->NextSiblingElement(MPRINTER_BOARD);
 				}
 			}
-
 		}
 	}
 	return valid;
