@@ -5,7 +5,7 @@
 using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
-MGetConfig::MGetConfig(Printers::Printer &printer):
+MGetConfig::MGetConfig(Printers::TIJPrinter &printer):
 	MCommand(MCONFIG_GET, printer)
 {}
 
@@ -14,58 +14,54 @@ bool MGetConfig::parseRequest(const XMLElement *xml)
 	return parseSingleCommand(xml);
 }
 
-bool MGetConfig::parseResponse(const XMLElement *xml)
+bool MGetConfig::parseResponse(const XMLElement */*xml*/)
 {
 	return false;
 }
 
 void MGetConfig::buildRequest()
 {
-	XMLElement* wind = buildNewFrame();
-	MTools::XML::newElement(commandName(), _doc, &wind);
+	newCommandNode();
 }
 
 
 void MGetConfig::buildResponse()
 {
-	XMLElement* wind = buildNewFrame();
+	XMLElement* cmd = newCommandNode();
+
 	_error = Printers::ErrorCode_n::SUCCESS;
-
-	XMLElement* cmd = MTools::XML::newElement(commandName(), _doc, &wind);
-
 	cmd->InsertEndChild(MPrinter::generalConfigToXml(_printer, _doc));
-	cmd->InsertEndChild(MPrinter::printerConnectionsToXml(_printer.comms(), _doc));
+	cmd->InsertEndChild(MPrinter::printerConnectionsToXml(dynamic_cast<const Printers::TIJComms*>(_printer.comms()), _doc));
 
 	XMLElement* eBoards = _doc.NewElement(MPRINTER_BOARDS_LIST);
-	for (auto& board : _printer.configuration().boards()) {
+	for (auto& board : _printer.boards()) {
 		eBoards->InsertEndChild(MPrinter::boardConfigToXml(board, _doc));
 	}
 
-	MTools::XML::setWindError(wind, _doc, _error);
+	_tools.addWindError(_error);
 }
 
 
 //######################################################
 //	SETCONFIG
 //######################################################
-MSetConfig::MSetConfig(Macsa::Printers::Printer &printer):
+MSetConfig::MSetConfig(Macsa::Printers::TIJPrinter &printer):
 	MCommand(MCONFIG_GET, printer)
 {}
 
 bool MSetConfig::parseRequest(const XMLElement *xml)
 {
-
+	return false;
 }
 
 bool MSetConfig::parseResponse(const XMLElement *xml)
 {
-
+	return false;
 }
 
 void MSetConfig::buildRequest()
 {
-	XMLElement* wind = buildNewFrame();
-	MTools::XML::newElement(commandName(), _doc, &wind);
+	newCommandNode();
 }
 
 void MSetConfig::buildResponse()
@@ -76,7 +72,7 @@ void MSetConfig::buildResponse()
 //######################################################
 //	SETCONFIG (set date and time)
 //######################################################
-MSetDateTime::MSetDateTime(Macsa::Printers::Printer &printer):
+MSetDateTime::MSetDateTime(Macsa::Printers::TIJPrinter &printer):
 	MSetConfig(printer)
 {}
 
@@ -87,8 +83,7 @@ bool MSetDateTime::parseRequest(const XMLElement *xml)
 
 void MSetDateTime::buildRequest()
 {
-	XMLElement* wind = buildNewFrame();
-	XMLElement* cmd = MTools::XML::newElement(commandName(), _doc, &wind);
+	XMLElement* cmd = newCommandNode();
 	//TODO
 }
 

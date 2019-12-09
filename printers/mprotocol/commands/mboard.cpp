@@ -8,29 +8,29 @@ using namespace Macsa;
 using namespace Macsa::MProtocol;
 
 
-XMLElement *MPrinter::generalConfigToXml(const Printers::Printer& printer, XMLDocument &doc)
+XMLElement *MPrinter::generalConfigToXml(const Printers::TIJPrinter& printer, XMLDocument &doc)
 {
 	XMLElement *general = doc.NewElement(MCONFIG_GENERAL);
 	MTools::XML::newTextElement(MCONFIG_GENERAL_DT, printer.formatedDateTime().c_str(), doc, &general);
 
-	const Printers::Configuration& config = printer.configuration();
+//	const Printers::Configuration& config = printer.configuration();
 
 	XMLElement *log = doc.NewElement(MCONFIG_GENERAL_LOG);
-	log->SetAttribute(MCONFIG_GENERAL_LOG_LEVEL_ATTR,	config.logLevel().toString().c_str());
-	log->SetAttribute(MCONFIG_GENERAL_LOG_ENABLED_ATTR,	MTools::toString(config.traceLogs()).c_str());
-	log->SetAttribute(MCONFIG_GENERAL_LOG_COMMS,		MTools::toString(config.traceComms()).c_str());
+//	log->SetAttribute(MCONFIG_GENERAL_LOG_LEVEL_ATTR,	printer.logLevel().toString().c_str());
+//	log->SetAttribute(MCONFIG_GENERAL_LOG_ENABLED_ATTR,	MTools::toString(config.traceLogs()).c_str());
+//	log->SetAttribute(MCONFIG_GENERAL_LOG_COMMS,		MTools::toString(config.traceComms()).c_str());
 	general->InsertEndChild(log);
 
 	return general;
 }
 
-XMLElement* MPrinter::printerConnectionsToXml(const Printers::PrinterComms &comms, XMLDocument &doc)
+XMLElement* MPrinter::printerConnectionsToXml(const Printers::TIJComms* comms, XMLDocument &doc)
 {
 	XMLElement*	connections = doc.NewElement(MCONFIG_CONNECTIONS);
 	XMLElement*	network = MTools::XML::newElement(MCONFIG_CONN_NETWORK, doc, &connections);
 	if(network != nullptr) {
-		for (int i = 0; i < comms.ethernetIfaces(); i++) {
-			const Printers::Ethernet* eth = comms.ethernetIface(i);
+		for (int i = 0; i < comms->ethernetIfaces(); i++) {
+			const Printers::Ethernet* eth = comms->ethernetIface(i);
 			XMLElement* iface = MTools::XML::newTextElement(MCONFIG_CONN_NETWORK_ADAPTER, eth->address().c_str(), doc, &network);
 			iface->SetAttribute(MCONFIG_CONN_NETWORK_ADAPTER_ID_ATTR, i);
 			MTools::XML::newTextElement(MCONFIG_CONN_NETWORK_SUBNET,		eth->netmask().c_str(),		doc, &network);
@@ -42,9 +42,9 @@ XMLElement* MPrinter::printerConnectionsToXml(const Printers::PrinterComms &comm
 	}
 	XMLElement*	ble = MTools::XML::newElement(MCONFIG_CONN_BLUETOOTH, doc, &connections);
 	if(ble != nullptr) {
-		MTools::XML::newTextElement(MCONFIG_CONN_BLUETOOTH_DEVNAME,		comms.bluetooth()->name(), doc, &ble);
-		MTools::XML::newTextElement(MCONFIG_CONN_BLUETOOTH_VISIBILITY,	MTools::toString(comms.bluetooth()->visible()), doc, &ble);
-		MTools::XML::newTextElement(MCONFIG_CONN_BLUETOOTH_PASSWORD,		comms.bluetooth()->pass(), doc, &ble);
+		MTools::XML::newTextElement(MCONFIG_CONN_BLUETOOTH_DEVNAME,		comms->bluetooth()->name(), doc, &ble);
+		MTools::XML::newTextElement(MCONFIG_CONN_BLUETOOTH_VISIBILITY,	MTools::toString(comms->bluetooth()->visible()), doc, &ble);
+		MTools::XML::newTextElement(MCONFIG_CONN_BLUETOOTH_PASSWORD,		comms->bluetooth()->pass(), doc, &ble);
 	}
 
 	return connections;
@@ -59,7 +59,7 @@ XMLElement *MPrinter::boardConfigToXml(const Printers::Board &board, XMLDocument
 	MTools::XML::newTextElement(MPRINTER_BOARD_ENABLED,	board.enabled(), doc, &eBoard);
 	MTools::XML::newTextElement(MPRINTER_BOARD_BLOCKED,	board.blocked(), doc, &eBoard);
 	MTools::XML::newTextElement(MPRINTER_BOARD_CURRENT_MSG,	board.currentMessage(), doc, &eBoard);
-	MTools::XML::newTextElement(MPRINTER_BOARD_BCD_MODE, board.bcdTable().mode().toString(), doc, &eBoard);
+	MTools::XML::newTextElement(MPRINTER_BOARD_BCD_MODE, board.bcdMode().toString(), doc, &eBoard);
 	XMLElement* eBCDTable = boardBCDTableToXml(board.bcdTable(), doc);
 	if  (eBCDTable != nullptr) {
 		eBoard->InsertEndChild(eBCDTable);
@@ -81,14 +81,14 @@ XMLElement *MPrinter::boardConfigToXml(const Printers::Board &board, XMLDocument
 	return eBoard;
 }
 
-XMLElement *MPrinter::boardBCDTableToXml(const Printers::BcdTable &bcdTable, XMLDocument &doc)
+XMLElement *MPrinter::boardBCDTableToXml(const Printers::BCDTable &bcdTable, XMLDocument &doc)
 {
 	XMLElement* eBCDTable = doc.NewElement(MPRINTER_BOARD_BCD_TABLE);
 	if(eBCDTable != nullptr) {
-		for (uint8_t i = 0; i < bcdTable.count(); i++) {
+		for (uint8_t i = 0; i < MAX_BCD_CODES; i++) {
 			XMLElement* eBcdCode = MTools::XML::newElement(MPRINTER_BOARD_BCD_TABLE, doc, &eBCDTable);
 			eBcdCode->SetAttribute(MPRINTER_BOARD_BCD_CODE_ATTR, i);
-			eBcdCode->SetAttribute(MPRINTER_BOARD_BCD_MSG_ATTR, bcdTable.message(i).c_str());
+			eBcdCode->SetAttribute(MPRINTER_BOARD_BCD_MSG_ATTR, bcdTable.at(i).c_str());
 		}
 	}
 	return eBCDTable;
@@ -134,7 +134,7 @@ XMLElement *MPrinter::boardEncoderToXml(const Printers::Encoder &encoder, XMLDoc
 }
 
 
-void MPrinter::boardFromXml(Printers::Printer &printer, const XMLElement *xmlboard)
+void MPrinter::boardFromXml(Printers::TIJPrinter &printer, const XMLElement *xmlboard)
 {
 	std::string tagName = MPRINTER_BOARD;
 	if (xmlboard != nullptr && tagName.compare(xmlboard->Name()) == 0)
@@ -143,7 +143,7 @@ void MPrinter::boardFromXml(Printers::Printer &printer, const XMLElement *xmlboa
 
 		if (id != nullptr) {
 			const int boardId = atoi(id);
-			Printers::Board* pBoard = printer.configuration().board(boardId);
+			Printers::Board* pBoard = printer.board(boardId);
 			Printers::Board board(boardId);
 			//fill the board with the previous values if needed
 			if (pBoard != nullptr) {
@@ -155,7 +155,7 @@ void MPrinter::boardFromXml(Printers::Printer &printer, const XMLElement *xmlboa
 			board.setEnabled(MTools::XML::boolFromChild(xmlboard, MPRINTER_BOARD_ENABLED));
 			board.setBlocked(MTools::XML::boolFromChild(xmlboard, MPRINTER_BOARD_BLOCKED));
 			board.setAutoStart(MTools::XML::boolFromChild(xmlboard, MPRINTER_BOARD_AUTOSTART));
-			board.setCurrentMessage(MTools::XML::textFromChild(xmlboard, MPRINTER_BOARD_CURRENT_MSG));
+			board.setUserMessage(MTools::XML::textFromChild(xmlboard, MPRINTER_BOARD_CURRENT_MSG));
 			board.setBcdMode(MTools::XML::textFromChild(xmlboard, MPRINTER_BOARD_BCD_MODE));
 			board.setBcdCurrent(static_cast<uint8_t>(MTools::XML::intFromChild(xmlboard, MPRINTER_BOARD_BCD_STATUS)));
 
@@ -164,7 +164,7 @@ void MPrinter::boardFromXml(Printers::Printer &printer, const XMLElement *xmlboa
 			parseInputs(board, xmlboard);
 			parseOutputs(board, xmlboard);
 
-			printer.configuration().setBoard(board);
+			printer.setBoard(board);
 		}
 	}
 }

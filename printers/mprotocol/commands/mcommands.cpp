@@ -8,13 +8,11 @@ using namespace Macsa;
 using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
-static int32_t seed = -1;
-
-MCommand::MCommand(const std::string& commandName, Printers::Printer &printer):
+MCommand::MCommand(const std::string& commandName, Printers::TIJPrinter &printer):
 	_printer(printer),
+	_tools(_doc),
 	_commandName(commandName)
-{
-}
+{}
 
 MCommand::~MCommand()
 {}
@@ -39,16 +37,18 @@ std::string MCommand::toString()
 	return p.CStr();
 }
 
-XMLElement *MCommand::buildNewFrame()
+XMLElement *MCommand::newCommandNode()
 {
-	if (_doc.RootElement() != nullptr) {
-		_doc.Clear();
+	XMLElement * wind = buildNewFrame();
+	XMLElement* cmd = nullptr;
+	if (wind != nullptr) {
+		cmd = _doc.NewElement(_commandName.c_str());
+		if(cmd != nullptr) {
+			wind->InsertEndChild(cmd);
+		}
 	}
-	XMLElement* wind = _doc.NewElement(MWIND);
-	int id = static_cast<int>(_id);
-	wind->SetAttribute(MWIND_ID_ATTR, id);
-	_doc.InsertEndChild(wind);
-	return _doc.RootElement();
+
+	return cmd;
 }
 
 bool MCommand::parseSingleCommand(const XMLElement *root)
@@ -64,8 +64,78 @@ bool MCommand::parseSingleCommand(const XMLElement *root)
 	return parsed;
 }
 
-uint32_t MCommand::nextId() const
+XMLElement *MCommand::buildNewFrame()
 {
-	if(++seed < 0){seed = 0;}
-	return static_cast<uint32_t>(seed);
+	if (_doc.RootElement() != nullptr) {
+		_doc.Clear();
+	}
+	XMLElement* wind = _doc.NewElement(MWIND);
+	int id = static_cast<int>(_id);
+	wind->SetAttribute(MWIND_ID_ATTR, id);
+	_doc.InsertEndChild(wind);
+	return _doc.RootElement();
 }
+
+/********************************************************************************/
+/*								XML Tools										*/
+/********************************************************************************/
+XMLTools::XMLTools(XMLDocument &doc) :
+	_doc(doc)
+{}
+
+int XMLTools::getWindId(const XMLElement *wind)
+{
+	int id = -1;
+
+	if (wind != nullptr && std::string(wind->Name()).compare(MWIND) == 0) {
+		wind->QueryIntAttribute(MWIND_ID_ATTR, &id);
+	}
+
+	return id;
+}
+
+std::string XMLTools::getTextFromChildNode(const XMLElement *parent, const std::string &child, const std::string &defaultValue)
+{
+	std::string text = defaultValue;
+	if (parent)
+	{
+		const XMLElement * node = parent->FirstChildElement(child.c_str());
+		if (node)
+		{
+			text = node->GetText();
+		}
+	}
+	return text;
+}
+
+XMLElement *XMLTools::createChildNode(const std::string &child, XMLElement **parent)
+{
+	XMLElement * node = _doc.NewElement(child.c_str());
+	if (parent != nullptr && *parent != nullptr){
+		(*parent)->InsertEndChild(node);
+	}
+
+	return node;
+}
+
+XMLElement *XMLTools::createTextChildNode(const std::string &child, const std::string &text, XMLElement **parent)
+{
+	XMLElement * node = createChildNode(child, parent);
+	if (node != nullptr) {
+		node->SetText(text.c_str());
+	}
+	return node;
+}
+
+void XMLTools::addWindError(const Printers::ErrorCode &errorCode)
+{
+	XMLElement* wind = _doc.FirstChildElement(MWIND);
+	if (wind != nullptr) {
+		XMLElement* error = createChildNode(MERROR, &wind);
+		if (error != nullptr) {
+			error->SetAttribute(MERROR_CODE_ATTR, errorCode.toString().c_str());
+			wind->InsertFirstChild(error);
+		}
+	}
+}
+

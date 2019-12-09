@@ -1,17 +1,18 @@
-#ifndef MSTATUS_COMMANDS_H
-#define MSTATUS_COMMANDS_H
-
-#include "mcommands.h"
+#ifndef MUPDATECOMMANDS_H
+#define MUPDATECOMMANDS_H
+#include "mprotocol/mcommands.h"
 
 namespace Macsa {
 	namespace MProtocol {
-
-		class MGetStatus : public MCommand
+		class MUpdate : public MCommand
 		{
 			public:
-				MGetStatus(Printers::TIJPrinter& printer);
+				MUpdate(Printers::TIJPrinter& printer);
+				virtual ~MUpdate();
+
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
+
 
 			private:
 				virtual void buildRequest();
@@ -20,4 +21,4 @@ namespace Macsa {
 	}
 }
 
-#endif // MSTATUS_COMMANDS_H
+#endif // MUPDATECOMMANDS_H

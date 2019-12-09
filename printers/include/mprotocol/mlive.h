@@ -8,7 +8,8 @@ namespace Macsa
 	namespace MProtocol {
 		class MLive : public MCommand
 		{
-				MLive(Printers::Printer& printer);
+			public:
+				MLive(Printers::TIJPrinter &printer);
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
 
@@ -16,8 +17,7 @@ namespace Macsa
 				virtual void buildRequest();
 				virtual void buildResponse();
 		};
-
-	} //<< MProtocol
-} //<< Macsa
+	}
+}
 
 #endif // MLIVE_COMMANDS_H

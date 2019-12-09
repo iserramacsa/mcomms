@@ -24,8 +24,17 @@ namespace Macsa {
 		class Folder;
 		class File;
 
-		class FileSystemAbstract {
+		class FileSystemAbstract
+		{
+			public:
+				FileSystemAbstract();
+				virtual ~FileSystemAbstract();
+
+				virtual bool operator == (const FileSystemAbstract& other) const {return equal(other);}
+				virtual bool operator != (const FileSystemAbstract& other) const {return !equal(other);}
+
 			protected:
+
 				template<class T>
 				T* getItem(const std::string& name, const std::map<std::string, T*>& map) const;
 
@@ -44,13 +53,18 @@ namespace Macsa {
 				template<class T>
 				bool clear(std::map<std::string, T*>& map);
 
+				template<class T>
+				bool compare(const std::map<std::string, T*>& map1, const std::map<std::string, T*>& map2) const;
+
+				virtual bool equal (const FileSystemAbstract& other) const = 0;
+
 		};
 
 		class PrinterFiles : public FileSystemAbstract
 		{
 			public:
 				PrinterFiles();
-				~PrinterFiles();
+				virtual ~PrinterFiles() override;
 
 				std::vector<std::string> getDrives() const;
 				std::vector<std::string> getFolders(const std::string& drive) const;
@@ -89,6 +103,8 @@ namespace Macsa {
 				Folder* removeFolder(const std::string &drive, const std::string &folder);/*Full transfer*/
 				File*	removeFile(const std::string &drive, const std::string& folder, const std::string& filename);/*Full transfer*/
 
+				virtual bool equal (const FileSystemAbstract& other) const override;
+
 			private:
 				std::map<std::string, Drive*> _drives;
 		};
@@ -97,7 +113,7 @@ namespace Macsa {
 		{
 			public:
 				Drive(const std::string& name, const PrinterFiles* parent);
-				~Drive();
+				virtual ~Drive() override;
 
 				std::string name() const;
 
@@ -130,13 +146,15 @@ namespace Macsa {
 				const PrinterFiles* _parent;
 				std::map<std::string, Folder*> _folders;
 
+				virtual bool equal (const FileSystemAbstract& other) const override;
+
 		};
 
 		class Folder : public FileSystemAbstract
 		{
 			public:
 				Folder(const std::string& name, const Drive* parent);
-				~Folder();
+				virtual ~Folder() override;
 
 				std::string pwd() const;
 				std::string name() const;
@@ -162,12 +180,14 @@ namespace Macsa {
 				const Drive* _parent;
 				std::string _name;
 				std::map<std::string, File*> _files;
+
+				virtual bool equal (const FileSystemAbstract& other) const override;
 		};
 
 		class File {
 			public:
 				File(const std::string& filename, const Folder* parent);
-				~File();
+				virtual ~File();
 
 				std::string pwd() const;
 				std::string folder() const;
@@ -178,12 +198,18 @@ namespace Macsa {
 				bool empty() const;
 
 				void setName(const std::string &name);
-				bool setContent(const std::vector<uint8_t> &data);
+				bool setContent(const std::vector<uint8_t>& data);
+				bool checkContent(const std::vector<uint8_t>* data) const;
+
+				virtual bool operator == (const File& other) const {return equal(other);}
+				virtual bool operator != (const File& other) const {return !equal(other);}
 
 			private:
 				const Folder* _parent;
 				std::string _name;
 				std::vector<uint8_t>* _data;
+
+				bool equal (const File& other) const;
 		};
 	}
 }

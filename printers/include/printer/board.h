@@ -9,19 +9,19 @@
 #include "datatypes.h"
 #include "datecodes.h"
 #include "shotmode.h"
-#include "bcdtable.h"
 #include "inputs.h"
 #include "outputs.h"
 #include "encoder.h"
 #include "cartridge.h"
 #include "errors.h"
+#include "messagemanager.h"
 
 namespace Macsa {
 	namespace Printers {
 		class Board {
 			public:
 				Board(const int id);
-				~Board();
+				virtual ~Board();
 
 				int id() const;
 
@@ -44,10 +44,13 @@ namespace Macsa {
 				virtual void setBlocked(bool blocked);
 
 				virtual std::string currentMessage() const;
-				virtual void setCurrentMessage(const std::string &currentMessage);
+				virtual std::string userMessage() const;
+				virtual void setUserMessage(const std::string &currentMessage);
 
-				virtual BcdTable bcdTable() const;
-				virtual void setBcdTable(const BcdTable& bcdTable);
+				virtual const BCDTable& bcdTable() const;
+				virtual BCDMode bcdMode() const;
+				virtual uint8_t currentBcdCode() const;
+				virtual void setBcdTable(const BCDTable& bcdTable);
 				virtual void setBcdMode(const BCDMode &mode);
 				virtual void setBcdMode(const BCDMode_n &mode);
 				virtual void setBcdMode(const std::string &mode);
@@ -90,9 +93,6 @@ namespace Macsa {
 				virtual Cartridge cartridge() const;
 				virtual void setCartridge(const Cartridge &cartridge);
 
-				virtual DateCodes dateCodes() const;
-				virtual void setDateCodes(const DateCodes &dateCodes);
-
 				virtual std::vector<Input> inputs() const;
 				virtual void setInputs(const std::vector<Input>& inputs);
 				virtual Input input(unsigned int idx) const;
@@ -111,36 +111,38 @@ namespace Macsa {
 				virtual void clear();
 
 				//Operators
-				bool operator == (const Board& other) const {return equal(other);}
-				bool operator != (const Board& other) const {return !equal(other);}
-				void operator = (const Board& other) { return copy(other);}
+				virtual bool operator == (const Board& other) const {return equal(other);}
+				virtual bool operator != (const Board& other) const {return !equal(other);}
+				virtual void operator = (const Board& other) { return copy(other);}
 
 			private:
-				const int	_id;
-				std::string	_type;
-				bool		_autostart;
-				bool		_lowLvlOutput;
-				bool		_printing;
-				bool		_enabled;
-				bool		_blocked;
-				std::string	_currentMessage;
-				PrinterDir	_printerDirection;
-				BcdTable	_bcdTable;
-				bool        _printRotated;      //Inverted
-				NozzlesCol	_nozzlesCol;
-				ShotMode	_shotMode;
-				Encoder		_encoder;
-				Photocell	_photocell;
-				std::map<std::string, std::string> _properties;
+				const int		_id;
+				bool			_autostart;
+				bool			_lowLvlOutput;
+				bool			_printing;
+				bool			_enabled;
+				bool			_blocked;
+				bool			_printRotated;      //Inverted
+				std::string		_type;
+				MessageManager	_messageManager;
+				PrinterDir		_printerDirection;
+				NozzlesCol		_nozzlesCol;
+				ShotMode		_shotMode;
+				Encoder			_encoder;
+				Photocell		_photocell;
+				Cartridge		_cartridge;
 				std::map<std::string, int> _counters;
-				Cartridge	_cartridge;
-				DateCodes	_dateCodes;
+				std::map<std::string, std::string> _properties;
 
-				std::vector<Input> _inputs;
-				std::vector<Output> _outputs;
-				std::vector<Error> _errors;
-
+				std::vector<Input>	_inputs;
+				std::vector<Output>	_outputs;
+				std::vector<Error>	_errors;
+#if __cplusplus >= 201103L
 				using itProp = std::map<std::string, std::string>::const_iterator;
+#else
+				typedef std::map<std::string, std::string>::const_iterator itProp;
+#endif
+
 				bool equal(const Board& other) const;
 				void copy(const Board& other);
 				bool checkProperties(const std::map<std::string, std::string> other) const;

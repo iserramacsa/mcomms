@@ -4,14 +4,13 @@
 using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
-MGetStatus::MGetStatus(Printers::Printer &printer):
+MGetStatus::MGetStatus(Printers::TIJPrinter &printer):
 	MCommand(MSTATUS, printer)
 {}
 
 bool MGetStatus::parseRequest(const XMLElement *xml)
 {
-	return false;
-
+	return parseSingleCommand(xml);
 }
 
 bool MGetStatus::parseResponse(const XMLElement *xml)
@@ -37,9 +36,9 @@ bool MGetStatus::parseResponse(const XMLElement *xml)
 			const XMLElement * versionsTag = cmd->FirstChildElement(MSTATUS_VERSION);
 			if (versionsTag != nullptr)
 			{
-				std::string ctrlVersion = MTools::XML::textFromChild(versionsTag, MSTATUS_VERSION_CTRL);
-				std::string fpgaVersion = MTools::XML::textFromChild(versionsTag, MSTATUS_VERSION_FPGA);
-				std::string mpkVersion = MTools::XML::textFromChild(versionsTag, MSTATUS_VERSION_API);
+				std::string ctrlVersion = _tools.getTextFromChildNode(versionsTag, MSTATUS_VERSION_CTRL);
+				std::string fpgaVersion = _tools.getTextFromChildNode(versionsTag, MSTATUS_VERSION_FPGA);
+				std::string mpkVersion = _tools.getTextFromChildNode(versionsTag, MSTATUS_VERSION_API);
 				_printer.setVersions(ctrlVersion, fpgaVersion, mpkVersion);
 			}
 
@@ -52,7 +51,6 @@ bool MGetStatus::parseResponse(const XMLElement *xml)
 					board = board->NextSiblingElement(MPRINTER_BOARD);
 				}
 			}
-
 			return true;
 		}
 	}
@@ -62,12 +60,14 @@ bool MGetStatus::parseResponse(const XMLElement *xml)
 
 void MGetStatus::buildRequest()
 {
-	XMLElement* wind = buildNewFrame();
-	MTools::XML::newElement(commandName(), _doc, &wind);
+	newCommandNode();
 }
 
 void MGetStatus::buildResponse()
 {
-
+	XMLElement * cmd = newCommandNode();
+	_error = Printers::ErrorCode_n::SUCCESS;
+	_tools.createTextChildNode(MSTATUS_DT, _printer.formatedDateTime().c_str(), &cmd);
+	//TODO: fill response
 }
 

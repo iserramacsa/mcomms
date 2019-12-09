@@ -10,7 +10,7 @@ namespace Macsa {
 		class MGetConfig : public MCommand
 		{
 			public:
-				MGetConfig(Printers::Printer& printer);
+				MGetConfig(Printers::TIJPrinter& printer);
 
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
@@ -27,7 +27,7 @@ namespace Macsa {
 		class MSetConfig : public MCommand
 		{
 			public:
-				MSetConfig(Printers::Printer& printer);
+				MSetConfig(Printers::TIJPrinter& printer);
 
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
@@ -43,7 +43,7 @@ namespace Macsa {
 		class MSetDateTime : public MSetConfig
 		{
 			public:
-				MSetDateTime(Printers::Printer& printer);
+				MSetDateTime(Printers::TIJPrinter& printer);
 
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 

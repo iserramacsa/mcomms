@@ -8,7 +8,7 @@
 using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
-MGetFilesList::MGetFilesList(Macsa::Printers::Printer &printer, const std::string &filter) :
+MGetFilesList::MGetFilesList(Printers::TIJPrinter &printer, const std::string &filter) :
 	MCommand(MFILES_GET_LIST, printer)
 {
 	_filter = filter;
@@ -16,8 +16,7 @@ MGetFilesList::MGetFilesList(Macsa::Printers::Printer &printer, const std::strin
 
 void MGetFilesList::buildRequest()
 {
-	XMLElement* wind = buildNewFrame();
-	XMLElement* cmd = MTools::XML::newElement(commandName(), _doc, &wind);
+	XMLElement* cmd = newCommandNode();
 	if (cmd != nullptr && filter().length()) {
 		cmd->SetAttribute(MFILES_GET_LIST_TYPE_ATTR, filter().c_str());
 	}
@@ -25,13 +24,13 @@ void MGetFilesList::buildRequest()
 
 void MGetFilesList::buildResponse()
 {
-	XMLElement* wind = buildNewFrame();
+	XMLElement* eCmd = newCommandNode();
 	_error = Printers::ErrorCode_n::SUCCESS;
 
-	XMLElement* eCmd = MTools::XML::newElement(MFILES_GET_LIST, _doc, &wind);
 	eCmd->SetAttribute(MFILES_GET_LIST_TYPE_ATTR, _filter.c_str());
 	//TODO: Insert requested files (create files server)
 
+	_tools.addWindError(_error);
 }
 
 bool MGetFilesList::parseRequest(const XMLElement *xml)
@@ -89,9 +88,9 @@ bool MGetFilesList::parseResponse(const XMLElement *xml)
 				unit = unit->NextSiblingElement(MFILES_DEVICE_UNIT);
 			}
 			/* remove all filtered files */
-			_printer.files().updateDrives(drives);
+			_printer.files()->updateDrives(drives);
 			for (unsigned int i = 0; i < drives.size(); ++i) {
-				_printer.files().clearFilesOfType(drives.at(i), exts);
+				_printer.files()->clearFilesOfType(drives.at(i), exts);
 			}
 
 			/* Insert new files */
@@ -137,12 +136,12 @@ void MGetFilesList::insertFileToPrinterData(const std::string &pwd)
 	std::string drive, folder, file;
 	splitFilePwd(pwd, drive, folder, file);
 
-	if (!_printer.files().driveExist(drive)) {
-		_printer.files().addNewDrive(drive);
+	if (!_printer.files()->driveExist(drive)) {
+		_printer.files()->addNewDrive(drive);
 	}
-	if (!_printer.files().folderExist(drive, folder)) {
-		_printer.files().addNewFolder(drive, folder);
+	if (!_printer.files()->folderExist(drive, folder)) {
+		_printer.files()->addNewFolder(drive, folder);
 	}
-	_printer.files().addNewFile(drive, folder, file);
+	_printer.files()->addNewFile(drive, folder, file);
 }
 

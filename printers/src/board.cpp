@@ -78,42 +78,57 @@ void Board::setBlocked(bool blocked)
 
 std::string Board::currentMessage() const
 {
-	return _currentMessage;
+	return _messageManager.currentMessage();
 }
 
-void Board::setCurrentMessage(const std::string &currentMessage)
+std::string Board::userMessage() const
 {
-	_currentMessage = currentMessage;
+	return _messageManager.userMessage();
 }
 
-BcdTable Board::bcdTable() const
+void Board::setUserMessage(const std::string &currentMessage)
 {
-	return _bcdTable;
+	_messageManager.setUserMessage(currentMessage);
 }
 
-void Board::setBcdTable(const BcdTable &bcdTable)
+const BCDTable& Board::bcdTable() const
 {
-	_bcdTable = bcdTable;
+	return _messageManager.bcdTable();
+}
+
+BCDMode Board::bcdMode() const
+{
+	return _messageManager.mode();
+}
+
+uint8_t Board::currentBcdCode() const
+{
+	return _messageManager.currentBcdCode();
+}
+
+void Board::setBcdTable(const BCDTable& bcdTable)
+{
+	_messageManager.setBcdTable(bcdTable);
 }
 
 void Board::setBcdMode(const BCDMode &mode)
 {
-	_bcdTable.setMode(mode);
+	_messageManager.setMode(mode);
 }
 
 void Board::setBcdMode(const BCDMode_n &mode)
 {
-	_bcdTable.setMode(mode);
+	_messageManager.setMode(mode);
 }
 
 void Board::setBcdMode(const std::string &mode)
 {
-	_bcdTable.setMode(mode);
+	_messageManager.setMode(mode);
 }
 
 void Board::setBcdCurrent(uint8_t current)
 {
-	_bcdTable.setCurrent(current);
+	_messageManager.setCurrentBcdCode(current);
 }
 
 PrinterDir Board::printerDirection() const
@@ -277,16 +292,6 @@ void Board::setCartridge(const Cartridge &cartridge)
     _cartridge = cartridge;
 }
 
-DateCodes Board::dateCodes() const
-{
-	return _dateCodes;
-}
-
-void Board::setDateCodes(const DateCodes &dateCodes)
-{
-	_dateCodes = dateCodes;
-}
-
 std::vector<Input> Board::inputs() const
 {
 	return _inputs;
@@ -372,8 +377,7 @@ void Board::clear()
 	_printing = false;
 	_enabled = false;
 	_blocked = true;
-	_currentMessage.clear();
-	_bcdTable.clear();
+	_messageManager.clear();
 	_printerDirection = PrinterDir_n::R2L;
 	_printRotated = false;
 	_nozzlesCol = NozzlesCol_n::COL_A;
@@ -405,11 +409,9 @@ bool Board::equal(const Board &other) const
 		return false;
 	else if (_blocked != other._blocked)
 		return false;
-	else if (_currentMessage.compare(other._currentMessage) != 0)
+	else if (_messageManager == other._messageManager)
 		return false;
 	else if (_printerDirection != other._printerDirection)
-		return false;
-	else if (_bcdTable != other._bcdTable)
 		return false;
 	else if (_printRotated != other._printRotated)
 		return false;
@@ -422,8 +424,6 @@ bool Board::equal(const Board &other) const
 	else if (_photocell != other._photocell)
 		return false;
 	else if (_cartridge != other._cartridge)
-		return false;
-	else if (_dateCodes != other._dateCodes)
 		return false;
 	else if(!checkProperties(other._properties))
 		return false;
@@ -445,8 +445,7 @@ void Board::copy(const Board &other)
 	_printing = other._printing;
 	_enabled = other._enabled;
 	_blocked = other._blocked;
-	_currentMessage = other._currentMessage;
-	_bcdTable = other._bcdTable;
+	_messageManager = other._messageManager;
 	_printerDirection = other._printerDirection;
 	_printRotated = other._printRotated;
 	_nozzlesCol = other._nozzlesCol;
@@ -454,7 +453,6 @@ void Board::copy(const Board &other)
 	_encoder = other._encoder;
 	_photocell = other._photocell;
 	_cartridge = other._cartridge;
-	_dateCodes = other._dateCodes;
 	setProperties(other._properties);
 	setInputs(other._inputs);
 	setOutputs(other._outputs);

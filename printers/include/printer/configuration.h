@@ -7,69 +7,68 @@
 #include <stdint.h>
 
 #include "datatypes.h"
+#include "printer.h"
 #include "board.h"
-#include "comms.h"
 
 namespace Macsa {
-	namespace Printers {
+//	namespace Printers {
 
-#if __cplusplus >= 201103L
-		using itBoard  = std::vector<Board>::iterator;
-		using citBoard = std::vector<Board>::const_iterator;
-#else
-		typedef std::vector<Board>::iterator		itBoard;
-		typedef std::vector<Board>::const_iterator	citBoard;
-#endif
-		class Configuration
-		{
+//#if __cplusplus >= 201103L
+//		using itBoard  = std::vector<Board>::iterator;
+//		using citBoard = std::vector<Board>::const_iterator;
+//#else
+//		typedef std::vector<Board>::iterator		itBoard;
+//		typedef std::vector<Board>::const_iterator	citBoard;
+//#endif
+//		class Configuration
+//		{
 
-			public:
-				Configuration();
-				virtual ~Configuration();
+//			public:
+//				Configuration();
+//				virtual ~Configuration();
 
-				virtual Photocell photocell() const;
-				virtual void setPhotocell(const Photocell &photocell);
+//				virtual Photocell photocell() const;
+//				virtual void setPhotocell(const Photocell &photocell);
 
-				virtual const std::vector<Board>& boards() const;
-				virtual const Board* board(int id) const;
-				virtual Board* board(int id);
-				virtual void setBoards(const std::vector<Board> &boards);
-				virtual void setBoard(const Board &board);
+//				virtual const std::vector<Board>& boards() const;
+//				virtual const Board* board(int id) const;
+//				virtual Board* board(int id);
+//				virtual void setBoards(const std::vector<Board> &boards);
+//				virtual void setBoard(const Board &board);
 
-				virtual PrinterComms comms() const;
-				virtual void setComms(const PrinterComms &comms);
+//				virtual PrinterComms comms() const;
+//				virtual void setComms(const PrinterComms &comms);
 
-				//Operators
-				bool operator == (const Configuration& other){return equal(other);}
-				bool operator != (const Configuration& other){return !equal(other);}
+//				//Operators
+//				bool operator == (const Configuration& other){return equal(other);}
+//				bool operator != (const Configuration& other){return !equal(other);}
 
-				LoggerLevel logLevel() const;
-				void setLogLevel(const LoggerLevel &logLevel);
+//				LoggerLevel logLevel() const;
+//				void setLogLevel(const LoggerLevel &logLevel);
 
-				bool traceLogs() const;
-				void setTraceLogs(bool traceLogs);
+//				bool traceLogs() const;
+//				void setTraceLogs(bool traceLogs);
 
-				bool traceComms() const;
-				void setTraceComms(bool traceComms);
+//				bool traceComms() const;
+//				void setTraceComms(bool traceComms);
 
-			protected:
-				PrinterComms		_comms;
-				std::vector<Board>	_boards;
-				LoggerLevel _logLevel;
-				bool _traceLogs;
-				bool _traceComms;
+//			protected:
+//				Printer& _printer;
+//				LoggerLevel _logLevel;
+//				bool _traceLogs;
+//				bool _traceComms;
 
 
-//				enum EKindOfLog traceLevel;
-//				bool traceComDetails;
+////				enum EKindOfLog traceLevel;
+////				bool traceComDetails;
 
-//				MLogDef();
-//				void clear();
+////				MLogDef();
+////				void clear();
 
-				Configuration(const Configuration&){}
-				bool equal(const Configuration& other);
-		};
-	}
+//				Configuration(const Configuration&){}
+//				bool equal(const Configuration& other);
+//		};
+//	}
 }
 
 #endif //MACSA_PRINTERS_CONFIGURATION_H

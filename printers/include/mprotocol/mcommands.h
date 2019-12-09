@@ -6,10 +6,8 @@
 #include <string>
 #include <tinyxml2.h>
 #include "mprotocol.h"
-
-#ifndef VIRTUAL_MOCK
-	#define VIRTUAL_MOCK
-#endif
+#include "printer/datatypes.h"
+#include "tij/tijprinter.h"
 
 namespace Macsa{
 	namespace MProtocol {
@@ -20,10 +18,27 @@ namespace Macsa{
 		class MSetConfig;
 		class MUpdate;
 
+		class XMLTools
+		{
+			public:
+				XMLTools(tinyxml2::XMLDocument& doc);
+
+				int getWindId(const tinyxml2::XMLElement *wind);
+				std::string getTextFromChildNode(const tinyxml2::XMLElement *parent, const std::string &child, const std::string& defaultValue="");
+
+
+				tinyxml2::XMLElement * createChildNode(const std::string &child, tinyxml2::XMLElement **parent);
+				tinyxml2::XMLElement * createTextChildNode(const std::string &child, const std::string& text, tinyxml2::XMLElement **parent);
+				void addWindError(const Printers::ErrorCode& errorCode);
+
+			private:
+				tinyxml2::XMLDocument& _doc;
+		};
+
 		class MCommand
 		{
 			public:
-				MCommand(const std::string& commandName, Printers::Printer& printer);
+				MCommand(const std::string& commandName, Printers::TIJPrinter& printer);
 				virtual ~MCommand();
 
 				virtual std::string getRequest(uint32_t windId);
@@ -40,19 +55,20 @@ namespace Macsa{
 				uint32_t _id;
 				tinyxml2::XMLDocument _doc;
 				Printers::ErrorCode _error;
-				Printers::Printer& _printer;
+				Printers::TIJPrinter& _printer;
+				XMLTools _tools;
 
 				virtual void buildRequest() = 0;
 				virtual void buildResponse() = 0;
 
 
 				std::string toString(); //return current xml document in a std::string
-				tinyxml2::XMLElement * buildNewFrame();
 				bool parseSingleCommand(const tinyxml2::XMLElement *root);
+				tinyxml2::XMLElement * newCommandNode();
 
 			private:
+				tinyxml2::XMLElement * buildNewFrame();
 				const std::string _commandName;
-				VIRTUAL_MOCK inline uint32_t nextId() const; //ToDo: Move to factory
 
 		};
 	}

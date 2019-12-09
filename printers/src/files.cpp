@@ -1,12 +1,30 @@
 #include "printer/files.h"
 #include <algorithm> // Update methods
+#include <typeinfo>
+#include <iostream>
 
 using namespace Macsa;
 using namespace Macsa::Printers;
 using namespace std;
 
+#if __cplusplus >= 201103L
+	using citDrive  = std::map<std::string, Drive*>::const_iterator;
+	using citFolder = std::map<std::string, Folder*>::const_iterator;
+	using citFile	= std::map<std::string, File*>::const_iterator;
+#else
+	typedef std::map<std::string, Drive*>::const_iterator citDrive;
+	typedef std::map<std::string, Folder*>::const_iterator citFolder;
+	typedef std::map<std::string, File*>::const_iterator citFile;
+#endif
+
 
 //====== FileSystemAbstract definitions ======//
+FileSystemAbstract::FileSystemAbstract()
+{}
+
+FileSystemAbstract::~FileSystemAbstract()
+{}
+
 template<class T>
 T *FileSystemAbstract::getItem(const string &name, const std::map<string, T*> &map) const
 {
@@ -21,9 +39,15 @@ std::vector<string> FileSystemAbstract::getItemsList(const std::map<string, T *>
 {
 	std::vector<string> list;
 	list.clear();
+#if __cplusplus >= 201103L
 	for (auto& item : map) {
 		list.push_back(item.first);
 	}
+#else
+	for (typename std::map<string, T *>::const_iterator it = map.begin(); it != map.end(); it++) {
+		list.push_back((*it).first);
+	}
+#endif
 	return list;
 }
 
@@ -63,11 +87,39 @@ bool FileSystemAbstract::deleteItem(const std::string& name, std::map<string, T*
 template<class T>
 bool FileSystemAbstract::clear(std::map<string, T*> &map)
 {
+#if __cplusplus >= 201103L
 	for (auto& item : map) {
 		delete item.second;
 	}
+#else
+	for (typename std::map<string, T *>::const_iterator it = map.begin(); it != map.end(); it++) {
+		delete it->second;
+	}
+#endif
 	map.clear();
 	return (map.size() == 0);
+}
+
+template<class T>
+bool FileSystemAbstract::compare(const std::map<string, T *> &map1, const std::map<string, T*> &map2) const
+{
+	bool equal = false;
+
+	if (map1.size() == map2.size()) {
+#if __cplusplus >= 201103L
+		for (auto& item : map1) {
+#else
+		for (typename std::map<string, T *>::const_iterator it = map1.begin(); it != map1.end(); it++) {
+			typename std::map<string, T *>::const_reference item = *it;
+#endif
+			equal = (*(map2.at(item.first)) == *(item.second));
+			if(!equal) {
+				break;
+			}
+		}
+	}
+
+	return equal;
 }
 
 
@@ -265,6 +317,20 @@ File *PrinterFiles::removeFile(const string &drive, const string &folder, const 
 	return f;
 }
 
+bool PrinterFiles::equal(const FileSystemAbstract &other) const
+{
+	bool equal = false;
+	try {
+		const PrinterFiles& fs = dynamic_cast<const PrinterFiles&>(other);
+		equal = compare(_drives, fs._drives);
+	}
+	catch(std::bad_cast exp) {
+		std::cout << __func__ <<"Caught bad cast" << std::endl;
+	}
+
+	return equal;
+}
+
 bool PrinterFiles::renameFolder(const string &drive, const string &oldfolder, const string &newFolder)
 {
 	bool success = false;
@@ -312,14 +378,18 @@ bool PrinterFiles::moveFile(const string &oldDrive, const string &oldFolder, con
 	return success;
 }
 
-#include <iostream>
 void PrinterFiles::updateDrives(const std::vector<std::string> drives)
 {
 	try {
 		for (map<string, Drive*>::iterator d = _drives.begin(); d != _drives.end(); d++)
 		{
 			bool found = false;
+#if __cplusplus >= 201103L
 			for (auto& drive : drives) {
+#else
+			for (std::vector<std::string>::const_iterator it = drives.begin(); it != drives.end(); it++) {
+				std::string drive = *it;
+#endif
 				if (drive.compare(d->second->name()) == 0) {
 					found = true;
 					break;
@@ -338,7 +408,13 @@ void PrinterFiles::clearFilesOfType(const string &drive, const string &extension
 {
 	Drive* d = getItem(drive, _drives);
 	if (d) {
+#if __cplusplus >= 201103L
 		for (auto& file : d->getFiles()) {
+#else
+		std::vector<const File *>files = d->getFiles();
+		for (std::vector<const File *>::const_iterator it = files.begin(); it != files.end(); it++) {
+			const File * file = *it;
+#endif
 			if (extension.compare(file->extension()) == 0) {
 				d->deleteFile(file->folder(), file->name());
 			}
@@ -393,6 +469,7 @@ std::vector<string> Drive::getFilesList(const string &folder) const
 
 std::vector<const File *> Drive::getFiles() const
 {
+	//TODO: add C++98 compatibility
 	std::vector<const File *>files;
 	for (auto& folder : _folders) {
 		std::vector<const File *> currentFolder = folder.second->getFiles();
@@ -500,6 +577,22 @@ File *Drive::removeFile(const string &folder, const string &filename)
 		return f->removeFile(filename);
 	}
 	return nullptr;
+}
+
+bool Drive::equal(const FileSystemAbstract &other) const
+{
+	bool equal = false;
+	try {
+		const Drive& drive = dynamic_cast<const Drive&>(other);
+
+		equal = (_name == drive._name);
+		equal &= compare(_folders, drive._folders);
+	}
+	catch(std::bad_cast exp) {
+		std::cout << __func__ <<"Caught bad cast" << std::endl;
+	}
+
+	return equal;
 }
 
 bool Drive::renameFile(const string &folder, const string &oldName, const string &newName)
@@ -681,6 +774,30 @@ bool Folder::renameFile(const string &oldName, const string &newName)
 	return success;
 }
 
+bool Folder::equal(const FileSystemAbstract &other) const
+{
+	bool equal = false;
+
+	try
+	{
+		const Folder& folder = dynamic_cast<const Folder&>(other);
+
+		equal =  (_parent->name().compare(folder._parent->name()) == 0);
+		if(equal){
+			equal &= (_name == folder._name);
+			equal &= compare(_files, folder._files);
+		}
+
+	}
+	catch(std::bad_cast exp)
+	{
+		std::cout << __func__ <<"Caught bad cast" << std::endl;
+	}
+
+	return equal;
+
+}
+
 //====== Files definitions ======//
 File::File(const string &filename, const Folder *parent) :
 	_parent(parent),
@@ -775,5 +892,39 @@ bool File::setContent(const std::vector<uint8_t> &data)
 	}
 
 	return success;
+}
+
+bool File::checkContent(const std::vector<uint8_t> *data) const
+{
+	bool equal = false;
+	if (_data != nullptr && data != nullptr) {
+		if (_data->size() == data->size()) {
+			equal = ((*_data) == (*data));
+		}
+	}
+	else {
+		equal = (_data == nullptr && data == nullptr);
+	}
+
+	return equal;
+}
+
+bool File::equal(const File &other) const
+{
+	bool equal = (_parent != nullptr && other._parent != nullptr);
+
+	if(!equal) {
+		equal = (_parent == nullptr && other._parent == nullptr);
+	}
+	else {
+		equal = _parent->name().compare(other._parent->name());
+	}
+
+	if (equal){
+		equal = (_name.compare(other._name) == 0);
+		equal &= checkContent(other._data);
+	}
+
+	return equal;
 }
 

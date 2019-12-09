@@ -11,7 +11,7 @@ namespace Macsa {
 		class MGetFilesList : public MCommand
 		{
 			public:
-				MGetFilesList(Printers::Printer& printer, const std::string& filter = "");
+				MGetFilesList(Printers::TIJPrinter& printer, const std::string& filter = "");
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 

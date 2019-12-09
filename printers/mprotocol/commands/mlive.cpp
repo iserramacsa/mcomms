@@ -5,22 +5,22 @@
 using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
-MLive::MLive(Macsa::Printers::Printer &printer):
+MLive::MLive(Macsa::Printers::TIJPrinter& printer):
 	MCommand(MLIVE, printer)
 {}
 
 void MLive::buildRequest()
 {
-	XMLElement* wind = buildNewFrame();
-	MTools::XML::newElement(commandName(), _doc, &wind);
+	newCommandNode();
 }
 
 void MLive::buildResponse()
 {
-	XMLElement* wind = buildNewFrame();
-	XMLElement* live = MTools::XML::newElement(MLIVE, _doc, &wind);
-
+	XMLElement* live = newCommandNode();
 	live->SetAttribute(MLIVE_DT_ATTR,		MTools::dateTime().c_str());
+
+	_error = Printers::ErrorCode_n::SUCCESS;
+
 	//live->SetAttribute(MLIVE_STATUS_ATTR,	_printer.statusChanged());			//TODO: refactor live monitor
 	//live->SetAttribute(MLIVE_CONFIG_ATTR,	_printer.configChanged());			//TODO: refactor live monitor
 	//live->SetAttribute(MLIVE_FILES_ATTR,		_printer.filesChanged());		//TODO: refactor live monitor
@@ -29,7 +29,7 @@ void MLive::buildResponse()
 
 	XMLElement* eBoards = MTools::XML::newElement(MPRINTER_BOARDS_LIST, _doc, &live);
 	if (eBoards != nullptr) {
-		const std::vector<Printers::Board> & boards = _printer.configuration().boards();
+		const std::vector<Printers::Board> & boards = _printer.boards();
 		for (auto& board : boards) {
 			//<BOARD id="[Board Id]" enabled="[value]" printing="[value]" >
 			XMLElement* eBoard = MTools::XML::newElement(MPRINTER_BOARD, _doc, &eBoards);
@@ -40,11 +40,11 @@ void MLive::buildResponse()
 				//<COUNTERS total="[value]" user="[value]"/>
 				XMLElement* eCounters = MTools::XML::newElement(MPRINTER_BOARD_COUNTERS_LIST, _doc, &eBoard);
 				std::stringstream counterName;
-				if (board.bcdTable().mode()() == Printers::BCDMode_n::USER_MODE) {
+				if (board.bcdMode() == Printers::BCDMode_n::USER_MODE) {
 					counterName << key_counter_system_user;
 				}
 				else {
-					counterName << key_counter_system_bcd << board.bcdTable().current();
+					counterName << key_counter_system_bcd << board.currentBcdCode();
 				}
 				eCounters->SetAttribute(MPRINTER_BOARD_COUNT_TOTAL, board.counter(key_counter_system_total));
 				eCounters->SetAttribute(MPRINTER_BOARD_COUNT_USER, board.counter(counterName.str()));
@@ -59,6 +59,7 @@ void MLive::buildResponse()
 			}
 		}
 	}
+	_tools.addWindError(_error);
 }
 
 bool MLive::parseRequest(const XMLElement *xml)
@@ -91,7 +92,7 @@ bool MLive::parseResponse(const XMLElement *xml)
 					const XMLElement* eBoard = eBoards->FirstChildElement(MPRINTER_BOARD);
 					while (eBoard != nullptr) {
 						int id = eBoard->IntAttribute(MPRINTER_BOARD_ID_ATTR, -1);
-						Printers::Board* pBoard = _printer.configuration().board(id);
+						Printers::Board* pBoard = _printer.board(id);
 						if  (id != -1 && pBoard != nullptr) {
 							pBoard->setEnabled(eBoard->BoolAttribute(MPRINTER_BOARD_ENABLED_ATTR));
 							pBoard->setPrinting(eBoard->BoolAttribute(MPRINTER_BOARD_PRINT_ATTR));
@@ -102,9 +103,9 @@ bool MLive::parseResponse(const XMLElement *xml)
 									int partial = eCounters->IntAttribute(MPRINTER_BOARD_COUNT_USER);
 									pBoard->setCounter(key_counter_system_total, total);
 									std::string counterName = key_counter_system_user;
-									if (pBoard->bcdTable().mode()() != Printers::BCDMode_n::USER_MODE) {
+									if (pBoard->bcdMode() != Printers::BCDMode_n::USER_MODE) {
 										counterName = key_counter_system_bcd;
-										counterName.append(std::to_string(pBoard->bcdTable().current()));
+										counterName.append(std::to_string(pBoard->currentBcdCode()));
 									}
 									pBoard->setCounter(counterName, partial);
 								}
@@ -119,7 +120,7 @@ bool MLive::parseResponse(const XMLElement *xml)
 									pBoard->setProperty(key_prop_status_general_print_remain, ePrintsRemain->Attribute(ATTRIBUTE_VALUE));
 								}
 							}
-							_printer.configuration().setBoard(*pBoard);
+							_printer.setBoard(*pBoard);
 						}
 						eBoard = eBoard->NextSiblingElement(MPRINTER_BOARD);
 					}

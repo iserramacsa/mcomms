@@ -3,13 +3,13 @@
 #include "mprotocol/mconfig.h"
 #include "mprotocol/mlive.h"
 #include "mprotocol/mstatus.h"
-//#include "commands/mupdate.h"
+#include "mprotocol/mupdate.h"
 #include <iostream>
 
 using namespace tinyxml2;
 using namespace Macsa::MProtocol;
 
-MCommandsFactory::MCommandsFactory(Printers::Printer& printer) :
+MCommandsFactory::MCommandsFactory(Printers::TIJPrinter& printer) :
 	_printer(printer)
 {
 	_doc.Clear();
@@ -20,84 +20,97 @@ MCommandsFactory::~MCommandsFactory()
 	_doc.Clear();
 }
 
-//bool MCommandsFactory::parse(const std::string &frame)
-//{
-//	bool valid = false;
+bool MCommandsFactory::parse(const std::string &frame, Printers::ErrorCode &error)
+{
+	bool valid = false;
 
-//	if (_doc.FirstChild() != nullptr)
-//	{
-//		_doc.Clear();
-//	}
+	if (_doc.FirstChild() != nullptr) 	{
+		_doc.Clear();
+	}
 
-//	if (frame.length())
-//	{
-//		_doc.Parse(frame.c_str());
+	if (frame.length())
+	{
+		_doc.Parse(frame.c_str());
 
-//		XMLElement* pWind = _doc.FirstChildElement();
-//		valid = isWindValid(pWind);
-//	}
+		XMLElement* wind = _doc.FirstChildElement();
+		if(isWindValid(wind)) {
+			MCommand* cmd = getCommand(wind);
+			if (cmd != nullptr){
+				valid = cmd->parseResponse(wind);
+				error = cmd->getError();
+				delete cmd;
+			}
+		}
+	}
 
-//	return valid;
-//}
+	return valid;
+}
 
-//bool MCommandsFactory::parse(const std::string &frame, MCommand *handler)
-//{
-//	bool success = false;
-//	if(parse(frame)) {
-//		XMLElement* pWind = _doc.FirstChildElement();
-//		success = handler->parseResponse(pWind);
-//	}
+MCommand *MCommandsFactory::getLiveCommand()
+{
+	return new MLive(_printer);
+}
 
-//	return success;
-//}
+MCommand *MCommandsFactory::getStatusCommand()
+{
+	return  new MGetStatus(_printer);
+}
 
-// ////////////////////////////////////////////
-// CLIENT METHODS  //TODO: Refactorize
-//MCommand *MCommandsFactory::getConfigCommand()
-//{
-//	MGetConfig* cmd = new Client::MGetConfig(_printer);
-//	return cmd;
-//}
+MCommand *MCommandsFactory::getConfigCommand()
+{
+	return new MGetConfig(_printer);
+}
 
-//MCommand *MCommandsFactory::getFontsCommand()
-//{
-//	MGetFilesList* cmd = new Client::MGetFilesList(_printer);
-//	cmd->setFilter(FONTS_FILTER);
-//	return cmd;
-//}
+MCommand *MCommandsFactory::getFontsCommand()
+{
+	return new MGetFilesList(_printer, FONTS_FILTER);
+}
 
-//MCommand *MCommandsFactory::getMessagesCommand()
-//{
-//	MGetFilesList* cmd = new Client::MGetFilesList(_printer);
-//	cmd->setFilter(NISX_FILTER);
-//	return cmd;
-//}
+MCommand *MCommandsFactory::getMessagesCommand()
+{
+	return new MGetFilesList(_printer, NISX_FILTER);
+}
 
-//MCommand *MCommandsFactory::getImagesCommand()
-//{
-//	MGetFilesList* cmd = new Client::MGetFilesList(_printer);
-//	cmd->setFilter(IMG_FILTER);
-//	return cmd;
-//}
+MCommand *MCommandsFactory::getImagesCommand()
+{
+	return new MGetFilesList(_printer, IMG_FILTER);
+}
 
-//MCommand *MCommandsFactory::getAllFilesCommand()
-//{
-//	MGetFilesList* cmd = new Client::MGetFilesList(_printer);
-//	cmd->setFilter(NO_FILTER);
-//	return cmd;
-//}
+MCommand *MCommandsFactory::getAllFilesCommand()
+{
+	return new MGetFilesList(_printer,NO_FILTER);
+}
 
-//MCommand *MCommandsFactory::getLiveCommand()
-//{
-//	return  new Macsa::MProtocol::MLive(_printer);
-//}
+MCommand *MCommandsFactory::getCommand(XMLElement *wind) const
+{
+	MCommand * cmd = nullptr;
+	XMLElement* eCmd = wind->FirstChildElement();
+	if (eCmd != nullptr) {
+		std::string cmdName = eCmd->Name();
 
-//MCommand *MCommandsFactory::getStatusCommand()
-//{
-//	return  new Macsa::MProtocol::MGetStatus(_printer);
-//}
-// END OF CLIENT METHODS  //TODO: Refactorize
-// ////////////////////////////////////////////
+		if (cmdName.compare(MLIVE) == 0) {
+			cmd = new MLive(_printer);
+		}
+		else if (cmdName.compare(MSTATUS) == 0){
+			cmd = new MGetStatus(_printer);
+		}
+		else if (cmdName.compare(MCONFIG_GET) == 0) {
+			cmd = new MGetConfig(_printer);
+		}
+		else if (cmdName.compare(MCONFIG_SET) == 0) {
+			cmd = new MSetConfig(_printer);
+		}
+		else if (cmdName.compare(MFILES_GET_LIST) == 0) {
+			cmd = new MGetFilesList(_printer);
+		}
+		else if (cmdName.compare(MUPDATE) == 0) {
+			cmd = new MUpdate(_printer);
+		}
+	}
+
+	return cmd;
+}
+
 
 // ////////////////////////////////////////////
 // SERVER METHODS  //TODO: Refactorize
@@ -176,11 +189,17 @@ bool MCommandsFactory::isElement(const XMLElement *wind, const std::string &name
 	return (elementName.compare(name) == 0);
 }
 
-bool MCommandsFactory::isWindValid(XMLElement *wind)
+bool MCommandsFactory::isWindValid(XMLElement *wind) const
 {
 	bool valid = false;
 	if (wind != nullptr) {
 		valid = (isElement(wind, MWIND) && wind->FirstChildElement() != nullptr);
 	}
 	return valid;
+}
+
+uint32_t MCommandsFactory::nextId()
+{
+	if(++_requestId < 0){_requestId = 0;}
+	return static_cast<uint32_t>(_requestId);
 }

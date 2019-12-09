@@ -10,31 +10,37 @@ namespace Macsa {
 		class MCommandsFactory
 		{
 			public:
-				MCommandsFactory(Printers::Printer& printer);
+				MCommandsFactory(Printers::TIJPrinter& printer);
 				~MCommandsFactory();
-//				bool parse(const std::string &frame);
-//				bool parse(const std::string &frame, MCommand* handler);
+
+				bool parse(const std::string &frame, Printers::ErrorCode &error);
+
 //				//SERVER
-//				std::string getResponse(); //TODO: Refactorize
-//				//CLIENT
-//				//Live
-//				MCommand *getLiveCommand();		//TODO: Refactorize
-//				//Status
-//				MCommand* getStatusCommand();	//TODO: Refactorize
-//				//Config
-//				MCommand* getConfigCommand();	//TODO: Refactorize
-//				//Files
-//				MCommand* getFontsCommand();	//TODO: Refactorize
-//				MCommand* getMessagesCommand(); //TODO: Refactorize
-//				MCommand* getImagesCommand();	//TODO: Refactorize
-//				MCommand* getAllFilesCommand(); //TODO: Refactorize
-	//			MCommand* getErrorsList();		//TODO: Refactorize
+//				std::string getResponse(); //TODO: Move to commandsHandler (server)
+
+				//Live
+				MCommand *getLiveCommand();
+				//Status
+				MCommand* getStatusCommand();
+				//Config
+				MCommand* getConfigCommand();
+				//Files
+				MCommand* getFontsCommand();
+				MCommand* getMessagesCommand();
+				MCommand* getImagesCommand();
+				MCommand* getAllFilesCommand();
+				MCommand* getErrorsList();
+
 			private:
 				tinyxml2::XMLDocument _doc;
-				Printers::Printer& _printer;
-//				std::string  getCommandResponse(tinyxml2::XMLElement* wind);
+				Printers::TIJPrinter& _printer;
+				int32_t _requestId = -1;
+
+				MCommand* getCommand(tinyxml2::XMLElement* wind) const;
 				inline bool isElement(const tinyxml2::XMLElement *wind, const std::string& name) const;
-				inline bool isWindValid(tinyxml2::XMLElement* wind);
+				inline bool isWindValid(tinyxml2::XMLElement* wind) const;
+
+				inline uint32_t nextId();
 		};
 	}
 }
