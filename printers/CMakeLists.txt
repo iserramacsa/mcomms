@@ -1,5 +1,5 @@
 #############################################
-#	Printers data structures and protocols  #
+#   Printers data structures and protocols  #
 #############################################
 ## TIJ Printers
 

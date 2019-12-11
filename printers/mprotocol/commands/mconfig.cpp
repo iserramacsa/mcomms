@@ -1,6 +1,8 @@
 #include "mprotocol/mconfig.h"
-#include "mtools.h"
+#include "mprotocol/mprotocol.h"
 #include "mboard.h"
+
+#include "mtools.h"
 
 using namespace Macsa::MProtocol;
 using namespace tinyxml2;

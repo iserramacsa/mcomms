@@ -1,5 +1,5 @@
-#ifndef MCOMMANDSFACTORY_H
-#define MCOMMANDSFACTORY_H
+#ifndef MACSA_MPROTOCOL_COMMANDSFACTORY_H
+#define MACSA_MPROTOCOL_COMMANDSFACTORY_H
 
 #include <map>
 #include "mcommands.h"
@@ -24,12 +24,15 @@ namespace Macsa {
 				MCommand* getStatusCommand();
 				//Config
 				MCommand* getConfigCommand();
+				MCommand* setDateTimeCommand();
 				//Files
 				MCommand* getFontsCommand();
 				MCommand* getMessagesCommand();
 				MCommand* getImagesCommand();
 				MCommand* getAllFilesCommand();
 				MCommand* getErrorsList();
+
+				inline uint32_t nextId();
 
 			private:
 				tinyxml2::XMLDocument _doc;
@@ -40,7 +43,6 @@ namespace Macsa {
 				inline bool isElement(const tinyxml2::XMLElement *wind, const std::string& name) const;
 				inline bool isWindValid(tinyxml2::XMLElement* wind) const;
 
-				inline uint32_t nextId();
 		};
 	}
 }

@@ -1,4 +1,5 @@
 #include "mprotocol/mcommands.h"
+#include "mprotocol/mprotocol.h"
 #include "mtools.h"
 #include <iostream>
 #include <iomanip>
@@ -27,6 +28,11 @@ std::string MCommand::getResponse()
 {
 	buildResponse();
 	return toString();
+}
+
+void MCommand::setError(const Printers::ErrorCode &error)
+{
+	_error = error;
 }
 
 std::string MCommand::toString()

@@ -1,4 +1,5 @@
 #include "mprotocol/mlive.h"
+#include "mprotocol/mprotocol.h"
 #include "mtools.h"
 #include <sstream>
 

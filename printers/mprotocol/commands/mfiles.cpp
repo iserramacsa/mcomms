@@ -1,4 +1,5 @@
 #include "mprotocol/mfiles.h"
+#include "mprotocol/mprotocol.h"
 #include "printer/files.h"
 #include "mtools.h"
 #include "base64.h"
@@ -52,10 +53,9 @@ void MGetFilesList::buildResponse()
 
 bool MGetFilesList::parseRequest(const XMLElement *xml)
 {
+	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = false;
-	int id  = MTools::XML::getWindId(xml);
-	if(id != -1) {
-		const XMLElement *cmd = xml->FirstChildElement(commandName().c_str());
+	if  (cmd != nullptr) {
 		valid = (cmd != nullptr && cmd->NoChildren());
 		if (valid){
 			_filter = "*.*";
@@ -335,13 +335,87 @@ std::string MDeleteFile::filename() const
 }
 
 
-//=============		GET FILE		=============//
-MGetFile::MGetFile(Macsa::Printers::TIJPrinter &printer, const std::string &filename, bool raw) :
-	MCommand(MFILES_GET, printer)
+//=============		FILE CONTENT COMMAND BASE		=============//
+MFileContentCommand::MFileContentCommand(const std::string &command, Printers::TIJPrinter &printer, const std::string &filename, bool raw, const std::vector<uint8_t> &content) :
+	MCommand(command, printer)
 {
 	_filename = filename;
+	_content = content;
 	_raw = raw;
 }
+
+bool MFileContentCommand::raw() const
+{
+	return _raw;
+}
+
+std::string MFileContentCommand::filename() const
+{
+	return _filename;
+}
+
+std::vector<uint8_t> MFileContentCommand::content() const
+{
+	return _content;
+}
+
+void MFileContentCommand::setContent(const std::vector<uint8_t> &content)
+{
+	_content = content;
+}
+
+std::string MFileContentCommand::contentToString(const std::vector<uint8_t> content, bool raw) const
+{
+	std::stringstream out;
+	if (raw) {
+		out << OPEN_CDATA;
+		for (std::vector<uint8_t>::const_iterator it = content.begin(); it != content.end(); it++) {
+			out << std::to_string(*it);
+		}
+		out << CLOSE_CDATA;
+	}
+	else {
+		const char* plainData = reinterpret_cast<const char*>(&content[0]);
+
+		int len = Base64encode_len(static_cast<int>(content.size()));
+		char* encodeData = new char[len + 1];
+		if(encodeData) {
+			Base64encode(encodeData, plainData, static_cast<int>(content.size()));
+
+			out << encodeData;
+			delete[]  encodeData;
+		}
+	}
+	return out.str();
+}
+
+std::vector<uint8_t> MFileContentCommand::contentFromString(const char *data, bool raw) const
+{
+	std::vector<uint8_t> content;
+
+	if (raw && data != nullptr) {
+		unsigned int len = strlen(data);
+		for (unsigned int i = 0; i < len; i++) {
+			content.push_back(static_cast<uint8_t>(*(data + i)));
+		}
+	}
+	else if (data != nullptr) {
+		int decodedLen = Base64decode_len(data);
+		char* decodedData = new char[decodedLen + 1];
+		Base64decode(decodedData, data);
+		for (int i = 0; i < decodedLen; i++) {
+			content.push_back(static_cast<uint8_t>(*(decodedData + i)));
+		}
+		delete[]  decodedData;
+	}
+
+	return content;
+}
+
+//=============		GET FILE		=============//
+MGetFile::MGetFile(Macsa::Printers::TIJPrinter &printer, const std::string &filename, bool raw) :
+	MFileContentCommand(MFILES_GET, printer, filename, raw)
+{}
 
 void MGetFile::buildRequest()
 {
@@ -399,73 +473,10 @@ bool MGetFile::parseResponse(const XMLElement *xml)
 	return valid;
 }
 
-std::string MGetFile::filename() const
-{
-	return _filename;
-}
-
-bool MGetFile::raw() const
-{
-	return _raw;
-}
-
-std::vector<uint8_t> MGetFile::content() const
-{
-	return _content;
-}
-
-std::string MGetFile::contentToString(const std::vector<uint8_t> content, bool raw) const
-{
-	std::stringstream out;
-	if (raw) {
-		out << OPEN_CDATA;
-		for (std::vector<uint8_t>::const_iterator it = content.begin(); it != content.end(); it++) {
-			out << std::to_string(*it);
-		}
-		out << CLOSE_CDATA;
-	}
-	else {
-		const char* plainData = reinterpret_cast<const char*>(&content[0]);
-
-		int len = Base64encode_len(static_cast<int>(content.size()));
-		char* encodeData = new char[len + 1];
-		if(encodeData) {
-			Base64encode(encodeData, plainData, static_cast<int>(content.size()));
-
-			out << encodeData;
-			delete[]  encodeData;
-		}
-	}
-	return out.str();
-}
-
-std::vector<uint8_t> MGetFile::contentFromString(const char *data, bool raw) const
-{
-	std::vector<uint8_t> content;
-
-	if (raw && data != nullptr) {
-		unsigned int len = strlen(data);
-		for (unsigned int i = 0; i < len; i++) {
-			content.push_back(static_cast<uint8_t>(*(data + i)));
-		}
-	}
-	else if (data != nullptr) {
-		int decodedLen = Base64decode_len(data);
-		char* decodedData = new char[decodedLen + 1];
-		Base64decode(decodedData, data);
-		for (int i = 0; i < decodedLen; i++) {
-			content.push_back(static_cast<uint8_t>(*(decodedData + i)));
-		}
-		delete[]  decodedData;
-	}
-
-	return content;
-}
-
 //=============		SET FILE		=============//
  ///TODO!!!
 MSetFile::MSetFile(Macsa::Printers::TIJPrinter &printer, const std::string &filename, const std::vector<uint8_t> &content, bool raw) :
-	MCommand(MFILES_SET, printer)
+	MFileContentCommand(MFILES_SET, printer, filename, raw, content)
 {
 	_filename = filename;
 	_raw = raw;
@@ -478,6 +489,7 @@ void MSetFile::buildRequest()
 	if (cmd != nullptr) {
 		cmd->SetAttribute(MFILES_FILE_FILEPATH_ATTR, _filename.c_str());
 		cmd->SetAttribute(MFILES_FILE_RAW_ATTR, MTools::toString(_raw).c_str());
+
 	}
 }
 
@@ -528,65 +540,3 @@ bool MSetFile::parseResponse(const XMLElement *xml)
 	return valid;
 }
 
-std::string MSetFile::filename() const
-{
-	return _filename;
-}
-
-bool MSetFile::raw() const
-{
-	return _raw;
-}
-
-std::vector<uint8_t> MSetFile::content() const
-{
-	return _content;
-}
-
-std::string MSetFile::contentToString(const std::vector<uint8_t> content, bool raw) const
-{
-	std::stringstream out;
-	if (raw) {
-		out << OPEN_CDATA;
-		for (std::vector<uint8_t>::const_iterator it = content.begin(); it != content.end(); it++) {
-			out << std::to_string(*it);
-		}
-		out << CLOSE_CDATA;
-	}
-	else {
-		const char* plainData = reinterpret_cast<const char*>(&content[0]);
-
-		int len = Base64encode_len(static_cast<int>(content.size()));
-		char* encodeData = new char[len + 1];
-		if(encodeData) {
-			Base64encode(encodeData, plainData, static_cast<int>(content.size()));
-
-			out << encodeData;
-			delete[]  encodeData;
-		}
-	}
-	return out.str();
-}
-
-std::vector<uint8_t> MSetFile::contentFromString(const char *data, bool raw) const
-{
-	std::vector<uint8_t> content;
-
-	if (raw && data != nullptr) {
-		unsigned int len = strlen(data);
-		for (unsigned int i = 0; i < len; i++) {
-			content.push_back(static_cast<uint8_t>(*(data + i)));
-		}
-	}
-	else if (data != nullptr) {
-		int decodedLen = Base64decode_len(data);
-		char* decodedData = new char[decodedLen + 1];
-		Base64decode(decodedData, data);
-		for (int i = 0; i < decodedLen; i++) {
-			content.push_back(static_cast<uint8_t>(*(decodedData + i)));
-		}
-		delete[]  decodedData;
-	}
-
-	return content;
-}

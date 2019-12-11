@@ -1,5 +1,5 @@
-#ifndef MFILESCOMMANDS_H
-#define MFILESCOMMANDS_H
+#ifndef MACSA_MPROTOCOL_COMMANDS_FILES_H
+#define MACSA_MPROTOCOL_COMMANDS_FILES_H
 
 #include "mcommands.h"
 
@@ -79,50 +79,51 @@ namespace Macsa {
 				virtual void buildResponse();
 		};
 
-		class MGetFile : public MCommand
+		class MFileContentCommand : public MCommand
+		{
+			public:
+				MFileContentCommand(const std::string& command, Printers::TIJPrinter &printer, const std::string &filename = "", bool raw = false, const std::vector<uint8_t>& content = std::vector<uint8_t>());
+				virtual ~MFileContentCommand();
+
+				std::string filename() const;
+				std::vector<uint8_t> content() const;
+				void setContent(const std::vector<uint8_t>& content);
+				void setContent(const std::string& content);
+
+				bool raw() const;
+
+			protected:
+				std::string _filename;
+				std::vector<uint8_t> _content;
+				bool _raw;
+
+				std::string contentToString(const std::vector<uint8_t> content, bool raw) const;
+				std::vector<uint8_t> contentFromString(const char* data, bool raw) const;
+
+		};
+
+		class MGetFile : public MFileContentCommand
 		{
 			public:
 				MGetFile(Macsa::Printers::TIJPrinter &printer, const std::string &filename = "", bool raw = false);
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
 
-				std::string filename() const;
-				bool raw() const;
-
-				std::vector<uint8_t> content() const;
-
 			private:
-				std::string _filename;
-				std::vector<uint8_t> _content;
-				bool _raw;
-
 				virtual void buildRequest();
 				virtual void buildResponse();
-				std::string contentToString(const std::vector<uint8_t> content, bool raw) const;
-				std::vector<uint8_t> contentFromString(const char* data, bool raw) const;
 		};
 
-		class MSetFile : public MCommand
+		class MSetFile : public MFileContentCommand
 		{
 			public:
 				MSetFile(Macsa::Printers::TIJPrinter &printer, const std::string &filename = "", const std::vector<uint8_t>& content = std::vector<uint8_t>(), bool raw = false);
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
 
-				std::string filename() const;
-				bool raw() const;
-
-				std::vector<uint8_t> content() const;
-
 			private:
-				std::string _filename;
-				std::vector<uint8_t> _content;
-				bool _raw;
-
 				virtual void buildRequest();
 				virtual void buildResponse();
-				std::string contentToString(const std::vector<uint8_t> content, bool raw) const;
-				std::vector<uint8_t> contentFromString(const char* data, bool raw) const;
 		};
 	}
 }

@@ -1,21 +1,24 @@
-#include "mupdate.h"
+#include "mprotocol/mupdate.h"
+#include "mprotocol/mprotocol.h"
 #include "mtools.h"
 
+using namespace Macsa;
+using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
-Macsa::MProtocol::MUpdate::MUpdate(Macsa::Printers::TIJPrinter &printer):
+MUpdate::MUpdate(Printers::TIJPrinter &printer):
 	MCommand(MUPDATE, printer)
 {}
 
-Macsa::MProtocol::MUpdate::~MUpdate()
+MUpdate::~MUpdate()
 {}
 
-bool Macsa::MProtocol::MUpdate::parseRequest(const XMLElement *xml)
+bool MUpdate::parseRequest(const XMLElement *xml)
 {
 	return parseSingleCommand(xml);
 }
 
-bool Macsa::MProtocol::MUpdate::parseResponse(const XMLElement *xml)
+bool MUpdate::parseResponse(const XMLElement *xml)
 {
 	//	const XMLElement * pwind = getWindNode(wind);
 	//	if(pwind != nullptr){
@@ -58,14 +61,14 @@ bool Macsa::MProtocol::MUpdate::parseResponse(const XMLElement *xml)
 	return false;
 }
 
-void Macsa::MProtocol::MUpdate::buildRequest()
+void MUpdate::buildRequest()
 {
-	getNewCommandNode();
+//	getNewCommandNode();
 }
 
-void Macsa::MProtocol::MUpdate::buildResponse()
+void MUpdate::buildResponse()
 {
-	XMLElement* cmd = getNewCommandNode();
+//	XMLElement* cmd = getNewCommandNode();
 	//	cmd->SetAttribute(MUPDATE_PROGRESS_ATTR, _printer.updateProgress());
 
 	//	std::string status = _printer.updateStatus();

@@ -1,5 +1,6 @@
-#ifndef MUPDATECOMMANDS_H
-#define MUPDATECOMMANDS_H
+#ifndef MACSA_MPROTOCOL_COMMANDS_UPDATE_H
+#define MACSA_MPROTOCOL_COMMANDS_UPDATE_H
+
 #include "mprotocol/mcommands.h"
 
 namespace Macsa {
@@ -21,4 +22,4 @@ namespace Macsa {
 	}
 }
 
-#endif // MUPDATECOMMANDS_H
+#endif // MACSA_MPROTOCOL_COMMANDS_UPDATE_H

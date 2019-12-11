@@ -1,5 +1,5 @@
-#ifndef MLIVE_COMMANDS_H
-#define MLIVE_COMMANDS_H
+#ifndef MACSA_MPROTOCOL_COMMANDS_LIVE_H
+#define MACSA_MPROTOCOL_COMMANDS_LIVE_H
 
 #include "mcommands.h"
 

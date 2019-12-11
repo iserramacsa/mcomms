@@ -1,5 +1,5 @@
-#ifndef MCONFIGCOMMANDS_H
-#define MCONFIGCOMMANDS_H
+#ifndef MACSA_MPROTOCOL_COMMANDS_CONFIG_H
+#define MACSA_MPROTOCOL_COMMANDS_CONFIG_H
 #include "mcommands.h"
 
 namespace Macsa {

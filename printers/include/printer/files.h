@@ -18,6 +18,7 @@
 #define IMAGES_FILTER_JPG	".jpg"
 #define IMAGES_FILTER_JPEG	".jpeg"
 #define IMAGES_FILTER_BMP	".bmp"
+//#define IMG_FILTER			"*.png,*.jpg,*.jpeg,*.bmp"
 
 #define ALL_FILES_FILTER	"*.*"
 #define EXTENSIONS_SEPARATOR ","

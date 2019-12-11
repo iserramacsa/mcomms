@@ -1,8 +1,10 @@
 #include "mprotocol/mcommandsfactory.h"
+#include "mprotocol/mprotocol.h"
 #include "mprotocol/mfiles.h"
 #include "mprotocol/mconfig.h"
 #include "mprotocol/mlive.h"
 #include "mprotocol/mstatus.h"
+#include "mprotocol/mmessagevalues.h"
 #include "mprotocol/mupdate.h"
 #include <iostream>
 
@@ -61,6 +63,11 @@ MCommand *MCommandsFactory::getConfigCommand()
 	return new MGetConfig(_printer);
 }
 
+MCommand *MCommandsFactory::setDateTimeCommand()
+{
+	return new MSetDateTime(_printer);
+}
+
 MCommand *MCommandsFactory::getFontsCommand()
 {
 	return new MGetFilesList(_printer, FONTS_FILTER);
@@ -68,7 +75,7 @@ MCommand *MCommandsFactory::getFontsCommand()
 
 MCommand *MCommandsFactory::getMessagesCommand()
 {
-	return new MGetFilesList(_printer, NISX_FILTER);
+	return new MGetFilesList(_printer, MESSAGES_FILTER);
 }
 
 MCommand *MCommandsFactory::getImagesCommand()
@@ -78,7 +85,7 @@ MCommand *MCommandsFactory::getImagesCommand()
 
 MCommand *MCommandsFactory::getAllFilesCommand()
 {
-	return new MGetFilesList(_printer,NO_FILTER);
+	return new MGetFilesList(_printer, ALL_FILES_FILTER);
 }
 
 MCommand *MCommandsFactory::getCommand(XMLElement *wind) const

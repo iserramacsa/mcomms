@@ -71,7 +71,8 @@ SET (INCLUDES
 add_subdirectory(${PROJECT_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/src)
 add_subdirectory(${PROJECT_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/include)
 add_subdirectory(${PROJECT_SOURCE_DIR}/network ${CMAKE_BINARY_DIR}/network)
-##Add printers
+
+## Add printers ##
 add_subdirectory(${PROJECT_SOURCE_DIR}/printers ${CMAKE_BINARY_DIR}/printers)
 
 set(SOURCES ${SOURCES})

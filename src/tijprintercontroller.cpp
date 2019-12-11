@@ -54,7 +54,12 @@ time_t TijPrinterController::getDateTime()
 
 bool TijPrinterController::setDateTime(tm dt)
 {
+	time_t datetime = mktime(&dt);
+	_printer.setDateTime(datetime);
+	MProtocol::MCommand* cmd = _factory.setDateTimeCommand();
+	if(send(cmd)) {
 
+	}
 }
 
 
@@ -65,7 +70,7 @@ bool TijPrinterController::send(MProtocol::MCommand* cmd)
 	if(socket->status() == ISocket::CONNECTED)
 	{
 		//TODO check for new command iface funtionality ¿ getRequest or getResponse?
-		if (socket->send(cmd->getResponse()) == ISocket::FRAME_SUCCESS)
+		if (socket->send(cmd->getRequest(_factory.nextId())) == ISocket::FRAME_SUCCESS)
 		{
 			std::string resp = "";
 			if(socket->receive(resp) == ISocket::FRAME_SUCCESS)

@@ -1,23 +1,15 @@
-﻿#ifndef MPROTOCOL_COMMANDS_H
-#define MPROTOCOL_COMMANDS_H
+﻿#ifndef MACSA_MPROTOCOL_COMMANDS_H
+#define MACSA_MPROTOCOL_COMMANDS_H
 
-#include "printer/printer.h"
 #include <cstdint>
 #include <string>
 #include <tinyxml2.h>
-#include "mprotocol.h"
+
 #include "printer/datatypes.h"
 #include "tij/tijprinter.h"
 
 namespace Macsa{
 	namespace MProtocol {
-		class MGetFilesList;
-		class MGetStatus;
-		class MLive_;
-		class MGetConfig;
-		class MSetConfig;
-		class MUpdate;
-
 		class MCommand
 		{
 			public:
@@ -29,10 +21,11 @@ namespace Macsa{
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml) = 0;
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml) = 0;
 
-
 				inline std::string commandName() const{ return _commandName;}
 				inline uint32_t id() const{ return _id;}
 				inline Printers::ErrorCode getError() const{ return _error;}
+				void setError(const Printers::ErrorCode &error);
+
 
 			protected:
 				uint32_t _id;
