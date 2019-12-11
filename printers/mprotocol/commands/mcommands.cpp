@@ -56,19 +56,6 @@ XMLElement *MCommand::newCommandNode()
 	return cmd;
 }
 
-bool MCommand::parseSingleCommand(const XMLElement *root)
-{
-	bool parsed = false;
-	int id  = MTools::XML::getWindId(root);
-	if(id != -1) {
-		if (MTools::XML::isSingleCommand(root, _commandName.c_str())){
-			_id = static_cast<uint32_t>(id);
-			parsed = true;
-		}
-	}
-	return parsed;
-}
-
 XMLElement *MCommand::buildNewFrame()
 {
 	if (_doc.RootElement() != nullptr) {
@@ -115,7 +102,7 @@ Printers::ErrorCode MCommand::getCommandError(const XMLElement *wind) const
 	if (wind != nullptr){
 		const XMLElement* error = wind->FirstChildElement(MERROR);
 		if (error != nullptr) {
-			err = error->Attribute(MERROR_CODE_ATTR, err.toString().c_str());
+			err = error->Attribute(ATTRIBUTE_CODE, err.toString().c_str());
 		}
 	}
 	return err;
@@ -133,10 +120,62 @@ std::string MCommand::getTextFromChildNode(const XMLElement *parent, const std::
 	return text;
 }
 
-bool MCommand::isSingleCommand(const XMLElement *wind, unsigned int& windId) const
+bool MCommand::getBoolFromChildNode(const XMLElement *parent, const std::string &child, bool defaultValue) const
 {
-	const XMLElement* cmd = getCommand(wind, windId);
-	return (cmd != nullptr && cmd->NoChildren());
+	bool value = defaultValue;
+	if (parent)	{
+		const XMLElement * node = parent->FirstChildElement(child.c_str());
+		if (node) {
+			value = MTools::boolfromString(node->GetText());
+		}
+	}
+	return value;
+}
+
+int MCommand::getIntFromChildNode(const XMLElement *parent, const std::string &child, int defaultValue) const
+{
+	int value = defaultValue;
+	if (parent)	{
+		const XMLElement * node = parent->FirstChildElement(child.c_str());
+		if (node) {
+			std::string text = node->GetText();
+			if (text.length()) {
+				value = std::atoi(text.c_str());
+			}
+		}
+	}
+	return value;
+}
+
+unsigned MCommand::getUnsignedFromChildNode(const XMLElement *parent, const std::string &child, unsigned defaultValue) const
+{
+	unsigned value = defaultValue;
+	if (parent)	{
+		const XMLElement * node = parent->FirstChildElement(child.c_str());
+		if (node) {
+			std::string text = node->GetText();
+			if (text.length()) {
+				value = static_cast<unsigned>(std::atoi(text.c_str()));
+			}
+		}
+	}
+	return value;
+}
+
+double MCommand::getDoubleFromChildNode(const XMLElement *parent, const std::string &child, double defaultValue) const
+{
+	double value = defaultValue;
+	if (parent)	{
+		const XMLElement * node = parent->FirstChildElement(child.c_str());
+		if (node) {
+			std::string text = node->GetText();
+			if (text.length()) {
+				char* pEnd;
+				value = std::strtod(text.c_str(), &pEnd);
+			}
+		}
+	}
+	return value;
 }
 
 XMLElement *MCommand::createChildNode(const std::string &child, XMLElement **parent)
@@ -158,13 +197,49 @@ XMLElement *MCommand::createTextChildNode(const std::string &child, const std::s
 	return node;
 }
 
+XMLElement *MCommand::createBoolTextChildNode(const std::string &child, bool value, XMLElement **parent)
+{
+	XMLElement * node = createChildNode(child, parent);
+	if (node != nullptr) {
+		node->SetText(MTools::toString(value).c_str());
+	}
+	return node;
+}
+
+XMLElement *MCommand::createIntTextChildNode(const std::string &child, int value, XMLElement **parent)
+{
+	XMLElement * node = createChildNode(child, parent);
+	if (node != nullptr) {
+		node->SetText(MTools::toString(value).c_str());
+	}
+	return node;
+}
+
+XMLElement *MCommand::createUnsignedTextChildNode(const std::string &child, unsigned value, XMLElement **parent)
+{
+	XMLElement * node = createChildNode(child, parent);
+	if (node != nullptr) {
+		node->SetText(MTools::toString(value).c_str());
+	}
+	return node;
+}
+
+XMLElement *MCommand::createDoubleTextChildNode(const std::string &child, double value, unsigned precision, XMLElement **parent)
+{
+	XMLElement * node = createChildNode(child, parent);
+	if (node != nullptr) {
+		node->SetText(MTools::toString(value, static_cast<int>(precision)).c_str());
+	}
+	return node;
+}
+
 void MCommand::addWindError(const Printers::ErrorCode &errorCode)
 {
 	XMLElement* wind = _doc.FirstChildElement(MWIND);
 	if (wind != nullptr) {
 		XMLElement* error = createChildNode(MERROR, &wind);
 		if (error != nullptr) {
-			error->SetAttribute(MERROR_CODE_ATTR, errorCode.toString().c_str());
+			error->SetAttribute(ATTRIBUTE_CODE, errorCode.toString().c_str());
 			wind->InsertFirstChild(error);
 		}
 	}

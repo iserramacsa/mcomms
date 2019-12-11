@@ -37,12 +37,22 @@ void Error::setType(const ErrorType &type)
 	_type = type;
 }
 
+void Error::setType(const std::string &type)
+{
+	_type = type;
+}
+
 ErrorCode Error::code() const
 {
 	return _code;
 }
 
 void Error::setCode(const ErrorCode &code)
+{
+	_code = code;
+}
+
+void Error::setCode(const std::string &code)
 {
 	_code = code;
 }

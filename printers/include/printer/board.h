@@ -20,7 +20,16 @@ namespace Macsa {
 	namespace Printers {
 		class Board {
 			public:
+#if __cplusplus >= 201103L
+				using propertyMap = std::map<std::string, std::string>;
+				using countersMap = std::map<std::string, int>;
+#else
+				typedef std::map<std::string, std::string> propertyMap;
+				typedef std::map<std::string, int> countersMap;
+#endif
+			public:
 				Board(const int id);
+				Board(const Board& other);
 				virtual ~Board();
 
 				int id() const;
@@ -80,14 +89,14 @@ namespace Macsa {
 				virtual void setPhotocell(const Photocell_n& photocell);
 				virtual void setPhotocell(const std::string & photocell);
 
-				virtual std::map<std::string, int> counters() const;
+				virtual countersMap counters() const;
 				virtual int counter(const std::string& name) const;
-				virtual void setCounters(const std::map<std::string, int>& counters);
+				virtual void setCounters(const countersMap& counters);
 				virtual void setCounter(const std::string& name, int value);
 
-				virtual std::map<std::string, std::string> properties() const;
+				virtual propertyMap properties() const;
 				virtual std::string property(const std::string& name) const;
-				virtual void setProperties(const std::map<std::string, std::string>& properties);
+				virtual void setProperties(const propertyMap& properties);
 				virtual void setProperty(const std::string& name, const std::string& value);
 
 				virtual Cartridge cartridge() const;
@@ -131,21 +140,21 @@ namespace Macsa {
 				Encoder			_encoder;
 				Photocell		_photocell;
 				Cartridge		_cartridge;
-				std::map<std::string, int> _counters;
-				std::map<std::string, std::string> _properties;
+				countersMap		_counters;
+				propertyMap		_properties;
 
 				std::vector<Input>	_inputs;
 				std::vector<Output>	_outputs;
 				std::vector<Error>	_errors;
 #if __cplusplus >= 201103L
-				using itProp = std::map<std::string, std::string>::const_iterator;
+				using itProp = propertyMap::const_iterator;
 #else
-				typedef std::map<std::string, std::string>::const_iterator itProp;
+				typedef propertyMap::const_iterator itProp;
 #endif
 
 				bool equal(const Board& other) const;
 				void copy(const Board& other);
-				bool checkProperties(const std::map<std::string, std::string> other) const;
+				bool checkProperties(const Board::propertyMap& other) const;
 				template<class T>
 				bool isSameVector(const std::vector<T> a, const std::vector<T> b) const;
 		};

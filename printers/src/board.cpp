@@ -8,6 +8,12 @@ Board::Board(const int id) :
 	clear();
 }
 
+Board::Board(const Board &other) :
+	_id(other.id())
+{
+	copy(other);
+}
+
 Board::~Board()
 {}
 
@@ -221,7 +227,7 @@ void Board::setPhotocell(const std::string &photocell)
 	_photocell = photocell;
 }
 
-std::map<std::string, int> Board::counters() const
+Board::countersMap Board::counters() const
 {
 	return _counters;
 }
@@ -236,7 +242,7 @@ int Board::counter(const std::string &name) const
 
 }
 
-void Board::setCounters(const std::map<std::string, int> &counters)
+void Board::setCounters(const Board::countersMap& counters)
 {
 	_counters.clear();
 	_counters.insert(counters.begin(), counters.end());
@@ -251,8 +257,7 @@ void Board::setCounter(const std::string &name, int value)
 		_counters[name] = value;
 	}
 }
-
-std::map<std::string, std::string> Board::properties() const
+Board::propertyMap Board::properties() const
 {
 	return _properties;
 }
@@ -266,7 +271,7 @@ std::string Board::property(const std::string &name) const
 	return value;
 }
 
-void Board::setProperties(const std::map<std::string, std::string> &properties)
+void Board::setProperties(const Board::propertyMap& properties)
 {
 	_properties.clear();
 	_properties.insert(properties.begin(), properties.end());
@@ -459,7 +464,7 @@ void Board::copy(const Board &other)
 	setErrors(other.errors());
 }
 
-bool Board::checkProperties(const std::map<std::string, std::string> other) const
+bool Board::checkProperties(const Board::propertyMap& other) const
 {
 	bool equal = false;
 	equal = (_properties.size() == other.size());

@@ -58,6 +58,26 @@ std::string TIJPrinter::formatedDateTime() const
 	return dt.str();
 }
 
+void TIJPrinter::setDateTime(const std::string &formatedDatetime)
+{
+	time_t rawtime;
+	struct tm * timeInfo;
+
+	time(&rawtime);
+	timeInfo = localtime(&rawtime);
+
+	if (formatedDatetime.length() == 14)
+	{
+		timeInfo->tm_mday = std::atoi(formatedDatetime.substr(0, 2).c_str());
+		timeInfo->tm_mon  = std::atoi(formatedDatetime.substr(2, 2).c_str()) - 1;
+		timeInfo->tm_year = std::atoi(formatedDatetime.substr(4, 4).c_str()) - 1900;
+		timeInfo->tm_hour = std::atoi(formatedDatetime.substr(8, 2).c_str());
+		timeInfo->tm_min  = std::atoi(formatedDatetime.substr(10, 2).c_str());
+		timeInfo->tm_sec  = std::atoi(formatedDatetime.substr(12, 2).c_str());
+		Printer::setDateTime(rawtime);
+	}
+}
+
 std::string TIJPrinter::controllerVersion() const {return _controllerVersion;}
 std::string TIJPrinter::apiVersion() const {return _apiVersion;}
 std::string TIJPrinter::fpgaVersion() const {return _fpgaVersion;}
@@ -88,18 +108,18 @@ std::vector<Board> TIJPrinter::boards() const
 	return list;
 }
 
-const Board* TIJPrinter::board(int id) const
+Board* TIJPrinter::board(int id)
 {
 	if (_boards.find(id) != _boards.end()) {
-		return &_boards.at(id);
+		return &(_boards[id]);
 	}
 	return nullptr;
 }
 
-Board* TIJPrinter::board(int id)
+const Board * TIJPrinter::board(int id) const
 {
 	if (_boards.find(id) != _boards.end()) {
-//		return &(_boards[id]);
+		return  std::move(&_boards.at(id));
 	}
 	return nullptr;
 }
@@ -107,8 +127,8 @@ Board* TIJPrinter::board(int id)
 void TIJPrinter::setBoard(const Board &board)
 {
 	if (_boards.find(board.id()) != _boards.end()) {
-//		Board& printerBoard = _boards[board.id()];
-//		printerBoard = board;
+		Board& printerBoard = _boards[board.id()];
+		printerBoard = board;
 	}
 	else {
 		_boards.insert(std::pair<int, Board>(board.id(), board));

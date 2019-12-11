@@ -4,7 +4,7 @@
 #include <sstream>
 
 using namespace Macsa::MProtocol;
-
+/*
 int MTools::XML::getWindId(const XMLElement *wind)
 {
 	int id = -1;
@@ -37,7 +37,7 @@ Macsa::Printers::ErrorCode MTools::XML::getWindError(const XMLElement *wind)
 
 	if (isElement(wind, MWIND)) {
 		const XMLElement* windError = wind->FirstChildElement(MERROR);
-		std::string errorcode = windError->Attribute(MERROR_CODE_ATTR, err.toString().c_str());
+		std::string errorcode = windError->Attribute(ATTRIBUTE_CODE, err.toString().c_str());
 		err = errorcode;
 	}
 
@@ -48,7 +48,7 @@ void MTools::XML::setWindError(XMLElement *wind, XMLDocument &doc, Macsa::Printe
 {
 	if (isElement(wind, MWIND)) {
 		XMLElement* windError = doc.NewElement(MERROR);
-		windError->SetAttribute(MERROR_CODE_ATTR, error.toString().c_str());
+		windError->SetAttribute(ATTRIBUTE_CODE, error.toString().c_str());
 		wind->InsertFirstChild(windError);
 	}
 }
@@ -122,7 +122,7 @@ int MTools::XML::intFromChild(const XMLElement *parent, const std::string &child
 	}
 	return 0;
 }
-
+*/
 std::string MTools::toLower(std::string &str)
 {
 	for (std::string::iterator c = str.begin(); c != str.end(); c++){
@@ -178,6 +178,20 @@ std::string MTools::toString(bool value)
 	return (value ? "true" : "false");
 }
 
+std::string MTools::toString(int value)
+{
+	std::stringstream s;
+	s  << value;
+	return s.str();
+}
+
+std::string MTools::toString(unsigned value)
+{
+	std::stringstream s;
+	s  << value;
+	return s.str();
+}
+
 bool MTools::boolfromString(const std::string &value)
 {
 	return (toLower(value).compare("true") == 0);
@@ -189,40 +203,41 @@ bool MTools::isInRange(int val, int min, int max)
 }
 
 
-std::string MTools::dateTime()
-{
-	time_t t1 = ::time(nullptr);
-	struct tm *t2 = localtime(&t1);
+//std::string MTools::dateTime()
+//{
+//	time_t t1 = ::time(nullptr);
+//	struct tm *t2 = localtime(&t1);
 
-	std::stringstream dt;
-	dt <<  std::setfill ('0') << std::setw(2) << t2->tm_mday;
-	dt <<  std::setfill ('0') << std::setw(2) << (t2->tm_mon + 1);
-	dt <<  std::setfill ('0') << std::setw(4) << (t2->tm_year + 1900);
+//	std::stringstream dt;
+//	dt <<  std::setfill ('0') << std::setw(2) << t2->tm_mday;
+//	dt <<  std::setfill ('0') << std::setw(2) << (t2->tm_mon + 1);
+//	dt <<  std::setfill ('0') << std::setw(4) << (t2->tm_year + 1900);
 
-	dt <<  std::setfill ('0') << std::setw(2) << t2->tm_hour;
-	dt <<  std::setfill ('0') << std::setw(2) << t2->tm_min;
-	dt <<  std::setfill ('0') << std::setw(2) << t2->tm_sec;
+//	dt <<  std::setfill ('0') << std::setw(2) << t2->tm_hour;
+//	dt <<  std::setfill ('0') << std::setw(2) << t2->tm_min;
+//	dt <<  std::setfill ('0') << std::setw(2) << t2->tm_sec;
 
-	return dt.str();
-}
+//	return dt.str();
+//}
 
-time_t MTools::dateTime(const std::string &dt)
-{
-	time_t rawtime;
-	struct tm * timeInfo;
+//time_t MTools::dateTime(const std::string &dt)
+//{
+//	time_t rawtime;
+//	struct tm * timeInfo;
 
-	time(&rawtime);
-	timeInfo = localtime(&rawtime);
+//	time(&rawtime);
+//	timeInfo = localtime(&rawtime);
 
-	if (dt.length() == 14)
-	{
-		timeInfo->tm_mday = std::atoi(dt.substr(0, 2).c_str());
-		timeInfo->tm_mon  = std::atoi(dt.substr(2, 2).c_str()) - 1;
-		timeInfo->tm_year = std::atoi(dt.substr(4, 4).c_str()) - 1900;
-		timeInfo->tm_hour = std::atoi(dt.substr(8, 2).c_str());
-		timeInfo->tm_min  = std::atoi(dt.substr(10, 2).c_str());
-		timeInfo->tm_sec  = std::atoi(dt.substr(12, 2).c_str());
-		return mktime(timeInfo);
-	}
-	return rawtime;
-}
+//	if (dt.length() == 14)
+//	{
+//		timeInfo->tm_mday = std::atoi(dt.substr(0, 2).c_str());
+//		timeInfo->tm_mon  = std::atoi(dt.substr(2, 2).c_str()) - 1;
+//		timeInfo->tm_year = std::atoi(dt.substr(4, 4).c_str()) - 1900;
+//		timeInfo->tm_hour = std::atoi(dt.substr(8, 2).c_str());
+//		timeInfo->tm_min  = std::atoi(dt.substr(10, 2).c_str());
+//		timeInfo->tm_sec  = std::atoi(dt.substr(12, 2).c_str());
+//		return mktime(timeInfo);
+//	}
+//	return rawtime;
+//}
+

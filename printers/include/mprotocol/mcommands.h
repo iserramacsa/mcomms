@@ -38,7 +38,6 @@ namespace Macsa{
 
 
 				std::string toString(); //return current xml document in a std::string
-				bool parseSingleCommand(const tinyxml2::XMLElement *root);
 				tinyxml2::XMLElement * newCommandNode();
 
 			private:
@@ -52,11 +51,18 @@ namespace Macsa{
 				const tinyxml2::XMLElement * getCommand(const tinyxml2::XMLElement *wind, unsigned int &windId) const;
 				Printers::ErrorCode getCommandError(const tinyxml2::XMLElement *wind) const;
 				std::string getTextFromChildNode(const tinyxml2::XMLElement *parent, const std::string &child, const std::string& defaultValue="") const;
-				bool isSingleCommand(const tinyxml2::XMLElement *wind, unsigned int& windId) const;
+				bool getBoolFromChildNode(const tinyxml2::XMLElement *parent, const std::string &child, bool defaultValue = false) const;
+				int getIntFromChildNode(const tinyxml2::XMLElement *parent, const std::string &child, int defaultValue = 0) const;
+				unsigned getUnsignedFromChildNode(const tinyxml2::XMLElement *parent, const std::string &child, unsigned defaultValue = 0)const;
+				double getDoubleFromChildNode(const tinyxml2::XMLElement *parent, const std::string &child, double defaultValue = 0.0)const;
 
 
 				tinyxml2::XMLElement * createChildNode(const std::string &child, tinyxml2::XMLElement **parent);
 				tinyxml2::XMLElement * createTextChildNode(const std::string &child, const std::string& text, tinyxml2::XMLElement **parent);
+				tinyxml2::XMLElement * createBoolTextChildNode(const std::string &child, bool value, tinyxml2::XMLElement **parent);
+				tinyxml2::XMLElement * createIntTextChildNode(const std::string &child, int value, tinyxml2::XMLElement **parent);
+				tinyxml2::XMLElement * createUnsignedTextChildNode(const std::string &child, unsigned value, tinyxml2::XMLElement **parent);
+				tinyxml2::XMLElement * createDoubleTextChildNode(const std::string &child, double value, unsigned precision, tinyxml2::XMLElement **parent);
 				void addWindError(const Printers::ErrorCode& errorCode);
 
 		};

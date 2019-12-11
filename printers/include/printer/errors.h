@@ -18,9 +18,11 @@ namespace Macsa {
 
 				ErrorType type() const;
 				void setType(const ErrorType &type);
+				void setType(const std::string &type);
 
 				ErrorCode code() const;
 				void setCode(const ErrorCode &code);
+				void setCode(const std::string &code);
 
 				unsigned int priority() const;
 				void setPriority(unsigned int priority);

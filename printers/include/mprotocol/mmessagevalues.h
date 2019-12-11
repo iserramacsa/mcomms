@@ -84,7 +84,7 @@ namespace Macsa {
 		};
 
 		/**
-		 * @brief The GETMESSAGEDATASOURCE command class, allow the client to get variable filed of the specified Nisx file in filename
+		 * @brief The GETMESSAGEDATASOURCE command class, allow the client to get variable fields of the specified Nisx file in filename
 		 */
 		class MGetMessageDataSource : public MMessageValues
 		{
@@ -106,7 +106,7 @@ namespace Macsa {
 		};
 
 		/**
-		 * @brief The SETMESSAGEDATASOURCE command class, allow the client to change variable filed of the specified Nisx file in filename
+		 * @brief The SETMESSAGEDATASOURCE command class, allow the client to change variable fields of the specified Nisx file in filename
 		 */
 		class MSetMessageDataSource : public MMessageValues
 		{

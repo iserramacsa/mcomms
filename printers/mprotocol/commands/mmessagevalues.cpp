@@ -47,8 +47,8 @@ XMLElement *MMessageValues::userFieldsToXml(XMLElement **parent)
 		{
 			XMLElement* uiField = createChildNode(MMESSAGE_USER_FIELD_ELEMENT, parent);
 			if (uiField) {
-				uiField->SetAttribute(MMESSAGE_USER_FIELD_NAME_ATTR, it->first.c_str());
-				uiField->SetAttribute(MMESSAGE_USER_FIELD_VALUE_ATTR, it->second.c_str());
+				uiField->SetAttribute(ATTRIBUTE_NAME, it->first.c_str());
+				uiField->SetAttribute(ATTRIBUTE_VALUE, it->second.c_str());
 			}
 		}
 	}
@@ -63,7 +63,7 @@ XMLElement *MMessageValues::datesToXml(XMLElement **parent)
 		{
 			XMLElement* dtField = createChildNode(MMESSAGE_DATETIME_FIELD_ELEMENT, parent);
 			if (dtField != nullptr) {
-				dtField->SetAttribute(MMESSAGE_DATETIME_NAME_ATTR, it->first.c_str());
+				dtField->SetAttribute(ATTRIBUTE_NAME, it->first.c_str());
 				Macsa::Nisx::DateTime dt = it->second;
 				dtField->SetAttribute(MMESSAGE_DATETIME_FORMAT_ATTR, dt.format().c_str());
 				dtField->SetAttribute(MMESSAGE_DATETIME_DOFFSET_ATTR, dt.dayOffset());
@@ -84,7 +84,7 @@ XMLElement *MMessageValues::countersToXml(XMLElement **parent)
 		{
 			XMLElement* counterField = createChildNode(MMESSAGE_COUNTER_FIELD_ELEMENT, parent);
 			if (counterField != nullptr) {
-				counterField->SetAttribute(MMESSAGE_COUNTER_NAME_ATTR, it->first.c_str());
+				counterField->SetAttribute(ATTRIBUTE_NAME, it->first.c_str());
 				Macsa::Nisx::Counter counter = it->second;
 				counterField->SetAttribute(MMESSAGE_COUNTER_ZERO_ATTR, counter.leadingZeros());
 				counterField->SetAttribute(MMESSAGE_COUNTER_MIN_ATTR, counter.min());
@@ -102,8 +102,8 @@ void MMessageValues::userFieldsFromXml(const XMLElement *parent, Macsa::MProtoco
 {
 	const XMLElement* uifield = parent->FirstChildElement(MMESSAGE_USER_FIELD_ELEMENT);
 	while (uifield != nullptr) {
-		std::string key = uifield->Attribute(MMESSAGE_USER_FIELD_NAME_ATTR, "");
-		std::string value = uifield->Attribute(MMESSAGE_USER_FIELD_VALUE_ATTR, "");
+		std::string key = uifield->Attribute(ATTRIBUTE_NAME, "");
+		std::string value = uifield->Attribute(ATTRIBUTE_VALUE, "");
 		if (key.length() > 0) {
 			if (map.find(key) == map.end()) {
 					map.insert(std::pair<std::string, std::string>(key, value));
@@ -120,7 +120,7 @@ void MMessageValues::datesFromXml(const XMLElement *parent, Macsa::MProtocol::da
 {
 	const XMLElement* dtfield = parent->FirstChildElement(MMESSAGE_DATETIME_FIELD_ELEMENT);
 	while (dtfield != nullptr) {
-		std::string key = dtfield->Attribute(MMESSAGE_DATETIME_NAME_ATTR, "");
+		std::string key = dtfield->Attribute(ATTRIBUTE_NAME, "");
 		Macsa::Nisx::DateTime dt;
 		if  (map.find(key) != map.end()) {
 			dt = map.at(key);
@@ -146,7 +146,7 @@ void MMessageValues::countersFromXml(const XMLElement *parent, Macsa::MProtocol:
 {
 	const XMLElement* counterfield = parent->FirstChildElement(MMESSAGE_COUNTER_FIELD_ELEMENT);
 	while (counterfield != nullptr) {
-		std::string key = counterfield->Attribute(MMESSAGE_COUNTER_NAME_ATTR, "");
+		std::string key = counterfield->Attribute(ATTRIBUTE_NAME, "");
 		Macsa::Nisx::Counter counter;
 		if  (map.find(key) != map.end()) {
 			counter = map.at(key);
@@ -182,7 +182,7 @@ void MGetMessageValues::buildRequest()
 {
 	XMLElement* cmd = newCommandNode();
 	if (cmd != nullptr) {
-		cmd->SetAttribute(MMESSAGE_USER_FIELD_PATH_ATTR, _filename.c_str());
+		cmd->SetAttribute(ATTRIBUTE_FILEPATH, _filename.c_str());
 	}
 }
 
@@ -191,7 +191,7 @@ bool MGetMessageValues::parseRequest(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if  (valid) {
-		_filename = cmd->Attribute(MMESSAGE_USER_FIELD_PATH_ATTR, "");
+		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
 	}
 	return valid;
 }
@@ -200,7 +200,7 @@ void MGetMessageValues::buildResponse()
 {
 	XMLElement* cmd = newCommandNode();
 	if (cmd) {
-		cmd->SetAttribute(MMESSAGE_USER_FIELD_PATH_ATTR, _filename.c_str());
+		cmd->SetAttribute(ATTRIBUTE_FILEPATH, _filename.c_str());
 		userFieldsToXml(&cmd);
 	}
 	addWindError(_error);
@@ -212,7 +212,7 @@ bool MGetMessageValues::parseResponse(const XMLElement *xml)
 	bool valid = (cmd != nullptr);
 	if  (valid) {
 		_error = getCommandError(xml);
-		_filename = cmd->Attribute(MMESSAGE_USER_FIELD_PATH_ATTR, "");
+		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
 		if (_error == Printers::ErrorCode_n::SUCCESS) {
 			_userFieldsMap.clear();
 			userFieldsFromXml(cmd, _userFieldsMap);
@@ -235,7 +235,7 @@ void MSetMessageValues::buildRequest()
 {
 	XMLElement* cmd = newCommandNode();
 	if (cmd != nullptr) {
-		cmd->SetAttribute(MMESSAGE_USER_FIELD_PATH_ATTR, _filename.c_str());
+		cmd->SetAttribute(ATTRIBUTE_FILEPATH, _filename.c_str());
 		userFieldsToXml(&cmd);
 	}
 }
@@ -245,7 +245,7 @@ bool MSetMessageValues::parseRequest(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if  (valid) {
-		_filename = cmd->Attribute(MMESSAGE_USER_FIELD_PATH_ATTR, "");
+		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
 		userFieldsFromXml(cmd, _userFieldsMap);
 	}
 	return valid;
@@ -255,7 +255,7 @@ void MSetMessageValues::buildResponse()
 {
 	XMLElement* cmd = newCommandNode();
 	if (cmd) {
-		cmd->SetAttribute(MMESSAGE_USER_FIELD_PATH_ATTR, _filename.c_str());
+		cmd->SetAttribute(ATTRIBUTE_FILEPATH, _filename.c_str());
 	}
 	addWindError(_error);
 }
@@ -265,7 +265,7 @@ bool MSetMessageValues::parseResponse(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if  (valid) {
-		_filename = cmd->Attribute(MMESSAGE_USER_FIELD_PATH_ATTR, "");
+		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
 	}
 	return valid;
 }
@@ -420,7 +420,7 @@ bool MSetMessageDataSource::parseResponse(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if  (valid) {
-		_filename = cmd->Attribute(MMESSAGE_USER_FIELD_PATH_ATTR, "");
+		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
 	}
 	return valid;
 }

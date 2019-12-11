@@ -20,6 +20,7 @@ namespace Macsa {
 				virtual const PrinterComms* comms() const override;
 
 				virtual std::string formatedDateTime() const;
+				virtual void setDateTime(const std::string& formatedDatetime);
 
 				virtual std::string controllerVersion() const;
 				virtual std::string apiVersion() const;
@@ -31,8 +32,8 @@ namespace Macsa {
 
 
 				virtual std::vector<Board> boards() const;
-				virtual const Board* board(int id) const;
 				virtual Board* board(int id);
+				virtual const Board * board(int id) const;
 				virtual void setBoard(const Board& board);
 				virtual void setBoards(const std::vector<Board>& boards);
 
