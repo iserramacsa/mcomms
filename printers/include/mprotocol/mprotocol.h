@@ -30,6 +30,9 @@ namespace  Macsa {
 #define MLIVE_ERRORS_ATTR		"HaveError"
 
 #define MSTATUS					"STATUS"
+#define MIOSTATUS				"IOSTATUS"
+#define MERRORS_GET				"GETERRORS"
+
 #define MSTATUS_DT				"DATETIME"
 #define MSTATUS_VERSION			"VERSIONS"
 #define MSTATUS_VERSION_CTRL	"CONTROLLER"

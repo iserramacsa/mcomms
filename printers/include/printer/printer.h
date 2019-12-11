@@ -18,8 +18,8 @@ namespace Macsa {
 				virtual int id() const;
 				virtual void setId(int id);
 
-				std::time_t dateTime() const;
-				void setDateTime(const std::time_t &dateTime);
+				virtual std::time_t dateTime() const;
+				virtual void setDateTime(const std::time_t &dateTime);
 
 				virtual PrinterFiles* files() = 0;
 				virtual const PrinterFiles* files() const = 0;

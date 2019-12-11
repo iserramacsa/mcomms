@@ -21,6 +21,7 @@ namespace Macsa {
 
 				virtual std::string formatedDateTime() const;
 				virtual void setDateTime(const std::string& formatedDatetime);
+				virtual void setDateTime(const std::time_t &dateTime) override;
 
 				virtual std::string controllerVersion() const;
 				virtual std::string apiVersion() const;
@@ -30,12 +31,19 @@ namespace Macsa {
 				virtual DateCodes dateCodes() const;
 				virtual void setDateCodes(const DateCodes &dateCodes);
 
-
 				virtual std::vector<Board> boards() const;
 				virtual Board* board(int id);
 				virtual const Board * board(int id) const;
 				virtual void setBoard(const Board& board);
 				virtual void setBoards(const std::vector<Board>& boards);
+
+				virtual bool logsEnabled() const;
+				virtual void setlogsEnabled(bool enable);
+				virtual bool logComsEnabled() const;
+				virtual void setlogComsEnabled(bool enable);
+				virtual LoggerLevel loggerLevel() const;
+				virtual void setloggerLevel(const LoggerLevel& logLevel);
+				virtual void setloggerLevel(const std::string& logLevel);
 
 			private:
 				PrinterFiles _files;
@@ -45,7 +53,7 @@ namespace Macsa {
 				std::string _fpgaVersion;
 				DateCodes	_dateCodes;
 
-				std::map<int, Board> _boards;
+				std::vector<Board> _boards;
 				LoggerLevel _logLevel;
 				bool _traceLogs;
 				bool _traceComms;

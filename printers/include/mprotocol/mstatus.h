@@ -6,28 +6,75 @@
 namespace Macsa {
 	namespace MProtocol {
 
-		class MGetStatus : public MCommand
+		/**
+		 * @brief The MStatusCommand class
+		 */
+		class MStatusCommand : public MCommand
 		{
 			public:
-				MGetStatus(Printers::TIJPrinter& printer);
-				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
-				virtual bool parseResponse(const tinyxml2::XMLElement* xml);
+				MStatusCommand(std::string command, Printers::TIJPrinter& printer);
+				virtual ~MStatusCommand();
 
-			private:
-				virtual void buildRequest();
-				virtual void buildResponse();
-
+			protected:
 				void countersToXml(const Printers::Board& board, tinyxml2::XMLElement **parent);
 				void errorsToXml(const Printers::Board& board, tinyxml2::XMLElement **parent);
 				void inputsToXml(const Printers::Board& board, tinyxml2::XMLElement **parent);
 				void outputsToXml(const Printers::Board& board, tinyxml2::XMLElement **parent);
 				void propertiesToXml(const Printers::Board& board, tinyxml2::XMLElement **parent);
 
-				void countersFromXml(const tinyxml2::XMLElement *parent, Printers::Board& board);
-				void errorsFromXml(const tinyxml2::XMLElement *parent, Printers::Board& board);
-				void inputsFromXml(const tinyxml2::XMLElement *parent, Printers::Board& board);
-				void outputsFromXml(const tinyxml2::XMLElement *parent, Printers::Board& board);
-				void propertiesFromXml(const tinyxml2::XMLElement *parent, Printers::Board& board);
+				void countersFromXml(const tinyxml2::XMLElement *parent, Printers::Board& board) const;
+				void errorsFromXml(const tinyxml2::XMLElement *parent, Printers::Board& board) const;
+				void inputsFromXml(const tinyxml2::XMLElement *parent, Printers::Board& board) const;
+				void outputsFromXml(const tinyxml2::XMLElement *parent, Printers::Board& board) const;
+				void propertiesFromXml(const tinyxml2::XMLElement *parent, Printers::Board& board) const;
+		};
+
+		/**
+		 * @brief The MGetStatus class
+		 */
+		class MGetStatus : public MStatusCommand
+		{
+			public:
+				MGetStatus(Printers::TIJPrinter& printer);
+				virtual ~MGetStatus();
+				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
+				virtual bool parseResponse(const tinyxml2::XMLElement* xml);
+
+			private:
+				virtual void buildRequest();
+				virtual void buildResponse();
+		};
+
+		/**
+		 * @brief The MGetIOStatus class
+		 */
+		class MGetIOStatus : public MStatusCommand
+		{
+			public:
+				MGetIOStatus(Printers::TIJPrinter& printer);
+				virtual ~MGetIOStatus();
+				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
+				virtual bool parseResponse(const tinyxml2::XMLElement* xml);
+
+			private:
+				virtual void buildRequest();
+				virtual void buildResponse();
+		};
+
+		/**
+		 * @brief The MGetErrors class
+		 */
+		class MGetErrors : public MStatusCommand
+		{
+			public:
+				MGetErrors(Printers::TIJPrinter& printer);
+				virtual ~MGetErrors();
+				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
+				virtual bool parseResponse(const tinyxml2::XMLElement* xml);
+
+			private:
+				virtual void buildRequest();
+				virtual void buildResponse();
 		};
 	}
 }

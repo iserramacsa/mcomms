@@ -39,7 +39,7 @@ void MGetFilesList::buildResponse()
 	for (std::vector<std::string>::const_iterator d = drives.begin(); d != drives.end(); d++)
 	{
 		createChildNode(MFILES_GET_LIST, &cmd);
-		cmd->SetAttribute(MFILES_DEVICE_UNIT_ATTR, d->c_str());
+		cmd->SetAttribute(ATTRIBUTE_NAME, d->c_str());
 	}
 	std::vector<std::string> files = rootfs->getAllFiles(_filter);
 	for (std::vector<std::string>::const_iterator f = files.begin(); f != files.end(); f++)
@@ -95,7 +95,7 @@ bool MGetFilesList::parseResponse(const XMLElement *xml)
 			std::vector<std::string> drives;
 			const XMLElement * unit = cmd->FirstChildElement(MFILES_DEVICE_UNIT);
 			while (unit != nullptr) {
-				const char* drive = unit->Attribute(MFILES_DEVICE_UNIT_ATTR);
+				const char* drive = unit->Attribute(ATTRIBUTE_NAME);
 				if (drive != nullptr) {
 					drives.push_back(drive);
 				}
@@ -292,7 +292,7 @@ void MDeleteFile::buildRequest()
 {
 	XMLElement* cmd = newCommandNode();
 	if (cmd != nullptr) {
-		cmd->SetAttribute(MFILES_FILE_FILEPATH_ATTR, _filename.c_str());
+		cmd->SetAttribute(ATTRIBUTE_FILEPATH, _filename.c_str());
 	}
 }
 
@@ -301,7 +301,7 @@ bool MDeleteFile::parseRequest(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if (valid) {
-		_filename = cmd->Attribute(MFILES_FILE_FILEPATH_ATTR, "");
+		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
 	}
 	return valid;
 }
@@ -336,7 +336,9 @@ std::string MDeleteFile::filename() const
 
 
 //=============		FILE CONTENT COMMAND BASE		=============//
-MFileContentCommand::MFileContentCommand(const std::string &command, Printers::TIJPrinter &printer, const std::string &filename, bool raw, const std::vector<uint8_t> &content) :
+MFileContentCommand::MFileContentCommand(const std::string &command, Printers::TIJPrinter &printer,
+										 const std::string &filename, bool raw,
+										 const std::vector<uint8_t> &content) :
 	MCommand(command, printer)
 {
 	_filename = filename;
@@ -421,7 +423,7 @@ void MGetFile::buildRequest()
 {
 	XMLElement* cmd = newCommandNode();
 	if (cmd != nullptr) {
-		cmd->SetAttribute(MFILES_FILE_FILEPATH_ATTR, _filename.c_str());
+		cmd->SetAttribute(ATTRIBUTE_FILEPATH, _filename.c_str());
 		cmd->SetAttribute(MFILES_FILE_RAW_ATTR, MTools::toString(_raw).c_str());
 	}
 }
@@ -431,7 +433,7 @@ bool MGetFile::parseRequest(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if (valid) {
-		_filename = cmd->Attribute(MFILES_FILE_FILEPATH_ATTR, "");
+		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
 		_raw = MTools::boolfromString(cmd->Attribute(MFILES_FILE_RAW_ATTR, "false"));
 	}
 	return valid;
@@ -487,7 +489,7 @@ void MSetFile::buildRequest()
 {
 	XMLElement* cmd = newCommandNode();
 	if (cmd != nullptr) {
-		cmd->SetAttribute(MFILES_FILE_FILEPATH_ATTR, _filename.c_str());
+		cmd->SetAttribute(ATTRIBUTE_FILEPATH, _filename.c_str());
 		cmd->SetAttribute(MFILES_FILE_RAW_ATTR, MTools::toString(_raw).c_str());
 
 	}
@@ -498,7 +500,7 @@ bool MSetFile::parseRequest(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if (valid) {
-		_filename = cmd->Attribute(MFILES_FILE_FILEPATH_ATTR, "");
+		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
 		_raw = MTools::boolfromString(cmd->Attribute(MFILES_FILE_RAW_ATTR, "false"));
 	}
 	return valid;

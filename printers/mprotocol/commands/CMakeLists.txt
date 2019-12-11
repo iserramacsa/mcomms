@@ -8,6 +8,7 @@ endif()
 
 set(PROTOCOL_SOURCES ${PROTOCOL_SOURCES}
 	${CMAKE_CURRENT_SOURCE_DIR}/mcommands.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/mconfigbase.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/mconfig.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/mfiles.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/mlive.cpp

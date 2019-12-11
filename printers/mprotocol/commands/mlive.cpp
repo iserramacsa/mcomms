@@ -18,7 +18,7 @@ void MLive::buildRequest()
 void MLive::buildResponse()
 {
 	XMLElement* live = newCommandNode();
-	live->SetAttribute(MLIVE_DT_ATTR,		MTools::dateTime().c_str());
+//	live->SetAttribute(MLIVE_DT_ATTR,		MTools::dateTime().c_str());
 
 	_error = Printers::ErrorCode_n::SUCCESS;
 
@@ -28,18 +28,18 @@ void MLive::buildResponse()
 	//live->SetAttribute(MLIVE_FONTS_ATTR,		_printer.fontsChanged());		//TODO: refactor live monitor
 	//live->SetAttribute(MLIVE_ERRORS_ATTR,	_printer.errorsChanged());			//TODO: refactor live monitor
 
-	XMLElement* eBoards = MTools::XML::newElement(MPRINTER_BOARDS_LIST, _doc, &live);
+	XMLElement* eBoards = createChildNode(MPRINTER_BOARDS_LIST, &live);
 	if (eBoards != nullptr) {
 		const std::vector<Printers::Board> & boards = _printer.boards();
 		for (auto& board : boards) {
 			//<BOARD id="[Board Id]" enabled="[value]" printing="[value]" >
-			XMLElement* eBoard = MTools::XML::newElement(MPRINTER_BOARD, _doc, &eBoards);
-			eBoard->SetAttribute(MPRINTER_BOARD_ID_ATTR, board.id());
+			XMLElement* eBoard = createChildNode(MPRINTER_BOARD, &eBoards);
+			eBoard->SetAttribute(ATTRIBUTE_ID, board.id());
 			eBoard->SetAttribute(MPRINTER_BOARD_ENABLED_ATTR, board.enabled());
 			eBoard->SetAttribute(MPRINTER_BOARD_PRINT_ATTR, board.printing());
 			if (board.enabled()) {
 				//<COUNTERS total="[value]" user="[value]"/>
-				XMLElement* eCounters = MTools::XML::newElement(MPRINTER_BOARD_COUNTERS_LIST, _doc, &eBoard);
+				XMLElement* eCounters = createChildNode(MPRINTER_BOARD_COUNTERS_LIST, &eBoard);
 				std::stringstream counterName;
 				if (board.bcdMode() == Printers::BCDMode_n::USER_MODE) {
 					counterName << key_counter_system_user;
@@ -51,11 +51,11 @@ void MLive::buildResponse()
 				eCounters->SetAttribute(MPRINTER_BOARD_COUNT_USER, board.counter(counterName.str()));
 
 				// <PRINT_SPEED value="[Actual print speed]"/>
-				XMLElement* eSpeed = MTools::XML::newElement(MPRINTER_BOARD_PRINT_SPEED, _doc, &eBoard);
+				XMLElement* eSpeed = createChildNode(MPRINTER_BOARD_PRINT_SPEED, &eBoard);
 				eSpeed->SetAttribute(ATTRIBUTE_VALUE, board.property(key_prop_status_general_print_speed).c_str());
 
 				// <NUM_PRINTS_REMAIN Value="[Num prints remaining]"/>
-				XMLElement* ePrintsRemain = MTools::XML::newElement(MPRINTER_BOARD_PRINTS_REMAIN, _doc, &eBoard);
+				XMLElement* ePrintsRemain = createChildNode(MPRINTER_BOARD_PRINTS_REMAIN, &eBoard);
 				ePrintsRemain->SetAttribute(ATTRIBUTE_VALUE, board.property(key_prop_status_general_print_remain).c_str());
 			}
 		}
@@ -65,7 +65,9 @@ void MLive::buildResponse()
 
 bool MLive::parseRequest(const XMLElement *xml)
 {
-	return parseSingleCommand(xml);
+	//TODO: refactor
+	//return parseSingleCommand(xml);
+	return false;
 }
 
 bool MLive::parseResponse(const XMLElement *xml)
@@ -78,7 +80,7 @@ bool MLive::parseResponse(const XMLElement *xml)
 		const char* dt = cmd->Attribute(MLIVE_DT_ATTR);
 		valid = (!cmd->NoChildren() && dt != nullptr);
 		if (valid){
-			_printer.setDateTime(MTools::dateTime(dt));
+			_printer.setDateTime(dt);
 			// _printer.setStatusChanged(cmd->BoolAttribute(MLIVE_STATUS_ATTR));  //TODO refactor live monitor
 			// _printer.setConfigChanged(cmd->BoolAttribute(MLIVE_CONFIG_ATTR));  //TODO refactor live monitor
 			// _printer.setFilesChanged(cmd->BoolAttribute(MLIVE_FILES_ATTR));	  //TODO refactor live monitor
@@ -89,7 +91,7 @@ bool MLive::parseResponse(const XMLElement *xml)
 			if (eBoards != nullptr) {
 				const XMLElement* eBoard = eBoards->FirstChildElement(MPRINTER_BOARD);
 				while (eBoard != nullptr) {
-					int id = eBoard->IntAttribute(MPRINTER_BOARD_ID_ATTR, -1);
+					int id = eBoard->IntAttribute(ATTRIBUTE_ID, -1);
 					Printers::Board* pBoard = _printer.board(id);
 					if  (id != -1 && pBoard != nullptr) {
 						pBoard->setEnabled(eBoard->BoolAttribute(MPRINTER_BOARD_ENABLED_ATTR));

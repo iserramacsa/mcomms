@@ -1,13 +1,13 @@
 #ifndef MACSA_MPROTOCOL_COMMANDS_CONFIG_H
 #define MACSA_MPROTOCOL_COMMANDS_CONFIG_H
-#include "mcommands.h"
+#include "mconfigbase.h"
 
 namespace Macsa {
 	namespace MProtocol {
 		/**
 		 * @brief The GETCONFIG command class
 		 */
-		class MGetConfig : public MCommand
+		class MGetConfig : public MConfigCommand
 		{
 			public:
 				MGetConfig(Printers::TIJPrinter& printer);
@@ -24,7 +24,7 @@ namespace Macsa {
 		/**
 		 * @brief The SETCONFIG command class
 		 */
-		class MSetConfig : public MCommand
+		class MSetConfig : public MConfigCommand
 		{
 			public:
 				MSetConfig(Printers::TIJPrinter& printer);

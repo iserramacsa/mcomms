@@ -15,7 +15,9 @@ MUpdate::~MUpdate()
 
 bool MUpdate::parseRequest(const XMLElement *xml)
 {
-	return parseSingleCommand(xml);
+	//TODO: refactor
+//	return parseSingleCommand(xml);
+	return false;
 }
 
 bool MUpdate::parseResponse(const XMLElement *xml)

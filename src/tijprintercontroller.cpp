@@ -58,7 +58,6 @@ bool TijPrinterController::setDateTime(tm dt)
 	_printer.setDateTime(datetime);
 	MProtocol::MCommand* cmd = _factory.setDateTimeCommand();
 	if(send(cmd)) {
-
 	}
 }
 

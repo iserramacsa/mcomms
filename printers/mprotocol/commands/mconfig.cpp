@@ -1,6 +1,5 @@
 #include "mprotocol/mconfig.h"
 #include "mprotocol/mprotocol.h"
-#include "mboard.h"
 
 #include "mtools.h"
 
@@ -8,12 +7,14 @@ using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
 MGetConfig::MGetConfig(Printers::TIJPrinter &printer):
-	MCommand(MCONFIG_GET, printer)
+	MConfigCommand(MCONFIG_GET, printer)
 {}
 
 bool MGetConfig::parseRequest(const XMLElement *xml)
 {
-	return parseSingleCommand(xml);
+	const XMLElement* cmd = getCommand(xml, _id);
+	bool valid = (cmd != nullptr && cmd->NoChildren());
+	return valid;
 }
 
 bool MGetConfig::parseResponse(const XMLElement */*xml*/)
@@ -32,12 +33,12 @@ void MGetConfig::buildResponse()
 	XMLElement* cmd = newCommandNode();
 
 	_error = Printers::ErrorCode_n::SUCCESS;
-	cmd->InsertEndChild(MPrinter::generalConfigToXml(_printer, _doc));
-	cmd->InsertEndChild(MPrinter::printerConnectionsToXml(dynamic_cast<const Printers::TIJComms*>(_printer.comms()), _doc));
+//	cmd->InsertEndChild(MPrinter::generalConfigToXml(_printer, _doc));
+//	cmd->InsertEndChild(MPrinter::printerConnectionsToXml(dynamic_cast<const Printers::TIJComms*>(_printer.comms()), _doc));
 
 	XMLElement* eBoards = _doc.NewElement(MPRINTER_BOARDS_LIST);
 	for (auto& board : _printer.boards()) {
-		eBoards->InsertEndChild(MPrinter::boardConfigToXml(board, _doc));
+//		eBoards->InsertEndChild(MPrinter::boardConfigToXml(board, _doc));
 	}
 
 	addWindError(_error);
@@ -191,3 +192,4 @@ void MSetDateTime::buildRequest()
 //	//TODO: fill setConfig response
 //	setWind(&cmd);
 //}
+

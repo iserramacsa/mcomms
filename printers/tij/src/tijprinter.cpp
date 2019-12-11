@@ -7,11 +7,11 @@ using namespace Macsa;
 using namespace Macsa::Printers;
 
 #if __cplusplus >= 201103L
-		using itBoard  = std::map<int, Board>::iterator;
-		using citBoard = std::map<int, Board>::const_iterator;
+		using itBoard  = std::vector<Printers::Board>::iterator;
+		using citBoard = std::vector<Printers::Board>::const_iterator;
 #else
-		typedef std::map<int, Board>::iterator		itBoard;
-		typedef std::map<int, Board>::const_iterator	citBoard;
+		typedef std::vector<Printers::Board>::iterator			itBoard;
+		typedef std::vector<Printers::Board>::const_iterator	citBoard;
 #endif
 
 TIJPrinter::TIJPrinter()
@@ -78,6 +78,11 @@ void TIJPrinter::setDateTime(const std::string &formatedDatetime)
 	}
 }
 
+void TIJPrinter::setDateTime(const time_t &dateTime)
+{
+	Printer::setDateTime(dateTime);
+}
+
 std::string TIJPrinter::controllerVersion() const {return _controllerVersion;}
 std::string TIJPrinter::apiVersion() const {return _apiVersion;}
 std::string TIJPrinter::fpgaVersion() const {return _fpgaVersion;}
@@ -101,46 +106,84 @@ void TIJPrinter::setDateCodes(const DateCodes &dateCodes)
 
 std::vector<Board> TIJPrinter::boards() const
 {
-	std::vector<Board> list;
-	for (citBoard it = _boards.begin(); it != _boards.end(); it++) {
-		list.push_back(it->second);
-	}
-	return list;
+	return _boards;
 }
 
 Board* TIJPrinter::board(int id)
 {
-	if (_boards.find(id) != _boards.end()) {
-		return &(_boards[id]);
+	Board* board = nullptr;
+	for (unsigned int i = 0; i < _boards.size(); i++) {
+		if (_boards.at(i).id() == id){
+			board = &_boards[i];
+			break;
+		}
 	}
-	return nullptr;
+	return board;
 }
 
 const Board * TIJPrinter::board(int id) const
 {
-	if (_boards.find(id) != _boards.end()) {
-		return  std::move(&_boards.at(id));
+	const Board* board = nullptr;
+	for (unsigned int i = 0; i < _boards.size(); i++) {
+		if (_boards.at(i).id() == id){
+			board = &_boards.at(i);
+			break;
+		}
 	}
-	return nullptr;
+	return board;
 }
 
 void TIJPrinter::setBoard(const Board &board)
 {
-	if (_boards.find(board.id()) != _boards.end()) {
-		Board& printerBoard = _boards[board.id()];
-		printerBoard = board;
+	bool found = false;
+	for (unsigned int i = 0; i < _boards.size(); i++) {
+		if (_boards.at(i).id() == board.id()){
+			_boards[i] = board;
+			found  = true;
+			break;
+		}
 	}
-	else {
-		_boards.insert(std::pair<int, Board>(board.id(), board));
-	}
+
 }
 
 void TIJPrinter::setBoards(const std::vector<Board> &boards)
 {
-	_boards.clear();
-	for (unsigned long i = 0; i < boards.size(); i++) {
-		_boards.insert(std::pair<int, Board>(boards.at(i).id(), boards.at(i)));
-	}
+	_boards = boards;
+}
+
+bool TIJPrinter::logsEnabled() const
+{
+	return _traceLogs;
+}
+
+void TIJPrinter::setlogsEnabled(bool enable)
+{
+	_traceLogs = enable;
+}
+
+bool TIJPrinter::logComsEnabled() const
+{
+	return  _traceComms;
+}
+
+void TIJPrinter::setlogComsEnabled(bool enable)
+{
+	_traceComms = enable;
+}
+
+LoggerLevel TIJPrinter::loggerLevel() const
+{
+	return _logLevel;
+}
+
+void TIJPrinter::setloggerLevel(const LoggerLevel &logLevel)
+{
+	_logLevel = logLevel;
+}
+
+void TIJPrinter::setloggerLevel(const std::string &logLevel)
+{
+	_logLevel = logLevel;
 }
 
 bool TIJPrinter::equal(const Printer &other) const
