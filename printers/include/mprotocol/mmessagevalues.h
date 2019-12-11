@@ -9,6 +9,7 @@
 
 namespace Macsa {
 	namespace MProtocol {
+
 #if __cplusplus >= 201103L
 		using userFieldsMap = std::map<std::string, std::string>;
 		using datesMap      = std::map<std::string, Nisx::DateTime>;
@@ -29,9 +30,9 @@ namespace Macsa {
 				virtual ~MMessageValues();
 
 				std::string filename() const;
-				userFieldsMap userFieldsMap() const;
-				countersMap countersMap() const;
-				datesMap datesMap() const;
+				MProtocol::userFieldsMap userFieldsMap() const;
+				MProtocol::countersMap countersMap() const;
+				MProtocol::datesMap datesMap() const;
 
 			protected:
 				std::string _filename;
@@ -55,7 +56,8 @@ namespace Macsa {
 		class MGetMessageValues : public MMessageValues
 		{
 			public:
-				MGetMessageValues(Printers::TIJPrinter& printer, const std::string& filename = "", const MProtocol::userFieldsMap &userFields = MProtocol::userFieldsMap());
+				MGetMessageValues(Printers::TIJPrinter& printer, const std::string& filename = "",
+								  const MProtocol::userFieldsMap &userFields = MProtocol::userFieldsMap());
 				virtual  ~MGetMessageValues();
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
@@ -70,7 +72,8 @@ namespace Macsa {
 		class MSetMessageValues : public MMessageValues
 		{
 			public:
-				MSetMessageValues(Printers::TIJPrinter& printer, const std::string& filename = "", const MProtocol::userFieldsMap& userFields = MProtocol::userFieldsMap());
+				MSetMessageValues(Printers::TIJPrinter& printer, const std::string& filename = "",
+								  const MProtocol::userFieldsMap& userFields = MProtocol::userFieldsMap());
 				virtual  ~MSetMessageValues();
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
