@@ -1,4 +1,7 @@
 #include "printer/outputs.h"
+#include <typeinfo>
+#include <iostream>
+
 using namespace Macsa::Printers;
 
 Output::Output(uint32_t id) : IOBase (id)
@@ -47,25 +50,37 @@ void Output::setTime(const uint32_t &time)
 	_time = time;
 }
 
-void Output::operator =(const Output &other)
+bool Output::equal(const IOBase &other) const
 {
-	_id = other._id;
-	_descriptor = other._descriptor;
-	_value = other._value;
-	_time = other._time;
-	_type = other._type;
-	_initialValue = other._initialValue;
+	bool equal = false;
+	try {
+		Output output = dynamic_cast<const Output&>(other);
+		equal = (_id == output._id);
+		equal &= (_descriptor.compare(output._descriptor) == 0);
+		equal &= (_value == output._value);
+		equal &= (_time == output._time);
+		equal &= (_type == output._type);
+		equal &= (_initialValue == output._initialValue);
+	}
+	catch(std::bad_cast exp) {
+		std::cout << __func__ <<" Caught bad cast" << std::endl;
+	}
+	return equal;
 }
 
-bool Output::equal(const Output &other) const
+void Output::copy(const IOBase &other)
 {
-	bool eq = false;
-	eq = (_id == other._id);
-	eq &= (_descriptor.compare(other._descriptor) == 0);
-	eq &= (_value == other._value);
-	eq &= (_time == other._time);
-	eq &= (_type == other._type);
-	eq &= (_initialValue == other._initialValue);
-
-	return eq;
+	try {
+		Output output = dynamic_cast<const Output&>(other);
+		_id = output._id;
+		_descriptor = output._descriptor;
+		_value = output._value;
+		_time = output._time;
+		_type = output._type;
+		_initialValue = output._initialValue;
+	}
+	catch(std::bad_cast exp) {
+		std::cout << __func__ <<" Caught bad cast" << std::endl;
+	}
 }
+

@@ -266,7 +266,7 @@ bool MGetStatus::parseResponse(const XMLElement *xml)
 				std::vector<Printers::Board> boards;
 				while (xBoard != nullptr){
 					int id = xBoard->IntAttribute(ATTRIBUTE_ID, 0);
-					Printers::Board board(id);
+					Printers::Board board(id, &_printer);
 					if (_printer.board(id) != nullptr) {
 						board = *_printer.board(id);
 					}
@@ -350,7 +350,7 @@ bool MGetIOStatus::parseResponse(const XMLElement *xml)
 				std::vector<Printers::Board> boards;
 				while (xBoard != nullptr) {
 					int id = xBoard->IntAttribute(ATTRIBUTE_ID, 0);
-					Printers::Board board(id);
+					Printers::Board board(id, &_printer);
 					if (_printer.board(id) != nullptr) {
 						board = *_printer.board(id);
 					}
@@ -420,7 +420,7 @@ bool MGetErrors::parseResponse(const XMLElement *xml)
 				std::vector<Printers::Board> boards;
 				while (xBoard != nullptr) {
 					int id = xBoard->IntAttribute(ATTRIBUTE_ID, 0);
-					Printers::Board board(id);
+					Printers::Board board(id, &_printer);
 					if (_printer.board(id) != nullptr) {
 						board = *_printer.board(id);
 					}

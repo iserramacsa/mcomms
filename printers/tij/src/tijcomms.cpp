@@ -207,6 +207,30 @@ bool Ethernet::isInRange(int val, int min, int max) const
 	return ((val >= min) && (val <= max));
 }
 
+void Ethernet::copy(const Ethernet &other)
+{
+	_address  = other._address;
+	_mask     = other._mask;
+	_gateway  = other._gateway;
+	_mac      = other._mac;
+	_dhcp     = other._dhcp;
+	_hostname = other._hostname;
+	_tcpPort  = other._tcpPort ;
+}
+
+bool Ethernet::compare(const Ethernet &other)
+{
+	if (_address.compare(other._address) != 0)   { return false; }
+	if (_mask.compare(other._mask) != 0)         { return false; }
+	if (_gateway.compare(other._gateway) != 0)   { return false; }
+	if (_mac.compare(other._mac) != 0)           { return false; }
+	if (_hostname.compare(other._hostname) != 0) { return false; }
+	if (_dhcp != other._dhcp)       { return false; }
+	if (_tcpPort != other._tcpPort) { return false; }
+
+	return true;
+}
+
 // ========== BlueTooth  ===========//
 BlueTooth::BlueTooth()
 {}
@@ -244,6 +268,18 @@ void BlueTooth::setVisible(bool visible)
 	_visible = visible;
 }
 
+void BlueTooth::copy(const BlueTooth &other)
+{
+	_name = other._name;
+	_pass = other._pass;
+	_visible = other._visible;
+}
+
+bool BlueTooth::compare(const BlueTooth &other)
+{
+	return (_name.compare(other._name) == 0 && _pass.compare(other._pass) == 0);
+}
+
 // ========== PrinterComms  ===========//
 int TIJComms::ethernetIfaces() const
 {
@@ -260,11 +296,6 @@ Ethernet *TIJComms::ethernetIface(int iface)
 	return eth;
 }
 
-BlueTooth * TIJComms::bluetooth()
-{
-	return &_bluetooth;
-}
-
 const Ethernet *TIJComms::ethernetIface(int iface) const
 {
 	if (iface >= 0 && static_cast<unsigned long>(iface) < _ifaces.size())
@@ -274,11 +305,9 @@ const Ethernet *TIJComms::ethernetIface(int iface) const
 	return nullptr;
 }
 
-int TIJComms::addEthernetIface(const std::string &addr, const std::string &mask, const std::string &gw, const std::string hw)
+int TIJComms::setEthernetIface(const std::string &addr, const std::string &mask, const std::string &gw, const std::string hw, uint16_t tcpPort)
 {
-	std::vector<Ethernet>::const_iterator it = std::find_if(_ifaces.begin(), _ifaces.end(), [&](const Ethernet& eth){
-		return ((eth.address().compare(addr) == 0) || (eth.macAddress().compare(hw) == 0));
-	});
+	std::vector<Ethernet>::iterator it = getEthAdapter(addr, hw);
 
 	if (it == _ifaces.end()){
 		Ethernet eth;
@@ -286,14 +315,63 @@ int TIJComms::addEthernetIface(const std::string &addr, const std::string &mask,
 		eth.setGateway(gw);
 		eth.setNetmask(mask);
 		eth.setMacAddress(hw);
+		eth.setTcpPort(tcpPort);
+
 		_ifaces.push_back(eth);
-		return static_cast<int>(_ifaces.size() - 1);
+		return 0;
+	}
+	else {
+		//TODO: review
+		it->setNetmask(mask);
+		it->setGateway(gw);
+		it->setTcpPort(tcpPort);
+		return 0;
+	}
+}
+
+int TIJComms::setEthernetIface(const Ethernet *ethAdapter)
+{
+	if (ethAdapter != nullptr) {
+		std::vector<Ethernet>::iterator it = getEthAdapter(ethAdapter->address(), ethAdapter->macAddress());
+
+		if (it == _ifaces.end()){
+			Ethernet eth = (*ethAdapter);
+
+			_ifaces.push_back(eth);
+			return static_cast<int>(_ifaces.size() - 1);
+		}
+		else {
+			*it = *ethAdapter;
+			return (it - _ifaces.begin());
+		}
 	}
 
 	return -1;
+
+}
+
+BlueTooth * TIJComms::bluetooth()
+{
+	return &_bluetooth;
 }
 
 const BlueTooth *TIJComms::bluetooth() const
 {
 	return &_bluetooth;
+}
+
+void TIJComms::setBluetooth(const BlueTooth &bluetooth)
+{
+	_bluetooth = bluetooth;
+}
+
+std::vector<Ethernet>::iterator TIJComms::getEthAdapter(const std::string &addr, const std::string &mac)
+{
+	for (std::vector<Ethernet>::iterator it = _ifaces.begin(); it != _ifaces.end(); it++) {
+		if ((it->address().compare(addr) == 0) || (it->macAddress().compare(mac) == 0)) {
+			return it;
+		}
+	}
+
+	return _ifaces.end();
 }

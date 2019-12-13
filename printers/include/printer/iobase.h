@@ -20,10 +20,21 @@ namespace Macsa {
 				virtual bool value() const;
 				virtual void setValue(bool value);
 
+				virtual bool operator < (const IOBase& other) const;
+				virtual bool operator > (const IOBase& other) const;
+
+				virtual bool operator == (const IOBase& other) const {return equal(other);}
+				virtual bool operator != (const IOBase& other) const {return !equal(other);}
+
+				virtual void operator = (const IOBase& other) {return copy(other);}
+
 			protected:
 				uint32_t _id;
 				std::string _descriptor;
 				bool _value;
+
+				virtual bool equal(const IOBase& other) const = 0;
+				virtual void copy(const IOBase& other) = 0;
 		};
 	}
 }

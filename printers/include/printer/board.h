@@ -18,17 +18,20 @@
 
 namespace Macsa {
 	namespace Printers {
+		class TIJPrinter;
 		class Board {
 			public:
 #if __cplusplus >= 201103L
 				using propertyMap = std::map<std::string, std::string>;
+				using propertyPair = std::pair<std::string, std::string>;
 				using countersMap = std::map<std::string, int>;
 #else
 				typedef std::map<std::string, std::string> propertyMap;
+				typedef std::pair<std::string, std::string> propertyPair;
 				typedef std::map<std::string, int> countersMap;
 #endif
 			public:
-				Board(const int id);
+				Board(const int id, TIJPrinter* parent);
 				Board(const Board& other);
 				virtual ~Board();
 
@@ -65,10 +68,10 @@ namespace Macsa {
 				virtual void setBcdMode(const std::string &mode);
 				virtual void setBcdCurrent(uint8_t current);
 
-				virtual PrinterDir printerDirection() const;
-				virtual void setPrinterDirection(const PrinterDir &printerDirection);
-				virtual void setPrinterDirection(const PrinterDir_n &printerDirection);
-				virtual void setPrinterDirection(const std::string &printerDirection);
+				virtual PrinterDir printDirection() const;
+				virtual void setPrinterDirection(const PrinterDir &printDirection);
+				virtual void setPrinterDirection(const PrinterDir_n &printDirection);
+				virtual void setPrinterDirection(const std::string &printDirection);
 
 				virtual bool printRotated() const;
 				virtual void setPrintRotated(bool printRotated);
@@ -117,6 +120,9 @@ namespace Macsa {
 				virtual Error error(unsigned int idx) const;
 				virtual void setError(unsigned int idx, const Error& error);
 
+				virtual TIJPrinter* printer();
+				virtual const TIJPrinter* printer() const;
+
 				virtual void clear();
 
 				//Operators
@@ -126,6 +132,8 @@ namespace Macsa {
 
 			private:
 				const int		_id;
+				TIJPrinter*		_parent;
+
 				bool			_autostart;
 				bool			_lowLvlOutput;
 				bool			_printing;

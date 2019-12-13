@@ -4,6 +4,8 @@
 #include "printer/printer.h"
 #include "printer/board.h"
 
+#define DEFAULT_TIJ_TCP_PORT	9991
+
 namespace Macsa {
 	namespace Printers {
 		class Ethernet
@@ -32,6 +34,10 @@ namespace Macsa {
 				std::string hostname() const;
 				uint16_t tcpPort() const;
 
+				inline bool operator == (const Ethernet& other) {return compare(other);}
+				inline bool operator != (const Ethernet& other) {return !compare(other);}
+				inline void operator = (const Ethernet& other) {return copy(other);}
+
 			private:
 				std::string _address;
 				std::string _mask;
@@ -47,6 +53,10 @@ namespace Macsa {
 				std::string ipFromU32(const uint32_t& ip) const;
 				bool validMacAddress(const std::string& mac) const;
 				inline bool isInRange(int val, int min, int max) const;
+
+				void copy(const Ethernet& other);
+				bool compare(const Ethernet& other);
+
 		};
 
 
@@ -65,10 +75,17 @@ namespace Macsa {
 				bool visible() const;
 				void setVisible(bool visible);
 
+				inline bool operator == (const BlueTooth& other) {return compare(other);}
+				inline bool operator != (const BlueTooth& other) {return !compare(other);}
+				inline void operator = (const BlueTooth& other) {return copy(other);}
+
 			private:
 				std::string _name;
 				std::string _pass;
 				bool _visible;
+
+				void copy (const BlueTooth& other);
+				bool compare(const BlueTooth& other);
 		};
 
 		class TIJComms : public PrinterComms{
@@ -77,14 +94,20 @@ namespace Macsa {
 				Ethernet * ethernetIface(int iface);
 				const Ethernet * ethernetIface(int iface) const;
 
-				int addEthernetIface(const std::string& addr, const std::string& mask, const std::string& gw, const std::string hw = "");
+				int setEthernetIface(const std::string& addr, const std::string& mask, const std::string& gw, const std::string hw = "", uint16_t tcpPort = DEFAULT_TIJ_TCP_PORT);
+				int setEthernetIface(const Ethernet * ethAdapter);
 
 				BlueTooth* bluetooth();
 				const BlueTooth* bluetooth() const;
 
+				void setBluetooth(const BlueTooth& bluetooth);
+				void setBluetooth(const std::string& device, const std::string& pass, bool visible);
+
 			private:
 				std::vector<Ethernet> _ifaces;
 				BlueTooth _bluetooth;
+
+				std::vector<Ethernet>::iterator getEthAdapter(const std::string & addr, const std::string & mac);
 
 		};
 	}

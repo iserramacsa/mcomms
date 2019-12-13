@@ -23,16 +23,13 @@ namespace Macsa {
 				uint32_t time() const;
 				void setTime(const uint32_t &time);
 
-				virtual void operator  = (const Output& other);
-				virtual bool operator != (const Output& other) const{return  equal(other);}
-				virtual bool operator == (const Output& other) const{return !equal(other);}
-
 			private:
 				bool _initialValue;
 				OutputType	_type;
 				uint32_t	_time;
 
-				virtual bool equal(const Output &other )const;
+				virtual bool equal(const IOBase &other )const;
+				virtual void copy(const IOBase &other);
 		};
 	}
 }

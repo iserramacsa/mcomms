@@ -1,4 +1,6 @@
 #include "printer/inputs.h"
+#include <typeinfo>
+#include <iostream>
 
 using namespace Macsa::Printers;
 
@@ -49,25 +51,38 @@ void Input::setFilter(const uint32_t &filter)
 	_filter = filter;
 }
 
-void Input::operator =(const Input &other)
+bool Input::equal(const IOBase &other) const
 {
-	_id = other._id;
-	_descriptor = other._descriptor;
-	_value = other._value;
-	_filter = other._filter;
-	_mode = other._mode;
-	_inverted = other._inverted;
+	bool equal = false;
+	try {
+		Input input = dynamic_cast<const Input&>(other);
+		equal = (_id == input._id);
+		equal &= (_descriptor.compare(input._descriptor) == 0);
+		equal &= (_value == input._value);
+		equal &= (_filter == input._filter);
+		equal &= (_mode == input._mode);
+		equal &= (_inverted == input._inverted);
+	}
+	catch(std::bad_cast exp) {
+		std::cout << __func__ <<" Caught bad cast" << std::endl;
+	}
+	return equal;
 }
 
-bool Input::equal(const Input &other) const
+void Input::copy(const IOBase &other)
 {
-	bool eq = false;
-	eq = (_id == other._id);
-	eq &= (_descriptor.compare(other._descriptor) == 0);
-	eq &= (_value == other._value);
-	eq &= (_filter == other._filter);
-	eq &= (_mode == other._mode);
-	eq &= (_inverted == other._inverted);
-
-	return eq;
+	try {
+		Input input = dynamic_cast<const Input&>(other);
+		_id = input._id;
+		_descriptor = input._descriptor;
+		_value = input._value;
+		_filter = input._filter;
+		_mode = input._mode;
+		_inverted = input._inverted;
+	}
+	catch(std::bad_cast exp) {
+		std::cout << __func__ <<" Caught bad cast" << std::endl;
+	}
 }
+
+

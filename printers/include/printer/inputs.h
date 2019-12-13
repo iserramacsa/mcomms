@@ -23,17 +23,14 @@ namespace Macsa {
 				uint32_t filter() const;
 				void setFilter(const uint32_t &filter);
 
-				virtual void operator  = (const Input& other);
-				virtual bool operator == (const Input& other)const {return  equal(other);}
-				virtual bool operator != (const Input& other)const {return !equal(other);}
-
 			private:
 				InputMode	_mode;
 				bool		_inverted;
 				uint32_t	_filter;
 
 
-				virtual bool equal(const Input &other )const;
+				virtual bool equal(const IOBase& other) const;
+				virtual void copy(const IOBase& other);
 		};
 	}
 }

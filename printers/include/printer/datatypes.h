@@ -106,8 +106,8 @@ namespace Macsa {
 		class SmartEnum
 		{
 			public:
-				SmartEnum();
-				virtual ~SmartEnum();
+				SmartEnum(){}
+				virtual ~SmartEnum(){}
 				N operator()() const {return _val;}
 				bool operator == (const N& val) const {return _val == val;}
 				bool operator != (const N& val) const {return _val != val;}
@@ -118,7 +118,7 @@ namespace Macsa {
 				virtual void operator =  (const N& v) = 0;
 				virtual void operator = (const std::string& val) = 0;
 				virtual std::string toString() const = 0;
-				const char* str() const { return toString().c_str();}
+				const char* toCString() const { return toString().c_str();}
 
 			protected:
 					N _val;
@@ -185,6 +185,7 @@ namespace Macsa {
 		class ShootingMode : public SmartEnum<ShootingMode_n>
 		{
 			public:
+				ShootingMode() : SmartEnum() {_val = SINGLE_SHOT;}
 				virtual void operator = (const enum ShootingMode_n& v){_val = v;}
 				virtual void operator = (const std::string& val){
 					if (val.compare(SHOOTING_MODE_ONCE) == 0)
@@ -211,6 +212,7 @@ namespace Macsa {
 		class NozzlesCol : public SmartEnum<NozzlesCol_n>
 		{
 			public:
+				NozzlesCol() {_val = COL_A;}
 				virtual void operator = (const enum NozzlesCol_n& v){_val = v;}
 				virtual void operator = (const std::string& val){
 					if (val.compare(NOZZLES_COL_A) == 0)
@@ -236,6 +238,7 @@ namespace Macsa {
 		class DelayUnits : public SmartEnum<DelayUnits_n>
 		{
 			public:
+				DelayUnits() {_val = UNITS_DOTS;}
 				virtual void operator = (const enum DelayUnits_n& v){_val = v;}
 				virtual void operator = (const std::string& v) {
 					if (v.compare(DELAY_UNIT_MM) == 0)
@@ -259,6 +262,9 @@ namespace Macsa {
 		class EncoderMode : public SmartEnum<EncoderMode_n>
 		{
 			public:
+				EncoderMode() { _val = FIXED_SPEED; }
+				EncoderMode(const std::string& val){*this = val;}
+				EncoderMode(const EncoderMode_n& val){*this = val;}
 				virtual void operator = (const enum EncoderMode_n& v){_val = v;}
 				virtual void operator = (const std::string& val){
 					if (val.compare(ENCODER_MODE_FIXED) == 0)
@@ -285,6 +291,7 @@ namespace Macsa {
 		class Photocell : public SmartEnum<Photocell_n>
 		{
 			public:
+				Photocell() {_val = PHCELL_A;}
 				virtual void operator = (const enum Photocell_n& v){_val = v;}
 				virtual void operator = (const std::string& val){
 					if (val.compare(PHOTOCELL_A) == 0)
@@ -310,6 +317,7 @@ namespace Macsa {
 		class InputMode : public SmartEnum<InputMode_n>
 		{
 			public:
+				InputMode() {_val = INPUT_EDGE;}
 				virtual void operator = (const enum InputMode_n& v){_val = v;}
 				virtual void operator = (const std::string& val){
 					if (val.compare(INPUT_MODE_EDGE) == 0)
@@ -341,6 +349,7 @@ namespace Macsa {
 		class OutputType : public SmartEnum<OutputType_n>
 		{
 			public:
+				OutputType(){_val = OUTPUT_ONPULSE;}
 				virtual void operator = (const enum OutputType_n& v){_val = v;}
 				virtual void operator = (const std::string& val){
 					if (val.compare(OUTPUT_TYPE_STATE   ) == 0)
@@ -450,8 +459,7 @@ namespace Macsa {
 		class ErrorCode : public SmartEnum<ErrorCode_n>
 		{
 			public:
-				ErrorCode() : SmartEnum()
-					{_val = SUCCESS;}
+				ErrorCode() : SmartEnum() {_val = SUCCESS;}
 				virtual ~ErrorCode(){}
 				virtual void operator = (const enum ErrorCode_n& v){_val = v;}
 				virtual void operator = (const std::string& val){
@@ -603,6 +611,7 @@ namespace Macsa {
 		class LoggerLevel : public SmartEnum<LoggerLevel_n>
 		{
 			public:
+				LoggerLevel(){_val = LOG_DISABLED;}
 				void operator = (const enum LoggerLevel_n& v){_val = v;}
 				void operator = (const std::string& val){
 					if (val.compare(LOG_LEVEL_ERROR) == 0)

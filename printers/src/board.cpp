@@ -1,15 +1,18 @@
 #include "printer/board.h"
+#include "tij/tijprinter.h"
 
 using namespace Macsa::Printers;
 
-Board::Board(const int id) :
-	_id(id)
+Board::Board(const int id, TIJPrinter* parent) :
+	_id(id),
+	_parent(parent)
 {
 	clear();
 }
 
 Board::Board(const Board &other) :
-	_id(other.id())
+	_id(other.id()),
+	_parent(other._parent)
 {
 	copy(other);
 }
@@ -137,7 +140,7 @@ void Board::setBcdCurrent(uint8_t current)
 	_messageManager.setCurrentBcdCode(current);
 }
 
-PrinterDir Board::printerDirection() const
+PrinterDir Board::printDirection() const
 {
 	return _printerDirection;
 }
@@ -372,6 +375,16 @@ void Board::setError(unsigned int idx, const Error &error)
 	if (idx < _outputs.size()){
 		_errors[idx] = error;
 	}
+}
+
+TIJPrinter *Board::printer()
+{
+	return _parent;
+}
+
+const TIJPrinter *Board::printer() const
+{
+	return _parent;
 }
 
 void Board::clear()

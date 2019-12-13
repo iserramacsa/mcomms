@@ -33,3 +33,13 @@ void IOBase::setValue(bool value)
 {
 	_value = value;
 }
+
+bool IOBase::operator < (const IOBase &other) const
+{
+	return (_id < other._id);
+}
+
+bool IOBase::operator > (const IOBase &other) const
+{
+	return (_id > other._id);
+}

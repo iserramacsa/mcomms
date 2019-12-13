@@ -38,6 +38,12 @@ namespace Macsa {
 				std::string toString(int value);
 				std::string toString(unsigned value);
 
+				inline const char* toCString(double value,int precision = 1) { return toString(value, precision).c_str(); }
+				inline const char* toCString(float value, int precision = 1) { return toString(value, precision).c_str(); }
+				inline const char* toCString(bool value)     { return toString(value).c_str(); }
+				inline const char* toCString(int value)      { return toString(value).c_str(); }
+				inline const char* toCString(unsigned value) { return toString(value).c_str(); }
+
 //				std::string dateTime();
 //				time_t dateTime(const std::string &dt);
 

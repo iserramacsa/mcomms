@@ -36,6 +36,11 @@ void Encoder::setMode(const EncoderMode &value)
 	_mode = value;
 }
 
+//void Encoder::setMode(const std::string &value)
+//{
+//	_mode = value;
+//}
+
 double Encoder::fixedSpeed() const
 {
 	return _fixedSpeed;
