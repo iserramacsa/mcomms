@@ -9,7 +9,8 @@ set(SOURCES ${SOURCES}
 
 set(MOC_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/mainwindow.h
-	${CMAKE_CURRENT_SOURCE_DIR}/printerConnDialog.h
+	${CMAKE_CURRENT_SOURCE_DIR}/printerslistmodel.h
+	${CMAKE_CURRENT_SOURCE_DIR}/printerconndialog.h
 	)
 
 set(HEADERS ${MOC_HEADERS}

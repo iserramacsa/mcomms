@@ -1,7 +1,11 @@
 #ifndef PRINTER_CONNECTION_DIALOG
 #define PRINTER_CONNECTION_DIALOG
 
+#include <QtGui>
+#include "ui_addprinterdialog.h"
 #include <QDialog>
+#include <QLineEdit>
+
 
 class PrinterConnectionDialog : public QDialog
 {
@@ -14,15 +18,15 @@ class PrinterConnectionDialog : public QDialog
 		QString name() const;
 
 	private slots:
-		void onNameChanged(const QString& name);
-		void onAddressChanged(const QString& address);
+		void onValidate();
 
 	private:
 		QString _address;
 		QString _name;
-		//		uint16_t _port;
+		Ui::AddPrinterDialog ui;
 
-		void buildDialog();
+		void configure();
+
 };
 
 #endif
