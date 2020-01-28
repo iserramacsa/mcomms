@@ -148,6 +148,7 @@ namespace Macsa {
 						case BCD_MODE_1: return BCD_MODE_BCD_1;
 						case BCD_MODE_2: return BCD_MODE_BCD_2;
 					}
+					return "";
 				}
 		};
 
@@ -174,6 +175,7 @@ namespace Macsa {
 						case L2R:  return DIR_LEFT_TO_RIGHT;
 						case AUTO: return DIR_AUTO;
 					}
+					return "";
 				}
 		};
 
@@ -201,6 +203,7 @@ namespace Macsa {
 						case MULTI_SHOT_REL:	return SHOOTING_MODE_REL;
 						case MULTI_SHOT_ABS:	return SHOOTING_MODE_ABS;
 					}
+					return "";
 				}
 		};
 
@@ -228,6 +231,7 @@ namespace Macsa {
 						case COL_B:		return NOZZLES_COL_B;
 						case COL_BOTH:	return NOZZLES_COL_BOTH;
 					}
+					return "";
 				}
 		};
 
@@ -251,6 +255,7 @@ namespace Macsa {
 						case UNITS_MM:	 return DELAY_UNIT_MM;
 						case UNITS_DOTS: return DELAY_UNIT_DOTS;
 					}
+					return "";
 				}
 		};
 
@@ -280,6 +285,7 @@ namespace Macsa {
 						case INTERNAL_ENCODER:	return ENCODER_MODE_INTERNAL;
 						case EXTERNAL_ENCODER:	return ENCODER_MODE_EXTERNAL;
 					}
+					return "";
 				}
 		};
 
@@ -307,6 +313,7 @@ namespace Macsa {
 						case PHCELL_B:	 return PHOTOCELL_B;
 						case PHCELL_EXT: return PHOTOCELL_EXT;
 					}
+					return "";
 				}
 		};
 
@@ -330,6 +337,7 @@ namespace Macsa {
 						case INPUT_EDGE:	 return INPUT_MODE_EDGE;
 						case INPUT_STATUS:	 return INPUT_MODE_STATE;
 					}
+					return "";
 				}
 		};
 
@@ -371,6 +379,7 @@ namespace Macsa {
 						case OUTPUT_MAXON:		return OUTPUT_TYPE_MAXON;
 						case OUTPUT_MAXOFF:		return OUTPUT_TYPE_MAXOFF;
 					}
+					return "";
 				}
 		};
 
@@ -401,6 +410,7 @@ namespace Macsa {
 						case ERROR:			return ERROR_TYPE_ERR;
 						default: 			return ERROR_TYPE_INVALID;
 					}
+					return "";
 				}
 		};
 
@@ -598,6 +608,7 @@ namespace Macsa {
 
 						default:							return ERROR_CODE_UNKNOWN;
 					}
+					return "";
 				}
 		};
 
@@ -635,6 +646,7 @@ namespace Macsa {
 						case LOG_DEBUG:		return LOG_LEVEL_DEBUG;
 						case LOG_DISABLED:	return LOG_LEVEL_DISABLED;
 					}
+					return "";
 				}
 		};
 	}

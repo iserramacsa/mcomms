@@ -54,11 +54,10 @@ time_t TijPrinterController::getDateTime()
 
 bool TijPrinterController::setDateTime(tm dt)
 {
-	time_t datetime = mktime(&dt);
+	std::time_t datetime = mktime(&dt);
 	_printer.setDateTime(datetime);
 	MProtocol::MCommand* cmd = _factory.setDateTimeCommand();
-	if(send(cmd)) {
-	}
+	return  send(cmd);
 }
 
 

@@ -58,6 +58,11 @@ std::string TIJPrinter::formatedDateTime() const
 	return dt.str();
 }
 
+void TIJPrinter::setDateTime(const time_t &dateTime)
+{
+	return Printer::setDateTime(dateTime);
+}
+
 void TIJPrinter::setDateTime(const std::string &formatedDatetime)
 {
 	time_t rawtime;
@@ -74,13 +79,9 @@ void TIJPrinter::setDateTime(const std::string &formatedDatetime)
 		timeInfo->tm_hour = std::atoi(formatedDatetime.substr(8, 2).c_str());
 		timeInfo->tm_min  = std::atoi(formatedDatetime.substr(10, 2).c_str());
 		timeInfo->tm_sec  = std::atoi(formatedDatetime.substr(12, 2).c_str());
+		rawtime = mktime ( timeInfo );
 		Printer::setDateTime(rawtime);
 	}
-}
-
-void TIJPrinter::setDateTime(const time_t &dateTime)
-{
-	Printer::setDateTime(dateTime);
 }
 
 std::string TIJPrinter::controllerVersion() const {return _controllerVersion;}
@@ -135,11 +136,9 @@ const Board * TIJPrinter::board(int id) const
 
 void TIJPrinter::setBoard(const Board &board)
 {
-	bool found = false;
 	for (unsigned int i = 0; i < _boards.size(); i++) {
 		if (_boards.at(i).id() == board.id()){
 			_boards[i] = board;
-			found  = true;
 			break;
 		}
 	}

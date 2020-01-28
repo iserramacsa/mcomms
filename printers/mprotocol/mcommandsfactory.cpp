@@ -14,6 +14,7 @@ using namespace Macsa::MProtocol;
 MCommandsFactory::MCommandsFactory(Printers::TIJPrinter& printer) :
 	_printer(printer)
 {
+	_requestId = -1;
 	_doc.Clear();
 }
 
@@ -203,10 +204,4 @@ bool MCommandsFactory::isWindValid(XMLElement *wind) const
 		valid = (isElement(wind, MWIND) && wind->FirstChildElement() != nullptr);
 	}
 	return valid;
-}
-
-uint32_t MCommandsFactory::nextId()
-{
-	if(++_requestId < 0){_requestId = 0;}
-	return static_cast<uint32_t>(_requestId);
 }

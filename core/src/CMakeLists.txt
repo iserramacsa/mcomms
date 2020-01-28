@@ -8,7 +8,7 @@ endif()
 
 
 set(SOURCES ${SOURCES}
-	${CMAKE_CURRENT_SOURCE_DIR}/core.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/printersmanager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/tijprintermonitor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/tijprintercontroller.cpp
 #	${CMAKE_CURRENT_SOURCE_DIR}/

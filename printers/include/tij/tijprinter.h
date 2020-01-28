@@ -20,8 +20,9 @@ namespace Macsa {
 				virtual const PrinterComms* comms() const override;
 
 				virtual std::string formatedDateTime() const;
+
+				virtual void setDateTime(const std::time_t& dateTime) override;
 				virtual void setDateTime(const std::string& formatedDatetime);
-				virtual void setDateTime(const std::time_t &dateTime) override;
 
 				virtual std::string controllerVersion() const;
 				virtual std::string apiVersion() const;

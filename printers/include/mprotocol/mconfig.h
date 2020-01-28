@@ -44,9 +44,6 @@ namespace Macsa {
 		{
 			public:
 				MSetDateTime(Printers::TIJPrinter& printer);
-
-				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
-
 			private:
 				virtual void buildRequest();
 		};

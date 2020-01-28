@@ -40,6 +40,17 @@ bool MNetwork::addNewNode(NetworkNode *node)
 	return added;
 }
 
+NetworkNode *MNetwork::getNodeById(const std::string &id) const
+{
+	for (unsigned int i = 0; i < _nodes.size(); i++) {
+		if(_nodes.at(i)->id().compare(id) == 0) {
+			return _nodes.at(i);
+		}
+	}
+
+	return nullptr;
+}
+
 NetworkNode *MNetwork::getNode(const std::string &address) const
 {
 	for (unsigned int i = 0; i < _nodes.size(); i++) {
@@ -107,6 +118,7 @@ bool MNetwork::removeNode(std::string nodeId)
 {
 	return removeNode(find(nodeId));
 }
+
 
 bool MNetwork::exist(NetworkNode *node)
 {

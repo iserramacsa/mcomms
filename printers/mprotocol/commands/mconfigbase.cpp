@@ -57,8 +57,7 @@ void MConfigCommand::printerConnectionsToXml(const Printers::TIJComms *comms, XM
 		}
 	}
 }
-
-void MConfigCommand::boardToXml(const Printers::Board &board, XMLElement **parent)
+void MConfigCommand::boardToXml(const Printers::Board& board, tinyxml2::XMLElement **parent)
 {
 	XMLElement * xBoard = createChildNode(MPRINTER_BOARD, parent);
 	if (xBoard != nullptr) {
@@ -151,7 +150,7 @@ void MConfigCommand::shotModeToXml(const Printers::ShotMode &shotMode, XMLElemen
 			const std::vector<Printers::Delay>& delays = shotMode.delays();
 			xShotMode->SetAttribute(MPRINTER_BOARD_SHOT_MODE_MODE_ATTR, shotMode.mode().toCString());
 			xShotMode->SetAttribute(ATTRIBUTE_VALUE, shotMode.numPrints());
-			xShotMode->SetAttribute(MPRINTER_BOARD_SHOT_MODE_DELAY_ATTR, delays.size());
+			xShotMode->SetAttribute(MPRINTER_BOARD_SHOT_MODE_DELAY_ATTR, static_cast<uint32_t>(delays.size()));
 			xShotMode->SetAttribute(MPRINTER_BOARD_SHOT_MODE_REPEAT_ATTR, MTools::toCString(shotMode.repeat()));
 			for (uint i = 0; i < delays.size(); i++) {
 				XMLElement* xDelay = createChildNode(MPRINTER_BOARD_SHOT_DELAY, &xShotMode);
@@ -278,7 +277,7 @@ void MConfigCommand::dateCodesToXml(const Macsa::Printers::DateCodes &dateCodes,
 
 }
 
-void MConfigCommand::generalConfigFromXml(const XMLElement *parent, Printers::TIJPrinter &printer) const
+void MConfigCommand::generalConfigFromXml(const tinyxml2::XMLElement *parent, Printers::TIJPrinter& printer) const
 {
 	if (parent != nullptr) {
 		const XMLElement* xGeneral = parent->FirstChildElement(MCONFIG_GENERAL);
