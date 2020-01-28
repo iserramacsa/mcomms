@@ -22,6 +22,7 @@ namespace Macsa {
 				bool removeNode(NetworkNode* node);
 				bool removeNode(std::string nodeId);
 
+				NetworkNode* getNodeById(const std::string& id) const;
 				NetworkNode* getNode(const std::string& address) const;
 				NetworkNode* getNode(unsigned int index) const;
 				int getNodeIdx(NetworkNode* node) const;

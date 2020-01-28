@@ -346,6 +346,9 @@ MFileContentCommand::MFileContentCommand(const std::string &command, Printers::T
 	_raw = raw;
 }
 
+MFileContentCommand::~MFileContentCommand()
+{}
+
 bool MFileContentCommand::raw() const
 {
 	return _raw;

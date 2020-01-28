@@ -32,12 +32,15 @@ namespace Macsa {
 				MCommand* getAllFilesCommand();
 				MCommand* getErrorsList();
 
-				inline uint32_t nextId();
+				inline uint32_t nextId() {
+					if(++_requestId < 0) { _requestId = 0; }
+					return static_cast<uint32_t>(_requestId);
+				}
 
 			private:
 				tinyxml2::XMLDocument _doc;
 				Printers::TIJPrinter& _printer;
-				int32_t _requestId = -1;
+				int32_t _requestId;
 
 				MCommand* getCommand(tinyxml2::XMLElement* wind) const;
 				inline bool isElement(const tinyxml2::XMLElement *wind, const std::string& name) const;
