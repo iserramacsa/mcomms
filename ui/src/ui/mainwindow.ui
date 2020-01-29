@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1003</width>
-    <height>626</height>
+    <width>800</width>
+    <height>494</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -25,6 +25,9 @@
         <width>200</width>
         <height>16777215</height>
        </size>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
       </property>
      </widget>
     </item>

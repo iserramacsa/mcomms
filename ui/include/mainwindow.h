@@ -23,9 +23,10 @@ class MainWindow : public QMainWindow
 
 	private slots:
 		void onAddPrinter();
+		void onPrinterSelected(const QModelIndex& index);
 
 	private:
-		PrintersListModel* _printersListModel;
+		QStringListModel* _printersListModel;
 		Macsa::PrintersManager _manager;
 		Ui::MainWindow ui;
 

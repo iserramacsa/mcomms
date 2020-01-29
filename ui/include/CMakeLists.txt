@@ -11,6 +11,7 @@ set(MOC_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/mainwindow.h
 	${CMAKE_CURRENT_SOURCE_DIR}/printerslistmodel.h
 	${CMAKE_CURRENT_SOURCE_DIR}/printerconndialog.h
+	${CMAKE_CURRENT_SOURCE_DIR}/printerview.h
 	)
 
 set(HEADERS ${MOC_HEADERS}

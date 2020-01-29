@@ -16,10 +16,14 @@ bool PrintersManager::addTijPrinter(const std::string name, const std::string &a
 {
 	TijPrinterController* controller = new TijPrinterController(name, address);
 
-	return  _tcpNetwork.addNewNode(controller);
+	bool success = _tcpNetwork.addNewNode(controller);
+	if ( success) {
+		_printerAddedEvent(name);
+	}
+	return success;
 }
 
-bool PrintersManager::connectTijPrinter(const std::string name)
+bool PrintersManager::connectPrinter(const std::string name)
 {
 	bool connected = false;
 	NetworkNode* node = _tcpNetwork.getNodeById(name);
@@ -29,7 +33,7 @@ bool PrintersManager::connectTijPrinter(const std::string name)
 	return connected;
 }
 
-bool PrintersManager::disconnectTijPrinter(const std::string name)
+bool PrintersManager::disconnectPrinter(const std::string name)
 {
 	bool disconnected = false;
 	NetworkNode* node = _tcpNetwork.getNodeById(name);
@@ -43,5 +47,15 @@ bool PrintersManager::disconnectTijPrinter(const std::string name)
 TijPrinterController *PrintersManager::getPrinter(const std::string name)
 {
 	return dynamic_cast<TijPrinterController*>(_tcpNetwork.getNodeById(name));
+}
+
+TijPrinterController *PrintersManager::getPrinter(const int index)
+{
+	return dynamic_cast<TijPrinterController*>(_tcpNetwork.getNode(static_cast<uint>(index)));
+}
+
+unsigned int PrintersManager::size() const
+{
+	return _tcpNetwork.size();
 }
 

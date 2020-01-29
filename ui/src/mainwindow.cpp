@@ -23,15 +23,10 @@ void MainWindow::loadMenus()
 
 void MainWindow::loadPrintersList()
 {
-	_printersListModel = new PrintersListModel(this);
-	_printersListModel->setColumnCount(1);
-	QStandardItem* item = new QStandardItem("Printers list");
-	_printersListModel->setVerticalHeaderItem(0, item);
-	_printersListModel->setHorizontalHeaderItem(0, item);
-
-	//_printersListModel->setVerticalHeaderItem(0, item);
-	//_printersListModel->setHeaderData(0, Qt::Orientation::Vertical, "Printers", Qt::DisplayRole);
+	_printersListModel = new QStringListModel(this);
 	ui._listPrinters->setModel(_printersListModel);
+
+	connect(ui._listPrinters, SIGNAL(doubleClicked(const QModelIndex&)), SLOT(onPrinterSelected(const QModelIndex&)));
 }
 
 void MainWindow::onAddPrinter()
@@ -41,9 +36,19 @@ void MainWindow::onAddPrinter()
 	if( dialog->exec()) {
 		qDebug() << __func__  << " id: " << dialog->name() << " - "  << dialog->address();
 		if (_manager.addTijPrinter(dialog->name().toStdString(), dialog->address().toStdString())) {
-			QStandardItem* item = new QStandardItem(QString("%1: %2").arg(dialog->name()).arg(dialog->address()));
-			_printersListModel->appendRow(item);
+			QStringList list = _printersListModel->stringList();
+			list << QString("%1: %2").arg(dialog->name()).arg(dialog->address());
+			_printersListModel->setStringList(list);
+//			QStandardItem* item = new QStandardItem(QString("%1: %2").arg(dialog->name()).arg(dialog->address()));
+//			_printersListModel->appendRow(item);
 		}
 	}
+
+}
+
+void MainWindow::onPrinterSelected(const QModelIndex &index)
+{
+	int row = index.row();
+	qDebug() << __func__  << " Selected printer: " << _manager.getPrinter(row)->id().c_str();
 
 }
