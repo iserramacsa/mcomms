@@ -7,6 +7,7 @@
 #include "ui_mainwindow.h"
 #include "printersmanager.h"
 #include "printerslistmodel.h"
+#include "printerview.h"
 
 #include <QStandardItemModel>
 
@@ -20,13 +21,15 @@ class MainWindow : public QMainWindow
 	protected:
 		void loadMenus();
 		void loadPrintersList();
+		void loadView();
 
 	private slots:
 		void onAddPrinter();
 		void onPrinterSelected(const QModelIndex& index);
 
 	private:
-		QStringListModel* _printersListModel;
+		PrinterView *_printerView;
+		QStringListModel *_printersListModel;
 		Macsa::PrintersManager _manager;
 		Ui::MainWindow ui;
 

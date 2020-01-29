@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui.setupUi(this);
 	loadMenus();
 	loadPrintersList();
+	loadView();
 }
 
 MainWindow::~MainWindow()
@@ -27,6 +28,14 @@ void MainWindow::loadPrintersList()
 	ui._listPrinters->setModel(_printersListModel);
 
 	connect(ui._listPrinters, SIGNAL(doubleClicked(const QModelIndex&)), SLOT(onPrinterSelected(const QModelIndex&)));
+}
+
+void MainWindow::loadView()
+{
+	QVBoxLayout* layout = new QVBoxLayout();
+	_printerView = new PrinterView(this);
+	ui._printerHolder->setLayout(layout);
+	layout->addWidget(_printerView);
 }
 
 void MainWindow::onAddPrinter()

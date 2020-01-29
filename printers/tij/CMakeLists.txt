@@ -10,7 +10,8 @@ project(${TIJ_LIBRARY_NAME})
 set (PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 ## Include macsa common code
-include($ENV{HOME}/workspace/tools/cmake/macsa.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../../toolchain/cmake/macsa.cmake)
+#include($ENV{HOME}/workspace/tools/cmake/macsa.cmake)
 
 if (WIN32)
 	set(EXTERNALS	${LIB_PREFIX}/lib/tinyxml2.lib)
