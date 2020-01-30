@@ -1,49 +1,41 @@
-#ifndef TIJ_PRINTER_CONTROLLER
-#define TIJ_PRINTER_CONTROLLER
+#ifndef TIJ_PRINTER_CONTROLLER_H
+#define TIJ_PRINTER_CONTROLLER_H
 
-#include <string>
-#include <mutex>
-#include <thread>
-#include <list>
-#if __cplusplus >= 201103L
-	#include <atomic>
-#else
-	#include <stdatomic.h>
-#endif
-
-#include "network/networknode.h"
-#include "tij/tijprinter.h"
-#include "mprotocol/mcommands.h"
+#include "printercontroller.h"
 #include "mprotocol/mcommandsfactory.h"
 
 namespace Macsa {
-	class TijPrinterController : public Network::NetworkNode {
+	class TIJPrinterController : public PrinterController {
 		public:
-			TijPrinterController(const std::string& id, const std::string& address);
-			~TijPrinterController();
-			bool connect();
-			bool disconnect();
+			TIJPrinterController(const std::string& id, const std::string& address);
+			virtual ~TIJPrinterController();
+			virtual Printers::Printer* printer() override {return &_printer;}
 
-			time_t getDateTime();
-			bool setDateTime(std::tm dt);
 
+			//Live
+			Printers::ErrorCode getLive();
+			//Status
+			Printers::ErrorCode updateStatus();
+			std::string printerStatus();
+			//Config
+			bool getConfig();
+			bool setDateTime(const std::time_t& dt);
+			//Files
+			std::vector<std::string> getFonts();
+			std::vector<std::string> getMessages();
+			std::vector<std::string> getImages();
+			std::vector<std::string> getAllFiles();
+			bool getErrorsList();
 
 		protected:
-			virtual bool send(MProtocol::MCommand *cmd);
+			virtual bool send(MProtocol::MCommand *cmd, Printers::ErrorCode& err);
 
 		private:
 			Printers::TIJPrinter _printer;
-			std::atomic_bool _running;
-			std::list<MProtocol::MCommand*> _commands;
 			MProtocol::MCommandsFactory _factory;
-#if __cplusplus >= 201103L
-			using itCommand = std::list<MProtocol::MCommand*>::iterator;
-#else
-			typedef std::list<MProtocol::MCommand*>::iterator itCommand;
-#endif
 	};
 }
 
 
-#endif
+#endif //TIJ_PRINTER_CONTROLLER_H
 

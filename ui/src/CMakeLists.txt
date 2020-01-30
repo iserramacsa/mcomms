@@ -9,11 +9,14 @@ set(SOURCES ${SOURCES}
 	${CMAKE_CURRENT_SOURCE_DIR}/printerconndialog.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/printerview.cpp
 	#	${CMAKE_CURRENT_SOURCE_DIR}/
-	PARENT_SCOPE
 	)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ui ${CMAKE_BINARY_DIR}/ui/qtdesigns)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/viewers ${CMAKE_BINARY_DIR}/ui/viewers)
+
+set(SOURCES ${SOURCES}
+	PARENT_SCOPE
+)
 
 set(UIS ${UIS}
 	PARENT_SCOPE

@@ -2,6 +2,7 @@
 #define MACSA_PRINTERS_DATA_TYPES_H
 
 #include <cinttypes>
+#include <ostream>
 #include <string>
 #include <stdint.h>
 
@@ -103,26 +104,40 @@ namespace Macsa {
 	namespace Printers {
 
 		template <typename N>
+		///
+		/// \brief The SmartEnum class is an abstract class to avoid boilerplate code.
+		/// Only equal operator and toString must be overrided.
+		/// This class is allows to use and object as an enum and can be setted with
+		/// string, or return an string from the internal value.
+		///
 		class SmartEnum
 		{
 			public:
 				SmartEnum(){}
 				virtual ~SmartEnum(){}
-				N operator()() const {return _val;}
-				bool operator == (const N& val) const {return _val == val;}
-				bool operator != (const N& val) const {return _val != val;}
-				bool operator == (const SmartEnum& other) const {return _val == other._val;}
-				bool operator != (const SmartEnum& other) const {return _val != other._val;}
-				void operator =  (const SmartEnum& other){_val = other._val;}
+				inline N operator()() const {return _val;}
+				inline bool operator == (const N& val) const {return _val == val;}
+				inline bool operator != (const N& val) const {return _val != val;}
+				inline bool operator == (const SmartEnum& other) const {return _val == other._val;}
+				inline bool operator != (const SmartEnum& other) const {return _val != other._val;}
+				inline void operator =  (const SmartEnum& other){_val = other._val;}
 
 				virtual void operator =  (const N& v) = 0;
 				virtual void operator = (const std::string& val) = 0;
 				virtual std::string toString() const = 0;
 				const char* toCString() const { return toString().c_str();}
 
+
+
 			protected:
 					N _val;
 		};
+		template <typename N>
+		inline std::ostream& operator << (std::ostream& os, const SmartEnum<N>& value) {return os << value.toString();}
+		template <typename N>
+		inline std::string& operator<<(std::string&, const SmartEnum<N>& value) {return value.toString();}
+		template <typename N>
+		inline const SmartEnum<N>& operator << (SmartEnum<N>& se, const std::string& str) {se = str; return se;}
 
 
 		enum BCDMode_n{
@@ -469,7 +484,7 @@ namespace Macsa {
 		class ErrorCode : public SmartEnum<ErrorCode_n>
 		{
 			public:
-				ErrorCode() : SmartEnum() {_val = SUCCESS;}
+				ErrorCode() : SmartEnum() {_val = UNKOWN_ERROR;}
 				virtual ~ErrorCode(){}
 				virtual void operator = (const enum ErrorCode_n& v){_val = v;}
 				virtual void operator = (const std::string& val){

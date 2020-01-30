@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QtGui>
 #include "ui_printerview.h"
+#include "viewers/tijviewercontroller.h"
+#include "tijprintercontroller.h"
 
 class PrinterView : public QWidget
 {
@@ -11,9 +13,13 @@ class PrinterView : public QWidget
 	public:
 		explicit PrinterView(QWidget* parent = 0);
 		~PrinterView();
+		void setController(Macsa::TIJPrinterController& controller);
 
 	private:
+		TIJViewerController* _controller;
 		Ui::PrinterView ui;
+
+		void refresh();
 };
 
 

@@ -24,8 +24,8 @@ namespace Macsa {
 			bool connectPrinter(const std::string name);
 			bool disconnectPrinter(const std::string name);
 
-			TijPrinterController* getPrinter(const std::string name);
-			TijPrinterController* getPrinter(const int index);
+			PrinterController* getPrinter(const std::string name);
+			PrinterController* getPrinter(const int index);
 
 			unsigned int size() const;
 

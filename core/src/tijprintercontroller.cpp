@@ -1,5 +1,6 @@
 #include "tijprintercontroller.h"
 #include "mprotocol/mcommandsfactory.h"
+#include "network/isocket.h"
 #include "network/tcpsocket.h"
 
 #define MPROTOCOL_PORT	9991
@@ -7,75 +8,75 @@
 using namespace Macsa;
 using namespace Macsa::Network;
 
-TijPrinterController::TijPrinterController(const std::string &id, const std::string &address) :
-	Network::NetworkNode(id, address),
+TIJPrinterController::TIJPrinterController(const std::string &id, const std::string &address) :
+	PrinterController(id, address, MPROTOCOL_PORT),
 	_factory(_printer)
-{
-	_running.store(false);
-	addConnection(ISocket::TCP_SOCKET, MPROTOCOL_PORT);
-}
-
-TijPrinterController::~TijPrinterController()
 {}
 
-bool TijPrinterController::connect()
+TIJPrinterController::~TIJPrinterController()
+{}
+
+Printers::ErrorCode TIJPrinterController::getLive()
 {
-	TcpSocket* socket = dynamic_cast<TcpSocket*>(NetworkNode::socket(ISocket::TCP_SOCKET, MPROTOCOL_PORT));
-	if (socket != nullptr){
-		socket->connect(address(), MPROTOCOL_PORT);
-		return (socket->status() == ISocket::CONNECTED);
+	Printers::ErrorCode error;
+	MProtocol::MCommand* cmd = _factory.getLiveCommand();
+	if (cmd) {
+		send(cmd, error);
+	}
+	return error;
+}
+
+Printers::ErrorCode TIJPrinterController::updateStatus()
+{
+	Printers::ErrorCode error;
+	MProtocol::MCommand* cmd = _factory.getStatusCommand();
+	if (cmd) {
+		send(cmd, error);
+	}
+	return error;
+}
+
+std::string TIJPrinterController::printerStatus()
+{
+	std::string status = "unknown";
+
+	if (NetworkNode::status() == NetworkNode::NodeStatus_n::CONNECTED) {
+		const Macsa::Printers::Board * board = _printer.board(0);
+		if (board == nullptr){
+			updateStatus();
+		}
+		if (board != nullptr) {
+			if (board->enabled()) {
+				status = "running";
+			}
+			else {
+				status = "stopped";
+			}
+		}
 	}
 	else {
-		return false;
+		status = "disconnected";
 	}
-}
 
-bool TijPrinterController::disconnect()
-{
-	TcpSocket* socket = dynamic_cast<TcpSocket*>(NetworkNode::socket(ISocket::TCP_SOCKET, MPROTOCOL_PORT));
-	if (socket != nullptr){
-		socket->close();
-		return (socket->status() == ISocket::UNKNOWN);
-	}
-	else{
-		return false;
-	}
-}
-
-time_t TijPrinterController::getDateTime()
-{
-	time_t dt = _printer.dateTime();
-//	if(send(_factory.getLiveCommand()->getRequest())) { //TODO
-//		dt = _printer.dateTime();
-//	}
-
-	return dt;
-}
-
-bool TijPrinterController::setDateTime(tm dt)
-{
-	std::time_t datetime = mktime(&dt);
-	_printer.setDateTime(datetime);
-	MProtocol::MCommand* cmd = _factory.setDateTimeCommand();
-	return  send(cmd);
+	return status;
 }
 
 
-bool TijPrinterController::send(MProtocol::MCommand* cmd)
+bool TIJPrinterController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &err)
 {
 	bool success = false;
 	ISocket* socket = NetworkNode::socket(ISocket::TCP_SOCKET, MPROTOCOL_PORT);
 	if(socket->status() == ISocket::CONNECTED)
 	{
-		//TODO check for new command iface funtionality ¿ getRequest or getResponse?
 		if (socket->send(cmd->getRequest(_factory.nextId())) == ISocket::FRAME_SUCCESS)
 		{
 			std::string resp = "";
 			if(socket->receive(resp) == ISocket::FRAME_SUCCESS)
 			{
-//				success = _factory.parse(resp, cmd); //Refactor
+				success = _factory.parse(resp, err);
 			}
 		}
 	}
 	return success;
 }
+

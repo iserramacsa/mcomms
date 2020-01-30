@@ -4,11 +4,15 @@ using namespace Macsa;
 using namespace Macsa::Network;
 
 TijPrinterMonitor::TijPrinterMonitor(const std::string &id, const std::string &address) :
-	TijPrinterController(id, address)
-{}
+	PrinterMonitor(id, address)
+{
+	
+}
 
 TijPrinterMonitor::~TijPrinterMonitor()
-{}
+{
+	
+}
 
 void TijPrinterMonitor::run()
 {

@@ -102,7 +102,13 @@ Printers::ErrorCode MCommand::getCommandError(const XMLElement *wind) const
 	if (wind != nullptr){
 		const XMLElement* error = wind->FirstChildElement(MERROR);
 		if (error != nullptr) {
-			err = error->Attribute(ATTRIBUTE_CODE, err.toString().c_str());
+			const XMLAttribute* code = error->FindAttribute(ATTRIBUTE_CODE);
+			if (code ){
+				const char* strVal = code->Value();
+				if (strVal) {
+					err = strVal;
+				}
+			}
 		}
 	}
 	return err;

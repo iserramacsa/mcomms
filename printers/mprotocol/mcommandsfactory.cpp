@@ -11,7 +11,7 @@
 using namespace tinyxml2;
 using namespace Macsa::MProtocol;
 
-MCommandsFactory::MCommandsFactory(Printers::TIJPrinter& printer) :
+MCommandsFactory::MCommandsFactory(Printers::TIJPrinter &printer) :
 	_printer(printer)
 {
 	_requestId = -1;
@@ -92,7 +92,7 @@ MCommand *MCommandsFactory::getAllFilesCommand()
 MCommand *MCommandsFactory::getCommand(XMLElement *wind) const
 {
 	MCommand * cmd = nullptr;
-	XMLElement* eCmd = wind->FirstChildElement();
+	XMLElement* eCmd = wind->FirstChildElement()->NextSiblingElement();
 	if (eCmd != nullptr) {
 		std::string cmdName = eCmd->Name();
 

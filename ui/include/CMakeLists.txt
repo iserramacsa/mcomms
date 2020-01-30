@@ -14,6 +14,8 @@ set(MOC_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/printerview.h
 	)
 
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/viewers)
+
 set(HEADERS ${MOC_HEADERS}
 	PARENT_SCOPE
 	)

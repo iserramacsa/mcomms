@@ -23,7 +23,7 @@ QVariant PrintersListModel::data(const QModelIndex &index, int role) const
 		case Qt::DisplayRole:
 		case Qt::UserRole:
 			if (index.row() >= 0){
-				Macsa::TijPrinterController * tij = _manager.getPrinter(index.row());
+				Macsa::PrinterController * tij = _manager.getPrinter(index.row());
 				if (tij !=  nullptr){
 					qDebug() << __func__ << " printer: " << tij->id().c_str();
 					return QString(tij->id().c_str());

@@ -30,6 +30,7 @@ namespace Macsa {
 				MCommand* getMessagesCommand();
 				MCommand* getImagesCommand();
 				MCommand* getAllFilesCommand();
+
 				MCommand* getErrorsList();
 
 				inline uint32_t nextId() {
@@ -42,7 +43,8 @@ namespace Macsa {
 				Printers::TIJPrinter& _printer;
 				int32_t _requestId;
 
-				MCommand* getCommand(tinyxml2::XMLElement* wind) const;
+				MCommand* getCommand(tinyxml2::XMLElement* wind) const; //Refacotr
+//				MCommand* getResponseCommand(tinyxml2::XMLElement* wind) const;
 				inline bool isElement(const tinyxml2::XMLElement *wind, const std::string& name) const;
 				inline bool isWindValid(tinyxml2::XMLElement* wind) const;
 
