@@ -13,15 +13,22 @@ TIJPrinterController::TIJPrinterController(const std::string &id, const std::str
 	_factory(_printer)
 {}
 
-TIJPrinterController::~TIJPrinterController()
-{}
-
+#include <iostream>
 Printers::ErrorCode TIJPrinterController::getLive()
 {
 	Printers::ErrorCode error;
 	MProtocol::MCommand* cmd = _factory.getLiveCommand();
 	if (cmd) {
-		send(cmd, error);
+		if (send(cmd, error) && error == Printers::ErrorCode_n::SUCCESS) {
+			_liveFlags = _factory.liveFlags();
+		}
+		std::cout << "statusChanged:    " << _liveFlags.statusChanged << std::endl;
+		std::cout << "configChanged:    " << _liveFlags.configChanged << std::endl;
+		std::cout << "filesChanged:     " << _liveFlags.filesChanged << std::endl;
+		std::cout << "fontsChanged:     " << _liveFlags.fontsChanged << std::endl;
+		std::cout << "errorsLogChanged: " << _liveFlags.errorsLogChanged << std::endl;
+		std::cout << "userValueChanged: " << _liveFlags.userValueChanged << std::endl;
+		std::cout << "isInError:        " << _liveFlags.isInError << std::endl;
 	}
 	return error;
 }
@@ -38,27 +45,42 @@ Printers::ErrorCode TIJPrinterController::updateStatus()
 
 std::string TIJPrinterController::printerStatus()
 {
-	std::string status = "unknown";
+	std::string status = "---";
 
 	if (NetworkNode::status() == NetworkNode::NodeStatus_n::CONNECTED) {
 		const Macsa::Printers::Board * board = _printer.board(0);
-		if (board == nullptr){
+		if (board == nullptr) {
 			updateStatus();
+			board = _printer.board(0);
 		}
+		board = _printer.board(0);
 		if (board != nullptr) {
 			if (board->enabled()) {
-				status = "running";
+				status = "Running";
+				if (board->printing()){
+					status = "Printing";
+				}
 			}
 			else {
-				status = "stopped";
+				status = "Stopped";
 			}
 		}
 	}
 	else {
-		status = "disconnected";
+		status = "Disconnected";
 	}
 
 	return status;
+}
+
+Printers::ErrorCode TIJPrinterController::updateConfig()
+{
+	Printers::ErrorCode error;
+	MProtocol::MCommand* cmd = _factory.getConfigCommand();
+	if (cmd) {
+		send(cmd, error);
+	}
+	return error;
 }
 
 
