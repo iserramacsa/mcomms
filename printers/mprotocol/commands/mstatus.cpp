@@ -93,7 +93,7 @@ void MStatusCommand::countersFromXml(const XMLElement *parent, Macsa::Printers::
 	if (parent) {
 		const XMLElement* xCounter = parent->FirstChildElement(MPRINTER_BOARD_COUNTER);
 		while (xCounter != nullptr) {
-			std::string key = xCounter->Attribute(ATTRIBUTE_ID);
+			std::string key = getTextAttribute(xCounter, ATTRIBUTE_ID);
 			if (key.length()) {
 				int value = board.counter(key);
 				value = (value != -1) ? value : 0;
@@ -113,9 +113,9 @@ void MStatusCommand::errorsFromXml(const XMLElement *parent, Macsa::Printers::Bo
 		const XMLElement* xError = parent->FirstChildElement(MPRINTER_BOARD_ERROR);
 		while (xError != nullptr) {
 			Printers::Error error;
-			error.setType(xError->Attribute(MPRINTER_BOARD_ERR_TYPE_ATTR));
+			error.setType(getTextAttribute(xError, MPRINTER_BOARD_ERR_TYPE_ATTR));
 			error.setPriority(xError->UnsignedAttribute(MPRINTER_BOARD_ERR_PRIO_ATTR));
-			error.setCode(xError->Attribute(MPRINTER_BOARD_ERR_CODE_ATTR));
+			error.setCode(getTextAttribute(xError, MPRINTER_BOARD_ERR_CODE_ATTR));
 
 			errors.push_back(error);
 
@@ -133,8 +133,8 @@ void MStatusCommand::inputsFromXml(const XMLElement *parent, Macsa::Printers::Bo
 		while (xInput != nullptr) {
 			unsigned int inputId = xInput->UnsignedAttribute(ATTRIBUTE_ID);
 			Printers::Input input = board.input(inputId);
-			input.setDescriptor(xInput->Attribute(MPRINTER_BOARD_IO_DESCRIPT_ATTR));
-			input.setValue(MTools::boolfromString(xInput->Attribute(ATTRIBUTE_VALUE)));
+			input.setDescriptor(getTextAttribute(xInput, MPRINTER_BOARD_IO_DESCRIPT_ATTR));
+			input.setValue(getBoolAttribute(xInput,ATTRIBUTE_VALUE));
 
 			inputs.push_back(input);
 
@@ -152,8 +152,8 @@ void MStatusCommand::outputsFromXml(const XMLElement *parent, Macsa::Printers::B
 		while (xOutput != nullptr) {
 			unsigned int outputId = xOutput->UnsignedAttribute(ATTRIBUTE_ID);
 			Printers::Output output = board.output(outputId);
-			output.setDescriptor(xOutput->Attribute(MPRINTER_BOARD_IO_DESCRIPT_ATTR));
-			output.setValue(MTools::boolfromString(xOutput->Attribute(ATTRIBUTE_VALUE)));
+			output.setDescriptor(getTextAttribute(xOutput, MPRINTER_BOARD_IO_DESCRIPT_ATTR));
+			output.setValue(getBoolAttribute(xOutput, ATTRIBUTE_VALUE));
 
 			outputs.push_back(output);
 
@@ -168,9 +168,9 @@ void MStatusCommand::propertiesFromXml(const XMLElement *parent, Macsa::Printers
 		const XMLElement* xProperty = parent->FirstChildElement(MPRINTER_BOARD_PROPERTY);
 		Printers::Board::propertyMap properties;
 		while (xProperty != nullptr) {
-			std::string key = xProperty->Attribute(ATTRIBUTE_KEY);
+			std::string key = getTextAttribute(xProperty, ATTRIBUTE_KEY);
 			if (key.length()) {
-				std::string value = xProperty->Attribute(ATTRIBUTE_VALUE);
+				std::string value = getTextAttribute(xProperty, ATTRIBUTE_VALUE);
 				properties.insert(std::pair<std::string,std::string>(key, value));
 			}
 			xProperty = xProperty->NextSiblingElement(MPRINTER_BOARD_PROPERTY);
@@ -274,7 +274,8 @@ bool MGetStatus::parseResponse(const XMLElement *xml)
 					board.setPrinting(getBoolFromChildNode(xBoard, MPRINTER_BOARD_PRINTING, board.printing()));
 					const XMLElement * xUserMessage = xBoard->FirstChildElement(MPRINTER_BOARD_CURRENT_MSG);
 					if (xUserMessage != nullptr){
-						board.setUserMessage(xUserMessage->Attribute(ATTRIBUTE_FILEPATH, board.userMessage().c_str()));
+						std::string userMessage = getTextAttribute(xUserMessage, ATTRIBUTE_FILEPATH, board.userMessage().c_str());
+						board.setUserMessage(userMessage);
 					}
 					board.setBcdMode(getTextFromChildNode(xBoard, MPRINTER_BOARD_BCD_MODE, board.bcdMode().toString()));
 					board.setBcdCurrent(static_cast<uint8_t>(getUnsignedFromChildNode(xBoard, MPRINTER_BOARD_BCD_STATUS, board.currentBcdCode())));

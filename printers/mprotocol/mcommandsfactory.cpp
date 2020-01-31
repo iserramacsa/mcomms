@@ -51,7 +51,7 @@ bool MCommandsFactory::parse(const std::string &frame, Printers::ErrorCode &erro
 
 MCommand *MCommandsFactory::getLiveCommand()
 {
-	return new MLive(_printer);
+	return new MLive(_printer, _liveFlags);
 }
 
 MCommand *MCommandsFactory::getStatusCommand()
@@ -89,7 +89,12 @@ MCommand *MCommandsFactory::getAllFilesCommand()
 	return new MGetFilesList(_printer, ALL_FILES_FILTER);
 }
 
-MCommand *MCommandsFactory::getCommand(XMLElement *wind) const
+LiveFlags MCommandsFactory::liveFlags() const
+{
+	return _liveFlags;
+}
+
+MCommand *MCommandsFactory::getCommand(XMLElement *wind)
 {
 	MCommand * cmd = nullptr;
 	XMLElement* eCmd = wind->FirstChildElement()->NextSiblingElement();
@@ -97,7 +102,7 @@ MCommand *MCommandsFactory::getCommand(XMLElement *wind) const
 		std::string cmdName = eCmd->Name();
 
 		if (cmdName.compare(MLIVE) == 0) {
-			cmd = new MLive(_printer);
+			cmd = new MLive(_printer, _liveFlags);
 		}
 		else if (cmdName.compare(MSTATUS) == 0){
 			cmd = new MGetStatus(_printer);

@@ -3,6 +3,7 @@
 
 #include <map>
 #include "mcommands.h"
+#include "mlive.h"
 #include "printer/printer.h"
 
 namespace Macsa {
@@ -38,12 +39,15 @@ namespace Macsa {
 					return static_cast<uint32_t>(_requestId);
 				}
 
+				LiveFlags liveFlags() const;
+
 			private:
 				tinyxml2::XMLDocument _doc;
 				Printers::TIJPrinter& _printer;
+				LiveFlags _liveFlags;
 				int32_t _requestId;
 
-				MCommand* getCommand(tinyxml2::XMLElement* wind) const; //Refacotr
+				MCommand* getCommand(tinyxml2::XMLElement* wind); //Refactor required
 //				MCommand* getResponseCommand(tinyxml2::XMLElement* wind) const;
 				inline bool isElement(const tinyxml2::XMLElement *wind, const std::string& name) const;
 				inline bool isWindValid(tinyxml2::XMLElement* wind) const;

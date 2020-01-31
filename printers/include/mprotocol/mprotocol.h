@@ -27,7 +27,9 @@ namespace  Macsa {
 #define MLIVE_CONFIG_ATTR		"ConfigChanged"
 #define MLIVE_FILES_ATTR		"FilesChanged"
 #define MLIVE_FONTS_ATTR		"FontsChanged"
-#define MLIVE_ERRORS_ATTR		"HaveError"
+#define MLIVE_USER_VALUES_ATTR	"UVChanged"
+#define MLIVE_ERROR_ATTR		"HaveError"
+#define MLIVE_ERRORS_LOG_ATTR	"ErrLogChanged"
 
 #define MSTATUS					"STATUS"
 #define MIOSTATUS				"IOSTATUS"

@@ -102,13 +102,7 @@ Printers::ErrorCode MCommand::getCommandError(const XMLElement *wind) const
 	if (wind != nullptr){
 		const XMLElement* error = wind->FirstChildElement(MERROR);
 		if (error != nullptr) {
-			const XMLAttribute* code = error->FindAttribute(ATTRIBUTE_CODE);
-			if (code ){
-				const char* strVal = code->Value();
-				if (strVal) {
-					err = strVal;
-				}
-			}
+			err = getTextAttribute(error, ATTRIBUTE_CODE, err.toCString());
 		}
 	}
 	return err;
@@ -182,6 +176,24 @@ double MCommand::getDoubleFromChildNode(const XMLElement *parent, const std::str
 		}
 	}
 	return value;
+}
+
+std::string MCommand::getTextAttribute(const XMLElement *element, const std::string &attribute, const std::string &defaultValue) const
+{
+	std::string value = defaultValue;
+	if(element != nullptr && !attribute.empty()) {
+		const XMLAttribute* attr = element->FindAttribute(attribute.c_str());
+		if (attr != nullptr) {
+			value = attr->Value();
+		}
+	}
+	return value;
+}
+
+bool MCommand::getBoolAttribute(const XMLElement *element, const std::string &attribute, bool defaultValue) const
+{
+	std::string def = MTools::toString (defaultValue);
+	return MTools::boolfromString (getTextAttribute(element, attribute, def));
 }
 
 XMLElement *MCommand::createChildNode(const std::string &child, XMLElement **parent)

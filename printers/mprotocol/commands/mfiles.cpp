@@ -58,11 +58,7 @@ bool MGetFilesList::parseRequest(const XMLElement *xml)
 	if  (cmd != nullptr) {
 		valid = (cmd != nullptr && cmd->NoChildren());
 		if (valid){
-			_filter = "*.*";
-			const char* filter = cmd->Attribute(MFILES_GET_LIST_TYPE_ATTR);
-			if (filter != nullptr) {
-				_filter = filter;
-			}
+			_filter = getTextAttribute(cmd, MFILES_GET_LIST_TYPE_ATTR, "*.*");
 		}
 	}
 
@@ -77,17 +73,17 @@ bool MGetFilesList::parseResponse(const XMLElement *xml)
 		if (std::string(cmd->Value()).compare(MFILES_GET_LIST) == 0)
 		{
 			std::vector<std::string> exts;
-			const char* filter = cmd->Attribute(MFILES_GET_LIST_TYPE_ATTR);
-			if (filter != nullptr && strlen(filter) > 1) {
-				std::string f = filter;
+			std::string filter = getTextAttribute(cmd, MFILES_GET_LIST_TYPE_ATTR, "");
+
+			if (filter.length() > 1) {
 				size_t coma = 0;
-				while ((coma = f.find_first_of(",", coma)) != f.npos)
+				while ((coma = filter.find_first_of(",", coma)) != filter.npos)
 				{
-					exts.push_back(f.substr(0, coma));
-					f = f.substr(coma + 1);
+					exts.push_back(filter.substr(0, coma));
+					filter = filter.substr(coma + 1);
 				}
-				if (f.length()) {
-					exts.push_back(f);
+				if (filter.length()) {
+					exts.push_back(filter);
 				}
 			}
 
@@ -95,8 +91,8 @@ bool MGetFilesList::parseResponse(const XMLElement *xml)
 			std::vector<std::string> drives;
 			const XMLElement * unit = cmd->FirstChildElement(MFILES_DEVICE_UNIT);
 			while (unit != nullptr) {
-				const char* drive = unit->Attribute(ATTRIBUTE_NAME);
-				if (drive != nullptr) {
+				std::string drive = getTextAttribute(unit, ATTRIBUTE_NAME);
+				if (drive.length()) {
 					drives.push_back(drive);
 				}
 				unit = unit->NextSiblingElement(MFILES_DEVICE_UNIT);
@@ -110,8 +106,8 @@ bool MGetFilesList::parseResponse(const XMLElement *xml)
 			/* Insert new files */
 			const XMLElement * xmlfile = cmd->FirstChildElement(MFILES_FILE_PATH);
 			while (xmlfile != nullptr) {
-				const char* path = xmlfile->Attribute(MFILES_FILE_PATH_ATTR);
-				if (path != nullptr) {
+				std::string path = getTextAttribute(xmlfile, MFILES_FILE_PATH_ATTR);
+				if (path.length()) {
 					insertFileToPrinterData(path);
 				}
 				xmlfile = xmlfile->NextSiblingElement(MFILES_FILE_PATH);
@@ -181,8 +177,8 @@ bool MCopyFile::parseRequest(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if (valid) {
-		_sourceFilename = cmd->Attribute(MFILES_SOURCE_PATH_ATTR, "");
-		_targetFilename = cmd->Attribute(MFILES_TARGET_PATH_ATTR, "");
+		_sourceFilename = getTextAttribute(cmd, MFILES_SOURCE_PATH_ATTR);
+		_targetFilename = getTextAttribute(cmd, MFILES_TARGET_PATH_ATTR);
 	}
 
 	return valid;
@@ -242,8 +238,8 @@ bool MMoveFile::parseRequest(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if (valid) {
-		_sourceFilename = cmd->Attribute(MFILES_SOURCE_PATH_ATTR, "");
-		_targetFilename = cmd->Attribute(MFILES_TARGET_PATH_ATTR, "");
+		_sourceFilename = getTextAttribute(cmd, MFILES_SOURCE_PATH_ATTR);
+		_targetFilename = getTextAttribute(cmd, MFILES_TARGET_PATH_ATTR);
 	}
 	return valid;
 }
@@ -301,7 +297,7 @@ bool MDeleteFile::parseRequest(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if (valid) {
-		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
+		_filename = getTextAttribute(cmd, ATTRIBUTE_FILEPATH);
 	}
 	return valid;
 }
@@ -436,8 +432,8 @@ bool MGetFile::parseRequest(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if (valid) {
-		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
-		_raw = MTools::boolfromString(cmd->Attribute(MFILES_FILE_RAW_ATTR, "false"));
+		_filename = getTextAttribute(cmd, ATTRIBUTE_FILEPATH);
+		_raw = getBoolAttribute(cmd, MFILES_FILE_RAW_ATTR);
 	}
 	return valid;
 }
@@ -503,8 +499,8 @@ bool MSetFile::parseRequest(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if (valid) {
-		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
-		_raw = MTools::boolfromString(cmd->Attribute(MFILES_FILE_RAW_ATTR, "false"));
+		_filename = getTextAttribute(cmd, ATTRIBUTE_FILEPATH);
+		_raw = getBoolAttribute(cmd, MFILES_FILE_RAW_ATTR);
 	}
 	return valid;
 }
