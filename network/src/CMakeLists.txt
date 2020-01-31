@@ -4,6 +4,12 @@
 
 if (INCLUDE_TESTS)
 	add_subdirectory(test)
+        set(SRC_TEST ${SRC_TEST}
+            PARENT_SCOPE
+        )
+        set(HDRS_TEST ${HDRS_TEST}
+            PARENT_SCOPE
+        )
 endif()
 
 set(_SRCS ${_SRCS}

@@ -22,6 +22,7 @@ elseif(UNIX)
 	elseif(CMAKE_CXX_COMPILER MATCHES "gnueabi")
 		message("gnueabi variant")
 		set(LIB_PREFIX		$ENV{HOME}/TIJLibraries/arm-buildroot-linux-gnueabi)
+                add_definitions(-Dnullptr=0)
 	else()
 		message("Linux desktop version")
 		set(LIB_PREFIX		$ENV{HOME}/TIJLibraries/x64)
@@ -29,7 +30,9 @@ elseif(UNIX)
 	set(EXTERNAL_LIBS	-pthread)
 endif()
 
-add_definitions(-DVIRTUAL_MOCK=)
+if (NOT INCLUDE_TESTS)
+    add_definitions(-DVIRTUAL_MOCK=)
+endif()
 add_definitions(-DHOME=$ENV{HOME})
 
 
@@ -64,6 +67,14 @@ set(_SRCS ${_SRCS}
 set(_HDRS ${_HDRS}
 )
 
+if(INCLUDE_TESTS)
+    set(SRC_TEST ${SRC_TEST}
+        PARENT_SCOPE
+    )
+    set(HDRS_TEST ${HDRS_TEST}
+        PARENT_SCOPE
+    )
+endif()
 ###########################
 ## Install targets
 ###########################

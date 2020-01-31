@@ -206,9 +206,8 @@ TEST_F(SocketUT, receiveTcpServerSocket_returnEchoMessage)
 	}
 	_socket->close();
 
-	EXPECT_EQ(server_rx, ECHO_MSG);
-	EXPECT_EQ(remote_rx, ECHO_MSG);
-
+	EXPECT_EQ(server_rx.compare(ECHO_MSG), 0);
+	EXPECT_EQ(remote_rx.compare(ECHO_MSG), 0);
 }
 
 TEST_F(SocketUT, receiveTcpServerSocket_returnClientClosed)
@@ -302,7 +301,7 @@ TEST_F(SocketUT, tcpClientSocket_returnReceiveEcho)
 	EXPECT_EQ(_socket->send(ECHO_MSG), ISocket::FRAME_SUCCESS);
 	std::string msg = "";
 	EXPECT_EQ(_socket->receive(msg), ISocket::FRAME_SUCCESS);
-	EXPECT_EQ(msg, ECHO_MSG);
+	EXPECT_EQ(msg.compare(ECHO_MSG), 0);
 
 	_server.stop();
 	_socket->close();

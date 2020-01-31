@@ -4,10 +4,6 @@
 #include <stdint.h>
 #include <string>
 
-#ifndef nullptr
-#define nullptr NULL
-#endif
-
 #ifndef VIRTUAL_MOCK
 #define VIRTUAL_MOCK
 #endif
