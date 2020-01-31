@@ -9,7 +9,7 @@ namespace Macsa {
 		class MNetwork : public NetworkNode {
 			public:
 				MNetwork(ISocket::SocketType_n rootNodeType = ISocket::TCP_SOCKET);
-				~MNetwork();
+                                virtual ~MNetwork();
 
 #ifdef NETWORK_VERSION_STR
 				static int versionMajor();

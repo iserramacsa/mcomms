@@ -80,12 +80,12 @@ ISocket *NetworkNode::socket(ISocket::SocketType_n type, uint16_t port)
 	return find(type, port);
 }
 
-bool NetworkNode::operator ==(const NetworkNode &other)
+bool NetworkNode::operator == (const NetworkNode &other)
 {
 	return equal(other);
 }
 
-bool NetworkNode::operator !=(const NetworkNode &other)
+bool NetworkNode::operator != (const NetworkNode &other)
 {
 	return !equal(other);
 }

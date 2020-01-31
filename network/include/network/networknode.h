@@ -26,7 +26,6 @@ namespace Macsa {
 				bool addConnection(ISocket* socket);
 				ISocket* socket(ISocket::SocketType_n type, uint16_t port);
 
-
 				virtual bool operator == (const NetworkNode& other);
 				virtual bool operator != (const NetworkNode& other);
 
