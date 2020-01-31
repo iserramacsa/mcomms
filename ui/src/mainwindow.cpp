@@ -8,6 +8,7 @@
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent)
 {
+	this->setWindowTitle(QString("%1 v%2").arg(UI_PROJECT_NAME).arg(UI_VERSION_STR));
 	ui.setupUi(this);
 	loadMenus();
 	loadPrintersList();
@@ -36,6 +37,7 @@ void MainWindow::loadView()
 	_printerView = new PrinterView(this);
 	ui._printerHolder->setLayout(layout);
 	layout->addWidget(_printerView);
+	_printerView->setEnabled(false);
 }
 
 void MainWindow::onAddPrinter()

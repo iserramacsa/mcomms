@@ -10,9 +10,15 @@ class TIJViewerController : public PrinterViewerController
 	public:
 		enum class TIJDataDescriptors
 		{
-			STATUS = 0,
-			LIVE,
+			LIVE = 0,
+			STATUS,
+			CONFIG,
 			ALL_FILES,
+
+			PRINTER_ID,
+			PRINTER_ADDRS,
+			PRINTER_STATUS,
+			PRINTER_DT,
 		};
 
 	public:

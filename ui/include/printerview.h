@@ -20,6 +20,12 @@ class PrinterView : public QWidget
 		Ui::PrinterView ui;
 
 		void refresh();
+
+
+	private slots:
+		void onRequestLive();
+		void onRequestConfig();
+		void onRequestStatus();
 };
 
 
