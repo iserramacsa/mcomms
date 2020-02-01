@@ -30,7 +30,7 @@ namespace Macsa {
 			unsigned int size() const;
 
 			AddedPrinterConnection connect(const AddedPrinterCallback& callback) {
-				_printerAddedEvent.connect(callback);
+				return _printerAddedEvent.connect(callback);
 			}
 
 
