@@ -1,6 +1,8 @@
 #include <iostream>
 #include <getopt.h>
 
+#include "clientmanager.h"
+
 using namespace std;
 
 #define PORT_OPTION	'p'
@@ -47,11 +49,27 @@ int main(int argc, char* argv[])
 			cout << "Non-option argument " << argv[index] << endl;
 		return 1;
 	}
+	if (port == 0){
+		cout << "Invalid port" << endl;
+		return 1;
+	}
 
 	cout << "#################################" << endl;
 	cout << "    TIJEmulator version " << EMULATOR_VERSION_STR << endl;
 	cout << "#################################" << endl << endl;
 	cout << "Emulator configured at port: " << port << endl;
 
+	ClientManager manager;
+	if (manager.initServer(port)) {
+		if (manager.acceptConnection()) {
+			cout << "Client connected" << endl;
+		}
+		else {
+			cout << "Unable tot accept connections" << endl;
+		}
+	}
+	else {
+		cout << "Unable tot init server" << endl;
+	}
 	return 0;
 }
