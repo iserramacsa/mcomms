@@ -9,7 +9,7 @@ project(${PROJECT_NAME})
 
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
-include(${PROJECT_SOURCE_DIR}/../extras/macsa.cmake)
+include(${PROJECT_SOURCE_DIR}/../toolchain/cmake/macsa.cmake)
 
 if(UNIX)
 	add_compile_options(-fPIC)
