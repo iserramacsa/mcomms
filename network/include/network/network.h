@@ -9,7 +9,7 @@ namespace Macsa {
 		class MNetwork : public NetworkNode {
 			public:
 				MNetwork(ISocket::SocketType_n rootNodeType = ISocket::TCP_SOCKET);
-                                virtual ~MNetwork();
+				virtual ~MNetwork();
 
 #ifdef NETWORK_VERSION_STR
 				static int versionMajor();
@@ -29,9 +29,8 @@ namespace Macsa {
 				virtual NodeStatus_n status() const;
 				virtual unsigned int size() const {return static_cast<unsigned int>(_nodes.size());}
 
-                                bool blind(uint16_t port);
-                                bool listen();
-
+				bool blind(uint16_t port);
+				bool listen();
 
 			protected:
 				bool exist(NetworkNode* node);
