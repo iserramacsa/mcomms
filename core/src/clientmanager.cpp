@@ -5,14 +5,13 @@
 ClientManager::ClientManager() :
 	Network::MNetwork (Network::ISocket::TCP_SOCKET)
 {
-	_server = nullptr;
-	_running.store(false);
+  _server = nullptr;
+  _running.store(false);
 }
 
 ClientManager::~ClientManager()
 {
-	_running.store(true);
-
+	stop();
 }
 
 bool ClientManager::initServer(uint16_t port)
@@ -36,35 +35,52 @@ bool ClientManager::initServer(uint16_t port)
 
 void ClientManager::run(bool detached)
 {
+	if (!detached){
+		return serverMainLoop();
+	}
+	else {
+		_svrLoop = std::thread(&ClientManager::serverMainLoop, this);
+	}
+}
 
+void ClientManager::stop()
+{
+	_running.store(false);
+	_server->close();
+	{
+		std::unique_lock<std::mutex> lck(_mtx);
+		_cv.wait(lck);
+	}
+	_svrLoop.joinable();
 }
 
 void ClientManager::serverMainLoop()
 {
 	_running.store(true);
 	while (_running.load()) {
-		if (acceptConnection()){
+		NetworkNode* client = acceptConnection();
+		if (client != nullptr){
 
 		}
 	}
+	{
+		std::unique_lock<std::mutex> lck(_mtx);
+		_cv.notify_all();
+	}
 }
 
-bool ClientManager::acceptConnection()
+Network::NetworkNode* ClientManager::acceptConnection()
 {
-	bool newClient = false;
+	NetworkNode* newClient = nullptr;
 	if (_server ){
 		Network::ISocket* client = _server->accept();
 		if (client != nullptr) {
 			std::stringstream id;
 			id << "Client" << std::to_string(_nodes.size());
 			std::cout << __func__ << " " << id.str() << std::endl;
-			NetworkNode* node = new NetworkNode(id.str(), client);
-			newClient = addNewNode(node);
-			if (!newClient) {
-				delete node;
-			}
+			newClient = new NetworkNode(id.str(), client);
 		}
 	}
+
 	return newClient;
 }
-

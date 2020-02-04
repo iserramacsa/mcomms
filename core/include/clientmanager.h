@@ -15,17 +15,18 @@ class ClientManager : public Network::MNetwork
 		ClientManager();
 		~ClientManager();
 		bool initServer(uint16_t port);
-		void run(bool detached);
+		void run(bool detached = true);
+		void stop();
 
 	private:
 		Network::ISocket *_server;
-		std::thread _mainLoop;
+		std::thread _svrLoop;
 		std::atomic_bool _running;
 		std::mutex _mtx;
 		std::condition_variable _cv;
 
 		void serverMainLoop();
-		bool acceptConnection();
+		Network::NetworkNode* acceptConnection();
 
 };
 

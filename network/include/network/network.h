@@ -29,9 +29,6 @@ namespace Macsa {
 				virtual NodeStatus_n status() const;
 				virtual unsigned int size() const {return static_cast<unsigned int>(_nodes.size());}
 
-				bool blind(uint16_t port);
-				bool listen();
-
 			protected:
 				bool exist(NetworkNode* node);
 				NetworkNode* find(const std::string &name) const;

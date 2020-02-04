@@ -95,13 +95,6 @@ NetworkNode::NodeStatus_n MNetwork::status() const
 	return DISCONNECTED;
 }
 
-bool MNetwork::blind(uint16_t /*port*/)
-{
-//	_rootNode->
-	return false;
-}
-
-
 bool MNetwork::removeNode(NetworkNode *node)
 {
 	bool removed = false;

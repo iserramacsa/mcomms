@@ -61,12 +61,7 @@ int main(int argc, char* argv[])
 
 	ClientManager manager;
 	if (manager.initServer(port)) {
-		if (manager.acceptConnection()) {
-			cout << "Client connected" << endl;
-		}
-		else {
-			cout << "Unable tot accept connections" << endl;
-		}
+		manager.run(false);
 	}
 	else {
 		cout << "Unable tot init server" << endl;
