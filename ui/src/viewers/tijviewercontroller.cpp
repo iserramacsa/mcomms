@@ -27,7 +27,7 @@ QVariant TIJViewerController::data(int descriptor)
 		case TIJDataDescriptors::PRINTER_ADDRS:
 				return _controller.address().c_str();
 		case TIJDataDescriptors::PRINTER_STATUS:
-				return _controller.printerStatus().c_str();
+				return static_cast<int>(_controller.printerStatus());
 		case TIJDataDescriptors::PRINTER_DT:
 			{
 				TIJPrinter* tij = dynamic_cast<TIJPrinter*>(_controller.printer());
@@ -48,14 +48,44 @@ bool TIJViewerController::setData(int /*descriptor*/, const QVariant &/*value*/)
 	return false;
 }
 
-QString TIJViewerController::getype() const
+QString TIJViewerController::boardType() const
 {
-	std::string value = "";
+	std::string value = "---";
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		value = board->type();
 	}
 
+	return value.c_str();
+}
+
+QString TIJViewerController::boardControllerVersion() const
+{
+	std::string value = "---";
+	const TIJPrinter* tij = tijPrinter();
+	if (tij) {
+		value = tij->controllerVersion();
+	}
+	return value.c_str();
+}
+
+QString TIJViewerController::boardFPGAVersion() const
+{
+	std::string value = "---";
+	const TIJPrinter* tij = tijPrinter();
+	if (tij) {
+		value = tij->fpgaVersion();
+	}
+	return value.c_str();
+}
+
+QString TIJViewerController::boardAPIVersion() const
+{
+	std::string value = "---";
+	const TIJPrinter* tij = tijPrinter();
+	if (tij) {
+		value = tij->apiVersion();
+	}
 	return value.c_str();
 }
 
@@ -111,7 +141,7 @@ bool TIJViewerController::blocked() const
 
 QString TIJViewerController::currentMessage() const
 {
-	std::string value = "";
+	std::string value = "---";
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		value = board->currentMessage();
@@ -121,7 +151,7 @@ QString TIJViewerController::currentMessage() const
 
 QString TIJViewerController::userMessage() const
 {
-	std::string value = "";
+	std::string value = "---";
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		value = board->userMessage();
@@ -144,7 +174,7 @@ QMap<int, QString> TIJViewerController::bcdTable() const
 
 QString TIJViewerController::bcdMode() const
 {
-	std::string value = "";
+	std::string value = "---";
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		value = board->bcdMode().toString();
@@ -164,7 +194,7 @@ uint8_t TIJViewerController::currentBcdCode() const
 
 QString TIJViewerController::printDirection() const
 {
-	std::string value = "";
+	std::string value = "---";
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		value = board->printDirection().toString();
@@ -184,7 +214,7 @@ bool TIJViewerController::printRotated() const
 
 QString TIJViewerController::nozzlesCol() const
 {
-	std::string value = "";
+	std::string value = "---";
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		value = board->nozzlesCol().toString();
@@ -194,7 +224,7 @@ QString TIJViewerController::nozzlesCol() const
 
 QString TIJViewerController::shotMode() const
 {
-	std::string value = "";
+	std::string value = "---";
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		value = board->shotMode().mode().toString();
@@ -237,7 +267,7 @@ bool TIJViewerController::shotModeRepeat() const
 
 QString TIJViewerController::encoderMode() const
 {
-	std::string value = "";
+	std::string value = "---";
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		value = board->encoder().mode().toString();
@@ -279,7 +309,7 @@ double TIJViewerController::encoderDiameter() const
 
 QString TIJViewerController::photocell() const
 {
-	std::string value = "";
+	std::string value = "---";
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		value = board->photocell().toString();
@@ -326,7 +356,7 @@ QMap<QString, QString> TIJViewerController::properties() const
 
 QString TIJViewerController::property(const QString &name) const
 {
-	std::string value = "";
+	std::string value = "---";
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		value = board->property(name.toStdString());
@@ -493,16 +523,26 @@ const Board *TIJViewerController::tijPrinterBoard() const
 TIJViewerController::PrinterInput TIJViewerController::printerInputToView(Input in) const
 {
 	PrinterInput pIn;
+	pIn.id = static_cast<int>(in.id());
+	pIn.descriptor = in.descriptor().c_str();
 	pIn.mode = in.mode().toCString();
 	pIn.inverted = in.inverted();
 	pIn.filter = in.filter();
+	pIn.value = in.value();
+
+	return pIn;
 }
 
 TIJViewerController::PrinterOutput TIJViewerController::printerOutputToView(Output out) const
 {
 	PrinterOutput pOut;
+	pOut.id = static_cast<int>(out.id());
+	pOut.descriptor = out.descriptor().c_str();
 	pOut.initialValue = out.initialValue();
 	pOut.type = out.type().toCString();
 	pOut.time = out.time();
+	pOut.value = out.value();
+
+	return pOut;
 }
 

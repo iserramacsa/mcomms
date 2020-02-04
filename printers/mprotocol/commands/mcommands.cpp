@@ -114,7 +114,7 @@ std::string MCommand::getTextFromChildNode(const XMLElement *parent, const std::
 	if (parent)	{
 		const XMLElement * node = parent->FirstChildElement(child.c_str());
 		if (node) {
-			text = node->GetText();
+			text = (node->GetText() != nullptr) ? node->GetText() : "";
 		}
 	}
 	return text;

@@ -31,7 +31,7 @@ bool MGetConfig::parseResponse(const XMLElement *xml)
 		const XMLElement* xBoards = cmd->FirstChildElement(MPRINTER_BOARDS_LIST);
 		std::vector<Printers::Board> boards;
 		if (xBoards != nullptr) {
-			const XMLElement* xBoard = cmd->FirstChildElement(MPRINTER_BOARD);
+			const XMLElement* xBoard = xBoards->FirstChildElement(MPRINTER_BOARD);
 			while (xBoard != nullptr){
 				int id = xBoard->IntAttribute(ATTRIBUTE_ID, 0);
 				Printers::Board* board = _printer.board(id);
@@ -46,6 +46,7 @@ bool MGetConfig::parseResponse(const XMLElement *xml)
 				if (newBoard) {
 					delete board;
 				}
+				xBoard = xBoard->NextSiblingElement(MPRINTER_BOARD);
 			}
 		}
 		_printer.setBoards(boards);

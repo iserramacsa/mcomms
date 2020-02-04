@@ -8,6 +8,7 @@ set(SOURCES ${SOURCES}
 	${CMAKE_CURRENT_SOURCE_DIR}/printerslistmodel.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/printerconndialog.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/printerview.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/printerstatusview.cpp
 	#	${CMAKE_CURRENT_SOURCE_DIR}/
 	)
 

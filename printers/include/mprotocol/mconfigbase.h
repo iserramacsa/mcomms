@@ -19,6 +19,7 @@ namespace Macsa {
 				void boardToXml(const Printers::Board& board, tinyxml2::XMLElement **parent);
 				void boardTypeToXml(const std::string &boardType, tinyxml2::XMLElement **parent);
 				void autostartToXml(bool autostart, tinyxml2::XMLElement **parent);
+				void lowLevelOutputToXml(bool lowLevel, tinyxml2::XMLElement **parent);
 				void enabledToXml(bool enabled, tinyxml2::XMLElement **parent);
 				void blockToXml(bool block, tinyxml2::XMLElement **parent);
 				void userMessageToXml(const std::string &userMessage, tinyxml2::XMLElement **parent);

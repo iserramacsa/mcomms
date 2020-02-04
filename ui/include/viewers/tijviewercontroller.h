@@ -23,12 +23,18 @@ class TIJViewerController : public PrinterViewerController
 		};
 
 		struct PrinterInput {
+				int id;
+				QString descriptor;
+				bool value;
 				QString mode;
 				bool inverted;
 				uint filter;
 		};
 
 		struct PrinterOutput {
+				int id;
+				QString descriptor;
+				bool value;
 				bool initialValue;
 				QString type;
 				uint32_t time;
@@ -47,7 +53,10 @@ class TIJViewerController : public PrinterViewerController
 		virtual bool setData(int descriptor, const QVariant& value);
 
 
-		QString getype() const;
+		QString boardType() const;
+		QString boardControllerVersion() const;
+		QString boardFPGAVersion() const;
+		QString boardAPIVersion() const;
 
 		bool autoStart() const;
 		//		void setAutoStart(bool autoStart);

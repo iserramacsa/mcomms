@@ -64,6 +64,7 @@ void MConfigCommand::boardToXml(const Printers::Board& board, tinyxml2::XMLEleme
 		xBoard->SetAttribute(ATTRIBUTE_ID, board.id());
 		boardTypeToXml(board.type(), &xBoard);
 		autostartToXml(board.autoStart(), &xBoard);
+		lowLevelOutputToXml(board.lowLevelOutput(), &xBoard);
 		enabledToXml(board.enabled(), &xBoard);
 		blockToXml(board.blocked(), &xBoard);
 		userMessageToXml(board.userMessage(), &xBoard);
@@ -93,6 +94,11 @@ void MConfigCommand::boardTypeToXml(const std::string  &boardType, XMLElement **
 void MConfigCommand::autostartToXml(bool autostart, XMLElement **parent)
 {
 	return boardTextValueToXml(MPRINTER_BOARD_AUTOSTART, MTools::toString(autostart), parent);
+}
+
+void MConfigCommand::lowLevelOutputToXml(bool lowLevel, XMLElement **parent)
+{
+	return boardTextValueToXml(MPRINTER_BOARD_LOW_LEVEL, MTools::toString(lowLevel), parent);
 }
 
 void MConfigCommand::enabledToXml(bool enabled, XMLElement **parent)

@@ -39,9 +39,9 @@
 #define OUTPUT_TYPE_MAXON		"MaxOn"
 #define OUTPUT_TYPE_MAXOFF		"MaxOff"
 
-#define BCD_MODE_USER   "USER_MODE"
-#define BCD_MODE_BCD_1  "BCD_MODE_1"
-#define BCD_MODE_BCD_2  "BCD_MODE_2"
+#define BCD_MODE_USER   "Mode0"
+#define BCD_MODE_BCD_1  "Mode1"
+#define BCD_MODE_BCD_2  "Mode2"
 
 #define DELAY_UNIT_MM	"mm"
 #define DELAY_UNIT_DOTS	"dts"

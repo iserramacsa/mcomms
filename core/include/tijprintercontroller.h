@@ -5,7 +5,18 @@
 #include "mprotocol/mcommandsfactory.h"
 
 namespace Macsa {
-	class TIJPrinterController : public PrinterController {
+	class TIJPrinterController : public PrinterController
+	{
+		public:
+			enum class TIJPrinterStatus
+			{
+				DISCONNECTED = -1,
+				STOPPED,
+				WARNING,
+				RUNNING,
+				PRINTING,
+			};
+
 		public:
 			TIJPrinterController(const std::string& id, const std::string& address);
 			virtual Printers::Printer* printer() override {return &_printer;}
@@ -22,7 +33,7 @@ namespace Macsa {
 
 			//Status
 			Printers::ErrorCode updateStatus();
-			std::string printerStatus();
+			TIJPrinterStatus printerStatus();
 			//Config
 			Printers::ErrorCode updateConfig();
 			bool setDateTime(const std::time_t& dt);

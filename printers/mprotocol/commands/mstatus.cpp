@@ -254,10 +254,10 @@ bool MGetStatus::parseResponse(const XMLElement *xml)
 			_printer.setDateTime(getTextFromChildNode(cmd, MSTATUS_DT, _printer.formatedDateTime()));
 			const XMLElement* xVersion = cmd->FirstChildElement(MSTATUS_VERSION);
 			if (xVersion != nullptr){
-				std::string ctrlVersion = getTextFromChildNode(xVersion, MSTATUS_VERSION_CTRL,_printer.controllerVersion());
+				std::string mpkVersion = getTextFromChildNode(xVersion, MSTATUS_VERSION_CTRL,_printer.controllerVersion());
 				std::string fpgaVersion = getTextFromChildNode(xVersion, MSTATUS_VERSION_FPGA, _printer.fpgaVersion());
-				std::string mpkVersion  = getTextFromChildNode(xVersion, MSTATUS_VERSION_API, _printer.apiVersion());
-				_printer.setVersions(ctrlVersion, fpgaVersion, mpkVersion);
+				std::string coreVersion = getTextFromChildNode(xVersion, MSTATUS_VERSION_API, _printer.apiVersion());
+				_printer.setVersions(mpkVersion, coreVersion, fpgaVersion);
 			}
 			const XMLElement * xBoardsList = cmd->FirstChildElement(MPRINTER_BOARDS_LIST);
 			if (xBoardsList != nullptr) {
@@ -269,14 +269,15 @@ bool MGetStatus::parseResponse(const XMLElement *xml)
 					if (_printer.board(id) != nullptr) {
 						board = *_printer.board(id);
 					}
-					board.setType(getTextFromChildNode(xBoard, MPRINTER_BOARD_TYPE, board.type().c_str()));
+					board.setType(getTextFromChildNode(xBoard, MPRINTER_BOARD_TYPE, board.type()));
 					board.setEnabled(getBoolFromChildNode(xBoard, MPRINTER_BOARD_ENABLED, board.enabled()));
 					board.setPrinting(getBoolFromChildNode(xBoard, MPRINTER_BOARD_PRINTING, board.printing()));
-					const XMLElement * xUserMessage = xBoard->FirstChildElement(MPRINTER_BOARD_CURRENT_MSG);
-					if (xUserMessage != nullptr){
-						std::string userMessage = getTextAttribute(xUserMessage, ATTRIBUTE_FILEPATH, board.userMessage().c_str());
-						board.setUserMessage(userMessage);
-					}
+					board.setUserMessage(getTextFromChildNode(xBoard, MPRINTER_BOARD_CURRENT_MSG, board.userMessage()));
+//					const XMLElement * xUserMessage = xBoard->FirstChildElement(MPRINTER_BOARD_CURRENT_MSG);
+//					if (xUserMessage != nullptr){
+//						std::string userMessage = getTextAttribute(xUserMessage, ATTRIBUTE_FILEPATH, board.userMessage().c_str());
+//						board.setUserMessage(userMessage);
+//					}
 					board.setBcdMode(getTextFromChildNode(xBoard, MPRINTER_BOARD_BCD_MODE, board.bcdMode().toString()));
 					board.setBcdCurrent(static_cast<uint8_t>(getUnsignedFromChildNode(xBoard, MPRINTER_BOARD_BCD_STATUS, board.currentBcdCode())));
 

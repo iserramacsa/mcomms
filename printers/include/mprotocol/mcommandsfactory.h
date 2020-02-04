@@ -11,10 +11,11 @@ namespace Macsa {
 		class MCommandsFactory
 		{
 			public:
-				MCommandsFactory(Printers::TIJPrinter& printer);
+				MCommandsFactory(Printers::TIJPrinter& printer, LiveFlags& _liveFlags);
 				~MCommandsFactory();
 
-				bool parse(const std::string &frame, Printers::ErrorCode &error);
+				bool parseResponse(const std::string &frame, Printers::ErrorCode &error);
+				bool parseRequest(const std::string &frame, Printers::ErrorCode &error);
 
 //				//SERVER
 //				std::string getResponse(); //TODO: Move to commandsHandler (server)
@@ -39,15 +40,13 @@ namespace Macsa {
 					return static_cast<uint32_t>(_requestId);
 				}
 
-				LiveFlags liveFlags() const;
-
 			private:
 				tinyxml2::XMLDocument _doc;
 				Printers::TIJPrinter& _printer;
-				LiveFlags _liveFlags;
+				LiveFlags& _liveFlags;
 				int32_t _requestId;
 
-				MCommand* getCommand(tinyxml2::XMLElement* wind); //Refactor required
+				MCommand* getCommand(tinyxml2::XMLElement* eCmd); //Refactor required
 //				MCommand* getResponseCommand(tinyxml2::XMLElement* wind) const;
 				inline bool isElement(const tinyxml2::XMLElement *wind, const std::string& name) const;
 				inline bool isWindValid(tinyxml2::XMLElement* wind) const;

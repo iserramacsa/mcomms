@@ -6,6 +6,7 @@
 #include "ui_printerview.h"
 #include "viewers/tijviewercontroller.h"
 #include "tijprintercontroller.h"
+#include "printerstatusview.h"
 
 class PrinterView : public QWidget
 {
@@ -17,10 +18,14 @@ class PrinterView : public QWidget
 
 	private:
 		TIJViewerController* _controller;
-		Ui::PrinterView ui;
+		PrinterStatusView* _printerStatusView;
+		Ui::printerView ui;
 
 		void refresh();
+		void setPrinterStatus(int status);
+		void clear();
 
+		void buildStatus();
 
 	private slots:
 		void onRequestLive();

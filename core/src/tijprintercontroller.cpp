@@ -10,7 +10,7 @@ using namespace Macsa::Network;
 
 TIJPrinterController::TIJPrinterController(const std::string &id, const std::string &address) :
 	PrinterController(id, address, MPROTOCOL_PORT),
-	_factory(_printer)
+	_factory(_printer, _liveFlags)
 {}
 
 #include <iostream>
@@ -20,15 +20,14 @@ Printers::ErrorCode TIJPrinterController::getLive()
 	MProtocol::MCommand* cmd = _factory.getLiveCommand();
 	if (cmd) {
 		if (send(cmd, error) && error == Printers::ErrorCode_n::SUCCESS) {
-			_liveFlags = _factory.liveFlags();
+			std::cout << "statusChanged:    " << _liveFlags.statusChanged << std::endl;
+			std::cout << "configChanged:    " << _liveFlags.configChanged << std::endl;
+			std::cout << "filesChanged:     " << _liveFlags.filesChanged << std::endl;
+			std::cout << "fontsChanged:     " << _liveFlags.fontsChanged << std::endl;
+			std::cout << "errorsLogChanged: " << _liveFlags.errorsLogChanged << std::endl;
+			std::cout << "userValueChanged: " << _liveFlags.userValueChanged << std::endl;
+			std::cout << "isInError:        " << _liveFlags.isInError << std::endl;
 		}
-		std::cout << "statusChanged:    " << _liveFlags.statusChanged << std::endl;
-		std::cout << "configChanged:    " << _liveFlags.configChanged << std::endl;
-		std::cout << "filesChanged:     " << _liveFlags.filesChanged << std::endl;
-		std::cout << "fontsChanged:     " << _liveFlags.fontsChanged << std::endl;
-		std::cout << "errorsLogChanged: " << _liveFlags.errorsLogChanged << std::endl;
-		std::cout << "userValueChanged: " << _liveFlags.userValueChanged << std::endl;
-		std::cout << "isInError:        " << _liveFlags.isInError << std::endl;
 	}
 	return error;
 }
@@ -43,9 +42,9 @@ Printers::ErrorCode TIJPrinterController::updateStatus()
 	return error;
 }
 
-std::string TIJPrinterController::printerStatus()
+TIJPrinterController::TIJPrinterStatus TIJPrinterController::printerStatus()
 {
-	std::string status = "---";
+	TIJPrinterStatus status = TIJPrinterStatus::DISCONNECTED;
 
 	if (NetworkNode::status() == NetworkNode::NodeStatus_n::CONNECTED) {
 		const Macsa::Printers::Board * board = _printer.board(0);
@@ -56,18 +55,15 @@ std::string TIJPrinterController::printerStatus()
 		board = _printer.board(0);
 		if (board != nullptr) {
 			if (board->enabled()) {
-				status = "Running";
+				status = TIJPrinterStatus::RUNNING;
 				if (board->printing()){
-					status = "Printing";
+					status = TIJPrinterStatus::PRINTING;
 				}
 			}
 			else {
-				status = "Stopped";
+				status = TIJPrinterStatus::STOPPED;
 			}
 		}
-	}
-	else {
-		status = "Disconnected";
 	}
 
 	return status;
@@ -95,7 +91,7 @@ bool TIJPrinterController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &e
 			std::string resp = "";
 			if(socket->receive(resp) == ISocket::FRAME_SUCCESS)
 			{
-				success = _factory.parse(resp, err);
+				success = _factory.parseResponse(resp, err);
 			}
 		}
 	}

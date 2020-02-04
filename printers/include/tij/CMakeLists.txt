@@ -1,11 +1,11 @@
 ##########################
-#    MComms Includes     #
+#  TIJ Printer Includes  #
 ##########################
 
-add_subdirectory(printer)
-add_subdirectory(tij)
-add_subdirectory(mprotocol)
-add_subdirectory(nisx)
+set(HEADERS_LIB
+	${CMAKE_CURRENT_SOURCE_DIR}tijcomms.h
+	${CMAKE_CURRENT_SOURCE_DIR}/tijprinter.h
+	)
 
 set(SOURCES ${SOURCES}
 	PARENT_SCOPE
