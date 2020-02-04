@@ -15,7 +15,7 @@ namespace Macsa {
 				~MCommandsFactory();
 
 				bool parseResponse(const std::string &frame, Printers::ErrorCode &error);
-				bool parseRequest(const std::string &frame, Printers::ErrorCode &error);
+                                bool parseRequest(const std::string &frame, MCommand **cmd);
 
 //				//SERVER
 //				std::string getResponse(); //TODO: Move to commandsHandler (server)

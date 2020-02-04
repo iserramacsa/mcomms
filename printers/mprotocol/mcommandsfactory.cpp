@@ -54,7 +54,7 @@ bool MCommandsFactory::parseResponse(const std::string &frame, Printers::ErrorCo
 	return valid;
 }
 
-bool MCommandsFactory::parseRequest(const std::string &frame, Macsa::Printers::ErrorCode &error)
+bool MCommandsFactory::parseRequest(const std::string &frame, Macsa::MProtocol::MCommand** cmd)
 {
 	bool valid = false;
 
@@ -68,11 +68,9 @@ bool MCommandsFactory::parseRequest(const std::string &frame, Macsa::Printers::E
 		XMLElement* wind = _doc.FirstChildElement();
 		if(isWindValid(wind)) {
 			XMLElement* eCmd = wind->FirstChildElement();
-			MCommand* cmd = getCommand(eCmd);
+			*cmd = getCommand(eCmd);
 			if (cmd != nullptr){
-				valid = cmd->parseRequest(wind);
-				error = cmd->getError();
-				delete cmd;
+				valid = (*cmd)->parseRequest(wind);
 			}
 		}
 	}

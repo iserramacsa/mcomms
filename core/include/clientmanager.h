@@ -6,6 +6,8 @@
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
+#include "clientHandler.h"
+#include "tij/tijprinter.h"
 
 using namespace Macsa;
 
@@ -24,9 +26,13 @@ class ClientManager : public Network::MNetwork
 		std::atomic_bool _running;
 		std::mutex _mtx;
 		std::condition_variable _cv;
+		uint16_t _svrPort;
+
+		Printers::TIJPrinter _printer;
+		std::vector<ClientHandler*> _handlers;
 
 		void serverMainLoop();
-		Network::NetworkNode* acceptConnection();
+		Network::ISocket *acceptConnection();
 
 };
 
