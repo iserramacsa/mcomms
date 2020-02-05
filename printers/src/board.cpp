@@ -471,6 +471,7 @@ void Board::copy(const Board &other)
 	_encoder = other._encoder;
 	_photocell = other._photocell;
 	_cartridge = other._cartridge;
+	setCounters(other._counters);
 	setProperties(other._properties);
 	setInputs(other._inputs);
 	setOutputs(other._outputs);

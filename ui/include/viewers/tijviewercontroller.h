@@ -42,13 +42,15 @@ class TIJViewerController : public PrinterViewerController
 
 		struct PrinterError {
 				QDateTime timestamp;
-				QString value;
+				QString type;
+				uint priority;
+				QString code;
 		};
 
 	public:
 		TIJViewerController(Macsa::TIJPrinterController& controller);
 		virtual ~TIJViewerController(){}
-
+		virtual Macsa::TIJPrinterController& controller(){ return _controller;}
 		virtual QVariant data(int descriptor);
 		virtual bool setData(int descriptor, const QVariant& value);
 

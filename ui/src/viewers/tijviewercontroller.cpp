@@ -479,8 +479,10 @@ QVector<TIJViewerController::PrinterError> TIJViewerController::errors() const
 		std::vector<Error> errors = board->errors();
 		for (std::vector<Error>::const_iterator it = errors.begin(); it != errors.end(); it++) {
 			PrinterError err;
-			err.value = (*it).code().toCString();
 			err.timestamp = QDateTime::fromTime_t(static_cast<uint>((*it).timestamp()));
+			err.code = (*it).code().toString().c_str();
+			err.type = (*it).type().toString().c_str();
+			err.priority = (*it).priority();
 			values.push_back(err);
 		}
 	}
@@ -493,8 +495,10 @@ TIJViewerController::PrinterError TIJViewerController::error(unsigned int idx) c
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		Error perror = board->error(idx);
-		value.value = perror.code().toCString();
 		value.timestamp = QDateTime::fromTime_t(static_cast<uint>(perror.timestamp()));
+		value.code = perror.code().toString().c_str();
+		value.type = perror.type().toString().c_str();
+		value.priority = perror.priority();
 	}
 	return value;
 }
@@ -525,7 +529,7 @@ TIJViewerController::PrinterInput TIJViewerController::printerInputToView(Input 
 	PrinterInput pIn;
 	pIn.id = static_cast<int>(in.id());
 	pIn.descriptor = in.descriptor().c_str();
-	pIn.mode = in.mode().toCString();
+	pIn.mode = in.mode().toString().c_str();
 	pIn.inverted = in.inverted();
 	pIn.filter = in.filter();
 	pIn.value = in.value();

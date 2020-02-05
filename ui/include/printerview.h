@@ -15,6 +15,7 @@ class PrinterView : public QWidget
 		explicit PrinterView(QWidget* parent = 0);
 		~PrinterView();
 		void setController(Macsa::TIJPrinterController& controller);
+		void clear();
 
 	private:
 		TIJViewerController* _controller;
@@ -23,7 +24,6 @@ class PrinterView : public QWidget
 
 		void refresh();
 		void setPrinterStatus(int status);
-		void clear();
 
 		void buildStatus();
 
@@ -31,6 +31,7 @@ class PrinterView : public QWidget
 		void onRequestLive();
 		void onRequestConfig();
 		void onRequestStatus();
+		void onConnectClicked();
 };
 
 

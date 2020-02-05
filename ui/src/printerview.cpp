@@ -10,6 +10,7 @@ PrinterView::PrinterView(QWidget *parent) :
 	connect(ui.butLive, SIGNAL(clicked(bool)), SLOT(onRequestLive()));
 	connect(ui.butConfig, SIGNAL(clicked(bool)), SLOT(onRequestConfig()));
 	connect(ui.butStatus, SIGNAL(clicked(bool)), SLOT(onRequestStatus()));
+	connect(ui.butConnect, SIGNAL(clicked(bool)), SLOT(onConnectClicked()));
 
 	buildStatus();
 }
@@ -18,6 +19,7 @@ PrinterView::~PrinterView()
 {
 	if (_controller != nullptr) {
 		delete _controller;
+		_controller = nullptr;
 	}
 }
 
@@ -25,6 +27,7 @@ void PrinterView::setController(Macsa::TIJPrinterController &controller)
 {
 	if (_controller != nullptr) {
 		delete _controller;
+		_controller = nullptr;
 	}
 	_controller = new TIJViewerController(controller);
 	_printerStatusView->setController(controller);
@@ -55,32 +58,46 @@ void PrinterView::refresh()
 #include "tijprintercontroller.h"
 void PrinterView::setPrinterStatus(int status)
 {
+	bool connected = false;
 	switch (static_cast<Macsa::TIJPrinterController::TIJPrinterStatus>(status)) {
 		case Macsa::TIJPrinterController::TIJPrinterStatus::DISCONNECTED:
 			ui.lblPrinterStatus->setText("Disconnected");
 			ui.lblPrinterStatus->setStyleSheet("color:#333;");
 			break;
 		case Macsa::TIJPrinterController::TIJPrinterStatus::STOPPED:
+			connected = true;
 			ui.lblPrinterStatus->setText("Stopped");
 			ui.lblPrinterStatus->setStyleSheet("color:#900;");
 			break;
 		case Macsa::TIJPrinterController::TIJPrinterStatus::RUNNING:
+			connected = true;
 			ui.lblPrinterStatus->setText("Running");
 			ui.lblPrinterStatus->setStyleSheet("color:#050;");
 			break;
 		case Macsa::TIJPrinterController::TIJPrinterStatus::WARNING:
+			connected = true;
 			ui.lblPrinterStatus->setText("Warning");
 			ui.lblPrinterStatus->setStyleSheet("color:#303;");
 			break;
 		case Macsa::TIJPrinterController::TIJPrinterStatus::PRINTING:
+			connected = true;
 			ui.lblPrinterStatus->setText("Printing");
 			ui.lblPrinterStatus->setStyleSheet("color:#090;");
 			break;
 	}
+
+	ui.butConnect->setText(((connected) ? "Disconnect" : "Connect"));
+	ui.butConnect->setChecked(connected);
+
 }
 
 void PrinterView::clear()
 {
+	if (_controller != nullptr) {
+		delete _controller;
+		_controller = nullptr;
+	}
+
 	setPrinterStatus(-1);
 	ui.lblPrinterName->setText("");
 	ui.lblDatetime->setText("");
@@ -133,4 +150,18 @@ void PrinterView::onRequestStatus()
 		_controller->data(static_cast<int>(TIJViewerController::TIJDataDescriptors::STATUS));
 	}
 	refresh();
+}
+
+void PrinterView::onConnectClicked()
+{
+	if (_controller != nullptr) {
+		Macsa::TIJPrinterController::TIJPrinterStatus status = static_cast<Macsa::TIJPrinterController::TIJPrinterStatus>(_controller->data(static_cast<int>(TIJViewerController::TIJDataDescriptors::PRINTER_STATUS)).toInt());
+		if (status == Macsa::TIJPrinterController::TIJPrinterStatus::DISCONNECTED){
+			_controller->controller().connect();
+		}
+		else {
+			_controller->controller().disconnect();
+		}
+		refresh();
+	}
 }

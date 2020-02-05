@@ -21,6 +21,7 @@ namespace Macsa {
 			~PrintersManager();
 
 			bool addTijPrinter(const std::string name, const std::string& address);
+			bool removeTijPrinter(const std::string name);
 			bool connectPrinter(const std::string name);
 			bool disconnectPrinter(const std::string name);
 

@@ -159,6 +159,7 @@ void MStatusCommand::outputsFromXml(const XMLElement *parent, Macsa::Printers::B
 
 			xOutput = xOutput->NextSiblingElement();
 		}
+		board.setOutputs(outputs);
 	}
 }
 
@@ -287,7 +288,7 @@ bool MGetStatus::parseResponse(const XMLElement *xml)
 					outputsFromXml(xBoard->FirstChildElement(MPRINTER_BOARD_OUTPUTS_LIST), board);
 					propertiesFromXml(xBoard->FirstChildElement(MPRINTER_BOARD_PROPERTIES_LIST), board);
 
-					boards.push_back(board);
+					boards.push_back(std::move(board));
 					xBoard = xBoard->NextSiblingElement(MPRINTER_BOARD);
 				}
 				_printer.setBoards(boards);

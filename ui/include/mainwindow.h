@@ -25,6 +25,7 @@ class MainWindow : public QMainWindow
 
 	private slots:
 		void onAddPrinter();
+		void onDelPrinter();
 		void onPrinterSelected(const QModelIndex& index);
 
 	private:

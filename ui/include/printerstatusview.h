@@ -24,6 +24,8 @@ class PrinterStatusView : public QWidget
 	private:
 		TIJViewerController* _controller;
 		void build();
+		QWidget* buildCounters();
+		QWidget* buildInputs();
 		void printerDisconnected();
 
 		QLabel*	   _printerType;
@@ -31,16 +33,24 @@ class PrinterStatusView : public QWidget
 		QLabel* _printerUserMessage;
 		QLabel* _printerBcdMode;
 		QLabel* _printerBcdStatus;
+
+		QTableWidget* _errors;
+
 		QMap<QString, QLabel*> _counters;
-		QTableWidget* _inputs;
-		// QLabel* _printerVersionCtrl;
-		// QLabel* _printerVersionFPGA;
-		// QLabel* _printerVersionAPI;
-		//Counters
 
+		QMap<QString, QLabel*> _inputs; // QTableWidget* _inputs;
+		QGridLayout* _gridInputs;
 
+		QMap<QString, QLabel*> _outputs;
+		QGridLayout* _gridOutputs;
+
+		QFormLayout* _propLayout;
+		QMap<QString, QLabel*> _props;
+
+		void updateErrors(const QVector<TIJViewerController::PrinterError> &errors);
 		void updateInputs(const QVector<TIJViewerController::PrinterInput> &inputs);
-
+		void updateOutputs(const QVector<TIJViewerController::PrinterOutput> &outputs);
+		void updateProperties(const QMap<QString, QString> &prop);
 };
 
 

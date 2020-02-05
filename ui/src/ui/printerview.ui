@@ -97,7 +97,22 @@
    </item>
    <item>
     <widget class="QWidget" name="widget" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>85</height>
+      </size>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
       <property name="leftMargin">
        <number>0</number>
       </property>
@@ -110,15 +125,29 @@
       <property name="bottomMargin">
        <number>3</number>
       </property>
-      <item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Core Version:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>FPGA Version:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
          <string>Controller version:</string>
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QLabel" name="lblCtrlVersion">
+      <item row="2" column="1">
+       <widget class="QLabel" name="lblFPGAVersion">
         <property name="font">
          <font>
           <weight>75</weight>
@@ -126,31 +155,11 @@
          </font>
         </property>
         <property name="text">
-         <string>_Ctrl_Version_</string>
+         <string>_FPGA_Version_</string>
         </property>
        </widget>
       </item>
-      <item>
-       <spacer name="horizontalSpacer_5">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Core Version:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
+      <item row="1" column="1">
        <widget class="QLabel" name="lblCoreVersion">
         <property name="font">
          <font>
@@ -163,28 +172,8 @@
         </property>
        </widget>
       </item>
-      <item>
-       <spacer name="horizontalSpacer_6">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>FPGA Version:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="lblFPGAVersion">
+      <item row="0" column="1">
+       <widget class="QLabel" name="lblCtrlVersion">
         <property name="font">
          <font>
           <weight>75</weight>
@@ -192,7 +181,7 @@
          </font>
         </property>
         <property name="text">
-         <string>_FPGA_Version_</string>
+         <string>_Ctrl_Version_</string>
         </property>
        </widget>
       </item>
@@ -233,6 +222,19 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="butConnect">
+        <property name="text">
+         <string>Disconnect</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="butLive">

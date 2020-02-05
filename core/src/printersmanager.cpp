@@ -23,6 +23,11 @@ bool PrintersManager::addTijPrinter(const std::string name, const std::string &a
 	return success;
 }
 
+bool PrintersManager::removeTijPrinter(const std::string name)
+{
+	return _tcpNetwork.removeNode(name);
+}
+
 bool PrintersManager::connectPrinter(const std::string name)
 {
 	bool connected = false;

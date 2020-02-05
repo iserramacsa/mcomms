@@ -20,22 +20,23 @@ MainWindow::~MainWindow()
 
 void MainWindow::loadMenus()
 {
-	connect(ui._buttAddPrinter, SIGNAL(clicked(bool)), SLOT(onAddPrinter()));
+	connect(ui.butAddPrinter, SIGNAL(clicked(bool)), SLOT(onAddPrinter()));
+	connect(ui.butRemPrinter, SIGNAL(clicked(bool)), SLOT(onDelPrinter()));
 }
 
 void MainWindow::loadPrintersList()
 {
 	_printersListModel = new QStringListModel(this);
-	ui._listPrinters->setModel(_printersListModel);
+	ui.listPrinters->setModel(_printersListModel);
 
-	connect(ui._listPrinters, SIGNAL(doubleClicked(const QModelIndex&)), SLOT(onPrinterSelected(const QModelIndex&)));
+	connect(ui.listPrinters, SIGNAL(doubleClicked(const QModelIndex&)), SLOT(onPrinterSelected(const QModelIndex&)));
 }
 
 void MainWindow::loadView()
 {
 	QVBoxLayout* layout = new QVBoxLayout();
 	_printerView = new PrinterView(this);
-	ui._printerHolder->setLayout(layout);
+	ui.printerHolder->setLayout(layout);
 	layout->addWidget(_printerView);
 	_printerView->setEnabled(false);
 }
@@ -58,6 +59,26 @@ void MainWindow::onAddPrinter()
 
 }
 
+void MainWindow::onDelPrinter()
+{
+	int row = ui.listPrinters->currentIndex().row();
+	if (row >= 0) {
+		Macsa::TIJPrinterController * controller = dynamic_cast<Macsa::TIJPrinterController*>(_manager.getPrinter(row));
+		if (controller != nullptr) {
+			controller->disconnect();
+			QString name = controller->id().c_str();
+			_manager.removeTijPrinter(name.toStdString());
+
+			QStringList list = _printersListModel->stringList();
+			list.removeOne(name);
+			_printersListModel->setStringList(list);
+			if (list.count() == 1) {
+				onPrinterSelected(_printersListModel->index(0));
+			}
+		}
+	}
+}
+
 void MainWindow::onPrinterSelected(const QModelIndex &index)
 {
 	int row = index.row();
@@ -65,5 +86,9 @@ void MainWindow::onPrinterSelected(const QModelIndex &index)
 	if (controller){
 		qDebug() << __func__  << " Selected printer: " << controller->id().c_str();
 		_printerView->setController(*controller);
+	}
+	else {
+		_printerView->clear();
+		ui.printerHolder->setEnabled(false);
 	}
 }

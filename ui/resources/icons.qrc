@@ -1,9 +1,10 @@
-<!DOCTYPE RCC><RCC version="1.0">
-<qresource>
-    <file>icons/printer.svg</file>
-	<file>icons/play_arrow.svg</file>
-	<file>icons/playlist_add.svg</file>
-	<file>icons/update.svg</file>
-	<file>icons/usb.svg</file>
-</qresource>
+<RCC>
+    <qresource prefix="/">
+        <file>icons/printer.svg</file>
+        <file>icons/play_arrow.svg</file>
+        <file>icons/playlist_add.svg</file>
+        <file>icons/update.svg</file>
+        <file>icons/usb.svg</file>
+        <file>icons/playlist_del.svg</file>
+    </qresource>
 </RCC>

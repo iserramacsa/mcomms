@@ -98,8 +98,12 @@ bool MLive::parseResponse(const XMLElement *xml)
 				const XMLElement* eBoard = eBoards->FirstChildElement(MPRINTER_BOARD);
 				while (eBoard != nullptr) {
 					int id = eBoard->IntAttribute(ATTRIBUTE_ID, -1);
-					Printers::Board* pBoard = _printer.board(id);
-					if  (id != -1 && pBoard != nullptr) {
+					if (id != -1) {
+						Printers::Board* pBoard = _printer.board(id);
+						bool newBoard = (pBoard == nullptr);
+						if (newBoard) {
+							pBoard = new Printers::Board(id, &_printer);
+						}
 						pBoard->setEnabled( getBoolAttribute(eBoard,MPRINTER_BOARD_ENABLED_ATTR, pBoard->enabled()));
 						pBoard->setPrinting(getBoolAttribute(eBoard,MPRINTER_BOARD_PRINT_ATTR, pBoard->printing ()));
 						if (pBoard->enabled()) {
@@ -125,8 +129,12 @@ bool MLive::parseResponse(const XMLElement *xml)
 							if  (ePrintsRemain){
 								pBoard->setProperty(key_prop_status_general_print_remain, getTextAttribute(ePrintsRemain, ATTRIBUTE_VALUE));
 							}
+
 						}
 						_printer.setBoard(*pBoard);
+						if (newBoard) {
+							delete pBoard;
+						}
 					}
 					eBoard = eBoard->NextSiblingElement(MPRINTER_BOARD);
 				}

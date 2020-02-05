@@ -103,13 +103,13 @@
 namespace Macsa {
 	namespace Printers {
 
-		template <typename N>
 		///
 		/// \brief The SmartEnum class is an abstract class to avoid boilerplate code.
 		/// Only equal operator and toString must be overrided.
 		/// This class is allows to use and object as an enum and can be setted with
 		/// string, or return an string from the internal value.
 		///
+		template <typename N>
 		class SmartEnum
 		{
 			public:
@@ -125,7 +125,7 @@ namespace Macsa {
 				virtual void operator =  (const N& v) = 0;
 				virtual void operator = (const std::string& val) = 0;
 				virtual std::string toString() const = 0;
-				const char* toCString() const { return toString().c_str();}
+				const char* toCString() const { return std::move(toString().c_str());}
 
 
 
