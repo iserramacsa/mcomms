@@ -37,7 +37,7 @@ namespace Macsa {
 			//Config
 			Printers::ErrorCode updateConfig();
 			bool setDateTime(const std::time_t& dt);
-			bool setEnabled(bool enabled);
+			Printers::ErrorCode setEnabled(bool enabled);
 			//Files
 			Printers::ErrorCode updateFiles();
 			Printers::ErrorCode updateFile(const std::string& filepath);

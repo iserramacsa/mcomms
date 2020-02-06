@@ -84,10 +84,10 @@ Printers::ErrorCode TIJPrinterController::updateConfig()
 	return error;
 }
 
-bool TIJPrinterController::setEnabled(bool enabled)
+Printers::ErrorCode TIJPrinterController::setEnabled(bool enabled)
 {
 	Printers::ErrorCode error;
-	MProtocol::MCommand* cmd = _factory.getConfigSetEnabled(enabled);
+	MProtocol::MCommand* cmd = _factory.SetEnabled(enabled);
 	if (cmd) {
 		send(cmd, error);
 	}

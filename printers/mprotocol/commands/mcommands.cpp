@@ -198,9 +198,12 @@ bool MCommand::getBoolAttribute(const XMLElement *element, const std::string &at
 
 XMLElement *MCommand::createChildNode(const std::string &child, XMLElement **parent)
 {
-	XMLElement * node = _doc.NewElement(child.c_str());
-	if (parent != nullptr && *parent != nullptr){
-		(*parent)->InsertEndChild(node);
+	XMLElement * node = (*parent)->FirstChildElement(child.c_str());
+	if (node == nullptr){
+		node = _doc.NewElement(child.c_str());
+		if (parent != nullptr && *parent != nullptr){
+			(*parent)->InsertEndChild(node);
+		}
 	}
 
 	return node;

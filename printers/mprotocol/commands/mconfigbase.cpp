@@ -18,13 +18,23 @@ void MConfigCommand::generalConfigToXml(const Printers::TIJPrinter &printer, XML
 {
 	XMLElement * xGeneral = createChildNode(MCONFIG_GENERAL, parent);
 	if(xGeneral != nullptr) {
-		createTextChildNode(MCONFIG_GENERAL_DT, printer.formatedDateTime(), parent);
-		XMLElement * xLog = createChildNode(MCONFIG_GENERAL_LOG, parent);
-		if(xLog != nullptr) {
-			xLog->SetAttribute(MCONFIG_GENERAL_LOG_ENABLED_ATTR, MTools::toCString(printer.logsEnabled()));
-			xLog->SetAttribute(MCONFIG_GENERAL_LOG_LEVEL_ATTR, printer.loggerLevel().toCString());
-			xLog->SetAttribute(MCONFIG_GENERAL_LOG_COMMS, MTools::toCString(printer.logComsEnabled()));
-		}
+		datetimeToXml(printer, &xGeneral);
+		loggerToXml(printer, &xGeneral);
+	}
+}
+
+void MConfigCommand::datetimeToXml(const Macsa::Printers::TIJPrinter &printer, XMLElement **parent)
+{
+	createTextChildNode(MCONFIG_GENERAL_DT, printer.formatedDateTime(), parent);
+}
+
+void MConfigCommand::loggerToXml(const Macsa::Printers::TIJPrinter &printer, XMLElement **parent)
+{
+	XMLElement * xLog = createChildNode(MCONFIG_GENERAL_LOG, parent);
+	if(xLog != nullptr) {
+		xLog->SetAttribute(MCONFIG_GENERAL_LOG_ENABLED_ATTR, MTools::toCString(printer.logsEnabled()));
+		xLog->SetAttribute(MCONFIG_GENERAL_LOG_LEVEL_ATTR, printer.loggerLevel().toCString());
+		xLog->SetAttribute(MCONFIG_GENERAL_LOG_COMMS, MTools::toCString(printer.logComsEnabled()));
 	}
 }
 

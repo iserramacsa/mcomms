@@ -93,11 +93,11 @@ MCommand *MCommandsFactory::getConfigCommand()
 	return new MGetConfig(_printer);
 }
 
-MCommand *MCommandsFactory::setConfigSetEnabled(bool enabled)
+MCommand *MCommandsFactory::SetEnabled(bool enabled)
 {
 	Macsa::Printers::TIJPrinter printer = _printer;
 	printer.board(0)->setEnabled(enabled);
-	return MSetConfigEnabled(printer);
+	return new MUpdateConfig(_printer, printer);
 }
 
 MCommand *MCommandsFactory::setDateTimeCommand()

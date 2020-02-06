@@ -59,7 +59,8 @@ QWidget *PrinterConfigView::buildGeneralSettings()
 	layout->setSpacing(6);
 
 	_butEnable = new QPushButton("Start", generalSettings);
-	_printAutostart = new QCheckBox(generalSettings);
+        _butEnable->setFixedWidth(150);
+        _printAutostart = new QCheckBox(generalSettings);
 	_lowLevelOutput = new QCheckBox(generalSettings);
 	_blockCartridge = new QCheckBox(generalSettings);
 

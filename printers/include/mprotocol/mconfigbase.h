@@ -15,6 +15,8 @@ namespace Macsa {
 
 			protected:
 				void generalConfigToXml(const Printers::TIJPrinter& printer, tinyxml2::XMLElement **parent);
+                                void datetimeToXml(const Printers::TIJPrinter& printer, tinyxml2::XMLElement **parent);
+                                void loggerToXml(const Printers::TIJPrinter& printer, tinyxml2::XMLElement **parent);
 				void printerConnectionsToXml(const Printers::TIJComms* comms, tinyxml2::XMLElement **parent);
 				void boardToXml(const Printers::Board& board, tinyxml2::XMLElement **parent);
 				void boardTypeToXml(const std::string &boardType, tinyxml2::XMLElement **parent);

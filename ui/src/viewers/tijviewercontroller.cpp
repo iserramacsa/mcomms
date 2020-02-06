@@ -138,7 +138,7 @@ bool TIJViewerController::enabled() const
 
 void TIJViewerController::setEnabled(bool enabled)
 {
-	return _controller.setEnabled(enabled);
+	 _controller.setEnabled(enabled);
 }
 
 bool TIJViewerController::blocked() const

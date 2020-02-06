@@ -15,6 +15,11 @@ using namespace Macsa::Printers;
 Ethernet::Ethernet()
 {}
 
+Ethernet::Ethernet(const Ethernet &eth)
+{
+	copy(eth);
+}
+
 Ethernet::~Ethernet()
 {}
 
@@ -218,7 +223,7 @@ void Ethernet::copy(const Ethernet &other)
 	_tcpPort  = other._tcpPort ;
 }
 
-bool Ethernet::compare(const Ethernet &other)
+bool Ethernet::compare(const Ethernet &other) const
 {
 	if (_address.compare(other._address) != 0)   { return false; }
 	if (_mask.compare(other._mask) != 0)         { return false; }
@@ -275,7 +280,7 @@ void BlueTooth::copy(const BlueTooth &other)
 	_visible = other._visible;
 }
 
-bool BlueTooth::compare(const BlueTooth &other)
+bool BlueTooth::compare(const BlueTooth &other) const
 {
 	return (_name.compare(other._name) == 0 && _pass.compare(other._pass) == 0);
 }
@@ -363,6 +368,28 @@ const BlueTooth *TIJComms::bluetooth() const
 void TIJComms::setBluetooth(const BlueTooth &bluetooth)
 {
 	_bluetooth = bluetooth;
+}
+
+bool TIJComms::compare(const TIJComms &other) const
+{
+	if (_ifaces.size() != _ifaces.size()) {
+		return false;
+	}
+
+	for (uint eth = 0; eth < _ifaces.size(); ++eth) {
+		if (_ifaces.at(eth) != other._ifaces.at(eth)) {
+			return false;
+		}
+	}
+
+	return (_bluetooth != other._bluetooth);
+}
+
+void TIJComms::copy(const TIJComms &other)
+{
+	_ifaces.clear();
+	_ifaces = other._ifaces;
+	_bluetooth = other._bluetooth;
 }
 
 std::vector<Ethernet>::iterator TIJComms::getEthAdapter(const std::string &addr, const std::string &mac)

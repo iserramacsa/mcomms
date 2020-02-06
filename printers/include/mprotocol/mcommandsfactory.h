@@ -26,7 +26,7 @@ namespace Macsa {
 				MCommand* getStatusCommand();
 				//Config
 				MCommand* getConfigCommand();
-				MCommand* setConfigSetEnabled(bool enabled);
+                                MCommand* SetEnabled(bool enabled);
 				MCommand* setDateTimeCommand();
 				//Files
 				MCommand* getFontsCommand();

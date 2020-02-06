@@ -32,7 +32,7 @@ bool MGetConfig::parseResponse(const XMLElement *xml)
 		std::vector<Printers::Board> boards;
 		if (xBoards != nullptr) {
 			const XMLElement* xBoard = xBoards->FirstChildElement(MPRINTER_BOARD);
-			while (xBoard != nullptr){
+			while (xBoard != nullptr) {
 				int id = xBoard->IntAttribute(ATTRIBUTE_ID, 0);
 				Printers::Board* board = _printer.board(id);
 				bool newBoard = (board == nullptr);
@@ -116,7 +116,7 @@ bool MSetConfig::parseRequest(const XMLElement *xml)
 		std::vector<Printers::Board> boards;
 		if (xBoards != nullptr) {
 			const XMLElement* xBoard = cmd->FirstChildElement(MPRINTER_BOARD);
-			while (xBoard != nullptr){
+			while (xBoard != nullptr) {
 				int id = xBoard->IntAttribute(ATTRIBUTE_ID, 0);
 				Printers::Board* board = _printer.board(id);
 				bool newBoard = (board == nullptr);
@@ -165,19 +165,124 @@ void MSetDateTime::buildRequest()
 	XMLElement* cmd = newCommandNode();
 	XMLElement * xGeneral = createChildNode(MCONFIG_GENERAL, &cmd);
 	if(xGeneral != nullptr) {
-		createTextChildNode(MCONFIG_GENERAL_DT, _printer.formatedDateTime(), &cmd);
+		createTextChildNode(MCONFIG_GENERAL_DT, _printer.formatedDateTime(), &xGeneral);
 	}
 }
 //TODO
 MUpdateConfig::MUpdateConfig(Macsa::Printers::TIJPrinter &baseConfig, Macsa::Printers::TIJPrinter &newConfig):
-	MSetConfig(newConfig)
+	MSetConfig(baseConfig),
+	_newConfig(newConfig)
+{}
+
+void MUpdateConfig::buildRequest()
 {
 	XMLElement* cmd = newCommandNode();
-	XMLElement * xBoards = createChildNode(MPRINTER_BOARDS_LIST, &cmd);
-	if(xBoards != nullptr) {
-		XMLElement * xBoard = createChildNode(MPRINTER_BOARD, &xBoards);
-		if (xBoard != nullptr){
-			createBoolTextChildNode(MPRINTER_BOARD_ENABLED, _printer.board(0)->enabled(), &xBoard);
+	updateGeneralConfig(&cmd);
+	updateCommsConfig(&cmd);
+	updateBoards(&cmd);
+}
+
+void MUpdateConfig::updateGeneralConfig(XMLElement **parent)
+{
+	XMLElement * xGeneral = nullptr;
+	if (_printer.dateTime() != _newConfig.dateTime()) {
+		xGeneral = createChildNode(MCONFIG_GENERAL, parent);
+		if(xGeneral != nullptr) {
+			datetimeToXml(_newConfig, &xGeneral);
+		}
+	}
+	if (_printer.loggerLevel() != _newConfig.loggerLevel() ||
+		_printer.logsEnabled() != _newConfig.logsEnabled() ||
+		_printer.logComsEnabled() != _newConfig.logComsEnabled() )
+	{
+		xGeneral = createChildNode(MCONFIG_GENERAL, parent);
+		if(xGeneral != nullptr) {
+			loggerToXml(_newConfig, &xGeneral);
+		}
+	}
+}
+
+void MUpdateConfig::updateCommsConfig(XMLElement ** parent)
+{
+	Printers::TIJComms * comms = dynamic_cast<Printers::TIJComms *>(_printer.comms());
+	Printers::TIJComms * newcomms = dynamic_cast<Printers::TIJComms *>(_newConfig.comms());
+	if (comms != nullptr && newcomms != nullptr && ((*comms) != (*newcomms))) {
+		printerConnectionsToXml(newcomms,  parent);
+	}
+}
+
+void MUpdateConfig::updateBoards(XMLElement **parent)
+{
+	for (int b = 0; b < static_cast<int>(_newConfig.boards().size()); b++) {
+		const Printers::Board *oldBoard = _printer.board(b);
+		const Printers::Board *newBoard = _newConfig.board(b);
+		if ((newBoard != nullptr) && (oldBoard != nullptr) && *oldBoard != *newBoard)
+		{
+			const Printers::Board& oBoard = *oldBoard;
+			const Printers::Board& nBoard = *newBoard;
+			XMLElement * xBoards = createChildNode(MPRINTER_BOARDS_LIST, parent);
+			if(xBoards != nullptr) {
+				XMLElement * xBoard = createChildNode(MPRINTER_BOARD, &xBoards);
+				if (xBoard != nullptr) {
+					xBoard->SetAttribute(ATTRIBUTE_ID, nBoard.id());
+					if (oBoard.type() != nBoard.type()) {
+						boardTypeToXml(nBoard.type(), &xBoard);
+					}
+					if (oBoard.autoStart() != nBoard.autoStart()) {
+						autostartToXml(nBoard.autoStart(), &xBoard);
+					}
+					if (oBoard.lowLevelOutput() != nBoard.lowLevelOutput()) {
+						lowLevelOutputToXml(nBoard.lowLevelOutput(), &xBoard);
+					}
+					if (oBoard.enabled() != nBoard.enabled()) {
+						enabledToXml(nBoard.enabled(), &xBoard);
+					}
+					if (oBoard.blocked() != nBoard.blocked()) {
+						blockToXml(nBoard.blocked(), &xBoard);
+					}
+					if (oBoard.userMessage().compare(nBoard.userMessage()) != 0) {
+						userMessageToXml(nBoard.userMessage(), &xBoard);
+					}
+					if (oBoard.bcdMode() != nBoard.bcdMode() || oBoard.bcdTable() != nBoard.bcdTable()) {
+						bcdToXml(nBoard.bcdMode(), nBoard.bcdTable(), &xBoard);
+					}
+					if (oBoard.printDirection() != nBoard.printDirection()) {
+						printDirectionToXml(nBoard.printDirection(), &xBoard);
+					}
+					if (oBoard.printRotated() != nBoard.printRotated()) {
+						printInvertedToXml(nBoard.printRotated(), &xBoard);
+					}
+					if (oBoard.nozzlesCol() != nBoard.nozzlesCol()) {
+						nozzlesToXml(nBoard.nozzlesCol(), &xBoard);
+					}
+					if (oBoard.shotMode() != nBoard.shotMode()) {
+						shotModeToXml(nBoard.shotMode(), &xBoard);
+					}
+					if (oBoard.encoder() != nBoard.encoder()) {
+						encoderToXml(nBoard.encoder(), &xBoard);
+					}
+					if (oBoard.photocell() != nBoard.photocell()) {
+						photocellToXml(nBoard.photocell(), &xBoard);
+					}
+					if (oBoard.properties() != nBoard.properties()) {
+						propertiesToXml(nBoard.properties(), &xBoard);
+					}
+					if (oBoard.cartridge() != nBoard.cartridge()) {
+						cartridgeToXml(nBoard.cartridge(), &xBoard);
+					}
+					if (oBoard.inputs() != nBoard.inputs()) {
+						inputsToXml(nBoard.inputs(), &xBoard);
+					}
+					if (oBoard.outputs() != nBoard.outputs()) {
+						outputsToXml(nBoard.outputs(), &xBoard);
+					}
+					if (nBoard.printer() != nullptr) {
+						if (oBoard.printer() == nullptr || nBoard.printer()->dateCodes() != oBoard.printer()->dateCodes() ) {
+							dateCodesToXml(nBoard.printer()->dateCodes(), &xBoard);
+						}
+					}
+				}
+			}
 		}
 	}
 }
