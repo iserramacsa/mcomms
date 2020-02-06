@@ -9,6 +9,7 @@
 class TIJViewerController : public PrinterViewerController
 {
 	public:
+		typedef Macsa::TIJPrinterController::TIJPrinterStatus TIJStatus;
 		enum class TIJDataDescriptors
 		{
 			LIVE = 0,
@@ -54,6 +55,7 @@ class TIJViewerController : public PrinterViewerController
 		virtual QVariant data(int descriptor);
 		virtual bool setData(int descriptor, const QVariant& value);
 
+		TIJStatus printerStatus() const;
 
 		QString boardType() const;
 		QString boardControllerVersion() const;
@@ -70,7 +72,7 @@ class TIJViewerController : public PrinterViewerController
 		//		void setPrinting(bool printing);
 
 		bool enabled() const;
-		//		void setEnabled(bool enabled);
+		void setEnabled(bool enabled);
 
 		bool blocked() const;
 		//		void setBlocked(bool blocked);

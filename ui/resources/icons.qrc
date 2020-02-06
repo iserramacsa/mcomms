@@ -1,10 +1,13 @@
 <RCC>
     <qresource prefix="/">
-        <file>icons/printer.svg</file>
-        <file>icons/play_arrow.svg</file>
-        <file>icons/playlist_add.svg</file>
-        <file>icons/update.svg</file>
-        <file>icons/usb.svg</file>
-        <file>icons/playlist_del.svg</file>
+        <file>icons/folder_open.svg</file>
+		<file>icons/folder.svg</file>
+		<file>icons/play_arrow.svg</file>
+		<file>icons/playlist_add.svg</file>
+		<file>icons/playlist_del.svg</file>
+		<file>icons/printer.svg</file>
+		<file>icons/sd_card.svg</file>
+		<file>icons/update.svg</file>
+		<file>icons/usb.svg</file>
     </qresource>
 </RCC>

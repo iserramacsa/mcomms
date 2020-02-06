@@ -7,6 +7,8 @@
 #include "viewers/tijviewercontroller.h"
 #include "tijprintercontroller.h"
 #include "printerstatusview.h"
+#include "printerfilesview.h"
+#include "printerconfigview.h"
 
 class PrinterView : public QWidget
 {
@@ -20,17 +22,22 @@ class PrinterView : public QWidget
 	private:
 		TIJViewerController* _controller;
 		PrinterStatusView* _printerStatusView;
+		PrinterConfigView* _printerConfigView;
+		PrinterFilesView* _printerFilesView;
 		Ui::printerView ui;
 
 		void refresh();
-		void setPrinterStatus(int status);
+		void setPrinterStatus(TIJViewerController::TIJStatus status);
 
 		void buildStatus();
+		void buildConfig();
+		void buildFiles();
 
 	private slots:
 		void onRequestLive();
 		void onRequestConfig();
 		void onRequestStatus();
+		void onRequestFiles();
 		void onConnectClicked();
 };
 

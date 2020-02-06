@@ -22,6 +22,8 @@ QVariant TIJViewerController::data(int descriptor)
 				return _controller.updateStatus() == ErrorCode_n::SUCCESS;
 		case TIJDataDescriptors::CONFIG:
 				return _controller.updateConfig() == ErrorCode_n::SUCCESS;
+		case TIJDataDescriptors::ALL_FILES:
+				return _controller.updateFiles() == ErrorCode_n::SUCCESS;
 		case TIJDataDescriptors::PRINTER_ID:
 				return _controller.id().c_str();
 		case TIJDataDescriptors::PRINTER_ADDRS:
@@ -46,6 +48,11 @@ QVariant TIJViewerController::data(int descriptor)
 bool TIJViewerController::setData(int /*descriptor*/, const QVariant &/*value*/)
 {
 	return false;
+}
+
+TIJViewerController::TIJStatus TIJViewerController::printerStatus() const
+{
+	return _controller.printerStatus();
 }
 
 QString TIJViewerController::boardType() const
@@ -127,6 +134,11 @@ bool TIJViewerController::enabled() const
 		value = board->enabled();
 	}
 	return value;
+}
+
+void TIJViewerController::setEnabled(bool enabled)
+{
+	return _controller.setEnabled(enabled);
 }
 
 bool TIJViewerController::blocked() const

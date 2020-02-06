@@ -48,10 +48,8 @@ void MainWindow::onAddPrinter()
 	if( dialog->exec()) {
 		qDebug() << __func__  << " id: " << dialog->name() << " - "  << dialog->address();
 		if (_manager.addTijPrinter(dialog->name().toStdString(), dialog->address().toStdString())) {
-			QStringList list = _printersListModel->stringList();
-			list << QString("%1: %2").arg(dialog->name()).arg(dialog->address());
-			_printersListModel->setStringList(list);
-			if (list.count() == 1) {
+			refreshPrintersList();
+			if (_printersListModel->stringList().count() == 1) {
 				onPrinterSelected(_printersListModel->index(0));
 			}
 		}
@@ -69,12 +67,7 @@ void MainWindow::onDelPrinter()
 			QString name = controller->id().c_str();
 			_manager.removeTijPrinter(name.toStdString());
 
-			QStringList list = _printersListModel->stringList();
-			list.removeOne(name);
-			_printersListModel->setStringList(list);
-			if (list.count() == 1) {
-				onPrinterSelected(_printersListModel->index(0));
-			}
+			refreshPrintersList();
 		}
 	}
 }
@@ -86,9 +79,25 @@ void MainWindow::onPrinterSelected(const QModelIndex &index)
 	if (controller){
 		qDebug() << __func__  << " Selected printer: " << controller->id().c_str();
 		_printerView->setController(*controller);
+		_printerView->setEnabled(true);
 	}
 	else {
 		_printerView->clear();
-		ui.printerHolder->setEnabled(false);
+		_printerView->setEnabled(false);
+	}
+}
+
+void MainWindow::refreshPrintersList()
+{
+	QStringList list;
+	for (int p = 0; p < static_cast<int>(_manager.size()); p++) {
+		Macsa::PrinterController* controller = _manager.getPrinter(p);
+		if (controller != nullptr){
+			list << QString("%1: %2").arg(controller->id().c_str()).arg(controller->address().c_str());
+		}
+	}
+	_printersListModel->setStringList(list);
+	if (!list.count()) {
+		_printerView->setEnabled(false);
 	}
 }

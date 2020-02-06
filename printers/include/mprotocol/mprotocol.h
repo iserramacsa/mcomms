@@ -150,9 +150,10 @@ namespace  Macsa {
 #define NISX_FILTER		".nisx"
 #define IMG_FILTER		".png,.jpg,.jpeg,.bmp"
 #define NO_FILTER		"*.*"
+#define ALL_FILES		".nisx,.ttf,.png,.jpg,.jpeg,.bmp"
 
 #define MFILES_GET_LIST				"GETFILESLIST"
-#define MFILES_GET_LIST_TYPE_ATTR		"Type"
+#define MFILES_GET_LIST_TYPE_ATTR		"type"
 #define MFILES_DEVICE_UNIT			"UNIT"
 #define MFILES_FILE_PATH			"FILE"
 #define MFILES_FILE_PATH_ATTR			"Path"

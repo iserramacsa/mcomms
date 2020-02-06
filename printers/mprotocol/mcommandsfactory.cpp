@@ -93,6 +93,13 @@ MCommand *MCommandsFactory::getConfigCommand()
 	return new MGetConfig(_printer);
 }
 
+MCommand *MCommandsFactory::setConfigSetEnabled(bool enabled)
+{
+	Macsa::Printers::TIJPrinter printer = _printer;
+	printer.board(0)->setEnabled(enabled);
+	return MSetConfigEnabled(printer);
+}
+
 MCommand *MCommandsFactory::setDateTimeCommand()
 {
 	return new MSetDateTime(_printer);
@@ -115,7 +122,7 @@ MCommand *MCommandsFactory::getImagesCommand()
 
 MCommand *MCommandsFactory::getAllFilesCommand()
 {
-	return new MGetFilesList(_printer, ALL_FILES_FILTER);
+	return new MGetFilesList(_printer, ALL_FILES);
 }
 
 MCommand *MCommandsFactory::getCommand(XMLElement *eCmd)

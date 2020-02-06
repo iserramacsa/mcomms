@@ -27,6 +27,7 @@ class PrinterStatusView : public QWidget
 		QWidget* buildCounters();
 		QWidget* buildInputs();
 		void printerDisconnected();
+		virtual void resizeEvent(QResizeEvent *);
 
 		QLabel*	   _printerType;
 		QCheckBox* _printerAutostart;

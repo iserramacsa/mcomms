@@ -61,7 +61,7 @@ void ClientManager::serverMainLoop()
 {
 	_running.store(true);
 	while (_running.load()) {
-		Network::ISocket* clientSocket = acceptConnection();
+		Network::AbstractSocket* clientSocket = dynamic_cast<Network::AbstractSocket*>(acceptConnection());
 		if (clientSocket){
 			std::stringstream id;
 			id << "Client" << std::to_string(_nodes.size());

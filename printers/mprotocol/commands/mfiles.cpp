@@ -122,32 +122,20 @@ std::string MGetFilesList::filter() const
 	return _filter;
 }
 
-void MGetFilesList::splitFilePwd(const std::string &pwd, std::string &drive, std::string &folder, std::string &file)
-{
-	drive.clear();
-	folder.clear();
-	file = pwd;
-	std::vector<std::string> s;
-
-	size_t slash = file.find(DRIVE_CHARS);
-	if(slash != file.npos) {
-		drive = file.substr(0, slash + strlen(DRIVE_CHARS));
-		file = file.substr(slash + strlen(DRIVE_CHARS));
-	}
-	slash = file.find_last_of(SLASH_CHAR);
-	if(slash != file.npos) {
-		folder = file.substr(0, slash);
-		file = file.substr(slash + 1);
-	}
-}
-
 void MGetFilesList::insertFileToPrinterData(const std::string &pwd)
 {
 	std::string drive, folder, file;
-	splitFilePwd(pwd, drive, folder, file);
+	std::vector<std::string>folders;
+	_printer.files()->splitFilepath(pwd, drive, folders, file);
 
 	if (!_printer.files()->driveExist(drive)) {
 		_printer.files()->addNewDrive(drive);
+	}
+	for (uint i = 0; i < folders.size(); i++){
+		if (i > 0) {
+			folder += "/";
+		}
+		folder += folders.at(i);
 	}
 	if (!_printer.files()->folderExist(drive, folder)) {
 		_printer.files()->addNewFolder(drive, folder);

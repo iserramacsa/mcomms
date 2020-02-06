@@ -47,6 +47,17 @@ namespace Macsa {
 			private:
 				virtual void buildRequest();
 		};
+
+		/**
+		 * @brief The SETCONFIG command class
+		 */
+		class MUpdateConfig : public MSetConfig
+		{
+			public:
+				MUpdateConfig(Printers::TIJPrinter& baseConfig, Printers::TIJPrinter& newConfig);
+			private:
+				virtual void buildRequest();
+		};
 	}
 }
 

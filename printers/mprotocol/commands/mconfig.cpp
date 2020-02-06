@@ -168,3 +168,16 @@ void MSetDateTime::buildRequest()
 		createTextChildNode(MCONFIG_GENERAL_DT, _printer.formatedDateTime(), &cmd);
 	}
 }
+//TODO
+MUpdateConfig::MUpdateConfig(Macsa::Printers::TIJPrinter &baseConfig, Macsa::Printers::TIJPrinter &newConfig):
+	MSetConfig(newConfig)
+{
+	XMLElement* cmd = newCommandNode();
+	XMLElement * xBoards = createChildNode(MPRINTER_BOARDS_LIST, &cmd);
+	if(xBoards != nullptr) {
+		XMLElement * xBoard = createChildNode(MPRINTER_BOARD, &xBoards);
+		if (xBoard != nullptr){
+			createBoolTextChildNode(MPRINTER_BOARD_ENABLED, _printer.board(0)->enabled(), &xBoard);
+		}
+	}
+}

@@ -37,11 +37,24 @@ namespace Macsa {
 			//Config
 			Printers::ErrorCode updateConfig();
 			bool setDateTime(const std::time_t& dt);
+			bool setEnabled(bool enabled);
 			//Files
-			std::vector<std::string> getFonts();
-			std::vector<std::string> getMessages();
-			std::vector<std::string> getImages();
-			std::vector<std::string> getAllFiles();
+			Printers::ErrorCode updateFiles();
+			Printers::ErrorCode updateFile(const std::string& filepath);
+
+			std::vector<std::string> getDrives();
+			std::vector<uint8_t> getFile(const std::string& filepath);
+
+			inline std::vector<std::string> getFonts() { return getFiles(FONTS_FILTER); }
+			inline std::vector<std::string> getFonts(const std::string &drive) { return getFiles(drive, FONTS_FOLDER);}
+
+			inline std::vector<std::string> getMessages() { return getFiles(MESSAGES_FILTER); }
+			inline std::vector<std::string> getMessages(const std::string &drive) { return getFiles(drive, MESSAGES_FOLDER);}
+
+			inline std::vector<std::string> getImages() { return getFiles(IMAGES_FILTER); }
+			inline std::vector<std::string> getImages(const std::string &drive) { return getFiles(drive, IMAGES_FOLDER);}
+
+			inline std::vector<std::string> getAllFiles() { return getFiles(ALL_FILES_FILTER); }
 			bool getErrorsList();
 
 		protected:
@@ -53,6 +66,8 @@ namespace Macsa {
 			MProtocol::MCommandsFactory _factory;
 
 			void checkConnection();
+			std::vector<std::string> getFiles(const std::string &extension);
+			std::vector<std::string> getFiles(const std::string &drive,const std::string &folder);
 			
 	};
 }

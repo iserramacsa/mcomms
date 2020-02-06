@@ -28,7 +28,7 @@ void PrinterStatusView::setController(Macsa::TIJPrinterController &controller)
 
 void PrinterStatusView::refresh()
 {
-	if ((_controller != nullptr) && (_controller->data(1).toString() != "Disconnected")) {
+	if ((_controller != nullptr) && (_controller->printerStatus() != TIJViewerController::TIJStatus::DISCONNECTED)) {
 		_printerType->setText(_controller->boardType());
 		_printerAutostart->setChecked(_controller->autoStart());
 		_printerUserMessage->setText(_controller->userMessage());
@@ -154,6 +154,20 @@ void PrinterStatusView::printerDisconnected()
 	updateOutputs(QVector<TIJViewerController::PrinterOutput>());
 	updateProperties(QMap<QString, QString>());
 	updateErrors(QVector<TIJViewerController::PrinterError>());
+}
+
+void PrinterStatusView::resizeEvent(QResizeEvent * event)
+{
+	QWidget::resizeEvent(event);
+	int cols = _errors->columnCount();
+	if (cols == 4) {
+		_errors->setColumnWidth(0, 150);
+		_errors->setColumnWidth(1, 100);
+		_errors->setColumnWidth(2, 100);
+		int w = _errors->width() - (150 + 100 * 2 + 10);
+		_errors->setColumnWidth(3, w);
+	}
+
 }
 
 void PrinterStatusView::updateInputs(const QVector<TIJViewerController::PrinterInput> &inputs)

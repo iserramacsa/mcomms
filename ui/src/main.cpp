@@ -8,8 +8,8 @@
 
 #include "mainwindow.h"
 
-#define WIN_MIN_WIDTH	600
-#define WIN_MIN_HEIGHT	400
+#define WIN_MIN_WIDTH	1200
+#define WIN_MIN_HEIGHT	600
 
 int main (int argc, char* argv[])
 {
@@ -18,7 +18,7 @@ int main (int argc, char* argv[])
 
 	QRect rWin = app.desktop()->geometry();
 
-	rWin.setX((rWin.width() - WIN_MIN_WIDTH * 2));
+	rWin.setX(((rWin.width()/2 - WIN_MIN_WIDTH) / 2) + rWin.width()/2);
 	rWin.setY((rWin.height() - WIN_MIN_HEIGHT) / 2);
 	rWin.setWidth(WIN_MIN_WIDTH);
 	rWin.setHeight(WIN_MIN_HEIGHT);

@@ -2,10 +2,14 @@
 #include <algorithm> // Update methods
 #include <typeinfo>
 #include <iostream>
+#include <string.h> // strlen
 
 using namespace Macsa;
 using namespace Macsa::Printers;
 using namespace std;
+
+#define DRIVE_STRING_DELIMITER	"//"
+#define SLASH_CHAR	'/'
 
 #if __cplusplus >= 201103L
 	using citDrive  = std::map<std::string, Drive*>::const_iterator;
@@ -202,6 +206,12 @@ const Drive *PrinterFiles::getDrive(const string &drive) const
 	return getItem(drive, _drives);
 }
 
+const Folder *PrinterFiles::getFolder(const string &path) const
+{
+	std::string drive = "//";
+
+}
+
 const Folder *PrinterFiles::getFolder(const string &drive, const string &folder) const
 {
 	const Drive * d = getItem(drive, _drives);
@@ -355,6 +365,27 @@ File *PrinterFiles::removeFile(const string &drive, const string &folder, const 
 		f = d->removeFile(folder, filename);
 	}
 	return f;
+}
+
+void PrinterFiles::splitFilepath(const string &pwd, string &drive, vector<string> &folders, string &file) const
+{
+	drive.clear();
+	folders.clear();
+	file.clear();
+	string path;
+
+	size_t slash = pwd.find(DRIVE_STRING_DELIMITER);
+	path = pwd;
+	if(slash != pwd.npos) {
+		drive = pwd.substr(0, slash + strlen(DRIVE_STRING_DELIMITER));
+		path = pwd.substr(slash + strlen(DRIVE_STRING_DELIMITER));
+	}
+
+	while ((slash = path.find_last_of(SLASH_CHAR)) != file.npos) {
+		folders.push_back(path.substr(0, slash));
+		path = path.substr(slash + 1);
+	}
+	file = path;
 }
 
 bool PrinterFiles::equal(const FileSystemAbstract &other) const

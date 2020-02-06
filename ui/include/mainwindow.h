@@ -34,6 +34,8 @@ class MainWindow : public QMainWindow
 		Macsa::PrintersManager _manager;
 		Ui::MainWindow ui;
 
+		void refreshPrintersList();
+
 };
 
 #endif //UI_MAIN_WINDOW_H

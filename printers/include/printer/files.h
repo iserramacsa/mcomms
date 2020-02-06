@@ -18,7 +18,7 @@
 #define IMAGES_FILTER_JPG	".jpg"
 #define IMAGES_FILTER_JPEG	".jpeg"
 #define IMAGES_FILTER_BMP	".bmp"
-//#define IMG_FILTER			"*.png,*.jpg,*.jpeg,*.bmp"
+#define IMAGES_FILTER		".png,.jpg,.jpeg,s.bmp"
 
 #define ALL_FILES_FILTER	"*.*"
 #define EXTENSIONS_SEPARATOR ","
@@ -78,6 +78,7 @@ namespace Macsa {
 				std::vector<std::string> getAllFiles(const std::string& filter) const;
 
 				const Drive* getDrive(const std::string& drive) const;
+				const Folder* getFolder(const std::string& path) const;
 				const Folder* getFolder(const std::string& drive, const std::string& folder) const;
 				const File* getFile(const std::string& drive, const std::string& folder, const std::string& filename) const;
 
@@ -110,6 +111,8 @@ namespace Macsa {
 				Folder* removeFolder(const std::string &drive, const std::string &folder);/*Full transfer*/
 				File*	removeFile(const std::string &drive, const std::string& folder, const std::string& filename);/*Full transfer*/
 
+
+				void splitFilepath(const std::string &pwd, std::string &drive, std::vector<std::string> &folder, std::string &file) const;
 				virtual bool equal (const FileSystemAbstract& other) const override;
 
 				IFilesManager *filesManager() const;
