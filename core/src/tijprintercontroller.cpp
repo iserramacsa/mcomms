@@ -139,10 +139,20 @@ bool TIJPrinterController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &e
 		if (socket->send(tx) == ISocket::FRAME_SUCCESS)
 		{
 			std::string resp = "";
-			if(socket->receive(resp) == ISocket::FRAME_SUCCESS)
+			ISocket::nSocketFrameStatus status = socket->receive(resp);
+			if(status == ISocket::FRAME_SUCCESS)
 			{
-				std::cout << tx << std::endl;
+//				std::cout << tx << std::endl;
 				success = _factory.parseResponse(resp, err);
+			}
+			else {
+				std::cerr << __func__ << " Receive failed: ";
+				switch (status) {
+					case ISocket::FRAME_SUCCESS:     std::cerr << "SUCCESS" << std::endl; break;
+					case ISocket::FRAME_TIMEOUT:	 std::cerr << "TIMEOUT" << std::endl; break;
+					case ISocket::FRAME_INCOMPLETED: std::cerr << "INCOMPLETED" << std::endl; break;
+					case ISocket::FRAME_ERROR:		 std::cerr << "ERROR" << std::endl; break;
+				}
 			}
 		}
 	}
