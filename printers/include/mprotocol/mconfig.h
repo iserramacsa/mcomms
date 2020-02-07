@@ -57,10 +57,10 @@ namespace Macsa {
 				MUpdateConfig(Printers::TIJPrinter& baseConfig, Printers::TIJPrinter& newConfig);
 			private:
 				virtual void buildRequest();
-                                Printers::TIJPrinter& _newConfig;
-                                void updateGeneralConfig(tinyxml2::XMLElement** parent);
-                                void updateCommsConfig(tinyxml2::XMLElement** parent);
-                                void updateBoards(tinyxml2::XMLElement** parent);
+				Printers::TIJPrinter _newConfig;
+				void updateGeneralConfig(tinyxml2::XMLElement** parent);
+				void updateCommsConfig(tinyxml2::XMLElement** parent);
+				void updateBoards(tinyxml2::XMLElement** parent);
 		};
 	}
 }

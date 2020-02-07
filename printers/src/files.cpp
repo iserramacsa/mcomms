@@ -91,15 +91,15 @@ bool FileSystemAbstract::deleteItem(const std::string& name, std::map<string, T*
 template<class T>
 bool FileSystemAbstract::clear(std::map<string, T*> &map)
 {
-#if __cplusplus >= 201103L
-	for (auto& item : map) {
-		delete item.second;
+//#if __cplusplus >= 201103L
+	while (map.size()){
+		deleteItem(map.begin()->first, map);
 	}
-#else
-	for (typename std::map<string, T *>::const_iterator it = map.begin(); it != map.end(); it++) {
-		delete it->second;
-	}
-#endif
+//#else
+//	for (typename std::map<string, T *>::const_iterator it = map.begin(); it != map.end(); it++) {
+//		delete it->second;
+//	}
+//#endif
 	map.clear();
 	return (map.size() == 0);
 }

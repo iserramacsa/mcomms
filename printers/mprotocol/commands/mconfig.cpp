@@ -81,7 +81,7 @@ void MGetConfig::buildResponse()
 //	SETCONFIG
 //######################################################
 MSetConfig::MSetConfig(Macsa::Printers::TIJPrinter &printer):
-	MConfigCommand(MCONFIG_GET, printer)
+	MConfigCommand(MCONFIG_SET, printer)
 {}
 
 void MSetConfig::buildRequest()
@@ -178,7 +178,7 @@ void MUpdateConfig::buildRequest()
 {
 	XMLElement* cmd = newCommandNode();
 	updateGeneralConfig(&cmd);
-	updateCommsConfig(&cmd);
+	//updateCommsConfig(&cmd);
 	updateBoards(&cmd);
 }
 
