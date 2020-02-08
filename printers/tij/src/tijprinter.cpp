@@ -200,3 +200,19 @@ bool TIJPrinter::equal(const Printer &other) const
 
 	return equal;
 }
+
+void TIJPrinter::copy(const TIJPrinter &other)
+{
+
+	_files = PrinterFiles();
+	_comms = other._comms;
+	_controllerVersion = other._controllerVersion;
+	_apiVersion = other._apiVersion;
+	_fpgaVersion = other._fpgaVersion;
+	_dateCodes = other._dateCodes;
+
+	_boards.assign(other._boards.begin(), other._boards.end());
+	_logLevel = other._logLevel;
+	_traceLogs = other._traceLogs;
+	_traceComms = other._traceComms;
+}

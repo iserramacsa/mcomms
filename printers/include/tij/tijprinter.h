@@ -46,6 +46,8 @@ namespace Macsa {
 				virtual void setloggerLevel(const LoggerLevel& logLevel);
 				virtual void setloggerLevel(const std::string& logLevel);
 
+                                virtual void operator = (const TIJPrinter& other){return copy(other);}
+
 			private:
 				PrinterFiles _files;
 				TIJComms	_comms;
@@ -60,6 +62,7 @@ namespace Macsa {
 				bool _traceComms;
 
 				virtual bool equal(const Printer &other) const override;
+                                virtual void copy (const TIJPrinter& other);
 
 		};
 	}

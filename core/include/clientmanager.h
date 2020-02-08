@@ -10,7 +10,9 @@
 #include "tij/tijprinter.h"
 
 using namespace Macsa;
+using namespace Macsa::Network;
 
+class AbstractSocket;
 class ClientManager : public Network::MNetwork
 {
 	public:
@@ -32,7 +34,7 @@ class ClientManager : public Network::MNetwork
 		std::vector<ClientHandler*> _handlers;
 
 		void serverMainLoop();
-		Network::ISocket *acceptConnection();
+		Network::AbstractSocket *acceptConnection();
 
 };
 

@@ -32,7 +32,7 @@ namespace Macsa {
 #endif
 			public:
 				Board(const int id, TIJPrinter* parent);
-				Board(const Board& other);
+                Board(const Board& other, TIJPrinter* parent = nullptr);
 				virtual ~Board();
 
 				int id() const;
@@ -120,8 +120,8 @@ namespace Macsa {
 				virtual Error error(unsigned int idx) const;
 				virtual void setError(unsigned int idx, const Error& error);
 
-				virtual TIJPrinter* printer();
-				virtual const TIJPrinter* printer() const;
+                virtual TIJPrinter* printer();
+                virtual const TIJPrinter* printer() const;
 
 				virtual void clear();
 
@@ -131,8 +131,8 @@ namespace Macsa {
 				virtual void operator = (const Board& other) { return copy(other);}
 
 			private:
-				const int		_id;
-				TIJPrinter*		_parent;
+                const int   _id;
+                TIJPrinter*	_parent;
 
 				bool			_autostart;
 				bool			_lowLvlOutput;

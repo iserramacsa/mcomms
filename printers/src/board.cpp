@@ -10,9 +10,9 @@ Board::Board(const int id, TIJPrinter* parent) :
 	clear();
 }
 
-Board::Board(const Board &other) :
+Board::Board(const Board &other, TIJPrinter* parent) :
 	_id(other.id()),
-	_parent(other._parent)
+	_parent(parent)
 {
 	copy(other);
 }
