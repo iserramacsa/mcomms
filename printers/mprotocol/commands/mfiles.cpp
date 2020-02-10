@@ -450,13 +450,24 @@ bool MGetFile::parseResponse(const XMLElement *xml)
 	bool valid = false;
 	const XMLElement* cmd = getCommand(xml, _id);
 	valid = (cmd != nullptr);
-	if (valid) {
+	if (valid)
+	{
 		_error = getCommandError(xml);
-		const XMLText* content = dynamic_cast<const XMLText*>(cmd->FirstChild());
-		if (content) {
-			_raw = content->CData();
+		if (_error == Printers::ErrorCode_n::SUCCESS)
+		{
 			_content.clear();
-			_content = contentFromString(content->Value(), _raw);
+			std::string pwd = getTextAttribute(cmd, ATTRIBUTE_FILEPATH, "");
+			if (pwd.length() && _printer.files() && _printer.files()->getFile(pwd) != nullptr)
+			{
+				const XMLElement* contentNode = cmd->FirstChildElement();
+				if (dynamic_cast<const XMLText*>(contentNode->FirstChild()))
+				{
+					const XMLText* content = dynamic_cast<const XMLText*>(contentNode->FirstChild());
+					_raw = content->CData();
+					_content = contentFromString(content->Value(), _raw);
+					_printer.files()->setFile(pwd, _content);
+				}
+			}
 		}
 	}
 	return valid;

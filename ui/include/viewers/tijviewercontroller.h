@@ -16,6 +16,9 @@ class TIJViewerController : public PrinterViewerController
 			STATUS,
 			CONFIG,
 			ALL_FILES,
+			MESSAGES_FILES,
+			FONTS_FILES,
+			IMAGES_FILES,
 
 			PRINTER_ID,
 			PRINTER_ADDRS,
@@ -54,6 +57,20 @@ class TIJViewerController : public PrinterViewerController
 		virtual Macsa::TIJPrinterController& controller(){ return _controller;}
 		virtual QVariant data(int descriptor);
 		virtual bool setData(int descriptor, const QVariant& value);
+
+		//Command request
+		bool requestLive();
+		bool requestStatus();
+		bool requestConfig();
+		bool requestErrorsList();
+		bool requestAllFiles();
+		bool requestFontFiles();
+		bool requestMessagesFiles();
+		bool requestImagesFiles();
+		bool requestFileContent(const std::string& filepath, bool rawMode = false);
+		std::vector<uint8_t> getFileContent(const std::string& filepath);
+
+
 
 		TIJStatus printerStatus() const;
 

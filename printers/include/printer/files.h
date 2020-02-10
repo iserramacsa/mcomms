@@ -70,6 +70,7 @@ namespace Macsa {
 		{
 			public:
 				PrinterFiles();
+				PrinterFiles(const PrinterFiles& other);
 				virtual ~PrinterFiles() override;
 
 				std::vector<std::string> getDrives() const;
@@ -81,6 +82,7 @@ namespace Macsa {
 //				const Folder* getFolder(const std::string& path) const;
 				const Folder* getFolder(const std::string& drive, const std::string& folder) const;
 				const File* getFile(const std::string& drive, const std::string& folder, const std::string& filename) const;
+				const File* getFile(const std::string& filepath) const;
 
 				bool driveExist(const std::string& drive) const;
 				bool folderExist(const std::string& drive, const std::string& folder) const;
@@ -92,6 +94,7 @@ namespace Macsa {
 				bool addNewFile(const std::string& drive, const std::string& folder, const std::string& filename);
 				bool addFile(const std::string& drive, const std::string& folder, const std::string& filename, const std::vector<uint8_t>& data);
 				bool setFile(const std::string& drive, const std::string& folder, const std::string& filename, const std::vector<uint8_t>& data);
+				bool setFile(const std::string& filepath, const std::vector<uint8_t>& data);
 				bool clearDrive(const std::string& drive);
 				bool clearFolder(const std::string& drive, const std::string& folder);
 				bool deleteDrive(const std::string& drive);
@@ -112,7 +115,8 @@ namespace Macsa {
 				File*	removeFile(const std::string &drive, const std::string& folder, const std::string& filename);/*Full transfer*/
 
 
-				void splitFilepath(const std::string &pwd, std::string &drive, std::vector<std::string> &folder, std::string &file) const;
+				void splitFilepath(const std::string &pwd, std::string &drive, std::vector<std::string> &folders, std::string &file) const;
+				void splitFilepath(const std::string &pwd, std::string &drive, std::string &folder, std::string &file) const;
 
 				IFilesManager *filesManager() const;
 				void setFilesManager(IFilesManager *filesManager);

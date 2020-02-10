@@ -13,6 +13,32 @@ Version | Date | Edited by | Changes
 1.3.0 | 2019 June 05 |Ignasi Serra | Added [2 new commands](#get-message-data-source) to modify message datasource fields.
 1.3.1 | 2019 July  01 | Alex Dorado | Allow to send files in [RAW mode](#get-file).
 
+### Index of content
+1. [Introduction](#introduction)
+1. [Commands](#Files-management)
+    
+    2.1. [Files management](#Files-management)
+    
+    - [Get files list](#get-files-list)
+    - [Copy file](#copy-file)
+    - [Move file](#move-file)
+    - [Delete file](#delete-file)
+    - [Get file](#get-file)
+    - [Set file](#set-file)
+    - [Get message value](#get-message-value)
+    - [Set message value](#set-message-value)
+    - [Get message data source](#get-message-data-source)
+    - [Set message data source](#set-message-data-source)
+    
+    2.2. [Status and configuration](#status-and-configuration)
+    
+    - [Get status](#get-status)
+    - [Get IO status](#get-io-status)
+    - [Get errors list](#get-errors)
+1. [Data types](#data-types)
+1. [Error codes](#error-codes)
+
+
 ## Introduction
 This repository contains the code and documentation of Macsa Tij communication protocol.
 
@@ -30,6 +56,9 @@ This protocol uses xml as a language to create the payload. Payloads sent and re
     </COMMAND_NAME>
 </WIND>
 ```
+
+
+
 ## Data types
 >Note BOOL values must be string literals "true" or "false"
 
@@ -201,32 +230,11 @@ SingleShot | Single shot | One shot per trigger.
 MultiShotRelative | Relative multi shot | More than one shot per trigger: first delay and delay between shots.
 MultiShotAbsolute |Absolute multi shot | More than one shot per trigger. Every delay is an absolute time since trigger's signal.  **Not implemented yet** 
 
-## List of available commands:
-
-1. [Files management](#Files-management)
-    - [Get files list](#get-files-list)
-    - [Copy file](#copy-file)
-    - [Move file](#move-file)
-    - [Delete file](#delete-file)
-    - [Get file](#get-file)
-    - [Set file](#set-file)
-    - [Get message value](#get-message-value)
-    - [Set message value](#set-message-value)
-    - [Get message data source](#get-message-data-source)
-    - [Set message data source](#set-message-data-source)
-1. [Status and configuration](#status-and-configuration)
-    - [Get status](#get-status)
-    - [Get IO status](#get-io-status)
-    - [Get errors list](#get-errors)
-1. [Error codes](#error-codes)
-
----
-
 ---
 ## Files management
 The protocol has the capability to send and receive files inside the payload using the following commands. 
 
-In order to reference files through this protocol all files must be defined with two strings *logical drive* (`<UNIT name="//" />`) and *logical path* (`<FILE path="foo file.jpg" />`).
+In order to reference files through this protocol all files must be defined with two strings *logical drive* (`<UNIT name="//" />`) and *logical path* (`<FILE path="//messages/CQ.nisx" />` or `<FILE Path="USB//messages/CQ.nisx"/>`).
 
 The protocol is **not** the responsible of how drives and files are mapped. The logical path mapping depends on the code implementation.
 
@@ -242,7 +250,7 @@ __drive //__
 
 **TIJ project current used drives implementation**
 
-Logical drive|Description|Physical path
+Logical drive|Description|Mount point
 -------------|-----------|-------------
 //| Internal storage | /home/root
 USB//| External storage | /home/root/usb

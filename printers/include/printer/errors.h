@@ -10,8 +10,11 @@ namespace Macsa {
 		{
 			public:
 				Error();
-				Error(time_t timestamp, ErrorType type, ErrorCode code, unsigned int priority);
+				Error(uint board, time_t timestamp, ErrorType type, ErrorCode code, unsigned int priority);
 				~Error();
+
+				unsigned int boardId() const;
+				void setBoardId(unsigned int boardId);
 
 				time_t timestamp() const;
 				void setTimestamp(const time_t &value);
@@ -34,7 +37,9 @@ namespace Macsa {
 				bool operator == (const Error& other) const {return equal(other);}
 				bool operator != (const Error& other) const {return !equal(other);}
 
+
 			private:
+				unsigned int _boardId;
 				time_t	  _timestamp;
 				ErrorType _type;
 				ErrorCode _code;

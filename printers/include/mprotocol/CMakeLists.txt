@@ -9,6 +9,7 @@ set(HEADERS_LIB
 	${CMAKE_CURRENT_SOURCE_DIR}/mconfig.h
 	${CMAKE_CURRENT_SOURCE_DIR}/mfiles.h
 	${CMAKE_CURRENT_SOURCE_DIR}/mlive.h
+	${CMAKE_CURRENT_SOURCE_DIR}/merrorslogs.h
 	${CMAKE_CURRENT_SOURCE_DIR}/mmessagevalues.h
 	${CMAKE_CURRENT_SOURCE_DIR}/mprotocol.h
 	${CMAKE_CURRENT_SOURCE_DIR}/mstatus.h

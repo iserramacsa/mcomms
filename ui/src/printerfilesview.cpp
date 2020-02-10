@@ -9,8 +9,8 @@ PrinterFilesView::PrinterFilesView(QWidget *parent) :
 	connect(ui.butRefresh, SIGNAL(clicked(bool)), SLOT(onRequestFiles()));
 
 	_treeFiles = ui.treeFiles;
-	_treeFiles->setColumnCount(2);
-	_treeFiles->setHeaderLabels(QStringList()<< "Path"<<"Type");
+	_treeFiles->setColumnCount(3);
+	_treeFiles->setHeaderLabels(QStringList()<< "Path"<<"Type"<<"Size");
 	_treeFiles->setColumnWidth(0, 600);
 
 	connect(_treeFiles, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), SLOT(onRequestFile(QTreeWidgetItem*,int)));
@@ -62,6 +62,15 @@ void PrinterFilesView::refresh()
 			items << item;
 		}
 		_treeFiles->insertTopLevelItems(0, items);
+
+		///Expand all
+		for (int i = 0; i < items.count(); i++) {
+			const QTreeWidgetItem* item = items.at(i);
+			for (int j = 0; j < item->childCount(); j++) {
+				_treeFiles->setItemExpanded(item->child(j), true);
+			}
+			_treeFiles->setItemExpanded(item, true);
+		}
 	}
 }
 
@@ -78,9 +87,11 @@ void PrinterFilesView::AddFilesChild(QTreeWidgetItem *item, const QString &folde
 			for (int f = 0; f < fileName.count(); ++f) {
 				file->setText(f, fileName.at(f));
 			}
+			QString filepath = QString("%1%2/%3").arg(item->text(0)).arg(folder).arg((*it).c_str());
+			std::vector<uint8_t>content = _controller->controller().getFile(filepath.toStdString());
+			file->setText(2, QString("%1 kb").arg(QString::number((static_cast<double>(content.size())/1024),'f',2)));
 			fItem->insertChild(fItem->childCount(), file);
 		}
-
 		item->insertChild(item->childCount(), fItem);
 	}
 }
@@ -92,19 +103,20 @@ void PrinterFilesView::onRequestFiles()
 	}
 }
 
-#include <QDebug>
 void PrinterFilesView::onRequestFile(QTreeWidgetItem *item, int)
 {
 	if (!item->childCount()){
-		QString path = QString("%1.%2").arg(item->text(0)).arg(item->text(1));
+		QString path = QString("/%1.%2").arg(item->text(0)).arg(item->text(1));
 		while (item->parent() != nullptr) {
-			path.prepend("/");
 			item = item->parent();
 			path.prepend(item->text(0));
 		}
+		path.replace("///", "//");
 
 		if (_controller != nullptr) {
-//			std::vector<uint8_t> bytes = _controller->controller().getFile(path);
+			if (_controller->requestFileContent(path.toStdString())) {
+				refresh();
+			}
 		}
 	}
 }

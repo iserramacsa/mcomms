@@ -38,6 +38,10 @@ class PrinterView : public QWidget
 		void onRequestConfig();
 		void onRequestStatus();
 		void onRequestFiles();
+		void onRequestFonts();
+		void onRequestImages();
+		void onRequestMessages();
+		void onRequestErrorsLog();
 		void onConnectClicked();
 };
 

@@ -74,6 +74,16 @@ TIJPrinterController::TIJPrinterStatus TIJPrinterController::printerStatus()
 	return status;
 }
 
+Printers::ErrorCode TIJPrinterController::updateErrorsList()
+{
+	Printers::ErrorCode error;
+	MProtocol::MCommand* cmd = _factory.getErrorsList();
+	if (cmd) {
+		send(cmd, error);
+	}
+	return error;
+}
+
 Printers::ErrorCode TIJPrinterController::updateConfig()
 {
 	Printers::ErrorCode error;
@@ -84,10 +94,20 @@ Printers::ErrorCode TIJPrinterController::updateConfig()
 	return error;
 }
 
+Printers::ErrorCode TIJPrinterController::setDateTime(const time_t &dt)
+{
+	Printers::ErrorCode error;
+	MProtocol::MCommand* cmd = _factory.setDateTimeCommand(dt);
+	if (cmd) {
+		send(cmd, error);
+	}
+	return error;
+}
+
 Printers::ErrorCode TIJPrinterController::setEnabled(bool enabled)
 {
 	Printers::ErrorCode error;
-	MProtocol::MCommand* cmd = _factory.SetEnabled(enabled);
+	MProtocol::MCommand* cmd = _factory.setConfigBoardEnabled(enabled);
 	if (cmd) {
 		send(cmd, error);
 	}
@@ -98,6 +118,46 @@ Printers::ErrorCode TIJPrinterController::updateFiles()
 {
 	Printers::ErrorCode error;
 	MProtocol::MCommand* cmd = _factory.getAllFilesCommand();
+	if (cmd) {
+		send(cmd, error);
+	}
+	return error;
+}
+
+Printers::ErrorCode TIJPrinterController::updateFonts()
+{
+	Printers::ErrorCode error;
+	MProtocol::MCommand* cmd = _factory.getFontsCommand();
+	if (cmd) {
+		send(cmd, error);
+	}
+	return error;
+}
+
+Printers::ErrorCode TIJPrinterController::updateMessages()
+{
+	Printers::ErrorCode error;
+	MProtocol::MCommand* cmd = _factory.getMessagesCommand();
+	if (cmd) {
+		send(cmd, error);
+	}
+	return error;
+}
+
+Printers::ErrorCode TIJPrinterController::updateImages()
+{
+	Printers::ErrorCode error;
+	MProtocol::MCommand* cmd = _factory.getImagesCommand();
+	if (cmd) {
+		send(cmd, error);
+	}
+	return error;
+}
+
+Printers::ErrorCode TIJPrinterController::updateFile(const std::string &filepath, bool rawMode)
+{
+	Printers::ErrorCode error;
+	MProtocol::MCommand* cmd = _factory.getFileContent(filepath, rawMode);
 	if (cmd) {
 		send(cmd, error);
 	}
@@ -119,11 +179,16 @@ std::vector<std::string> TIJPrinterController::getDrives()
 std::vector<uint8_t> TIJPrinterController::getFile(const std::string &filepath)
 {
 	std::vector<uint8_t> content;
+	content.clear();
 	if (_printer.files() != nullptr) {
-//		const Macsa::Printers::File* file = _printer.files()->getFile(filepath);
-	}
-	else{
-		content.clear();
+		std::cout << __func__ << "  " << filepath;
+		const Macsa::Printers::File* file = _printer.files()->getFile(filepath);
+		if (file){
+			std::cout << "  => File found" << std::endl;
+			content = file->data();
+		}
+		else
+			std::cout << "  => File NOT found" << std::endl;
 	}
 	return content;
 }
@@ -142,7 +207,7 @@ bool TIJPrinterController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &e
 			ISocket::nSocketFrameStatus status = socket->receive(resp);
 			if(status == ISocket::FRAME_SUCCESS)
 			{
-//				std::cout << tx << std::endl;
+				std::cout << tx << std::endl;
 				success = _factory.parseResponse(resp, err);
 			}
 			else {

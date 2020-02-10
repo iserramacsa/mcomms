@@ -8,9 +8,11 @@
 
 namespace Macsa {
 	namespace Printers {
-		class TIJPrinter : public Printer{
+		class TIJPrinter : public Printer {
+
 			public:
 				TIJPrinter();
+				TIJPrinter(const TIJPrinter&);
 				virtual ~TIJPrinter() override;
 
 				virtual PrinterFiles* files() override;
@@ -20,6 +22,8 @@ namespace Macsa {
 				virtual const PrinterComms* comms() const override;
 
 				virtual std::string formatedDateTime() const;
+				virtual std::string formatedDateTime(time_t time) const;
+				virtual std::time_t dateTimeFromString(std::string dt) const;
 
 				virtual void setDateTime(const std::time_t& dateTime) override;
 				virtual void setDateTime(const std::string& formatedDatetime);
@@ -38,6 +42,9 @@ namespace Macsa {
 				virtual void setBoard(const Board& board);
 				virtual void setBoards(const std::vector<Board>& boards);
 
+				virtual std::vector<Error> errorsLog() const;
+				virtual void setErrorsLog(const std::vector<Error>& errorsLog);
+
 				virtual bool logsEnabled() const;
 				virtual void setlogsEnabled(bool enable);
 				virtual bool logComsEnabled() const;
@@ -46,7 +53,7 @@ namespace Macsa {
 				virtual void setloggerLevel(const LoggerLevel& logLevel);
 				virtual void setloggerLevel(const std::string& logLevel);
 
-                                virtual void operator = (const TIJPrinter& other){return copy(other);}
+				virtual void operator = (const TIJPrinter& other){return copy(other);}
 
             protected:
 				PrinterFiles _files;
@@ -57,12 +64,13 @@ namespace Macsa {
 				DateCodes	_dateCodes;
 
 				std::vector<Board> _boards;
+				std::vector<Error> _errorsLog;
 				LoggerLevel _logLevel;
 				bool _traceLogs;
 				bool _traceComms;
 
 				virtual bool equal(const Printer &other) const override;
-                                virtual void copy (const TIJPrinter& other);
+				virtual void copy (const TIJPrinter& other);
 
 		};
 	}

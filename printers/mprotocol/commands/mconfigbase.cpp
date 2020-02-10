@@ -33,7 +33,7 @@ void MConfigCommand::loggerToXml(const Macsa::Printers::TIJPrinter &printer, XML
 	XMLElement * xLog = createChildNode(MCONFIG_GENERAL_LOG, parent);
 	if(xLog != nullptr) {
 		xLog->SetAttribute(MCONFIG_GENERAL_LOG_ENABLED_ATTR, MTools::toCString(printer.logsEnabled()));
-		xLog->SetAttribute(MCONFIG_GENERAL_LOG_LEVEL_ATTR, printer.loggerLevel().toCString());
+		xLog->SetAttribute(MCONFIG_GENERAL_LOG_LEVEL_ATTR, printer.loggerLevel().toString().c_str());
 		xLog->SetAttribute(MCONFIG_GENERAL_LOG_COMMS, MTools::toCString(printer.logComsEnabled()));
 	}
 }
@@ -164,7 +164,7 @@ void MConfigCommand::shotModeToXml(const Printers::ShotMode &shotMode, XMLElemen
 		XMLElement* xShotMode = createChildNode(MPRINTER_BOARD_SHOT_MODE, parent);
 		if (xShotMode != nullptr) {
 			const std::vector<Printers::Delay>& delays = shotMode.delays();
-			xShotMode->SetAttribute(MPRINTER_BOARD_SHOT_MODE_MODE_ATTR, shotMode.mode().toCString());
+			xShotMode->SetAttribute(MPRINTER_BOARD_SHOT_MODE_MODE_ATTR, shotMode.mode().toString().c_str());
 			xShotMode->SetAttribute(ATTRIBUTE_VALUE, shotMode.numPrints());
 			xShotMode->SetAttribute(MPRINTER_BOARD_SHOT_MODE_DELAY_ATTR, static_cast<uint32_t>(delays.size()));
 			xShotMode->SetAttribute(MPRINTER_BOARD_SHOT_MODE_REPEAT_ATTR, MTools::toCString(shotMode.repeat()));
@@ -172,7 +172,7 @@ void MConfigCommand::shotModeToXml(const Printers::ShotMode &shotMode, XMLElemen
 				XMLElement* xDelay = createChildNode(MPRINTER_BOARD_SHOT_DELAY, &xShotMode);
 				if  (xDelay != nullptr) {
 					xDelay->SetAttribute(ATTRIBUTE_VALUE, delays.at(i).delay());
-					xDelay->SetAttribute(MPRINTER_BOARD_SHOT_DELAY_UNITS_ATTR, delays.at(i).units().toCString());
+					xDelay->SetAttribute(MPRINTER_BOARD_SHOT_DELAY_UNITS_ATTR, delays.at(i).units().toString().c_str());
 				}
 			}
 		}
@@ -184,7 +184,7 @@ void MConfigCommand::encoderToXml(const Printers::Encoder &encoder, XMLElement *
 	if (*parent != nullptr && std::strcmp((*parent)->Name(), MPRINTER_BOARD) == 0) {
 		XMLElement* xEncoder = createChildNode(MPRINTER_BOARD_ENCODER, parent);
 		if (xEncoder != nullptr) {
-			xEncoder->SetAttribute(MPRINTER_BOARD_ENCODER_MODE_ATTR, encoder.mode().toCString());
+			xEncoder->SetAttribute(MPRINTER_BOARD_ENCODER_MODE_ATTR, encoder.mode().toString().c_str());
 			XMLElement* xFixedSpeed = createChildNode(MPRINTER_BOARD_ENCODER_FIXED, &xEncoder);
 			if (xFixedSpeed != nullptr){
 				xFixedSpeed->SetAttribute(ATTRIBUTE_VALUE, MTools::toCString(encoder.fixedSpeed(), 1));
@@ -246,7 +246,7 @@ void MConfigCommand::inputsToXml(const std::vector<Printers::Input> &inputs, XML
 				if (xInput != nullptr) {
 					xInput->SetAttribute(ATTRIBUTE_ID, input->id());
 					xInput->SetAttribute(MPRINTER_BOARD_IO_DESCRIPT_ATTR, input->descriptor().c_str());
-					xInput->SetAttribute(MPRINTER_BOARD_IO_CONFIG_ATTR, input->mode().toCString());
+					xInput->SetAttribute(MPRINTER_BOARD_IO_CONFIG_ATTR, input->mode().toString().c_str());
 					xInput->SetAttribute(MPRINTER_BOARD_IO_INVERTED_ATTR, MTools::toCString(input->inverted()));
 					xInput->SetAttribute(MPRINTER_BOARD_IO_FILTER_ATTR, input->filter());
 				}
@@ -265,7 +265,7 @@ void MConfigCommand::outputsToXml(const std::vector<Macsa::Printers::Output> &ou
 				if (xOutput != nullptr) {
 					xOutput->SetAttribute(ATTRIBUTE_ID, output->id());
 					xOutput->SetAttribute(MPRINTER_BOARD_IO_DESCRIPT_ATTR, output->descriptor().c_str());
-					xOutput->SetAttribute(MPRINTER_BOARD_IO_TYPE_ATTR, output->type().toCString());
+					xOutput->SetAttribute(MPRINTER_BOARD_IO_TYPE_ATTR, output->type().toString().c_str());
 					xOutput->SetAttribute(MPRINTER_BOARD_IO_TIME_ATTR, output->time());
 					xOutput->SetAttribute(MPRINTER_BOARD_IO_INI_VAL_ATTR, MTools::toCString(output->initialValue()));
 				}
@@ -360,12 +360,12 @@ void MConfigCommand::boardFromXml(const XMLElement *xBoard, Printers::Board &boa
 			board.setBlocked(getBoolFromChildNode(xBoard, MPRINTER_BOARD_BLOCKED, board.blocked()));
 			board.setUserMessage(getTextFromChildNode(xBoard, MPRINTER_BOARD_CURRENT_MSG, board.userMessage()));
 			bcdFromXml(xBoard, board);
-			board.setPrinterDirection(getTextFromChildNode(xBoard, MPRINTER_BOARD_PRINT_DIR, board.printDirection().toCString()));
+			board.setPrinterDirection(getTextFromChildNode(xBoard, MPRINTER_BOARD_PRINT_DIR, board.printDirection().toString().c_str()));
 			board.setPrintRotated(getBoolFromChildNode(xBoard, MPRINTER_BOARD_PRINT_INVERTED, board.printRotated()));
-			board.setNozzlesCol(getTextFromChildNode(xBoard, MPRINTER_BOARD_NOZZLES_COL, board.nozzlesCol().toCString()));
+			board.setNozzlesCol(getTextFromChildNode(xBoard, MPRINTER_BOARD_NOZZLES_COL, board.nozzlesCol().toString().c_str()));
 			shotModeFromXml(xBoard, board);
 			encoderFromXml(xBoard, board);
-			board.setPhotocell(getTextFromChildNode(xBoard, MPRINTER_BOARD_PHOTOCELL, board.photocell().toCString()));
+			board.setPhotocell(getTextFromChildNode(xBoard, MPRINTER_BOARD_PHOTOCELL, board.photocell().toString().c_str()));
 			propertiesFromXml(xBoard, board);
 			cartridgeFromXml(xBoard, board);
 			inputsFromXml(xBoard, board);

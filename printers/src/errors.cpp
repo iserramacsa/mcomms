@@ -6,8 +6,9 @@ Error::Error()
 	clear();
 }
 
-Error::Error(time_t timestamp, ErrorType type, ErrorCode code, unsigned int priority)
+Error::Error(uint board, time_t timestamp, ErrorType type, ErrorCode code, unsigned int priority)
 {
+	_boardId = board;
 	_timestamp = timestamp;
 	_type = type;
 	_code = code;
@@ -16,6 +17,16 @@ Error::Error(time_t timestamp, ErrorType type, ErrorCode code, unsigned int prio
 
 Error::~Error()
 {}
+
+unsigned int Error::boardId() const
+{
+	return _boardId;
+}
+
+void Error::setBoardId(unsigned int boardId)
+{
+	_boardId = boardId;
+}
 
 time_t Error::timestamp() const
 {
@@ -77,6 +88,7 @@ void Error::clear()
 
 void Error::operator =(const Error &other)
 {
+	_boardId = other._boardId;
 	_timestamp = other._timestamp;
 	_type = other._type;
 	_code = other._code;
@@ -87,7 +99,8 @@ bool Error::equal(const Error &other) const
 {
 	bool equal = false;
 
-	equal = (_timestamp == other._timestamp);
+	equal = (_boardId == other._boardId);
+	equal &= (_timestamp == other._timestamp);
 	equal &= (_type == other._type);
 	equal &= (_code == other._code);
 	equal &= (_priority == other._priority);

@@ -125,9 +125,6 @@ namespace Macsa {
 				virtual void operator =  (const N& v) = 0;
 				virtual void operator = (const std::string& val) = 0;
 				virtual std::string toString() const = 0;
-				const char* toCString() const { return std::move(toString().c_str());}
-
-
 
 			protected:
 					N _val;

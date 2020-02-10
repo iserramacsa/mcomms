@@ -12,6 +12,11 @@ PrinterView::PrinterView(QWidget *parent) :
 	connect(ui.butStatus, SIGNAL(clicked(bool)), SLOT(onRequestStatus()));
 	connect(ui.butFiles, SIGNAL(clicked(bool)), SLOT(onRequestFiles()));
 	connect(ui.butConnect, SIGNAL(clicked(bool)), SLOT(onConnectClicked()));
+	connect(ui.butGetFonts, SIGNAL(clicked(bool)), SLOT(onRequestFonts()));
+	connect(ui.butGetImages, SIGNAL(clicked(bool)), SLOT(onRequestImages()));
+	connect(ui.butGetMessages, SIGNAL(clicked(bool)), SLOT(onRequestMessages()));
+	connect(ui.butGetErrors, SIGNAL(clicked(bool)), SLOT(onRequestErrorsLog()));
+
 
 	buildStatus();
 	buildConfig();
@@ -174,6 +179,39 @@ void PrinterView::onRequestFiles()
 		_controller->data(static_cast<int>(TIJViewerController::TIJDataDescriptors::ALL_FILES));
 	}
 	refresh();
+}
+
+void PrinterView::onRequestFonts()
+{
+	if (_controller) {
+		_controller->data(static_cast<int>(TIJViewerController::TIJDataDescriptors::FONTS_FILES));
+	}
+	refresh();
+}
+
+void PrinterView::onRequestImages()
+{
+	if (_controller) {
+		_controller->data(static_cast<int>(TIJViewerController::TIJDataDescriptors::IMAGES_FILES));
+	}
+	refresh();
+}
+
+void PrinterView::onRequestMessages()
+{
+	if (_controller) {
+		_controller->data(static_cast<int>(TIJViewerController::TIJDataDescriptors::MESSAGES_FILES));
+	}
+	refresh();
+}
+
+void PrinterView::onRequestErrorsLog()
+{
+	if (_controller) {
+		_controller->requestErrorsList();
+	}
+	refresh();
+
 }
 
 void PrinterView::onConnectClicked()

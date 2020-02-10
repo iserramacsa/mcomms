@@ -17,13 +17,19 @@ QVariant TIJViewerController::data(int descriptor)
 	switch (static_cast<TIJDataDescriptors>(descriptor))
 	{
 		case TIJDataDescriptors::LIVE:
-				return _controller.getLive() == ErrorCode_n::SUCCESS;
+				return requestLive();
 		case TIJDataDescriptors::STATUS:
-				return _controller.updateStatus() == ErrorCode_n::SUCCESS;
+				return requestStatus();
 		case TIJDataDescriptors::CONFIG:
-				return _controller.updateConfig() == ErrorCode_n::SUCCESS;
+				return requestConfig();
 		case TIJDataDescriptors::ALL_FILES:
 				return _controller.updateFiles() == ErrorCode_n::SUCCESS;
+		case TIJDataDescriptors::MESSAGES_FILES:
+			return _controller.updateMessages() == ErrorCode_n::SUCCESS;
+		case TIJDataDescriptors::FONTS_FILES:
+			return _controller.updateFonts() == ErrorCode_n::SUCCESS;
+		case TIJDataDescriptors::IMAGES_FILES:
+				return _controller.updateImages() == ErrorCode_n::SUCCESS;
 		case TIJDataDescriptors::PRINTER_ID:
 				return _controller.id().c_str();
 		case TIJDataDescriptors::PRINTER_ADDRS:
@@ -48,6 +54,36 @@ QVariant TIJViewerController::data(int descriptor)
 bool TIJViewerController::setData(int /*descriptor*/, const QVariant &/*value*/)
 {
 	return false;
+}
+
+bool TIJViewerController::requestLive()
+{
+	return _controller.getLive() == ErrorCode_n::SUCCESS;
+}
+
+bool TIJViewerController::requestStatus()
+{
+	return _controller.updateStatus() == ErrorCode_n::SUCCESS;
+}
+
+bool TIJViewerController::requestConfig()
+{
+	return _controller.updateConfig() == ErrorCode_n::SUCCESS;
+}
+
+bool TIJViewerController::requestErrorsList()
+{
+	return _controller.updateErrorsList() == ErrorCode_n::SUCCESS;
+}
+
+bool TIJViewerController::requestFileContent(const std::string &filepath, bool rawMode)
+{
+	return (_controller.updateFile(filepath, rawMode) == ErrorCode_n::SUCCESS);
+}
+
+std::vector<uint8_t> TIJViewerController::getFileContent(const std::string &filepath)
+{
+	return _controller.getFile(filepath);
 }
 
 TIJViewerController::TIJStatus TIJViewerController::printerStatus() const
@@ -555,7 +591,7 @@ TIJViewerController::PrinterOutput TIJViewerController::printerOutputToView(Outp
 	pOut.id = static_cast<int>(out.id());
 	pOut.descriptor = out.descriptor().c_str();
 	pOut.initialValue = out.initialValue();
-	pOut.type = out.type().toCString();
+	pOut.type = out.type().toString().c_str();
 	pOut.time = out.time();
 	pOut.value = out.value();
 

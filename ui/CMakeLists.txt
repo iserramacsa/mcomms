@@ -56,10 +56,9 @@ include_directories(${INCLUDES})
 
 # Next lines needed for building all Qt projects
 find_package( Qt4 REQUIRED )
-include( ${QT_USE_FILE} )
-add_definitions( ${QT_DEFINITIONS} )
-include_directories( ${CMAKE_BINARY_DIR} )
-
+include(${QT_USE_FILE})
+add_definitions(${QT_DEFINITIONS})
+include_directories(${CMAKE_BINARY_DIR})
 
 # using Qt meta-system (precompiler)
 QT4_ADD_RESOURCES( RES_SOURCES ${RESOURCES} )

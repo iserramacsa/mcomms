@@ -159,7 +159,6 @@ namespace Macsa {
 #else
 				typedef propertyMap::const_iterator itProp;
 #endif
-
 				bool equal(const Board& other) const;
 				void copy(const Board& other);
 				bool checkProperties(const Board::propertyMap& other) const;

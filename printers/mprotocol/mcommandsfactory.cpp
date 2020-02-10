@@ -4,6 +4,7 @@
 #include "mprotocol/mconfig.h"
 #include "mprotocol/mlive.h"
 #include "mprotocol/mstatus.h"
+#include "mprotocol/merrorslogs.h"
 #include "mprotocol/mmessagevalues.h"
 #include "mprotocol/mupdate.h"
 #include <iostream>
@@ -93,16 +94,86 @@ MCommand *MCommandsFactory::getConfigCommand()
 	return new MGetConfig(_printer);
 }
 
-MCommand *MCommandsFactory::SetEnabled(bool enabled)
+MCommand *MCommandsFactory::setConfigBoardEnabled(bool enabled, int boardId)
 {
-	Macsa::Printers::TIJPrinter printer = _printer;
-	printer.board(0)->setEnabled(enabled);
-	return new MUpdateConfig(_printer, printer);
+	if (_printer.board(boardId) != nullptr)
+	{
+		Macsa::Printers::TIJPrinter printer = _printer;
+		Macsa::Printers::Board* board = printer.board(boardId);
+		if (board != nullptr) {
+			board->setEnabled(enabled);
+			return new MUpdateConfig(_printer, printer);
+		}
+	}
+
+	return nullptr;
 }
 
-MCommand *MCommandsFactory::setDateTimeCommand()
+MCommand *MCommandsFactory::setConfigBoardAutostart(bool enabled, int boardId)
 {
-	return new MSetDateTime(_printer);
+	if (_printer.board(boardId) != nullptr)
+	{
+		Macsa::Printers::TIJPrinter printer = _printer;
+		Macsa::Printers::Board* board = printer.board(boardId);
+		if (board != nullptr) {
+			board->setAutoStart(enabled);
+			return new MUpdateConfig(_printer, printer);
+		}
+	}
+
+	return nullptr;
+}
+
+MCommand *MCommandsFactory::setConfigBoardBlocked(bool blocked, int boardId)
+{
+	if (_printer.board(boardId) != nullptr)
+	{
+		Macsa::Printers::TIJPrinter printer = _printer;
+		Macsa::Printers::Board* board = printer.board(boardId);
+		if (board != nullptr) {
+			board->setBlocked(blocked);
+			return new MUpdateConfig(_printer, printer);
+		}
+	}
+
+	return nullptr;
+}
+
+MCommand *MCommandsFactory::setConfigBoardLowLevelOutput(bool enable, int boardId)
+{
+	if (_printer.board(boardId) != nullptr)
+	{
+		Macsa::Printers::TIJPrinter printer = _printer;
+		Macsa::Printers::Board* board = printer.board(boardId);
+		if (board != nullptr) {
+			board->setLowLevelOutput(enable);
+			return new MUpdateConfig(_printer, printer);
+		}
+	}
+
+	return nullptr;
+}
+
+MCommand *MCommandsFactory::setConfigBoardUserMessage(const std::string &currentMessage, int boardId)
+{
+	if (_printer.board(boardId) != nullptr)
+	{
+		Macsa::Printers::TIJPrinter printer = _printer;
+		Macsa::Printers::Board* board = printer.board(boardId);
+		if (board != nullptr) {
+			board->setUserMessage(currentMessage);
+			return new MUpdateConfig(_printer, printer);
+		}
+	}
+
+	return nullptr;
+}
+
+MCommand *MCommandsFactory::setDateTimeCommand(time_t dateTime)
+{
+	Macsa::Printers::TIJPrinter printer = _printer;
+	printer.setDateTime(dateTime);
+	return new MSetDateTime(printer);
 }
 
 MCommand *MCommandsFactory::getFontsCommand()
@@ -125,43 +196,58 @@ MCommand *MCommandsFactory::getAllFilesCommand()
 	return new MGetFilesList(_printer, ALL_FILES);
 }
 
+MCommand *MCommandsFactory::getFileContent(const std::string &filePath, bool rawMode)
+{
+	return new MGetFile(_printer, filePath, rawMode);
+}
+
+MCommand *MCommandsFactory::getErrorsList()
+{
+	return new MErrorsLogs(_printer);
+}
+
+MCommand *MCommandsFactory::getCurrentErrors()
+{
+	return new MGetErrors(_printer);
+}
+
 MCommand *MCommandsFactory::getCommand(XMLElement *eCmd)
 {
 	MCommand * cmd = nullptr;
 	if (eCmd != nullptr) {
 		std::string cmdName = eCmd->Name();
 
-		if (cmdName.compare(MLIVE) == 0) {
+		if (cmdName == MLIVE) {
 			cmd = new MLive(_printer, _liveFlags);
 		}
-		else if (cmdName.compare(MSTATUS) == 0){
+		else if (cmdName == MSTATUS){
 			cmd = new MGetStatus(_printer);
 		}
-		else if (cmdName.compare(MCONFIG_GET) == 0) {
+		else if (cmdName == MCONFIG_GET) {
 			cmd = new MGetConfig(_printer);
 		}
-		else if (cmdName.compare(MCONFIG_SET) == 0) {
+		else if (cmdName == MCONFIG_SET) {
 			cmd = new MSetConfig(_printer);
 		}
-		else if (cmdName.compare(MFILES_GET_LIST) == 0) {
+		else if (cmdName == MFILES_GET_LIST) {
 			cmd = new MGetFilesList(_printer);
 		}
-		else if (cmdName.compare(MFILES_COPY)) {
+		else if (cmdName == MFILES_COPY) {
 			cmd = new MCopyFile(_printer);
 		}
-		else if (cmdName.compare(MFILES_MOVE)) {
+		else if (cmdName == MFILES_MOVE) {
 			cmd = new MMoveFile(_printer);
 		}
-		else if (cmdName.compare(MFILES_DELETE)) {
+		else if (cmdName == MFILES_DELETE) {
 			cmd = new MDeleteFile(_printer);
 		}
-		else if (cmdName.compare(MFILES_GET)) {
+		else if (cmdName == MFILES_GET) {
 			cmd = new MGetFile(_printer);
 		}
-		else if (cmdName.compare(MFILES_SET)) {
+		else if (cmdName == MFILES_SET) {
 			cmd = new MGetFile(_printer);
 		}
-		else if (cmdName.compare(MUPDATE) == 0) {
+		else if (cmdName == MUPDATE) {
 			cmd = new MUpdate(_printer);
 		}
 	}

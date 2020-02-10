@@ -34,13 +34,18 @@ namespace Macsa {
 			//Status
 			Printers::ErrorCode updateStatus();
 			TIJPrinterStatus printerStatus();
+
+			Printers::ErrorCode updateErrorsList();
 			//Config
 			Printers::ErrorCode updateConfig();
-			bool setDateTime(const std::time_t& dt);
+			Printers::ErrorCode setDateTime(const std::time_t& dt);
 			Printers::ErrorCode setEnabled(bool enabled);
 			//Files
 			Printers::ErrorCode updateFiles();
-			Printers::ErrorCode updateFile(const std::string& filepath);
+			Printers::ErrorCode updateFonts();
+			Printers::ErrorCode updateMessages();
+			Printers::ErrorCode updateImages();
+			Printers::ErrorCode updateFile(const std::string& filepath, bool rawMode = false);
 
 			std::vector<std::string> getDrives();
 			std::vector<uint8_t> getFile(const std::string& filepath);
@@ -55,7 +60,6 @@ namespace Macsa {
 			inline std::vector<std::string> getImages(const std::string &drive) { return getFiles(drive, IMAGES_FOLDER);}
 
 			inline std::vector<std::string> getAllFiles() { return getFiles(ALL_FILES_FILTER); }
-			bool getErrorsList();
 
 		protected:
 			virtual bool send(MProtocol::MCommand *cmd, Printers::ErrorCode& err);

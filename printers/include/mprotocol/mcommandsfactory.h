@@ -15,7 +15,7 @@ namespace Macsa {
 				~MCommandsFactory();
 
 				bool parseResponse(const std::string &frame, Printers::ErrorCode &error);
-                                bool parseRequest(const std::string &frame, MCommand **cmd);
+				bool parseRequest(const std::string &frame, MCommand **cmd);
 
 //				//SERVER
 //				std::string getResponse(); //TODO: Move to commandsHandler (server)
@@ -24,16 +24,27 @@ namespace Macsa {
 				MCommand *getLiveCommand();
 				//Status
 				MCommand* getStatusCommand();
+				MCommand* getCurrentErrors();
+
 				//Config
 				MCommand* getConfigCommand();
-                                MCommand* SetEnabled(bool enabled);
-				MCommand* setDateTimeCommand();
+				MCommand* setDateTimeCommand(time_t dateTime);
+				MCommand* setConfigBoardEnabled(bool enabled, int boardId = 0);
+				MCommand* setConfigBoardAutostart(bool enabled, int boardId = 0);
+				MCommand* setConfigBoardBlocked(bool blocked, int boardId = 0);
+				MCommand* setConfigBoard(bool enabled, int boardId = 0);
+				MCommand* setConfigBoardLowLevelOutput(bool enable, int boardId = 0);
+				MCommand* setConfigBoardUserMessage(const std::string &currentMessage, int board = 0);
+
 				//Files
 				MCommand* getFontsCommand();
 				MCommand* getMessagesCommand();
 				MCommand* getImagesCommand();
 				MCommand* getAllFilesCommand();
+				MCommand* getFileContent(const std::string &filePath, bool rawMode = false);
 
+
+				// Log
 				MCommand* getErrorsList();
 
 				inline uint32_t nextId() {

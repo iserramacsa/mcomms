@@ -191,7 +191,13 @@ namespace  Macsa {
 #define MMESSAGE_COUNTER_STEP_ATTR			"Step"
 #define MMESSAGE_COUNTER_REPEAT_ATTR		"Repeat"
 
-
+#define MERRORS_LOGS			"GETERRORLOG"
+#define MERRORS_LOGS_ITEM			"ITEM"
+#define MERRORS_LOGS_BOARD_ATTR			"BoardId"
+#define MERRORS_LOGS_TSTAMP_ATTR	    "When"
+#define MERRORS_LOGS_TYPE_ATTR		    "Type"
+#define MERRORS_LOGS_PRIO_ATTR		    "Priority"
+#define MERRORS_LOGS_CODE_ATTR		    "ErrorCode"
 
 
 #define MUPDATE					"UPDATE"

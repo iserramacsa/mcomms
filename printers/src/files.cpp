@@ -12,7 +12,7 @@ using namespace std;
 #define SLASH_CHAR	'/'
 
 
-#define TRACE	std::cout << __FILE__ <<  ":" << __LINE__ << "::" << __FUNCTION__ << std::endl;
+//#define TRACE	std::cout << __FILE__ <<  ":" << __LINE__ << "::" << __FUNCTION__ << std::endl;
 #if __cplusplus >= 201103L
 	using citDrive  = std::map<std::string, Drive*>::const_iterator;
 	using citFolder = std::map<std::string, Folder*>::const_iterator;
@@ -26,21 +26,19 @@ using namespace std;
 
 //====== FileSystemAbstract definitions ======//
 FileSystemAbstract::FileSystemAbstract()
-{TRACE}
+{}
 
 FileSystemAbstract::FileSystemAbstract(const FileSystemAbstract &other)
 {
-	TRACE
 	*this = other;
 }
 
 FileSystemAbstract::~FileSystemAbstract()
-{TRACE}
+{}
 #include <exception>
 template<class T>
 T *FileSystemAbstract::getItem(const string &name, const std::map<string, T*> &map) const
 {
-	TRACE
 	try {
 		if (map.size() && map.find(name) != map.end()){
 			return map.at(name);
@@ -55,7 +53,6 @@ T *FileSystemAbstract::getItem(const string &name, const std::map<string, T*> &m
 template<class T>
 std::vector<string> FileSystemAbstract::getItemsList(const std::map<string, T *> &map) const
 {
-	TRACE
 	std::vector<string> list;
 	list.clear();
 #if __cplusplus >= 201103L
@@ -73,7 +70,6 @@ std::vector<string> FileSystemAbstract::getItemsList(const std::map<string, T *>
 template<class P, class T>
 T *FileSystemAbstract::insertNewItem(const string &name, std::map<string, T*> &map, P *parent)
 {
-	TRACE
 	T* item = nullptr;
 	if (getItem(name, map) == nullptr) {
 		item = new T(name, parent);
@@ -85,7 +81,6 @@ T *FileSystemAbstract::insertNewItem(const string &name, std::map<string, T*> &m
 template<class T>
 T* FileSystemAbstract::removeItem(const std::string& name, std::map<string, T*>& map)
 {
-	TRACE
 	T* item = getItem(name, map);
 	if (item != nullptr) {
 		map.erase(name);
@@ -96,7 +91,6 @@ T* FileSystemAbstract::removeItem(const std::string& name, std::map<string, T*>&
 template<class T>
 bool FileSystemAbstract::deleteItem(const std::string& name, std::map<string, T*>& map)
 {
-	TRACE
 	bool success = false;
 	T* item =  removeItem(name, map);
 	if(item != nullptr) {
@@ -109,7 +103,7 @@ bool FileSystemAbstract::deleteItem(const std::string& name, std::map<string, T*
 template<class T>
 bool FileSystemAbstract::clear(std::map<string, T*> &map)
 {
-	TRACE
+
 	while (map.size()){
 		deleteItem(map.begin()->first, map);
 	}
@@ -119,7 +113,6 @@ bool FileSystemAbstract::clear(std::map<string, T*> &map)
 template<class T>
 bool FileSystemAbstract::compare(const std::map<string, T *> &map1, const std::map<string, T*> &map2) const
 {
-	TRACE
 	bool equal = false;
 
 	if (map1.size() == map2.size()) {
@@ -145,6 +138,13 @@ PrinterFiles::PrinterFiles()
 {
 	clear();
 	_filesManager = nullptr;
+}
+
+PrinterFiles::PrinterFiles(const PrinterFiles &other)
+{
+	clear();
+	_filesManager = nullptr;
+	copy(other);
 }
 
 PrinterFiles::~PrinterFiles()
@@ -243,6 +243,15 @@ const File *PrinterFiles::getFile(const string &drive, const string &folder, con
 	return nullptr;
 }
 
+const File *PrinterFiles::getFile(const string &filepath) const
+{
+	string drive = "//";
+	string folder = "";
+	string filename = "";
+	splitFilepath(filepath, drive, folder, filename);
+	return getFile(drive, folder, filename);
+}
+
 bool PrinterFiles::driveExist(const string &drive) const
 {
 	return (getItem(drive, _drives) != nullptr);
@@ -260,7 +269,6 @@ bool PrinterFiles::fileExist(const string &drive, const string &folder, const st
 
 bool PrinterFiles::clear()
 {
-	TRACE
 	return FileSystemAbstract::clear(_drives);
 }
 
@@ -307,6 +315,13 @@ bool PrinterFiles::setFile(const string &drive, const string &folder, const stri
 		success = d->setFileData(folder, filename, data);
 	}
 	return success;
+}
+
+bool PrinterFiles::setFile(const string &filepath, const std::vector<uint8_t> &data)
+{
+	string drive = "", folder = "", filename = "";
+	splitFilepath(filepath, drive, folder, filename);
+	return setFile(drive, folder, filename, data);
 }
 
 bool PrinterFiles::clearDrive(const string &drive)
@@ -402,6 +417,20 @@ void PrinterFiles::splitFilepath(const string &pwd, string &drive, vector<string
 	file = path;
 }
 
+void PrinterFiles::splitFilepath(const string &pwd, string &drive, string &folder, string &file) const
+{
+	vector<string> folders;
+	splitFilepath(pwd, drive, folders, file);
+	folder = "";
+	for (uint i = 0; i < folders.size(); i++) {
+		if (i) {
+			folder += "/";
+		}
+		folder += folders.at(i);
+	}
+
+}
+
 bool PrinterFiles::equal(const FileSystemAbstract &other) const
 {
 	bool equal = false;
@@ -423,7 +452,7 @@ void PrinterFiles::copy(const PrinterFiles &other)
 	{
 		if (drive->second){
 			Drive* d = new Drive(drive->first, this);
-			*d = *(drive->second);
+			(*d) = (*(drive->second));
 			_drives.insert(pair<string, Drive*>(drive->first, d));
 		}
 	}
@@ -552,7 +581,7 @@ Drive::Drive(const string &name, const PrinterFiles *parent) :
 
 Drive::~Drive()
 {
-
+	clear();
 }
 
 std::string Drive::name() const
@@ -590,7 +619,12 @@ std::vector<const File *> Drive::getFiles() const
 
 const Folder *Drive::getFolder(const string &folder) const
 {
-	return getItem(folder, _folders);
+	if (_folders.size()){
+		return getItem(folder, _folders);
+	}
+	else {
+		return nullptr;
+	}
 }
 
 const File *Drive::getFile(const string &folder, const string &file) const
@@ -606,7 +640,7 @@ const File *Drive::getFile(const string &folder, const string &file) const
 
 bool Drive::clear()
 {
-	TRACE
+
 	return FileSystemAbstract::clear(_folders);
 }
 
@@ -711,7 +745,7 @@ void Drive::copy(const Drive &other)
 	{
 		if (folder->second){
 			Folder* f = new Folder(folder->first, this);
-			*f = *(folder->second);
+			(*f) = (*(folder->second));
 			_folders.insert(pair<string, Folder*>(folder->first, f));
 		}
 	}
@@ -928,7 +962,7 @@ void Folder::copy(const Folder &other)
 	{
 		File* f = new File(file->first, this);
 		if (file->second){
-			*f = *(file->second);
+			(*f) = (*(file->second));
 		}
 		if (!addFile(f)) {
 			delete f;
@@ -946,6 +980,7 @@ File::File(const string &filename, const Folder *parent) :
 
 File::~File()
 {
+	std::cout << __FUNCTION__ << " filename: " << _name << std::endl;
 	if(_data != nullptr) {
 		_data->clear();
 		delete _data;

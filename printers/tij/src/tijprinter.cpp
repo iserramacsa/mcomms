@@ -19,6 +19,11 @@ TIJPrinter::TIJPrinter()
 	_type = "SM200";
 }
 
+TIJPrinter::TIJPrinter(const TIJPrinter &other)
+{
+	copy(other);
+}
+
 TIJPrinter::~TIJPrinter()
 {}
 
@@ -44,8 +49,12 @@ const PrinterComms *TIJPrinter::comms() const
 
 std::string TIJPrinter::formatedDateTime() const
 {
+	return formatedDateTime(_dt);
+}
+
+std::string TIJPrinter::formatedDateTime(time_t time) const
+{
 	std::stringstream dt;
-	std::time_t time = dateTime();
 
 	struct tm *date = localtime(&time);
 	dt <<  date->tm_mday;
@@ -56,6 +65,28 @@ std::string TIJPrinter::formatedDateTime() const
 	dt <<  date->tm_sec;
 
 	return dt.str();
+}
+
+time_t TIJPrinter::dateTimeFromString(std::string dt) const
+{
+	time_t rawtime;
+	struct tm * timeInfo;
+
+	time(&rawtime);
+	timeInfo = localtime(&rawtime);
+
+	if (dt.length() == 14)
+	{
+		timeInfo->tm_mday = std::atoi(dt.substr(0, 2).c_str());
+		timeInfo->tm_mon  = std::atoi(dt.substr(2, 2).c_str()) - 1;
+		timeInfo->tm_year = std::atoi(dt.substr(4, 4).c_str()) - 1900;
+		timeInfo->tm_hour = std::atoi(dt.substr(8, 2).c_str());
+		timeInfo->tm_min  = std::atoi(dt.substr(10, 2).c_str());
+		timeInfo->tm_sec  = std::atoi(dt.substr(12, 2).c_str());
+		rawtime = mktime ( timeInfo );
+	}
+
+	return rawtime;
 }
 
 void TIJPrinter::setDateTime(const time_t &dateTime)
@@ -150,6 +181,16 @@ void TIJPrinter::setBoards(const std::vector<Board> &boards)
 	_boards = boards;
 }
 
+std::vector<Error> TIJPrinter::errorsLog() const
+{
+	return _errorsLog;
+}
+
+void TIJPrinter::setErrorsLog(const std::vector<Error> &errorsLog)
+{
+	_errorsLog = errorsLog;
+}
+
 bool TIJPrinter::logsEnabled() const
 {
 	return _traceLogs;
@@ -203,9 +244,12 @@ bool TIJPrinter::equal(const Printer &other) const
 
 void TIJPrinter::copy(const TIJPrinter &other)
 {
+	_type = other._type;
 
 	_files = PrinterFiles();
+	_files = other._files;
 	_comms = other._comms;
+
 	_controllerVersion = other._controllerVersion;
 	_apiVersion = other._apiVersion;
 	_fpgaVersion = other._fpgaVersion;
