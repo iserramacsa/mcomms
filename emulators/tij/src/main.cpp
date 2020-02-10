@@ -2,6 +2,7 @@
 #include <getopt.h>
 
 #include "clientmanager.h"
+#include "tijemulator.h"
 
 using namespace std;
 
@@ -59,7 +60,8 @@ int main(int argc, char* argv[])
 	cout << "#################################" << endl << endl;
 	cout << "Emulator configured at port: " << port << endl;
 
-	ClientManager manager;
+	Macsa::Printers::TIJEmulator emulator;
+	ClientManager manager(emulator);
 	if (manager.initServer(port)) {
 		manager.run(false);
 	}

@@ -48,7 +48,7 @@ namespace Macsa {
 
                                 virtual void operator = (const TIJPrinter& other){return copy(other);}
 
-			private:
+            protected:
 				PrinterFiles _files;
 				TIJComms	_comms;
 				std::string _controllerVersion;

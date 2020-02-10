@@ -4,8 +4,9 @@
 #include <sstream>
 #include "network/abstractsocket.h"
 
-ClientManager::ClientManager() :
-	Network::MNetwork (Network::ISocket::TCP_SOCKET)
+ClientManager::ClientManager(Printers::TIJPrinter& printer) :
+	Network::MNetwork (Network::ISocket::TCP_SOCKET),
+	_printer(printer)
 {
   _server = nullptr;
   _running.store(false);
