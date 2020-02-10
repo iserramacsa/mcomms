@@ -2,9 +2,11 @@
 #include "clientHandler.h"
 #include <iostream>
 #include <sstream>
+#include "network/abstractsocket.h"
 
-ClientManager::ClientManager() :
-	Network::MNetwork (Network::ISocket::TCP_SOCKET)
+ClientManager::ClientManager(Printers::TIJPrinter& printer) :
+	Network::MNetwork (Network::ISocket::TCP_SOCKET),
+	_printer(printer)
 {
   _server = nullptr;
   _running.store(false);
@@ -61,7 +63,7 @@ void ClientManager::serverMainLoop()
 {
 	_running.store(true);
 	while (_running.load()) {
-		Network::AbstractSocket* clientSocket = dynamic_cast<Network::AbstractSocket*>(acceptConnection());
+		Network::AbstractSocket* clientSocket = acceptConnection();
 		if (clientSocket){
 			std::stringstream id;
 			id << "Client" << std::to_string(_nodes.size());
@@ -85,11 +87,11 @@ void ClientManager::serverMainLoop()
 	}
 }
 
-Network::ISocket* ClientManager::acceptConnection()
+Network::AbstractSocket* ClientManager::acceptConnection()
 {
-	Network::ISocket* client = nullptr;
+	Network::AbstractSocket* client = nullptr;
 	if (_server ){
-		client = _server->accept();
+		client = dynamic_cast<Network::AbstractSocket*>(_server->accept());
 		if (client){
 			std::cout << "Socket type:" << std::to_string(client->type()) << std::endl;
 		}

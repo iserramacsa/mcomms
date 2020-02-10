@@ -10,11 +10,13 @@
 #include "tij/tijprinter.h"
 
 using namespace Macsa;
+using namespace Macsa::Network;
 
+class AbstractSocket;
 class ClientManager : public Network::MNetwork
 {
 	public:
-		ClientManager();
+		ClientManager(Printers::TIJPrinter& printer);
 		~ClientManager();
 		bool initServer(uint16_t port);
 		void run(bool detached = true);
@@ -28,11 +30,11 @@ class ClientManager : public Network::MNetwork
 		std::condition_variable _cv;
 		uint16_t _svrPort;
 
-		Printers::TIJPrinter _printer;
+		Printers::TIJPrinter& _printer;
 		std::vector<ClientHandler*> _handlers;
 
 		void serverMainLoop();
-		Network::ISocket *acceptConnection();
+		Network::AbstractSocket *acceptConnection();
 
 };
 
