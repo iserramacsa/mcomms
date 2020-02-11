@@ -4,6 +4,7 @@
 #include <cinttypes>
 #include <ostream>
 #include <string>
+#include <vector>
 #include <stdint.h>
 
 //#ifndef UNKNOWN
@@ -125,6 +126,7 @@ namespace Macsa {
 				virtual void operator =  (const N& v) = 0;
 				virtual void operator = (const std::string& val) = 0;
 				virtual std::string toString() const = 0;
+				virtual std::vector<std::string> stringList() const = 0;
 
 			protected:
 					N _val;
@@ -154,6 +156,7 @@ namespace Macsa {
 					else if (val.compare(BCD_MODE_BCD_2) == 0)
 						_val = BCD_MODE_2;
 				}
+
 				virtual std::string toString() const {
 					switch (_val) {
 						case USER_MODE:  return BCD_MODE_USER;
@@ -161,6 +164,15 @@ namespace Macsa {
 						case BCD_MODE_2: return BCD_MODE_BCD_2;
 					}
 					return "";
+				}
+
+				virtual std::vector<std::string> stringList() const
+				{
+					std::vector<std::string> list;
+					list.push_back(BCD_MODE_USER);
+					list.push_back(BCD_MODE_BCD_1);
+					list.push_back(BCD_MODE_BCD_2);
+					return list;
 				}
 		};
 
@@ -188,6 +200,15 @@ namespace Macsa {
 						case AUTO: return DIR_AUTO;
 					}
 					return "";
+				}
+
+				virtual std::vector<std::string> stringList() const
+				{
+					std::vector<std::string> list;
+					list.push_back(DIR_RIGHT_TO_LEFT);
+					list.push_back(DIR_LEFT_TO_RIGHT);
+					list.push_back(DIR_AUTO);
+					return list;
 				}
 		};
 
@@ -217,6 +238,15 @@ namespace Macsa {
 					}
 					return "";
 				}
+
+				virtual std::vector<std::string> stringList() const
+				{
+					std::vector<std::string> list;
+					list.push_back(SHOOTING_MODE_ONCE);
+					list.push_back(SHOOTING_MODE_REL);
+					list.push_back(SHOOTING_MODE_ABS);
+					return list;
+				}
 		};
 
 		enum NozzlesCol_n{
@@ -245,6 +275,15 @@ namespace Macsa {
 					}
 					return "";
 				}
+
+				virtual std::vector<std::string> stringList() const
+				{
+					std::vector<std::string> list;
+					list.push_back(NOZZLES_COL_A);
+					list.push_back(NOZZLES_COL_B);
+					list.push_back(NOZZLES_COL_BOTH);
+					return list;
+				}
 		};
 
 		enum DelayUnits_n {
@@ -268,6 +307,14 @@ namespace Macsa {
 						case UNITS_DOTS: return DELAY_UNIT_DOTS;
 					}
 					return "";
+				}
+
+				virtual std::vector<std::string> stringList() const
+				{
+					std::vector<std::string> list;
+					list.push_back(DELAY_UNIT_MM);
+					list.push_back(DELAY_UNIT_DOTS);
+					return list;
 				}
 		};
 
@@ -299,6 +346,15 @@ namespace Macsa {
 					}
 					return "";
 				}
+
+				virtual std::vector<std::string> stringList() const
+				{
+					std::vector<std::string> list;
+					list.push_back(ENCODER_MODE_FIXED);
+					list.push_back(ENCODER_MODE_INTERNAL);
+					list.push_back(ENCODER_MODE_EXTERNAL);
+					return list;
+				}
 		};
 
 		enum Photocell_n{
@@ -327,6 +383,15 @@ namespace Macsa {
 					}
 					return "";
 				}
+
+				virtual std::vector<std::string> stringList() const
+				{
+					std::vector<std::string> list;
+					list.push_back(PHOTOCELL_A);
+					list.push_back(PHOTOCELL_B);
+					list.push_back(PHOTOCELL_EXT);
+					return list;
+				}
 		};
 
 		enum InputMode_n {
@@ -350,6 +415,14 @@ namespace Macsa {
 						case INPUT_STATUS:	 return INPUT_MODE_STATE;
 					}
 					return "";
+				}
+
+				virtual std::vector<std::string> stringList() const
+				{
+					std::vector<std::string> list;
+					list.push_back(INPUT_MODE_EDGE);
+					list.push_back(INPUT_MODE_STATE);
+					return list;
 				}
 		};
 
@@ -393,6 +466,17 @@ namespace Macsa {
 					}
 					return "";
 				}
+
+				virtual std::vector<std::string> stringList() const
+				{
+					std::vector<std::string> list;
+					list.push_back(OUTPUT_TYPE_STATE);
+					list.push_back(OUTPUT_TYPE_ONPULSE);
+					list.push_back(OUTPUT_TYPE_OFFPULSE);
+					list.push_back(OUTPUT_TYPE_MAXON);
+					list.push_back(OUTPUT_TYPE_MAXOFF);
+					return list;
+				}
 		};
 
 		enum ErrorType_n {
@@ -423,6 +507,16 @@ namespace Macsa {
 						default: 			return ERROR_TYPE_INVALID;
 					}
 					return "";
+				}
+
+				virtual std::vector<std::string> stringList() const
+				{
+					std::vector<std::string> list;
+					list.push_back(ERROR_TYPE_INFO);
+					list.push_back(ERROR_TYPE_WARN);
+					list.push_back(ERROR_TYPE_ERR);
+					list.push_back(ERROR_TYPE_INVALID);
+					return list;
 				}
 		};
 
@@ -482,6 +576,7 @@ namespace Macsa {
 		{
 			public:
 				ErrorCode() : SmartEnum() {_val = UNKOWN_ERROR;}
+				ErrorCode(ErrorCode_n n) : SmartEnum() {_val = n;}
 				virtual ~ErrorCode(){}
 				virtual void operator = (const enum ErrorCode_n& v){_val = v;}
 				virtual void operator = (const std::string& val){
@@ -622,6 +717,54 @@ namespace Macsa {
 					}
 					return "";
 				}
+
+				virtual std::vector<std::string> stringList() const
+				{
+					std::vector<std::string> list;
+					list.push_back(ERROR_CODE_SUCCCESS);
+					list.push_back(ERROR_CODE_FILE_NOT_FOUND);
+					list.push_back(ERROR_CODE_FILE_ALREADY_EXIST);
+					list.push_back(ERROR_CODE_FILE_COPY_FAIL);
+					list.push_back(ERROR_CODE_FILE_DELETE_FAIL);
+					list.push_back(ERROR_CODE_FILE_MOVE_FAIL);
+					list.push_back(ERROR_CODE_FILE_MOVE_INCOMPLETED);
+					list.push_back(ERROR_CODE_FILE_READ_FAIL);
+					list.push_back(ERROR_CODE_FILE_WRITE_FAIL);
+					list.push_back(ERROR_CODE_FILE_WRITE_INCOMPLETED);
+					list.push_back(ERROR_CODE_FILE_USER_DATA_NOT_FOUND);
+					list.push_back(ERROR_CODE_FILE_IN_USE);
+					list.push_back(ERROR_CODE_PARAM_BOARD_ID_NOT_FOUND);
+					list.push_back(ERROR_CODE_PARAM_COUNTER_ID_NOT_FOUND);
+					list.push_back(ERROR_CODE_PARAM_COUNTER_VALUE_REJECTED);
+					list.push_back(ERROR_CODE_PARAM_OUTPUT_ID_NOT_FOUND);
+					list.push_back(ERROR_CODE_PARAM_BCD_INVALID_MODE);
+					list.push_back(ERROR_CODE_PARAM_BOARD_IS_ENABLED);
+					list.push_back(ERROR_CODE_PARAM_BOARD_IS_DISABLED);
+					list.push_back(ERROR_CODE_PARAM_CHANGE_ADAPTER_FAILS);
+					list.push_back(ERROR_CODE_PARAM_INVALID_IP_ADDRESS);
+					list.push_back(ERROR_CODE_PARAM_INVALID_MASK_ADDRESS);
+					list.push_back(ERROR_CODE_PARAM_INVALID_GATEWAY_ADDRESS);
+					list.push_back(ERROR_CODE_PARAM_INVALID_PROP_COUNT);
+					list.push_back(ERROR_CODE_GENERIC_UNEXPECTED_TAG);
+					list.push_back(ERROR_CODE_GENERIC_NOT_IMPLEMENTED);
+					list.push_back(ERROR_CODE_GENERIC_LOCK_TIMEOUT);
+					list.push_back(ERROR_CODE_PH_PCA_NOT_DETECTED);
+					list.push_back(ERROR_CODE_PH_OVERTEMP);
+					list.push_back(ERROR_CODE_PH_OVERSPEED);
+					list.push_back(ERROR_CODE_MSG_FORMAT_ERROR);
+					list.push_back(ERROR_CODE_MSG_NOEXIST);
+					list.push_back(ERROR_CODE_PH_NO_CARTRIDGE);
+					list.push_back(ERROR_CODE_PH_SC_INVALID);
+					list.push_back(ERROR_CODE_PH_GENERIC_FAULT);
+					list.push_back(ERROR_CODE_PH_SC_CARTRIDGE_EMPTY);
+					list.push_back(ERROR_CODE_PH_SC_CARTRIDGE_OUT_OF_DATE);
+					list.push_back(ERROR_CODE_PH_SC_CARTRIDGE_NEAR_END);
+					list.push_back(ERROR_CODE_PH_SC_UNRECOGNIZED_DATA);
+					list.push_back(ERROR_CODE_PH_SC_INITIALIZING);
+					list.push_back(ERROR_CODE_PH_SC_HOST_SMARTCARD_FAIL);
+					list.push_back(ERROR_CODE_UNKNOWN);
+					return list;
+				}
 		};
 
 		enum LoggerLevel_n {
@@ -659,6 +802,17 @@ namespace Macsa {
 						case LOG_DISABLED:	return LOG_LEVEL_DISABLED;
 					}
 					return "";
+				}
+
+				virtual std::vector<std::string> stringList() const
+				{
+					std::vector<std::string> list;
+					list.push_back(LOG_LEVEL_ERROR);
+					list.push_back(LOG_LEVEL_WARNING);
+					list.push_back(LOG_LEVEL_INFO);
+					list.push_back(LOG_LEVEL_DEBUG);
+					list.push_back(LOG_LEVEL_DISABLED);
+					return list;
 				}
 		};
 	}

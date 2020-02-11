@@ -94,86 +94,23 @@ MCommand *MCommandsFactory::getConfigCommand()
 	return new MGetConfig(_printer);
 }
 
-MCommand *MCommandsFactory::setConfigBoardEnabled(bool enabled, int boardId)
-{
-	if (_printer.board(boardId) != nullptr)
-	{
-		Macsa::Printers::TIJPrinter printer = _printer;
-		Macsa::Printers::Board* board = printer.board(boardId);
-		if (board != nullptr) {
-			board->setEnabled(enabled);
-			return new MUpdateConfig(_printer, printer);
-		}
-	}
-
-	return nullptr;
-}
-
-MCommand *MCommandsFactory::setConfigBoardAutostart(bool enabled, int boardId)
-{
-	if (_printer.board(boardId) != nullptr)
-	{
-		Macsa::Printers::TIJPrinter printer = _printer;
-		Macsa::Printers::Board* board = printer.board(boardId);
-		if (board != nullptr) {
-			board->setAutoStart(enabled);
-			return new MUpdateConfig(_printer, printer);
-		}
-	}
-
-	return nullptr;
-}
-
-MCommand *MCommandsFactory::setConfigBoardBlocked(bool blocked, int boardId)
-{
-	if (_printer.board(boardId) != nullptr)
-	{
-		Macsa::Printers::TIJPrinter printer = _printer;
-		Macsa::Printers::Board* board = printer.board(boardId);
-		if (board != nullptr) {
-			board->setBlocked(blocked);
-			return new MUpdateConfig(_printer, printer);
-		}
-	}
-
-	return nullptr;
-}
-
-MCommand *MCommandsFactory::setConfigBoardLowLevelOutput(bool enable, int boardId)
-{
-	if (_printer.board(boardId) != nullptr)
-	{
-		Macsa::Printers::TIJPrinter printer = _printer;
-		Macsa::Printers::Board* board = printer.board(boardId);
-		if (board != nullptr) {
-			board->setLowLevelOutput(enable);
-			return new MUpdateConfig(_printer, printer);
-		}
-	}
-
-	return nullptr;
-}
-
-MCommand *MCommandsFactory::setConfigBoardUserMessage(const std::string &currentMessage, int boardId)
-{
-	if (_printer.board(boardId) != nullptr)
-	{
-		Macsa::Printers::TIJPrinter printer = _printer;
-		Macsa::Printers::Board* board = printer.board(boardId);
-		if (board != nullptr) {
-			board->setUserMessage(currentMessage);
-			return new MUpdateConfig(_printer, printer);
-		}
-	}
-
-	return nullptr;
-}
-
 MCommand *MCommandsFactory::setDateTimeCommand(time_t dateTime)
 {
 	Macsa::Printers::TIJPrinter printer = _printer;
 	printer.setDateTime(dateTime);
 	return new MSetDateTime(printer);
+}
+
+MCommand *MCommandsFactory::setConfigBoard(const Macsa::Printers::Board &board)
+{
+	if (_printer.board(board.id()) != nullptr)
+	{
+		Macsa::Printers::TIJPrinter printer = _printer;
+		printer.setBoard(board);
+		return new MUpdateConfig(_printer, printer);
+	}
+
+	return nullptr;
 }
 
 MCommand *MCommandsFactory::getFontsCommand()
@@ -246,6 +183,9 @@ MCommand *MCommandsFactory::getCommand(XMLElement *eCmd)
 		}
 		else if (cmdName == MFILES_SET) {
 			cmd = new MGetFile(_printer);
+		}
+		else if (cmdName == MERRORS_LOGS) {
+			cmd = new MErrorsLogs(_printer);
 		}
 		else if (cmdName == MUPDATE) {
 			cmd = new MUpdate(_printer);

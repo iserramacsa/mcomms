@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string.h> // strlen
 
+#include <exception>
+
 using namespace Macsa;
 using namespace Macsa::Printers;
 using namespace std;
@@ -35,7 +37,7 @@ FileSystemAbstract::FileSystemAbstract(const FileSystemAbstract &other)
 
 FileSystemAbstract::~FileSystemAbstract()
 {}
-#include <exception>
+
 template<class T>
 T *FileSystemAbstract::getItem(const string &name, const std::map<string, T*> &map) const
 {
@@ -980,7 +982,6 @@ File::File(const string &filename, const Folder *parent) :
 
 File::~File()
 {
-	std::cout << __FUNCTION__ << " filename: " << _name << std::endl;
 	if(_data != nullptr) {
 		_data->clear();
 		delete _data;

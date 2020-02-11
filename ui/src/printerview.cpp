@@ -21,6 +21,7 @@ PrinterView::PrinterView(QWidget *parent) :
 	buildStatus();
 	buildConfig();
 	buildFiles();
+	buildErrorsLog();
 }
 
 PrinterView::~PrinterView()
@@ -41,6 +42,7 @@ void PrinterView::setController(Macsa::TIJPrinterController &controller)
 	_printerStatusView->setController(controller);
 	_printerConfigView->setController(controller);
 	_printerFilesView->setController(controller);
+	_controller->updatePrinterData();
 	refresh();
 }
 
@@ -65,8 +67,39 @@ void PrinterView::refresh()
 	_printerStatusView->refresh();
 	_printerConfigView->refresh();
 	_printerFilesView->refresh();
+	updateLogs();
 }
-#include "tijprintercontroller.h"
+
+void PrinterView::updateLogs()
+{
+	if (_printerErrorsLog != nullptr)
+	{
+		if (_controller) {
+			QVector<TIJViewerController::PrinterError> log = _controller->errorsLog();
+			_printerErrorsLog->setRowCount(log.count());
+
+			for (int i = 0; i < log.count(); i++) {
+				QTableWidgetItem* itBoard = new QTableWidgetItem(static_cast<int>(log.at(i).boardId));
+				QTableWidgetItem* itTStamp = new QTableWidgetItem(QString("%1").arg(log.at(i).timestamp.toString(Qt::SystemLocaleShortDate)));
+				QTableWidgetItem* itType = new QTableWidgetItem(log.at(i).type);
+				QTableWidgetItem* itPriority = new QTableWidgetItem(QString("%1").arg(log.at(i).priority));
+				QTableWidgetItem* itCode = new QTableWidgetItem(log.at(i).code);
+
+				int col = 0;
+				_printerErrorsLog->setItem(i, col++, itTStamp);
+				_printerErrorsLog->setItem(i, col++, itBoard);
+				_printerErrorsLog->setItem(i, col++, itType);
+				_printerErrorsLog->setItem(i, col++, itPriority);
+				_printerErrorsLog->setItem(i, col++, itCode);
+			}
+			resizeErrorsLog();
+		}
+		else {
+			_printerErrorsLog->clear();
+		}
+	}
+}
+
 void PrinterView::setPrinterStatus(TIJViewerController::TIJStatus status)
 {
 	bool connected = false;
@@ -117,6 +150,12 @@ void PrinterView::clear()
 	ui.lblFPGAVersion->setText("---");
 }
 
+void PrinterView::resizeEvent(QResizeEvent *event)
+{
+	QWidget::resizeEvent(event);
+	resizeErrorsLog();
+}
+
 void PrinterView::buildStatus()
 {
 	QVBoxLayout* layout = new QVBoxLayout(ui.WidgetContentsStatus);
@@ -147,6 +186,39 @@ void PrinterView::buildFiles()
 	QVBoxLayout *layout = new QVBoxLayout(ui.tabFiles);
 	layout->setMargin(0);
 	layout->addWidget(_printerFilesView);
+}
+
+void PrinterView::buildErrorsLog()
+{
+	QVBoxLayout* layout = new QVBoxLayout(ui.tabLogs);
+	layout->setMargin(3);
+	_printerErrorsLog = new QTableWidget(ui.tabLogs);
+	layout->addWidget(_printerErrorsLog);
+
+	QStringList headers;
+	headers << "Timestamp" << "Board Id"  << "Type" << "Priority" << "Code";
+	_printerErrorsLog->setColumnCount(headers.count());
+	_printerErrorsLog->setHorizontalHeaderLabels(headers);
+	resizeErrorsLog();
+}
+
+void PrinterView::resizeErrorsLog()
+{
+	if(_printerErrorsLog != nullptr && _printerErrorsLog->rowCount()) {
+	   int w = 0;
+	   int c = 0;
+	   _printerErrorsLog->setColumnWidth(c++, 100); w += 100;
+	   _printerErrorsLog->setColumnWidth(c++, 70); w += 70;
+	   _printerErrorsLog->setColumnWidth(c++, 100); w += 100;
+	   _printerErrorsLog->setColumnWidth(c++, 70); w += 70;
+	   if (_printerErrorsLog->width() > 400){
+		   w = _printerErrorsLog->width() - (w + 19);
+	   }
+	   else {
+		   w = 400;
+	   }
+	   _printerErrorsLog->setColumnWidth(c, w);
+	}
 }
 
 void PrinterView::onRequestLive()

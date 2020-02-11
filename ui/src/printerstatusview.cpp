@@ -161,11 +161,14 @@ void PrinterStatusView::resizeEvent(QResizeEvent * event)
 	QWidget::resizeEvent(event);
 	int cols = _errors->columnCount();
 	if (cols == 4) {
-		_errors->setColumnWidth(0, 150);
-		_errors->setColumnWidth(1, 100);
-		_errors->setColumnWidth(2, 100);
-		int w = _errors->width() - (150 + 100 * 2 + 10);
-		_errors->setColumnWidth(3, w);
+
+		int w = 0;
+		int c = 0;
+		_errors->setColumnWidth(c++, 100); w += 100;
+		_errors->setColumnWidth(c++, 70); w += 70;
+		_errors->setColumnWidth(c++, 100); w += 100;
+		w = _errors->width() - (w + 18);
+		_errors->setColumnWidth(c, w);
 	}
 
 }

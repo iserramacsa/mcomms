@@ -29,12 +29,7 @@ namespace Macsa {
 				//Config
 				MCommand* getConfigCommand();
 				MCommand* setDateTimeCommand(time_t dateTime);
-				MCommand* setConfigBoardEnabled(bool enabled, int boardId = 0);
-				MCommand* setConfigBoardAutostart(bool enabled, int boardId = 0);
-				MCommand* setConfigBoardBlocked(bool blocked, int boardId = 0);
-				MCommand* setConfigBoard(bool enabled, int boardId = 0);
-				MCommand* setConfigBoardLowLevelOutput(bool enable, int boardId = 0);
-				MCommand* setConfigBoardUserMessage(const std::string &currentMessage, int board = 0);
+				MCommand* setConfigBoard(const Printers::Board& board);
 
 				//Files
 				MCommand* getFontsCommand();

@@ -11,6 +11,7 @@
 #include <QMap>
 #include <QTableWidget>
 #include <QSpinBox>
+#include "printer/datatypes.h"
 
 class PrinterConfigView : public QWidget
 {
@@ -26,16 +27,21 @@ class PrinterConfigView : public QWidget
 	private:
 		TIJViewerController* _controller;
 
+		//General config
 		QPushButton* _butEnable;
 		QCheckBox* _printAutostart;
 		QCheckBox* _lowLevelOutput;
 		QCheckBox* _blockCartridge;
-		QComboBox* _bcdMode;
-		QTableWidget* _bcdTable;
-		QComboBox* _printDirection;
+
+		//Print Setup
 		QCheckBox* _printRotated;
 		QComboBox* _printResolution;
 		QComboBox* _nozzlesCols;
+
+
+		QComboBox* _bcdMode;
+		QTableWidget* _bcdTable;
+		QComboBox* _printDirection;
 		//Photocell
 		QComboBox* _photocell;
 		//Encoder
@@ -72,9 +78,17 @@ class PrinterConfigView : public QWidget
 		void updateBcdTable();
 		void printerDisconnected();
 
+		QStringList printResolutions() const;
+		QLabel* getTitle(const QString& text);
+
 
 	private slots:
 		void onStartStop();
+		void onToggleAutoStart();
+		void onToggleLowLevel();
+		void onToggleBlockCartridge();
+		void onToggleRotated();
+		void onTimerRequest();
 };
 
 

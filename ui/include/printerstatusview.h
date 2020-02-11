@@ -21,19 +21,12 @@ class PrinterStatusView : public QWidget
 	public slots:
 		void refresh();
 
-	private:
-		TIJViewerController* _controller;
-		void build();
-		QWidget* buildCounters();
-		QWidget* buildInputs();
-		void printerDisconnected();
-		virtual void resizeEvent(QResizeEvent *);
-
-		QLabel*	   _printerType;
-		QCheckBox* _printerAutostart;
-		QLabel* _printerUserMessage;
-		QLabel* _printerBcdMode;
-		QLabel* _printerBcdStatus;
+	private:		
+		QLabel*		_printerType;
+		QCheckBox*	_printerAutostart;
+		QLabel*		_printerUserMessage;
+		QLabel*		_printerBcdMode;
+		QLabel*		_printerBcdStatus;
 
 		QTableWidget* _errors;
 
@@ -47,6 +40,16 @@ class PrinterStatusView : public QWidget
 
 		QFormLayout* _propLayout;
 		QMap<QString, QLabel*> _props;
+		TIJViewerController* _controller;
+
+
+		virtual void resizeEvent(QResizeEvent *);
+
+		void build();
+		QWidget* buildCounters();
+		QWidget* buildInputs();
+
+		void printerDisconnected();
 
 		void updateErrors(const QVector<TIJViewerController::PrinterError> &errors);
 		void updateInputs(const QVector<TIJViewerController::PrinterInput> &inputs);

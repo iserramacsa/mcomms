@@ -45,6 +45,7 @@ class TIJViewerController : public PrinterViewerController
 		};
 
 		struct PrinterError {
+				uint boardId;
 				QDateTime timestamp;
 				QString type;
 				uint priority;
@@ -59,6 +60,7 @@ class TIJViewerController : public PrinterViewerController
 		virtual bool setData(int descriptor, const QVariant& value);
 
 		//Command request
+		void updatePrinterData();
 		bool requestLive();
 		bool requestStatus();
 		bool requestConfig();
@@ -68,8 +70,17 @@ class TIJViewerController : public PrinterViewerController
 		bool requestMessagesFiles();
 		bool requestImagesFiles();
 		bool requestFileContent(const std::string& filepath, bool rawMode = false);
+
+
+		// File related getters and setters
 		std::vector<uint8_t> getFileContent(const std::string& filepath);
 
+		//Status related getters and setters
+		QString printerDateTime(const QString &format = "");
+
+
+
+		QVector<PrinterError> errorsLog() const;
 
 
 		TIJStatus printerStatus() const;
@@ -80,23 +91,22 @@ class TIJViewerController : public PrinterViewerController
 		QString boardAPIVersion() const;
 
 		bool autoStart() const;
-		//		void setAutoStart(bool autoStart);
+		bool setAutoStart(bool autoStart);
 
 		bool lowLevelOutput() const;
-		//		void setLowLevelOutput(bool lowLevelOutput);
+		bool setLowLevelOutput(bool lowLevelOutput);
 
 		bool printing() const;
-		//		void setPrinting(bool printing);
 
 		bool enabled() const;
-		void setEnabled(bool enabled);
+		bool setEnabled(bool enabled);
 
 		bool blocked() const;
-		//		void setBlocked(bool blocked);
+		bool setBlocked(bool blocked);
 
 		QString currentMessage() const;
 		QString userMessage() const;
-		//		void setUserMessage(const std::string &currentMessage);
+		//void setUserMessage(const std::string &currentMessage);
 
 		QMap<int, QString> bcdTable() const;
 		QString bcdMode() const;
@@ -113,7 +123,7 @@ class TIJViewerController : public PrinterViewerController
 		// void setPrinterDirection(const std::string &printDirection);
 
 		bool printRotated() const;
-		//void setPrintRotated(bool printRotated);
+		bool setPrintRotated(bool printRotated);
 
 		QString nozzlesCol() const;
 		// void setNozzlesCol(const NozzlesCol &nozzlesCol);

@@ -3,6 +3,8 @@
 #include "network/isocket.h"
 #include "network/tcpsocket.h"
 
+#include <iostream>
+
 #define MPROTOCOL_PORT	9991
 
 using namespace Macsa;
@@ -13,20 +15,26 @@ TIJPrinterController::TIJPrinterController(const std::string &id, const std::str
 	_factory(_printer, _liveFlags)
 {}
 
-#include <iostream>
 Printers::ErrorCode TIJPrinterController::getLive()
 {
 	Printers::ErrorCode error;
 	MProtocol::MCommand* cmd = _factory.getLiveCommand();
 	if (cmd) {
 		if (send(cmd, error) && error == Printers::ErrorCode_n::SUCCESS) {
-			std::cout << "statusChanged:    " << _liveFlags.statusChanged << std::endl;
-			std::cout << "configChanged:    " << _liveFlags.configChanged << std::endl;
-			std::cout << "filesChanged:     " << _liveFlags.filesChanged << std::endl;
-			std::cout << "fontsChanged:     " << _liveFlags.fontsChanged << std::endl;
-			std::cout << "errorsLogChanged: " << _liveFlags.errorsLogChanged << std::endl;
-			std::cout << "userValueChanged: " << _liveFlags.userValueChanged << std::endl;
-			std::cout << "isInError:        " << _liveFlags.isInError << std::endl;
+			if (_liveFlags.statusChanged)
+				std::cout << "statusChanged" << std::endl;
+			if (_liveFlags.configChanged)
+				std::cout << "configChanged" << std::endl;
+			if (_liveFlags.filesChanged)
+				std::cout << "filesChanged" << std::endl;
+			if (_liveFlags.fontsChanged)
+				std::cout << "fontsChanged" << std::endl;
+			if (_liveFlags.errorsLogChanged)
+				std::cout << "errorsLogChanged" << std::endl;
+			if (_liveFlags.userValueChanged)
+				std::cout << "userValueChanged" << std::endl;
+			if (_liveFlags.isInError)
+				std::cout << "isInError" << std::endl;
 		}
 	}
 	return error;
@@ -49,7 +57,6 @@ TIJPrinterController::TIJPrinterStatus TIJPrinterController::printerStatus()
 	if (NetworkNode::status() == NetworkNode::NodeStatus_n::CONNECTED) {
 		const Macsa::Printers::Board * board = _printer.board(0);
 		if (board == nullptr) {
-//			updateStatus();
 			board = _printer.board(0);
 		}
 		board = _printer.board(0);
@@ -106,15 +113,55 @@ Printers::ErrorCode TIJPrinterController::setDateTime(const time_t &dt)
 
 Printers::ErrorCode TIJPrinterController::setEnabled(bool enabled)
 {
-	Printers::ErrorCode error;
-	MProtocol::MCommand* cmd = _factory.setConfigBoardEnabled(enabled);
-	if (cmd) {
-		send(cmd, error);
+	Printers::Board board(0, &_printer);
+	if (getBaseBoard(board)){
+		board.setEnabled(enabled);
+		return changeBoardConfig(board);
 	}
-	return error;
+	return Printers::ErrorCode(Printers::PARAM_BOARD_ID_NOT_FOUND);
 }
 
-Printers::ErrorCode TIJPrinterController::updateFiles()
+Printers::ErrorCode TIJPrinterController::setAutoStart(bool enabled)
+{
+	Printers::Board board(0, &_printer);
+	if (getBaseBoard(board)){
+		board.setAutoStart(enabled);
+		return changeBoardConfig(board);
+	}
+	return Printers::ErrorCode(Printers::PARAM_BOARD_ID_NOT_FOUND);
+}
+
+Printers::ErrorCode TIJPrinterController::setLowLevelOutput(bool enabled)
+{
+	Printers::Board board(0, &_printer);
+	if (getBaseBoard(board)){
+		board.setLowLevelOutput(enabled);
+		return changeBoardConfig(board);
+	}
+	return Printers::ErrorCode(Printers::PARAM_BOARD_ID_NOT_FOUND);
+}
+
+Printers::ErrorCode TIJPrinterController::setCartridgeBlocked(bool blocked)
+{
+	Printers::Board board(0, &_printer);
+	if (getBaseBoard(board)){
+		board.setBlocked(blocked);
+		return changeBoardConfig(board);
+	}
+	return Printers::ErrorCode(Printers::PARAM_BOARD_ID_NOT_FOUND);
+}
+
+Printers::ErrorCode TIJPrinterController::setPrintRotated(bool rotated)
+{
+	Printers::Board board(0, &_printer);
+	if (getBaseBoard(board)){
+		board.setPrintRotated(rotated);
+		return changeBoardConfig(board);
+	}
+	return Printers::ErrorCode(Printers::PARAM_BOARD_ID_NOT_FOUND);
+}
+
+Printers::ErrorCode TIJPrinterController::updateFilesList()
 {
 	Printers::ErrorCode error;
 	MProtocol::MCommand* cmd = _factory.getAllFilesCommand();
@@ -124,7 +171,7 @@ Printers::ErrorCode TIJPrinterController::updateFiles()
 	return error;
 }
 
-Printers::ErrorCode TIJPrinterController::updateFonts()
+Printers::ErrorCode TIJPrinterController::updateFontsList()
 {
 	Printers::ErrorCode error;
 	MProtocol::MCommand* cmd = _factory.getFontsCommand();
@@ -134,7 +181,7 @@ Printers::ErrorCode TIJPrinterController::updateFonts()
 	return error;
 }
 
-Printers::ErrorCode TIJPrinterController::updateMessages()
+Printers::ErrorCode TIJPrinterController::updateMessagesList()
 {
 	Printers::ErrorCode error;
 	MProtocol::MCommand* cmd = _factory.getMessagesCommand();
@@ -144,7 +191,7 @@ Printers::ErrorCode TIJPrinterController::updateMessages()
 	return error;
 }
 
-Printers::ErrorCode TIJPrinterController::updateImages()
+Printers::ErrorCode TIJPrinterController::updateImagesList()
 {
 	Printers::ErrorCode error;
 	MProtocol::MCommand* cmd = _factory.getImagesCommand();
@@ -181,19 +228,14 @@ std::vector<uint8_t> TIJPrinterController::getFile(const std::string &filepath)
 	std::vector<uint8_t> content;
 	content.clear();
 	if (_printer.files() != nullptr) {
-		std::cout << __func__ << "  " << filepath;
 		const Macsa::Printers::File* file = _printer.files()->getFile(filepath);
 		if (file){
-			std::cout << "  => File found" << std::endl;
 			content = file->data();
 		}
-		else
-			std::cout << "  => File NOT found" << std::endl;
 	}
 	return content;
 }
 
-#include <iostream>
 bool TIJPrinterController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &err)
 {
 	bool success = false;
@@ -222,6 +264,27 @@ bool TIJPrinterController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &e
 		}
 	}
 	return success;
+}
+
+
+
+bool TIJPrinterController::getBaseBoard(Printers::Board& board)
+{
+	bool valid = (_printer.board(0) != nullptr);
+	if (valid) {
+		board = (*_printer.board(0));
+	}
+	return valid;
+}
+
+Printers::ErrorCode TIJPrinterController::changeBoardConfig(const Printers::Board &board)
+{
+	Printers::ErrorCode error(Printers::ErrorCode_n::PARAM_BOARD_ID_NOT_FOUND);
+	MProtocol::MCommand* cmd = _factory.setConfigBoard(board);
+	if (cmd) {
+		send(cmd, error);
+	}
+	return error;
 }
 
 std::vector<std::string> TIJPrinterController::getFiles(const std::string &extension)

@@ -6,54 +6,73 @@
 using namespace Macsa;
 using namespace Macsa::Printers;
 
- TIJViewerController::TIJViewerController(TIJPrinterController &controller) :
+TIJViewerController::TIJViewerController(TIJPrinterController &controller) :
 	_controller(controller)
- {
+{
 
- }
+}
 
 QVariant TIJViewerController::data(int descriptor)
 {
 	switch (static_cast<TIJDataDescriptors>(descriptor))
 	{
 		case TIJDataDescriptors::LIVE:
-				return requestLive();
+			return requestLive();
 		case TIJDataDescriptors::STATUS:
-				return requestStatus();
+			return requestStatus();
 		case TIJDataDescriptors::CONFIG:
-				return requestConfig();
+			return requestConfig();
 		case TIJDataDescriptors::ALL_FILES:
-				return _controller.updateFiles() == ErrorCode_n::SUCCESS;
+			return  requestAllFiles();
 		case TIJDataDescriptors::MESSAGES_FILES:
-			return _controller.updateMessages() == ErrorCode_n::SUCCESS;
+			return requestMessagesFiles();
 		case TIJDataDescriptors::FONTS_FILES:
-			return _controller.updateFonts() == ErrorCode_n::SUCCESS;
+			return requestFontFiles();
 		case TIJDataDescriptors::IMAGES_FILES:
-				return _controller.updateImages() == ErrorCode_n::SUCCESS;
+			return requestImagesFiles();
 		case TIJDataDescriptors::PRINTER_ID:
-				return _controller.id().c_str();
+			return _controller.id().c_str();
 		case TIJDataDescriptors::PRINTER_ADDRS:
-				return _controller.address().c_str();
+			return _controller.address().c_str();
 		case TIJDataDescriptors::PRINTER_STATUS:
-				return static_cast<int>(_controller.printerStatus());
+			return static_cast<int>(_controller.printerStatus());
 		case TIJDataDescriptors::PRINTER_DT:
-			{
-				TIJPrinter* tij = dynamic_cast<TIJPrinter*>(_controller.printer());
-				if (tij){
-					time_t time = tij->dateTime();
-					QDateTime dt = QDateTime::fromTime_t(static_cast<uint32_t>(time));
-					return dt.toString();
-				}
-				return "";
-			}
-		default:
-			return QVariant();
+			return printerDateTime();
 	}
+	return QVariant();
 }
 
 bool TIJViewerController::setData(int /*descriptor*/, const QVariant &/*value*/)
 {
 	return false;
+}
+
+#include <iostream>
+void TIJViewerController::updatePrinterData()
+{
+	if (_controller.getLive() == ErrorCode_n::SUCCESS) {
+		if (_controller.statusChanged())
+			_controller.updateStatus();
+
+		if (_controller.configChanged())
+			_controller.updateConfig();
+
+		if (_controller.filesChanged())
+			_controller.updateFilesList();
+
+		if (_controller.fontsChanged())
+			_controller.updateFontsList();
+
+		if (_controller.userValuesChanged())
+			std::cout << "Printer user values changed!" << std::endl;
+//			_controller.updateUserValues();
+
+		if (_controller.errorsLogsChanged())
+			_controller.updateErrorsList();
+
+		if (_controller.isInError())
+			std::cout << "Printer is in error!" << std::endl;
+	}
 }
 
 bool TIJViewerController::requestLive()
@@ -76,6 +95,26 @@ bool TIJViewerController::requestErrorsList()
 	return _controller.updateErrorsList() == ErrorCode_n::SUCCESS;
 }
 
+bool TIJViewerController::requestAllFiles()
+{
+	return _controller.updateFilesList() == ErrorCode_n::SUCCESS;
+}
+
+bool TIJViewerController::requestFontFiles()
+{
+	return _controller.updateFontsList() == ErrorCode_n::SUCCESS;
+}
+
+bool TIJViewerController::requestMessagesFiles()
+{
+	return _controller.updateMessagesList() == ErrorCode_n::SUCCESS;
+}
+
+bool TIJViewerController::requestImagesFiles()
+{
+	return _controller.updateImagesList() == ErrorCode_n::SUCCESS;
+}
+
 bool TIJViewerController::requestFileContent(const std::string &filepath, bool rawMode)
 {
 	return (_controller.updateFile(filepath, rawMode) == ErrorCode_n::SUCCESS);
@@ -84,6 +123,36 @@ bool TIJViewerController::requestFileContent(const std::string &filepath, bool r
 std::vector<uint8_t> TIJViewerController::getFileContent(const std::string &filepath)
 {
 	return _controller.getFile(filepath);
+}
+
+QString TIJViewerController::printerDateTime(const QString& format)
+{
+	TIJPrinter* tij = dynamic_cast<TIJPrinter*>(_controller.printer());
+	if (tij){
+		time_t time = tij->dateTime();
+		QDateTime dt = QDateTime::fromTime_t(static_cast<uint32_t>(time));
+		return dt.toString(format);
+	}
+	return "";
+}
+
+QVector<TIJViewerController::PrinterError> TIJViewerController::errorsLog() const
+{
+	QVector<PrinterError> values;
+	const TIJPrinter* tij = tijPrinter();
+	if (tij) {
+		std::vector<Error> errors = tij->errorsLog();
+		for (std::vector<Error>::const_iterator it = errors.begin(); it != errors.end(); it++) {
+			PrinterError err;
+			err.boardId = (*it).boardId();
+			err.timestamp = QDateTime::fromTime_t(static_cast<uint>((*it).timestamp()));
+			err.code = (*it).code().toString().c_str();
+			err.type = (*it).type().toString().c_str();
+			err.priority = (*it).priority();
+			values.push_back(err);
+		}
+	}
+	return values;
 }
 
 TIJViewerController::TIJStatus TIJViewerController::printerStatus() const
@@ -142,6 +211,11 @@ bool TIJViewerController::autoStart() const
 	return value;
 }
 
+bool TIJViewerController::setAutoStart(bool autoStart)
+{
+	return (_controller.setAutoStart(autoStart) == Printers::SUCCESS);
+}
+
 bool TIJViewerController::lowLevelOutput() const
 {
 	bool value = false;
@@ -150,6 +224,11 @@ bool TIJViewerController::lowLevelOutput() const
 		value = board->lowLevelOutput();
 	}
 	return value;
+}
+
+bool TIJViewerController::setLowLevelOutput(bool lowLevelOutput)
+{
+	return(_controller.setLowLevelOutput(lowLevelOutput) == Printers::SUCCESS);
 }
 
 bool TIJViewerController::printing() const
@@ -172,9 +251,9 @@ bool TIJViewerController::enabled() const
 	return value;
 }
 
-void TIJViewerController::setEnabled(bool enabled)
+bool TIJViewerController::setEnabled(bool enabled)
 {
-	 _controller.setEnabled(enabled);
+	return (_controller.setEnabled(enabled) == Printers::SUCCESS);
 }
 
 bool TIJViewerController::blocked() const
@@ -185,6 +264,11 @@ bool TIJViewerController::blocked() const
 		value = board->blocked();
 	}
 	return value;
+}
+
+bool TIJViewerController::setBlocked(bool blocked)
+{
+	return (_controller.setCartridgeBlocked(blocked) == Printers::SUCCESS);
 }
 
 QString TIJViewerController::currentMessage() const
@@ -258,6 +342,11 @@ bool TIJViewerController::printRotated() const
 		value = board->printRotated();
 	}
 	return value;
+}
+
+bool TIJViewerController::setPrintRotated(bool printRotated)
+{
+	return (_controller.setPrintRotated(printRotated) == Printers::SUCCESS);
 }
 
 QString TIJViewerController::nozzlesCol() const

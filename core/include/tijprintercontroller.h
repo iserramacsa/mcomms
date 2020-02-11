@@ -1,6 +1,6 @@
 #ifndef TIJ_PRINTER_CONTROLLER_H
 #define TIJ_PRINTER_CONTROLLER_H
-
+#include "printer/datatypes.h"
 #include "printercontroller.h"
 #include "mprotocol/mcommandsfactory.h"
 
@@ -40,11 +40,16 @@ namespace Macsa {
 			Printers::ErrorCode updateConfig();
 			Printers::ErrorCode setDateTime(const std::time_t& dt);
 			Printers::ErrorCode setEnabled(bool enabled);
+			Printers::ErrorCode setAutoStart(bool enabled);
+			Printers::ErrorCode setLowLevelOutput(bool enabled);
+			Printers::ErrorCode setCartridgeBlocked(bool blocked);
+			Printers::ErrorCode setPrintRotated(bool rotated);
+
 			//Files
-			Printers::ErrorCode updateFiles();
-			Printers::ErrorCode updateFonts();
-			Printers::ErrorCode updateMessages();
-			Printers::ErrorCode updateImages();
+			Printers::ErrorCode updateFilesList();
+			Printers::ErrorCode updateFontsList();
+			Printers::ErrorCode updateMessagesList();
+			Printers::ErrorCode updateImagesList();
 			Printers::ErrorCode updateFile(const std::string& filepath, bool rawMode = false);
 
 			std::vector<std::string> getDrives();
@@ -69,7 +74,11 @@ namespace Macsa {
 			Printers::TIJPrinter _printer;
 			MProtocol::MCommandsFactory _factory;
 
-			void checkConnection();
+			bool getBaseBoard(Printers::Board& board);
+			Printers::ErrorCode changeBoardConfig(const Printers::Board& board);
+
+
+//			void checkConnection(); // TODO
 			std::vector<std::string> getFiles(const std::string &extension);
 			std::vector<std::string> getFiles(const std::string &drive,const std::string &folder);
 			

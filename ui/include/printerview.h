@@ -24,14 +24,20 @@ class PrinterView : public QWidget
 		PrinterStatusView* _printerStatusView;
 		PrinterConfigView* _printerConfigView;
 		PrinterFilesView* _printerFilesView;
+		QTableWidget*	  _printerErrorsLog;
 		Ui::printerView ui;
 
+		virtual void resizeEvent(QResizeEvent *);
+
 		void refresh();
+		void updateLogs();
 		void setPrinterStatus(TIJViewerController::TIJStatus status);
 
 		void buildStatus();
 		void buildConfig();
 		void buildFiles();
+		void buildErrorsLog();
+		void resizeErrorsLog();
 
 	private slots:
 		void onRequestLive();
