@@ -62,6 +62,7 @@ namespace Macsa {
 				std::string _apiVersion;
 				std::string _fpgaVersion;
 				DateCodes	_dateCodes;
+				std::mutex* _mutex;
 
 				std::vector<Board> _boards;
 				std::vector<Error> _errorsLog;

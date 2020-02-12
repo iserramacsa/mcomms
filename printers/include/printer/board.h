@@ -15,7 +15,7 @@
 #include "cartridge.h"
 #include "errors.h"
 #include "messagemanager.h"
-
+#include <mutex>
 namespace Macsa {
 	namespace Printers {
 		class TIJPrinter;
@@ -120,7 +120,7 @@ namespace Macsa {
 				virtual Error error(unsigned int idx) const;
 				virtual void setError(unsigned int idx, const Error& error);
 
-                virtual TIJPrinter* printer();
+				virtual TIJPrinter* printer();
                 virtual const TIJPrinter* printer() const;
 
 				virtual void clear();
@@ -133,6 +133,7 @@ namespace Macsa {
 			private:
                 const int   _id;
                 TIJPrinter*	_parent;
+				std::mutex* _mutex;
 
 				bool			_autostart;
 				bool			_lowLvlOutput;
