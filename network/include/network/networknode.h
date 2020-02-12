@@ -7,6 +7,10 @@
 
 namespace Macsa {
 	namespace Network {
+		///
+		/// \brief The NetworkNode clas. This class allow to control a socket as a network node and
+		/// add or remove connections related with the node with multiple sockets.
+		///
 		class NetworkNode {
 			public:
 				enum NodeStatus_n{
@@ -21,10 +25,13 @@ namespace Macsa {
 
 				std::string id()	  const {return _id.c_str();}
 				std::string address() const {return _address;}
-				virtual NodeStatus_n status() const;
-				bool addConnection(ISocket::SocketType_n type, uint16_t port);
+                virtual NodeStatus_n status() const;
+                bool addConnection(ISocket::SocketType_n type, uint16_t port);
 				bool addConnection(ISocket* socket);
-				ISocket* socket(ISocket::SocketType_n type, uint16_t port);
+                bool removeConnection(ISocket::SocketType_n type, uint16_t port);
+                bool removeConnection(ISocket* socket);
+                ISocket* socket(ISocket::SocketType_n type, uint16_t port) const;
+                void close();
 
 				virtual bool operator == (const NetworkNode& other);
 				virtual bool operator != (const NetworkNode& other);
@@ -39,7 +46,8 @@ namespace Macsa {
 
 				bool equal(const NetworkNode& other);
 				bool exist(ISocket* socket);
-				ISocket* find(ISocket::SocketType_n type, uint16_t port);
+                ISocket* find(ISocket::SocketType_n type, uint16_t port) const;
+                std::vector<ISocket*>::iterator socket(ISocket::SocketType_n type, uint16_t port);
 				NodeStatus_n checkStatus() const;
 		};
 	}

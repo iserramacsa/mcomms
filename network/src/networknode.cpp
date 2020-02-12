@@ -24,11 +24,7 @@ NetworkNode::NetworkNode(const std::string &id, ISocket* connection)
 
 NetworkNode::~NetworkNode()
 {
-	while (_connections.size()) {
-		std::vector<ISocket*>::iterator it = _connections.begin();
-		delete (*it);
-		_connections.erase(it);
-	}
+	close();
 }
 
 NetworkNode::NodeStatus_n NetworkNode::status() const
@@ -75,9 +71,41 @@ bool NetworkNode::addConnection(ISocket *socket)
 	return false;
 }
 
-ISocket *NetworkNode::socket(ISocket::SocketType_n type, uint16_t port)
+bool NetworkNode::removeConnection(ISocket::SocketType_n type, uint16_t port)
+{
+	bool removed = false;
+
+	std::vector<ISocket*>::iterator it = socket(type, port);
+
+	if (it != _connections.end())
+	{
+		ISocket* socket = (*it);
+		if (socket) {
+			delete socket;
+			_connections.erase(it);
+		}
+	}
+
+	return removed;
+}
+
+bool NetworkNode::removeConnection(ISocket *socket)
+{
+	return removeConnection(socket->type(), socket->port());
+}
+
+ISocket *NetworkNode::socket(ISocket::SocketType_n type, uint16_t port) const
 {
 	return find(type, port);
+}
+
+void NetworkNode::close()
+{
+	while (_connections.size()) {
+		std::vector<ISocket*>::iterator it = _connections.begin();
+		delete (*it);
+		_connections.erase(it);
+	}
 }
 
 bool NetworkNode::operator == (const NetworkNode &other)
@@ -124,7 +152,7 @@ bool NetworkNode::exist(ISocket *socket)
 	return exist;
 }
 
-ISocket *NetworkNode::find(ISocket::SocketType_n type, uint16_t port)
+ISocket *NetworkNode::find(ISocket::SocketType_n type, uint16_t port) const
 {
 	ISocket * sock = nullptr;
 	for (unsigned int i = 0; i < _connections.size(); i++) {
@@ -135,6 +163,17 @@ ISocket *NetworkNode::find(ISocket::SocketType_n type, uint16_t port)
 		}
 	}
 	return sock;
+}
+
+std::vector<ISocket*>::iterator NetworkNode::socket(ISocket::SocketType_n type, uint16_t port)
+{
+	std::vector<ISocket*>::iterator it;
+	for (it = _connections.begin(); it != _connections.end(); it++) {
+		if ((*it)->type() == type && (*it)->port() == port) {
+			break;
+		}
+	}
+	return it;
 }
 
 NetworkNode::NodeStatus_n NetworkNode::checkStatus() const

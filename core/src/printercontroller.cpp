@@ -31,8 +31,11 @@ bool PrinterController::disconnect()
 {
 	TcpSocket* socket = dynamic_cast<TcpSocket*>(NetworkNode::socket(ISocket::TCP_SOCKET, _printerPort));
 	if (socket != nullptr){
-		socket->close();
-		return (socket->status() == ISocket::UNKNOWN);
+		bool success = socket->close();
+		if (success) {
+
+		}
+		return success;
 	}
 	else{
 		return false;
