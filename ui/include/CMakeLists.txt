@@ -14,6 +14,7 @@ set(MOC_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/printerview.h
 	${CMAKE_CURRENT_SOURCE_DIR}/printerstatusview.h
 	${CMAKE_CURRENT_SOURCE_DIR}/printerconfigview.h
+	${CMAKE_CURRENT_SOURCE_DIR}/printercommsview.h
 	${CMAKE_CURRENT_SOURCE_DIR}/printerfilesview.h
 	)
 

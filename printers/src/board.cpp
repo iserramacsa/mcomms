@@ -528,7 +528,8 @@ bool Board::equal(const Board &other) const
 
 void Board::copy(const Board &other)
 {
-	if (*this != other){
+	if (!equal(other))
+	{
 		{
 			std::lock_guard<std::mutex>lock(*_mutex);
 			_type = other._type;

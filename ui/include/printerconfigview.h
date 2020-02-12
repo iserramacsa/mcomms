@@ -21,6 +21,9 @@ class PrinterConfigView : public QWidget
 		~PrinterConfigView();
 		void setController(Macsa::TIJPrinterController& controller);
 
+	signals:
+		void configChangeRequested();
+
 	public slots:
 		void refresh();
 
@@ -88,7 +91,7 @@ class PrinterConfigView : public QWidget
 		void onToggleLowLevel();
 		void onToggleBlockCartridge();
 		void onToggleRotated();
-		void onTimerRequest();
+		void onRequestChanges();
 };
 
 

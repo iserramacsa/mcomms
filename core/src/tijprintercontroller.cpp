@@ -249,6 +249,7 @@ bool TIJPrinterController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &e
 			ISocket::nSocketFrameStatus status = socket->receive(resp);
 			if(status == ISocket::FRAME_SUCCESS)
 			{
+				std::lock_guard<std::mutex> lock(_mutex);
 				std::cout << tx << std::endl;
 				success = _factory.parseResponse(resp, err);
 			}

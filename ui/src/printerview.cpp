@@ -20,6 +20,7 @@ PrinterView::PrinterView(QWidget *parent) :
 
 	buildStatus();
 	buildConfig();
+	buildComms();
 	buildFiles();
 	buildErrorsLog();
 }
@@ -41,6 +42,7 @@ void PrinterView::setController(Macsa::TIJPrinterController &controller)
 	_controller = new TIJViewerController(controller);
 	_printerStatusView->setController(controller);
 	_printerConfigView->setController(controller);
+	_printerCommsView->setController(controller);
 	_printerFilesView->setController(controller);
 	_controller->updatePrinterData();
 	refresh();
@@ -66,6 +68,7 @@ void PrinterView::refresh()
 	}
 	_printerStatusView->refresh();
 	_printerConfigView->refresh();
+	_printerCommsView->refresh();
 	_printerFilesView->refresh();
 	updateLogs();
 }
@@ -174,10 +177,26 @@ void PrinterView::buildConfig()
 	layout->setMargin(0);
 
 	_printerConfigView = new PrinterConfigView(ui.WidgetContentsConfig);
+	connect(_printerConfigView, SIGNAL(configChangeRequested()), SLOT(onRequestedChanges()), Qt::QueuedConnection);
+
 	layout->setSizeConstraint(QLayout::SetMinAndMaxSize);
 	layout->addWidget(_printerConfigView);
 
 	clear();
+}
+
+void PrinterView::buildComms()
+{
+	QVBoxLayout* layout = new QVBoxLayout(ui.WidgetContentsNetwork);
+	layout->setMargin(0);
+
+	_printerCommsView = new PrinterCommsView(ui.WidgetContentsConfig);
+
+	layout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+	layout->addWidget(_printerCommsView);
+
+	clear();
+
 }
 
 void PrinterView::buildFiles()
@@ -296,6 +315,14 @@ void PrinterView::onConnectClicked()
 		else {
 			_controller->controller().disconnect();
 		}
+		refresh();
+	}
+}
+
+void PrinterView::onRequestedChanges()
+{
+	if (_controller != nullptr) {
+		_controller->updatePrinterData();
 		refresh();
 	}
 }

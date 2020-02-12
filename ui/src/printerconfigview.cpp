@@ -43,8 +43,6 @@ void PrinterConfigView::refresh()
 	}
 }
 
-#include <QLine>
-
 void PrinterConfigView::build()
 {
 	QVBoxLayout* layout = new QVBoxLayout(this);
@@ -193,7 +191,7 @@ void PrinterConfigView::onStartStop()
 {
 	if (_controller){
 		if (_controller->setEnabled(!_controller->enabled())) {
-			QTimer::singleShot(1000, this, SLOT(onTimerRequest()));
+			QTimer::singleShot(1000, this, SLOT(onRequestChanges()));
 		}
 	}
 }
@@ -202,7 +200,7 @@ void PrinterConfigView::onToggleAutoStart()
 {
 	if (_controller){
 		if (_controller->setAutoStart(_printAutostart->isChecked())) {
-			QTimer::singleShot(1000, this, SLOT(onTimerRequest()));
+			QTimer::singleShot(1000, this, SLOT(onRequestChanges()));
 		}
 	}
 }
@@ -211,7 +209,7 @@ void PrinterConfigView::onToggleLowLevel()
 {
 	if (_controller){
 		if (_controller->setLowLevelOutput(_lowLevelOutput->isChecked())) {
-			QTimer::singleShot(1000, this, SLOT(onTimerRequest()));
+			QTimer::singleShot(1000, this, SLOT(onRequestChanges()));
 		}
 	}
 }
@@ -220,7 +218,7 @@ void PrinterConfigView::onToggleBlockCartridge()
 {
 	if (_controller){
 		if (_controller->setBlocked(_blockCartridge->isChecked())) {
-			QTimer::singleShot(1000, this, SLOT(onTimerRequest()));
+			QTimer::singleShot(1000, this, SLOT(onRequestChanges()));
 		}
 	}
 }
@@ -229,13 +227,12 @@ void PrinterConfigView::onToggleRotated()
 {
 	if (_controller){
 		if (_controller->setPrintRotated(!_controller->enabled())) {
-			QTimer::singleShot(1000, this, SLOT(onTimerRequest()));
+			QTimer::singleShot(1000, this, SLOT(onRequestChanges()));
 		}
 	}
 }
-#include <unistd.h>
-void PrinterConfigView::onTimerRequest()
+
+void PrinterConfigView::onRequestChanges()
 {
-	_controller->updatePrinterData();
-	refresh();
+	emit configChangeRequested();
 }

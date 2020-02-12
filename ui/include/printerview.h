@@ -9,6 +9,7 @@
 #include "printerstatusview.h"
 #include "printerfilesview.h"
 #include "printerconfigview.h"
+#include "printercommsview.h"
 
 class PrinterView : public QWidget
 {
@@ -23,6 +24,7 @@ class PrinterView : public QWidget
 		TIJViewerController* _controller;
 		PrinterStatusView* _printerStatusView;
 		PrinterConfigView* _printerConfigView;
+		PrinterCommsView* _printerCommsView;
 		PrinterFilesView* _printerFilesView;
 		QTableWidget*	  _printerErrorsLog;
 		Ui::printerView ui;
@@ -35,6 +37,7 @@ class PrinterView : public QWidget
 
 		void buildStatus();
 		void buildConfig();
+		void buildComms();
 		void buildFiles();
 		void buildErrorsLog();
 		void resizeErrorsLog();
@@ -49,6 +52,7 @@ class PrinterView : public QWidget
 		void onRequestMessages();
 		void onRequestErrorsLog();
 		void onConnectClicked();
+		void onRequestedChanges();
 };
 
 

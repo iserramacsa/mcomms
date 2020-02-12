@@ -3,6 +3,7 @@
 #include "printer/datatypes.h"
 #include "printercontroller.h"
 #include "mprotocol/mcommandsfactory.h"
+#include <mutex>
 
 namespace Macsa {
 	class TIJPrinterController : public PrinterController
@@ -73,6 +74,7 @@ namespace Macsa {
 			MProtocol::LiveFlags _liveFlags;
 			Printers::TIJPrinter _printer;
 			MProtocol::MCommandsFactory _factory;
+			std::mutex _mutex;
 
 			bool getBaseBoard(Printers::Board& board);
 			Printers::ErrorCode changeBoardConfig(const Printers::Board& board);
