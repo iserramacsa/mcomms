@@ -17,27 +17,10 @@ PrinterController::~PrinterController()
 
 bool PrinterController::connect()
 {
-	TcpSocket* socket = dynamic_cast<TcpSocket*>(NetworkNode::socket(ISocket::TCP_SOCKET, _printerPort));
-	if (socket != nullptr){
-		socket->connect(address(), _printerPort);
-		return (socket->status() == ISocket::CONNECTED);
-	}
-	else {
-		return false;
-	}
+	return NetworkNode::connect(ISocket::TCP_SOCKET, _printerPort);
 }
 
 bool PrinterController::disconnect()
 {
-	TcpSocket* socket = dynamic_cast<TcpSocket*>(NetworkNode::socket(ISocket::TCP_SOCKET, _printerPort));
-	if (socket != nullptr){
-		bool success = socket->close();
-		if (success) {
-
-		}
-		return success;
-	}
-	else{
-		return false;
-	}
+	return NetworkNode::disconnect(_printerPort);
 }

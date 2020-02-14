@@ -27,15 +27,55 @@ NetworkNode::~NetworkNode()
 	close();
 }
 
-NetworkNode::NodeStatus_n NetworkNode::status() const
+NetworkNode::NodeStatus_n NetworkNode::status(ISocket::SocketType_n type, uint16_t port) const
 {
-	return checkStatus();
+	NetworkNode::NodeStatus_n status = NetworkNode::DISCONNECTED;
+	std::vector<ISocket*>::const_iterator it = connection(type, port);
+	if (it != _connections.end()) {
+		status = ((*it)->status() == ISocket::CONNECTED) ? NetworkNode::CONNECTED : NetworkNode::DISCONNECTED;
+	}
+	return status;
+}
+
+int NetworkNode::connections() const
+{
+	return static_cast<int>(_connections.size());
+}
+
+
+bool NetworkNode::connect(ISocket::SocketType_n type, uint16_t port)
+{
+	bool connected = false;
+	std::vector<ISocket*>::const_iterator it = connection(type, port);
+	if (it != _connections.end()) {
+		addConnection(type, port);
+	}
+	else {
+		connected = ((*it)->status() == ISocket::CONNECTED);
+		if(!connected) {
+			connected = (*it)->connect(_address, port);
+		}
+	}
+
+	return connected;
+
+}
+
+bool NetworkNode::disconnect(uint16_t port)
+{
+	bool success = false;
+	std::vector<ISocket*>::const_iterator it = connection(ISocket::TCP_SOCKET, port);
+	if (it != _connections.end()) {
+		success = (*it)->close();
+	}
+
+	return success ;
 }
 
 bool NetworkNode::addConnection(ISocket::SocketType_n type, uint16_t port)
 {
 	AbstractSocket* asockt = nullptr;
-	if (find(type, port) == nullptr)
+	if (connection(type, port) == _connections.end())
 	{
 		if (type == ISocket::TCP_SOCKET)
 		{
@@ -75,15 +115,17 @@ bool NetworkNode::removeConnection(ISocket::SocketType_n type, uint16_t port)
 {
 	bool removed = false;
 
-	std::vector<ISocket*>::iterator it = socket(type, port);
+	std::vector<ISocket*>::const_iterator it = connection(type, port);
 
 	if (it != _connections.end())
 	{
+		int nConns = connections();
 		ISocket* socket = (*it);
 		if (socket) {
 			delete socket;
 			_connections.erase(it);
 		}
+		removed = (connections() == (nConns - 1));
 	}
 
 	return removed;
@@ -96,13 +138,23 @@ bool NetworkNode::removeConnection(ISocket *socket)
 
 ISocket *NetworkNode::socket(ISocket::SocketType_n type, uint16_t port) const
 {
-	return find(type, port);
+	std::vector<ISocket*>::const_iterator it = connection(type, port);
+	if (it != _connections.end()) {
+		return (*it);
+	}
+
+	return nullptr;
 }
 
 void NetworkNode::close()
 {
 	while (_connections.size()) {
-		std::vector<ISocket*>::iterator it = _connections.begin();
+		ISocket* s  = _connections.back();
+		delete s;
+		_connections.pop_back();
+	}
+	while (_accessPoints.size()) {
+		std::vector<ISocket*>::iterator it = _accessPoints.begin();
 		delete (*it);
 		_connections.erase(it);
 	}
@@ -116,6 +168,38 @@ bool NetworkNode::operator == (const NetworkNode &other)
 bool NetworkNode::operator != (const NetworkNode &other)
 {
 	return !equal(other);
+}
+
+bool NetworkNode::initServer(uint16_t port)
+{
+	bool success = false;
+
+	if (accessPoints(port) == _accessPoints.end()) {
+		TcpSocket* server = new TcpSocket();
+		if (server->bind(port)) {
+			success = server->listen();
+		}
+		if (success) {
+			_accessPoints.push_back(server);
+		}
+	}
+
+	return success;
+}
+
+ISocket * NetworkNode::accept(uint16_t port)
+{
+	AbstractSocket* client = nullptr;
+
+	std::vector<ISocket*>::const_iterator it = accessPoints(port);
+	if (it != _accessPoints.end()) {
+		TcpSocket* svr = dynamic_cast<TcpSocket*>(*it);
+		if (svr != nullptr) {
+			client = dynamic_cast<AbstractSocket*>(svr->accept());
+		}
+	}
+
+	return client;
 }
 
 bool NetworkNode::equal(const NetworkNode &other)
@@ -139,36 +223,10 @@ bool NetworkNode::equal(const NetworkNode &other)
 	return equal;
 }
 
-bool NetworkNode::exist(ISocket *socket)
+std::vector<ISocket*>::const_iterator NetworkNode::find(const std::vector<ISocket *>& list, ISocket::SocketType_n type, uint16_t port) const
 {
-	bool exist = false;
-	for (unsigned int i = 0; i < _connections.size(); i++) {
-		ISocket * s = _connections.at(i);
-		if (s->port() == socket->port() && s->type() == socket->type()){
-			exist = true;
-			break;
-		}
-	}
-	return exist;
-}
-
-ISocket *NetworkNode::find(ISocket::SocketType_n type, uint16_t port) const
-{
-	ISocket * sock = nullptr;
-	for (unsigned int i = 0; i < _connections.size(); i++) {
-		ISocket * s = _connections.at(i);
-		if (s->port() == port && s->type() == type){
-			sock = s;
-			break;
-		}
-	}
-	return sock;
-}
-
-std::vector<ISocket*>::iterator NetworkNode::socket(ISocket::SocketType_n type, uint16_t port)
-{
-	std::vector<ISocket*>::iterator it;
-	for (it = _connections.begin(); it != _connections.end(); it++) {
+	std::vector<ISocket*>::const_iterator it;
+	for (it = list.begin(); it != list.end(); it++) {
 		if ((*it)->type() == type && (*it)->port() == port) {
 			break;
 		}

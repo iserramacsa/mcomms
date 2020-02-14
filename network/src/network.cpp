@@ -11,9 +11,9 @@ int MNetwork::versionPatch() {return NETWORK_VERSION_PATCH;}
 std::string MNetwork::version() {return NETWORK_VERSION_STR;}
 #endif
 
-MNetwork::MNetwork(ISocket::SocketType_n rootNodeType)
+MNetwork::MNetwork(ISocket::SocketType_n rootNodeType) :
+	NetworkNode("root" , new AbstractSocket(rootNodeType))
 {
-	_rootNode = new NetworkNode("root", new AbstractSocket(rootNodeType));
 	_nodes.clear();
 }
 
@@ -25,9 +25,9 @@ MNetwork::~MNetwork()
 		_nodes.erase(it);
 	}
 
-	if(_rootNode != nullptr) {
-		delete _rootNode;
-	}
+//	if(_rootNode != nullptr) {
+//		delete _rootNode;
+//	}
 }
 
 bool MNetwork::addNewNode(NetworkNode *node)

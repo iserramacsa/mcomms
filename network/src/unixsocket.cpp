@@ -135,7 +135,7 @@ ISocket::nSocketFrameStatus UnixSocket::send(const std::string &tx, int timeout)
 		if (waitForWrite(fd, timeout, expired)) {
 			long bytesSent = ::send(fd, tx.c_str(), tx.length(), 0);
 			if (bytesSent > 0){
-				if((unsigned)bytesSent == tx.length()) {
+				if(static_cast<unsigned>(bytesSent) == tx.length()) {
 					sent = FRAME_SUCCESS;
 				}
 				else {
@@ -203,7 +203,7 @@ ISocket::nSocketFrameStatus UnixSocket::receive(std::string &rx, std::string &ad
 	bool expired = false;
 	if (_type == TCP_SOCKET && status() >= LISTENING){
 		if (waitForRead(_sock.fd, timeout, expired)) {
-			int ret = ::recv(_sock.fd, buff, DEFAULT_BUFF_SIZE, 0);
+			int ret = static_cast<int>(::recv(_sock.fd, buff, DEFAULT_BUFF_SIZE, 0));
 			if (ret > 0) {
 				if (ret > DEFAULT_BUFF_SIZE){
 					buff[DEFAULT_BUFF_SIZE - 1] = '\0';
@@ -216,7 +216,7 @@ ISocket::nSocketFrameStatus UnixSocket::receive(std::string &rx, std::string &ad
 					bool end = false;
 					if (waitForRead(_sock.fd, 10, end)){
 						memset(buff, 0, DEFAULT_BUFF_SIZE);
-						len = ::recv(_sock.fd, buff, DEFAULT_BUFF_SIZE, 0);
+						len = static_cast<int>(::recv(_sock.fd, buff, DEFAULT_BUFF_SIZE, 0));
 						if (len > 0) {
 							if (ret > DEFAULT_BUFF_SIZE){
 								buff[DEFAULT_BUFF_SIZE - 1] = '\0';
@@ -243,7 +243,7 @@ ISocket::nSocketFrameStatus UnixSocket::receive(std::string &rx, std::string &ad
 			sConnection remote;
 			clearSocket(remote.addr);
 			socklen_t len = sizeof(remote.addr);
-			int ret = ::recvfrom(_sock.fd, buff, DEFAULT_BUFF_SIZE, 0, (struct sockaddr*)&remote.addr, &len);
+			int ret = static_cast<int>(::recvfrom(_sock.fd, buff, DEFAULT_BUFF_SIZE, 0, (struct sockaddr*)&remote.addr, &len));
 			if (ret > 0) {
 				rx = buff;
 				addr = getAddress(remote.addr);
@@ -426,7 +426,7 @@ bool UnixSocket::setAddress(sockaddr_in &socket, const char *addr)
 		else {
 			//Assume a hostname
 			struct hostent *hp = gethostbyname(addr);
-			if (hp != NULL &&  hp->h_addrtype == AF_INET) {
+			if (hp != nullptr &&  hp->h_addrtype == AF_INET) {
 				success = true;
 				socket.sin_addr = *(struct in_addr *)hp->h_addr_list[0];
 			}
@@ -464,7 +464,7 @@ bool UnixSocket::waitForWrite(int fd, int timeout, bool& expired)
 {
 	bool ready = false;
 	expired = false;
-	struct timeval *ptout = NULL;
+	struct timeval *ptout = nullptr;
 	struct timeval tout;
 	if (timeout >= 0){
 		tout.tv_sec = timeout / 1000;
@@ -476,7 +476,7 @@ bool UnixSocket::waitForWrite(int fd, int timeout, bool& expired)
 	FD_ZERO(&wfds);
 	FD_SET(fd, &wfds);
 
-	int ret = select(fd + 1, NULL, &wfds, NULL, ptout);
+	int ret = select(fd + 1, nullptr, &wfds, nullptr, ptout);
 
 	ready = (ret > 0);
 	expired = (ret == 0);
@@ -488,7 +488,7 @@ bool UnixSocket::waitForRead(int fd, int timeout, bool& expired)
 {
 	bool ready = false;
 	expired = false;
-	struct timeval *ptout = NULL;
+	struct timeval *ptout = nullptr;
 	struct timeval tout;
 	if (timeout >= 0){
 		tout.tv_sec = timeout / 1000;
@@ -502,7 +502,7 @@ bool UnixSocket::waitForRead(int fd, int timeout, bool& expired)
 	FD_SET(fd, &rfds);
 	FD_SET(fd, &excfds);
 
-	int ret = select(fd + 1, &rfds, NULL, &excfds, ptout);
+	int ret = select(fd + 1, &rfds, nullptr, &excfds, ptout);
 
 	if (FD_ISSET(fd, &rfds)){
 		ready = (ret > 0);
