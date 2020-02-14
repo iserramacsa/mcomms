@@ -99,13 +99,21 @@ ISocket *UnixSocket::accept()
 bool UnixSocket::connect(const std::string &addr, uint16_t port)
 {
 	bool success = false;
-	if (_sock.fd != -1 && status() < LISTENING){
+	if (_sock.fd != -1) {
 		sConnection remote;
-		clearSocket(remote.addr);
-		initSocket(remote.addr, addr.c_str(), port);
-		success = connect(_sock.fd, remote.addr);
-		if (success) {
-			setStatus(CONNECTED);
+		if (status() < LISTENING) {
+			clearSocket(remote.addr);
+			initSocket(remote.addr, addr.c_str(), port);
+			success = connect(_sock.fd, remote.addr);
+			if (success) {
+				setStatus(CONNECTED);
+			}
+		}
+		else if (status() == READY){
+			success = connect(_sock.fd, remote.addr);
+			if (success) {
+				setStatus(CONNECTED);
+			}
 		}
 	}
 	return success;
@@ -114,13 +122,21 @@ bool UnixSocket::connect(const std::string &addr, uint16_t port)
 bool UnixSocket::connect(const std::string &addr, const std::string &port)
 {
 	bool success = false;
-	if (_sock.fd != -1 && status() < LISTENING){
+	if (_sock.fd != -1) {
 		sConnection remote;
-		clearSocket(remote.addr);
-		initSocket(remote.addr, addr.c_str(), port.c_str());
-		success = connect(_sock.fd, remote.addr);
-		if (success) {
-			setStatus(CONNECTED);
+		if (status() < LISTENING) {
+			clearSocket(remote.addr);
+			initSocket(remote.addr, addr.c_str(), port.c_str());
+			success = connect(_sock.fd, remote.addr);
+			if (success) {
+				setStatus(CONNECTED);
+			}
+		}
+		else if (status() == READY){
+			success = connect(_sock.fd, remote.addr);
+			if (success) {
+				setStatus(CONNECTED);
+			}
 		}
 	}
 	return success;
