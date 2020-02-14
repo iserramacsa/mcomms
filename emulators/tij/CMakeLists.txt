@@ -7,6 +7,8 @@ cmake_minimum_required(VERSION 3.5.0)
 set(PROJECT_NAME TIJEmulator)
 project(${PROJECT_NAME})
 
+option(ADD_MCOMMS_LIBS "Add MComms cmake projects" ON)
+
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 include(${PROJECT_SOURCE_DIR}/../toolchain/cmake/macsa.cmake)
@@ -37,9 +39,11 @@ set(SOURCES)
 set(HEADERS)
 set(INCLUDES)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/src)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/include)
-add_subdirectory(${PROJECT_SOURCE_DIR}/../core ${CMAKE_BINARY_DIR}/mcomms)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/emulators/tij/src)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/emulators/tij/include)
+if (ADD_MCOMMS_LIBS)
+    add_subdirectory(${PROJECT_SOURCE_DIR}/../core ${CMAKE_BINARY_DIR}/mcomms)
+endif()
 
 SET (INCLUDES
 	${CMAKE_CURRENT_SOURCE_DIR}/src

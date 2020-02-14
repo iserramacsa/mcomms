@@ -37,8 +37,9 @@ set(RESOURCES)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/ui/src)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/ui/include)
-add_subdirectory(${PROJECT_SOURCE_DIR}/../core ${CMAKE_BINARY_DIR}/core)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/resources ${CMAKE_BINARY_DIR}/ui/resources)
+add_subdirectory(${PROJECT_SOURCE_DIR}/../core ${CMAKE_BINARY_DIR}/core)
+add_subdirectory(${PROJECT_SOURCE_DIR}/../emulators/tij ${CMAKE_BINARY_DIR}/emulators/tij)
 
 set(SOURCES ${SOURCES})
 set(HEADERS ${HEADERS})

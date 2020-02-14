@@ -65,6 +65,7 @@ void ClientHandler::serverSocketLoop()
 			}
 
 			if(error >= 10){
+				std::cout << "Client " << _socket->address() << " disconnected" << std::endl;
 				_running.store(false);
 			}
 		}

@@ -16,7 +16,13 @@ TIJEmulator::~TIJEmulator()
 void TIJEmulator::init()
 {
 	Board board(0, dynamic_cast<TIJPrinter*>(this));
-
-	board.setType("emulator");
+	initBoard(board);
 	_boards.insert(_boards.begin(), board);
+}
+
+void TIJEmulator::initBoard(Board &board)
+{
+	board.setType("emulator");
+	board.setAutoStart(false);
+	board.setBcdMode(Printers::BCDMode_n::USER_MODE);
 }

@@ -15,6 +15,7 @@ namespace Macsa
 
 			private:
 				void init();
+				void initBoard(Printers::Board& board);
 		};
 	}
 }
