@@ -23,7 +23,7 @@ class ClientManager : public Network::MNetwork
 		void stop();
 
 	private:
-		Network::ISocket *_server;
+//		Network::ISocket *_server;
 		std::thread _svrLoop;
 		std::atomic_bool _running;
 		std::mutex _mtx;

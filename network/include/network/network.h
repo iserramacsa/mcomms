@@ -36,7 +36,7 @@ namespace Macsa {
 
 			protected:
 				std::vector<NetworkNode*> _nodes;
-				NetworkNode* _rootNode;
+//				NetworkNode* _rootNode;
 		};
 	}
 }

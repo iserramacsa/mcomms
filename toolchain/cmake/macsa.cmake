@@ -1,14 +1,19 @@
 ## Project configuration
-cmake_minimum_required(VERSION 3.5.0)
 
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-unused-parameter -g2 -pedantic")
 set (CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-unused-parameter -g2 -pedantic")
 
+option(BUILD_STATIC_LIBS "Build the static library" ON)
+option(BUILD_SHARED_LIBS "Build the shared library" ON)
+
+add_definitions(-DHOME=$ENV{HOME})
+
 if (WIN32)
 	message("Windows version")
 	set(LIB_PREFIX		$ENV{HOME}/TIJLibraries/x64)
 elseif(UNIX)
+	message("Linux version: " CMAKE_CXX_COMPILER)
 	add_compile_options(-fPIC)
 	if (CMAKE_CXX_COMPILER MATCHES "gnueabihf")
 		message("Linux arm-gnueabihf")
@@ -36,5 +41,3 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	add_definitions(-DDEBUG)
 endif()
 
-
-add_definitions(-DHOME=$ENV{HOME})

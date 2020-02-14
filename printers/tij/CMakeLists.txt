@@ -9,14 +9,18 @@ set(TIJ_LIBRARY_NAME TijLibrary)
 project(${TIJ_LIBRARY_NAME})
 set (PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
-## Include macsa common code
-include(${CMAKE_CURRENT_SOURCE_DIR}/../../toolchain/cmake/macsa.cmake)
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/../../toolchain/cmake/macsa.cmake)	#configuration for macsa tij projects
+include(${CMAKE_CURRENT_SOURCE_DIR}/../../toolchain/cmake/test.cmake)  #configuration test enabled and GTest requiered configuration
+
 #include($ENV{HOME}/workspace/tools/cmake/macsa.cmake)
 
 if (WIN32)
-	set(EXTERNALS	${LIB_PREFIX}/lib/tinyxml2.lib)
+	set(EXTERNAL_LIBS	${EXTERNAL_LIBS}
+						${LIB_PREFIX}/lib/tinyxml2.lib)
 elseif(UNIX)
-	set(EXTERNALS	${LIB_PREFIX}/lib/libtinyxml2.a)
+	set(EXTERNAL_LIBS	${EXTERNAL_LIBS}
+						${LIB_PREFIX}/lib/libtinyxml2.a)
 endif()
 
 #####################  VERSION DEFINITION  #############################
@@ -76,6 +80,6 @@ set_target_properties(${TIJ_LIBRARY_NAME}
 set_target_properties(${TIJ_LIBRARY_NAME}-static
 		PROPERTIES SOVERSION ${SOVERSION} OUTPUT_NAME ${TIJ_LIBRARY_NAME})
 
-target_link_libraries(${TIJ_LIBRARY_NAME} ${EXTERNALS})
+target_link_libraries(${TIJ_LIBRARY_NAME} ${EXTERNAL_LIBS})
 install(TARGETS ${TIJ_LIBRARY_NAME}
 	LIBRARY DESTINATION ${LIB_PREFIX}/lib)
