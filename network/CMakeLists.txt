@@ -17,8 +17,7 @@ if(UNIX)
 	if (${BUILD_SHARED_LIBS})
 		add_compile_options(-fPIC)
 	endif()
-	set(EXTERNAL_LIBS	${EXTERNAL_LIBS}
-	    				 -pthread)
+	set(EXTERNAL_LIBS	-pthread)
 endif()
 
 set(NETWORK_LIB_VERSION_MAJOR 1)
@@ -77,6 +76,7 @@ install(TARGETS ${NETWORK_LIB_NAME}
 
 
 if (${ENABLE_TESTS})
+	message("Adding ${NETWORK_LIB_NAME} tests" )
 	set(PROJECT_TEST_NAME ${NETWORK_LIB_NAME}_Test)
 	link_directories(
 	    ${CMAKE_BINARY_DIR}/network

@@ -47,7 +47,7 @@ bool NetworkNode::connect(ISocket::SocketType_n type, uint16_t port)
 {
 	bool connected = false;
 	std::vector<ISocket*>::const_iterator it = connection(type, port);
-	if (it != _connections.end()) {
+	if (it == _connections.end()) {
 		addConnection(type, port);
 	}
 	else {
@@ -67,6 +67,7 @@ bool NetworkNode::disconnect(uint16_t port)
 	std::vector<ISocket*>::const_iterator it = connection(ISocket::TCP_SOCKET, port);
 	if (it != _connections.end()) {
 		success = (*it)->close();
+		removeConnection((*it));
 	}
 
 	return success ;

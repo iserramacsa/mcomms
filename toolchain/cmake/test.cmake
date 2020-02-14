@@ -3,17 +3,15 @@
 option(ENABLE_TESTS "Enable tests" OFF)
 
 if (WIN32)
+	message("Windows compilation")
 	##TODO
-		set(ENABLE_TESTS ON)
 elseif(UNIX)
 	if (CMAKE_CXX_COMPILER MATCHES "gnueabihf")
 		message("Linux arm-gnueabihf")
-		set(LIB_PREFIX		$ENV{HOME}/TIJLibraries/arm-linux-gnueabihf)
 	elseif(CMAKE_CXX_COMPILER MATCHES "gnueabi")
 		message("Linux arm-linux-gnueabi")
-		set(LIB_PREFIX		$ENV{HOME}/TIJLibraries/arm-fs-linux-gnueabi)
 	else()
-		set(ENABLE_TESTS ON)
+		message("Linux compilation")
 	endif()
 endif()
 
