@@ -97,10 +97,15 @@ namespace Macsa {
 				virtual void setCounters(const countersMap& counters);
 				virtual void setCounter(const std::string& name, int value);
 
-				virtual propertyMap properties() const;
-				virtual std::string property(const std::string& name) const;
-				virtual void setProperties(const propertyMap& properties);
-				virtual void setProperty(const std::string& name, const std::string& value);
+				virtual propertyMap statusProperties() const;
+				virtual std::string statusProperty(const std::string& name) const;
+				virtual void setStatusProperties(const propertyMap& properties);
+				virtual void setStatusProperty(const std::string& name, const std::string& value);
+
+				virtual propertyMap configurationProperties() const;
+				virtual std::string configurationProperty(const std::string& name) const;
+				virtual void setConfigurationProperties(const propertyMap& properties);
+				virtual void setConfigurationProperty(const std::string& name, const std::string& value);
 
 				virtual Cartridge cartridge() const;
 				virtual void setCartridge(const Cartridge &cartridge);
@@ -150,7 +155,8 @@ namespace Macsa {
 				Photocell		_photocell;
 				Cartridge		_cartridge;
 				countersMap		_counters;
-				propertyMap		_properties;
+				propertyMap		_configProperties;
+				propertyMap		_statusProperties;
 
 				std::vector<Input>	_inputs;
 				std::vector<Output>	_outputs;
@@ -162,9 +168,7 @@ namespace Macsa {
 #endif
 				bool equal(const Board& other) const;
 				void copy(const Board& other);
-				bool checkProperties(const Board::propertyMap& other) const;
-				template<class T>
-				bool isSameVector(const std::vector<T> a, const std::vector<T> b) const;
+				void setProperty(std::map<std::string, std::string>&map, const std::string& key, const std::string& value) const;
 		};
 	}
 }

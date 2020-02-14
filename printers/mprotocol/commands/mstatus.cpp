@@ -79,7 +79,7 @@ void MStatusCommand::propertiesToXml(const Macsa::Printers::Board &board, XMLEle
 {
 	XMLElement* xProperties = createChildNode(MPRINTER_BOARD_PROPERTIES_LIST, parent);
 	if (xProperties == nullptr) {
-		const Printers::Board::propertyMap& properties =  board.properties();
+		const Printers::Board::propertyMap& properties =  board.statusProperties();
 		for (Printers::Board::propertyMap::const_iterator property = properties.begin(); property != properties.end(); property++) {
 			XMLElement* xProperty = createChildNode(MPRINTER_BOARD_PROPERTY, &xProperties);
 			xProperty->SetAttribute(ATTRIBUTE_KEY, (*property).first.c_str());
@@ -138,7 +138,7 @@ void MStatusCommand::inputsFromXml(const XMLElement *parent, Macsa::Printers::Bo
 
 			inputs.push_back(input);
 
-			xInput = xInput->NextSiblingElement();
+			xInput = xInput->NextSiblingElement(MPRINTER_BOARD_INPUT);
 		}
 		board.setInputs(inputs);
 	}
@@ -157,7 +157,7 @@ void MStatusCommand::outputsFromXml(const XMLElement *parent, Macsa::Printers::B
 
 			outputs.push_back(output);
 
-			xOutput = xOutput->NextSiblingElement();
+			xOutput = xOutput->NextSiblingElement(MPRINTER_BOARD_OUTPUT);
 		}
 		board.setOutputs(outputs);
 	}
@@ -176,7 +176,7 @@ void MStatusCommand::propertiesFromXml(const XMLElement *parent, Macsa::Printers
 			}
 			xProperty = xProperty->NextSiblingElement(MPRINTER_BOARD_PROPERTY);
 		}
-		board.setProperties(properties);
+		board.setStatusProperties(properties);
 	}
 }
 

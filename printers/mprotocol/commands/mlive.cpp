@@ -55,11 +55,11 @@ void MLive::buildResponse()
 
 				// <PRINT_SPEED value="[Actual print speed]"/>
 				XMLElement* eSpeed = createChildNode(MPRINTER_BOARD_PRINT_SPEED, &eBoard);
-				eSpeed->SetAttribute(ATTRIBUTE_VALUE, board.property(key_prop_status_general_print_speed).c_str());
+				eSpeed->SetAttribute(ATTRIBUTE_VALUE, board.configurationProperty(key_prop_status_general_print_speed).c_str());
 
 				// <NUM_PRINTS_REMAIN Value="[Num prints remaining]"/>
 				XMLElement* ePrintsRemain = createChildNode(MPRINTER_BOARD_PRINTS_REMAIN, &eBoard);
-				ePrintsRemain->SetAttribute(ATTRIBUTE_VALUE, board.property(key_prop_status_general_print_remain).c_str());
+				ePrintsRemain->SetAttribute(ATTRIBUTE_VALUE, board.configurationProperty(key_prop_status_general_print_remain).c_str());
 			}
 		}
 	}
@@ -122,12 +122,12 @@ bool MLive::parseResponse(const XMLElement *xml)
 
 							const XMLElement* eSpeed = eBoard->FirstChildElement(MPRINTER_BOARD_PRINT_SPEED);
 							if (eSpeed != nullptr){
-								pBoard->setProperty(key_prop_status_general_print_speed, getTextAttribute(eSpeed, ATTRIBUTE_VALUE));
+								pBoard->setConfigurationProperty(key_prop_status_general_print_speed, getTextAttribute(eSpeed, ATTRIBUTE_VALUE));
 							}
 
 							const XMLElement* ePrintsRemain = eBoard->FirstChildElement(MPRINTER_BOARD_PRINTS_REMAIN);
 							if  (ePrintsRemain){
-								pBoard->setProperty(key_prop_status_general_print_remain, getTextAttribute(ePrintsRemain, ATTRIBUTE_VALUE));
+								pBoard->setConfigurationProperty(key_prop_status_general_print_remain, getTextAttribute(ePrintsRemain, ATTRIBUTE_VALUE));
 							}
 
 						}

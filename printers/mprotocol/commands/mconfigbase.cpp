@@ -53,8 +53,9 @@ void MConfigCommand::printerConnectionsToXml(const Printers::TIJComms *comms, XM
 					createTextChildNode(MCONFIG_CONN_NETWORK_SUBNET, eth->netmask().c_str(), &xNetwork);
 					createTextChildNode(MCONFIG_CONN_NETWORK_GATEWAY, eth->gateway().c_str(), &xNetwork);
 					createTextChildNode(MCONFIG_CONN_NETWORK_DHCP, MTools::toString(eth->dhcp()), &xNetwork);
-					createTextChildNode(MCONFIG_CONN_NETWORK_HOSTNAME, eth->macAddress().c_str(), &xNetwork);
+					createTextChildNode(MCONFIG_CONN_NETWORK_HOSTNAME, eth->hostname().c_str(), &xNetwork);
 					createTextChildNode(MCONFIG_CONN_NETWORK_TCPPORT, MTools::toString(eth->tcpPort()), &xNetwork);
+					createTextChildNode(MCONFIG_CONN_NETWORK_HW_ADDRESS, eth->macAddress().c_str(), &xNetwork);
 				}
 			}
 		}
@@ -85,7 +86,7 @@ void MConfigCommand::boardToXml(const Printers::Board& board, tinyxml2::XMLEleme
 		shotModeToXml(board.shotMode(), &xBoard);
 		encoderToXml(board.encoder(), &xBoard);
 		photocellToXml(board.photocell(), &xBoard);
-		propertiesToXml(board.properties(), &xBoard);
+		propertiesToXml(board.configurationProperties(), &xBoard);
 		cartridgeToXml(board.cartridge(), &xBoard);
 		inputsToXml(board.inputs(), &xBoard);
 		outputsToXml(board.outputs(), &xBoard);
@@ -312,7 +313,7 @@ void MConfigCommand::generalConfigFromXml(const tinyxml2::XMLElement *parent, Pr
 void MConfigCommand::printerConnectionsFromXml(const XMLElement *parent, Printers::TIJComms &comms) const
 {
 	if (parent != nullptr) {
-		const XMLElement* xConnections = parent->FirstChildElement(MCONFIG_GENERAL);
+		const XMLElement* xConnections = parent->FirstChildElement(MCONFIG_CONNECTIONS);
 		if (xConnections != nullptr) {
 			const XMLElement* xNetwork = xConnections->FirstChildElement(MCONFIG_CONN_NETWORK);
 			if (xNetwork != nullptr) {
@@ -328,7 +329,8 @@ void MConfigCommand::printerConnectionsFromXml(const XMLElement *parent, Printer
 					eth.setNetmask(getTextFromChildNode(xAdapter, MCONFIG_CONN_NETWORK_SUBNET,  eth.netmask()));
 					eth.setGateway(getTextFromChildNode(xAdapter, MCONFIG_CONN_NETWORK_GATEWAY,  eth.gateway()));
 					eth.setDhcp(getBoolFromChildNode(xAdapter, MCONFIG_CONN_NETWORK_DHCP, eth.dhcp()));
-					eth.setMacAddress(getTextFromChildNode(xAdapter, MCONFIG_CONN_NETWORK_HOSTNAME, eth.macAddress()));
+					eth.setHostname(getTextFromChildNode(xAdapter, MCONFIG_CONN_NETWORK_HOSTNAME, eth.hostname()));
+					eth.setMacAddress(getTextFromChildNode(xAdapter, MCONFIG_CONN_NETWORK_HW_ADDRESS, eth.macAddress()));
 					eth.setTcpPort(static_cast<uint16_t>(getUnsignedFromChildNode(xAdapter, MCONFIG_CONN_NETWORK_TCPPORT, eth.tcpPort())));
 
 					comms.setEthernetIface(&eth);
@@ -356,6 +358,7 @@ void MConfigCommand::boardFromXml(const XMLElement *xBoard, Printers::Board &boa
 		if (id == board.id()) {
 			board.setType(getTextFromChildNode(xBoard, MPRINTER_BOARD_TYPE, board.type()));
 			board.setAutoStart(getBoolFromChildNode(xBoard, MPRINTER_BOARD_AUTOSTART, board.autoStart()));
+			board.setLowLevelOutput(getBoolFromChildNode(xBoard, MPRINTER_BOARD_LOW_LEVEL, board.lowLevelOutput()));
 			board.setEnabled(getBoolFromChildNode(xBoard, MPRINTER_BOARD_ENABLED, board.enabled()));
 			board.setBlocked(getBoolFromChildNode(xBoard, MPRINTER_BOARD_BLOCKED, board.blocked()));
 			board.setUserMessage(getTextFromChildNode(xBoard, MPRINTER_BOARD_CURRENT_MSG, board.userMessage()));
@@ -464,7 +467,7 @@ void MConfigCommand::propertiesFromXml(const XMLElement *xBoard, Macsa::Printers
 				}
 				xProperty = xProperties->NextSiblingElement(MPRINTER_BOARD_PROPERTY);
 			}
-			board.setProperties(properties);
+			board.setConfigurationProperties(properties);
 		}
 	}
 }
@@ -536,7 +539,7 @@ void MConfigCommand::outputsFromXml(const XMLElement *xBoard, Macsa::Printers::B
 
 				outputs.push_back(output);
 
-				xOutput = xOutputs->NextSiblingElement(MPRINTER_BOARD_INPUT);
+				xOutput = xOutputs->NextSiblingElement(MPRINTER_BOARD_OUTPUT);
 			}
 			std::sort(outputs.begin(), outputs.end());
 			board.setOutputs(outputs);

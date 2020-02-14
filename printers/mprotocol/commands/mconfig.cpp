@@ -264,8 +264,8 @@ void MUpdateConfig::updateBoards(XMLElement **parent)
 					if (oBoard.photocell() != nBoard.photocell()) {
 						photocellToXml(nBoard.photocell(), &xBoard);
 					}
-					if (oBoard.properties() != nBoard.properties()) {
-						propertiesToXml(nBoard.properties(), &xBoard);
+					if (oBoard.configurationProperties() != nBoard.configurationProperties()) {
+						propertiesToXml(nBoard.configurationProperties(), &xBoard);
 					}
 					if (oBoard.cartridge() != nBoard.cartridge()) {
 						cartridgeToXml(nBoard.cartridge(), &xBoard);
