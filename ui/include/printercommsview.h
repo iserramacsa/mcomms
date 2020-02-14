@@ -46,9 +46,10 @@ class PrinterCommsView : public QWidget
 		bleWidget			_ble;
 		QPushButton* _butChangeConfig;
 
-
 		void build();
 		void clear();
+		void refreshNetIface(int idx);
+		void refreshBle();
 
 		QLabel* getTitle(const QString& text);
 		QWidget* buildNetworkAdapter();

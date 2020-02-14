@@ -33,7 +33,10 @@ void PrinterCommsView::setController(Macsa::TIJPrinterController &controller)
 void PrinterCommsView::refresh()
 {
 	if ((_controller != nullptr) && (_controller->printerStatus() != TIJViewerController::TIJStatus::DISCONNECTED)) {
-//		_controller->getNetwokIfaces();
+		for (int i = 0; i < _ifaces.count(); ++i) {
+			refreshNetIface(i);
+		}
+		refreshBle();
 	}
 	else {
 		clear();
@@ -73,6 +76,30 @@ void PrinterCommsView::clear()
 		iface.gateway->setText("");
 		iface.macAddress->setText("");
 	}
+}
+
+void PrinterCommsView::refreshNetIface(int idx)
+{
+	if (_ifaces.count() > idx){
+		TIJViewerController::NetworkIface eth = _controller->networkIface(idx);
+		netWidget& iface = _ifaces[idx];
+		iface.dhcp->setChecked(eth.dhcp);
+		iface.port->setText(QString("%1").arg(eth.port));
+		iface.iface->setText(eth.iface);
+		iface.address->setText(eth.address);
+		iface.netmask->setText(eth.netmask);
+		iface.gateway->setText(eth.gateway);
+		iface.macAddress->setText(eth.hwAddress);
+	}
+}
+
+void PrinterCommsView::refreshBle()
+{
+	TIJViewerController::BluetoothDevice ble = _controller->bluetooth();
+	_ble.name->setText(ble.name);
+	_ble.password->setText(ble.pass);
+	_ble.visible->setChecked(ble.visible);
+
 }
 
 QLabel *PrinterCommsView::getTitle(const QString &text)
@@ -118,7 +145,7 @@ QWidget *PrinterCommsView::buildBluetoothDevice()
 	_ble.name = new QLabel(rootBle);
 	_ble.password = new QLabel(rootBle);
 	_ble.visible = new QCheckBox(rootBle);
-	_ble.visible->setVisible(false);
+	_ble.visible->setEnabled(false);
 
 	layout->addRow("Device name:", _ble.name);
 	layout->addRow("Password:", _ble.password);

@@ -52,6 +52,22 @@ class TIJViewerController : public PrinterViewerController
 				QString code;
 		};
 
+		struct NetworkIface {
+				QString iface;
+				QString address;
+				QString netmask;
+				QString gateway;
+				QString hwAddress;
+				bool dhcp;
+				uint16_t port;
+		};
+
+		struct BluetoothDevice {
+				QString name;
+				QString pass;
+				bool visible;
+		};
+
 	public:
 		TIJViewerController(Macsa::TIJPrinterController& controller);
 		virtual ~TIJViewerController(){}
@@ -77,10 +93,12 @@ class TIJViewerController : public PrinterViewerController
 
 		//Status related getters and setters
 		QString printerDateTime(const QString &format = "");
-
-
-
 		QVector<PrinterError> errorsLog() const;
+
+		//Config related getters or setters
+		NetworkIface networkIface(int index) const;
+		BluetoothDevice bluetooth() const;
+
 
 
 		TIJStatus printerStatus() const;
@@ -156,10 +174,12 @@ class TIJViewerController : public PrinterViewerController
 		//void setCounters(const countersMap& counters);
 		//void setCounter(const std::string& name, int value);
 
-		QMap<QString, QString> properties() const;
-		QString property(const QString& name) const;
-		//void setProperties(const propertyMap& properties);
-		//void setProperty(const std::string& name, const std::string& value);
+		QMap<QString, QString> statusProperties() const;
+		QString statusProperty(const QString& name) const;
+		QMap<QString, QString> configProperties() const;
+		QString configProperty(const QString& name) const;
+		//void setConfigProperties(const propertyMap& properties);
+		//void setConfigProperty(const std::string& name, const std::string& value);
 
 		bool cartridgeAutoSetup() const;
 		double cartridgeFiringVoltage() const;
@@ -190,6 +210,8 @@ class TIJViewerController : public PrinterViewerController
 		const Macsa::Printers::Board* tijPrinterBoard() const;
 		PrinterInput printerInputToView(Macsa::Printers::Input in) const;
 		PrinterOutput printerOutputToView(Macsa::Printers::Output out) const;
+
+		inline QString _(const std::string& text) const {return text.c_str();}
 };
 
 #endif //TIJ_VIEWER_CONTROLLER_H

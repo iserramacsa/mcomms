@@ -42,7 +42,7 @@ void PrinterStatusView::refresh()
 		}
 		updateInputs(_controller->inputs());
 		updateOutputs(_controller->outputs());
-		updateProperties(_controller->properties());
+		updateProperties(_controller->statusProperties());
 	}
 	else {
 		printerDisconnected();

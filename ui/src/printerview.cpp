@@ -58,7 +58,7 @@ void PrinterView::refresh()
 
 		setPrinterStatus(_controller->printerStatus());
 
-		QString dt = _controller->data(static_cast<int>(TIJViewerController::TIJDataDescriptors::PRINTER_DT)).toString();
+		QString dt = _controller->printerDateTime("");
 		ui.lblDatetime->setText(dt);
 
 		ui.lblCtrlVersion->setText(_controller->boardControllerVersion());

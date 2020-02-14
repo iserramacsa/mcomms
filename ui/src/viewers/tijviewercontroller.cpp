@@ -31,9 +31,9 @@ QVariant TIJViewerController::data(int descriptor)
 		case TIJDataDescriptors::IMAGES_FILES:
 			return requestImagesFiles();
 		case TIJDataDescriptors::PRINTER_ID:
-			return _controller.id().c_str();
+			return _(_controller.id());
 		case TIJDataDescriptors::PRINTER_ADDRS:
-			return _controller.address().c_str();
+			return _(_controller.address());
 		case TIJDataDescriptors::PRINTER_STATUS:
 			return static_cast<int>(_controller.printerStatus());
 		case TIJDataDescriptors::PRINTER_DT:
@@ -131,7 +131,12 @@ QString TIJViewerController::printerDateTime(const QString& format)
 	if (tij){
 		time_t time = tij->dateTime();
 		QDateTime dt = QDateTime::fromTime_t(static_cast<uint32_t>(time));
-		return dt.toString(format);
+		if (format.length()){
+			return dt.toString(format);
+		}
+		else{
+			return dt.toString(Qt::SystemLocaleShortDate);
+		}
 	}
 	return "";
 }
@@ -146,13 +151,54 @@ QVector<TIJViewerController::PrinterError> TIJViewerController::errorsLog() cons
 			PrinterError err;
 			err.boardId = (*it).boardId();
 			err.timestamp = QDateTime::fromTime_t(static_cast<uint>((*it).timestamp()));
-			err.code = (*it).code().toString().c_str();
-			err.type = (*it).type().toString().c_str();
+			err.code = _((*it).code().toString());
+			err.type = _((*it).type().toString());
 			err.priority = (*it).priority();
 			values.push_back(err);
 		}
 	}
 	return values;
+}
+
+TIJViewerController::NetworkIface TIJViewerController::networkIface(int index) const
+{
+	NetworkIface iface;
+	const TIJPrinter* tij = tijPrinter();
+	if (tij) {
+		const TIJComms * comms = dynamic_cast<const TIJComms*>(tij->comms());
+		if (comms) {
+			const Ethernet * eth = comms->ethernetIface(index);
+			if (eth) {
+				iface.dhcp = eth->dhcp();
+				iface.address = _(eth->address());
+				iface.netmask = _(eth->netmask());
+				iface.gateway = _(eth->gateway());
+				iface.hwAddress = _(eth->macAddress());
+				iface.iface = _(eth->hostname());
+				iface.port = eth->tcpPort();
+			}
+		}
+	}
+	return iface;
+}
+
+TIJViewerController::BluetoothDevice TIJViewerController::bluetooth() const
+{
+	BluetoothDevice bDev;
+	const TIJPrinter* tij = tijPrinter();
+	if (tij) {
+		const TIJComms * comms = dynamic_cast<const TIJComms*>(tij->comms());
+		if (comms) {
+			const BlueTooth * ble = comms->bluetooth();
+			if (ble) {
+				bDev.name = _(ble->name());
+				bDev.pass = _(ble->pass());
+				bDev.visible = ble->visible();
+			}
+		}
+	}
+	return bDev;
+
 }
 
 TIJViewerController::TIJStatus TIJViewerController::printerStatus() const
@@ -168,7 +214,7 @@ QString TIJViewerController::boardType() const
 		value = board->type();
 	}
 
-	return value.c_str();
+	return _(value);
 }
 
 QString TIJViewerController::boardControllerVersion() const
@@ -178,7 +224,7 @@ QString TIJViewerController::boardControllerVersion() const
 	if (tij) {
 		value = tij->controllerVersion();
 	}
-	return value.c_str();
+	return _(value);
 }
 
 QString TIJViewerController::boardFPGAVersion() const
@@ -188,7 +234,7 @@ QString TIJViewerController::boardFPGAVersion() const
 	if (tij) {
 		value = tij->fpgaVersion();
 	}
-	return value.c_str();
+	return _(value);
 }
 
 QString TIJViewerController::boardAPIVersion() const
@@ -198,7 +244,7 @@ QString TIJViewerController::boardAPIVersion() const
 	if (tij) {
 		value = tij->apiVersion();
 	}
-	return value.c_str();
+	return _(value);
 }
 
 bool TIJViewerController::autoStart() const
@@ -278,7 +324,7 @@ QString TIJViewerController::currentMessage() const
 	if (board) {
 		value = board->currentMessage();
 	}
-	return value.c_str();
+	return _(value);
 }
 
 QString TIJViewerController::userMessage() const
@@ -288,7 +334,7 @@ QString TIJViewerController::userMessage() const
 	if (board) {
 		value = board->userMessage();
 	}
-	return value.c_str();
+	return _(value);
 }
 
 QMap<int, QString> TIJViewerController::bcdTable() const
@@ -298,7 +344,7 @@ QMap<int, QString> TIJViewerController::bcdTable() const
 	if (board) {
 		BCDTable table = board->bcdTable();
 		for (unsigned int code = 0; code < table.size(); code++) {
-			bcdTable.insert(static_cast<int>(code), table.at(code).c_str());
+			bcdTable.insert(static_cast<int>(code), _(table.at(code)));
 		}
 	}
 	return bcdTable;
@@ -311,7 +357,7 @@ QString TIJViewerController::bcdMode() const
 	if (board) {
 		value = board->bcdMode().toString();
 	}
-	return value.c_str();
+	return _(value);
 }
 
 uint8_t TIJViewerController::currentBcdCode() const
@@ -331,7 +377,7 @@ QString TIJViewerController::printDirection() const
 	if (board) {
 		value = board->printDirection().toString();
 	}
-	return value.c_str();
+	return _(value);
 }
 
 bool TIJViewerController::printRotated() const
@@ -356,7 +402,7 @@ QString TIJViewerController::nozzlesCol() const
 	if (board) {
 		value = board->nozzlesCol().toString();
 	}
-	return value.c_str();
+	return _(value);
 }
 
 QString TIJViewerController::shotMode() const
@@ -366,7 +412,7 @@ QString TIJViewerController::shotMode() const
 	if (board) {
 		value = board->shotMode().mode().toString();
 	}
-	return value.c_str();
+	return _(value);
 }
 
 uint16_t TIJViewerController::shotModeNumPrints() const
@@ -409,7 +455,7 @@ QString TIJViewerController::encoderMode() const
 	if (board) {
 		value = board->encoder().mode().toString();
 	}
-	return value.c_str();
+	return _(value);
 
 }
 
@@ -451,7 +497,7 @@ QString TIJViewerController::photocell() const
 	if (board) {
 		value = board->photocell().toString();
 	}
-	return value.c_str();
+	return _(value);
 }
 
 QMap<QString, int> TIJViewerController::counters() const
@@ -461,7 +507,7 @@ QMap<QString, int> TIJViewerController::counters() const
 	if (board) {
 		Board::countersMap counters = board->counters();
 		for (Board::countersMap::const_iterator c = counters.begin(); c != counters.end(); c++) {
-			values.insert(c->first.c_str(), c->second);
+			values.insert(_(c->first), c->second);
 		}
 	}
 	return values;
@@ -478,27 +524,51 @@ int TIJViewerController::counter(const QString &name) const
 
 }
 
-QMap<QString, QString> TIJViewerController::properties() const
+QMap<QString, QString> TIJViewerController::statusProperties() const
 {
 	QMap<QString, QString> values;
 	const Board* board = tijPrinterBoard();
 	if (board) {
-		Board::propertyMap propertirs = board->properties();
-		for (Board::propertyMap::const_iterator p = propertirs.begin(); p != propertirs.end(); p++) {
-			values.insert(p->first.c_str(), p->second.c_str());
+		Board::propertyMap properties = board->statusProperties();
+		for (Board::propertyMap::const_iterator p = properties.begin(); p != properties.end(); p++) {
+			values.insert(_(p->first), _(p->second));
 		}
 	}
 	return values;
 }
 
-QString TIJViewerController::property(const QString &name) const
+QString TIJViewerController::statusProperty(const QString &name) const
 {
 	std::string value = "---";
 	const Board* board = tijPrinterBoard();
 	if (board) {
-		value = board->property(name.toStdString());
+		value = board->configurationProperty(name.toStdString());
 	}
-	return value.c_str();
+	return _(value);
+}
+
+QMap<QString, QString> TIJViewerController::configProperties() const
+{
+	QMap<QString, QString> values;
+	const Board* board = tijPrinterBoard();
+	if (board) {
+		Board::propertyMap properties = board->configurationProperties();
+		for (Board::propertyMap::const_iterator p = properties.begin(); p != properties.end(); p++) {
+			values.insert(_(p->first), _(p->second));
+		}
+	}
+	return values;
+}
+
+QString TIJViewerController::configProperty(const QString &name) const
+{
+	std::string value = "---";
+	const Board* board = tijPrinterBoard();
+	if (board) {
+		value = board->statusProperty(name.toStdString());
+	}
+	return _(value);
+
 }
 
 bool TIJViewerController::cartridgeAutoSetup() const
@@ -617,8 +687,8 @@ QVector<TIJViewerController::PrinterError> TIJViewerController::errors() const
 		for (std::vector<Error>::const_iterator it = errors.begin(); it != errors.end(); it++) {
 			PrinterError err;
 			err.timestamp = QDateTime::fromTime_t(static_cast<uint>((*it).timestamp()));
-			err.code = (*it).code().toString().c_str();
-			err.type = (*it).type().toString().c_str();
+			err.code = _((*it).code().toString());
+			err.type = _((*it).type().toString());
 			err.priority = (*it).priority();
 			values.push_back(err);
 		}
@@ -633,8 +703,8 @@ TIJViewerController::PrinterError TIJViewerController::error(unsigned int idx) c
 	if (board) {
 		Error perror = board->error(idx);
 		value.timestamp = QDateTime::fromTime_t(static_cast<uint>(perror.timestamp()));
-		value.code = perror.code().toString().c_str();
-		value.type = perror.type().toString().c_str();
+		value.code = _(perror.code().toString());
+		value.type = _(perror.type().toString());
 		value.priority = perror.priority();
 	}
 	return value;
@@ -665,8 +735,8 @@ TIJViewerController::PrinterInput TIJViewerController::printerInputToView(Input 
 {
 	PrinterInput pIn;
 	pIn.id = static_cast<int>(in.id());
-	pIn.descriptor = in.descriptor().c_str();
-	pIn.mode = in.mode().toString().c_str();
+	pIn.descriptor = _(in.descriptor());
+	pIn.mode = _(in.mode().toString());
 	pIn.inverted = in.inverted();
 	pIn.filter = in.filter();
 	pIn.value = in.value();
@@ -678,9 +748,9 @@ TIJViewerController::PrinterOutput TIJViewerController::printerOutputToView(Outp
 {
 	PrinterOutput pOut;
 	pOut.id = static_cast<int>(out.id());
-	pOut.descriptor = out.descriptor().c_str();
+	pOut.descriptor = _(out.descriptor());
 	pOut.initialValue = out.initialValue();
-	pOut.type = out.type().toString().c_str();
+	pOut.type = _(out.type().toString());
 	pOut.time = out.time();
 	pOut.value = out.value();
 
