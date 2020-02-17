@@ -64,15 +64,18 @@ int main(int argc, char* argv[])
 	QApplication app(argc, argv);
 	Macsa::Printers::TIJEmulator emulator;
 	ClientManager manager(emulator);
-	EmulatorWindow win(manager);
+	EmulatorWindow win(emulator);
 
+	int result = 1;
 	if (manager.initServer(port)) {
 		win.show();
-		return app.exec();
+		manager.run();
+		result = app.exec();
+		manager.stop();
 	}
 	else {
 		cout << "Unable tot init server" << endl;
 	}
-	return 1;
+	return result;
 
 }

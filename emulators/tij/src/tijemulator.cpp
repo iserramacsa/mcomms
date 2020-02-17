@@ -5,6 +5,11 @@ using namespace Macsa::Printers;
 
 TIJEmulator::TIJEmulator()
 {
+	_controllerVersion = "Emulator v";
+	_controllerVersion += EMULATOR_VERSION_STR;
+
+	_apiVersion = "MComms v1.0.0";
+
 	init();
 }
 
@@ -24,5 +29,8 @@ void TIJEmulator::initBoard(Board &board)
 {
 	board.setType("emulator");
 	board.setAutoStart(false);
+	board.setBlocked(true);
+	board.setEnabled(false);
+	board.setPrinting(false);
 	board.setBcdMode(Printers::BCDMode_n::USER_MODE);
 }

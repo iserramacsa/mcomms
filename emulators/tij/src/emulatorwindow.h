@@ -3,25 +3,27 @@
 
 #include <QMainWindow>
 #include <QtGui>
-#include "clientmanager.h"
-//#include "ui_emulatorwindow.h"
+#include "tijemulator.h"
 
 
 class EmulatorWindow : public QMainWindow
 {
 		Q_OBJECT
 	public:
-		explicit EmulatorWindow(ClientManager& manager, QWidget* parent = nullptr);
+		explicit EmulatorWindow(Macsa::Printers::TIJEmulator & emulator, QWidget* parent = nullptr);
 		virtual ~EmulatorWindow();
 
 	protected:
 
-	private slots:
+	public slots:
+		void onUpdateData();
 
 	private:
-//		Ui::EmulatorWindow ui;
-		ClientManager& _manager;
+		Macsa::Printers::TIJEmulator & _emulator;
 
+		QCheckBox* _autostart;
+
+		void build();
 };
 
 #endif //UI_MAIN_WINDOW_H
