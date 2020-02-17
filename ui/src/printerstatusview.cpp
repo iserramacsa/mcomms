@@ -1,5 +1,10 @@
 #include "printerstatusview.h"
 #include "QFormLayout"
+#include "printer/datatypes.h"
+
+#define ERROR_ICON	":/icons/error.svg"
+#define WARN_ICON	":/icons/warning.svg"
+#define INFO_ICON	":/icons/notification.svg"
 
 PrinterStatusView::PrinterStatusView(QWidget *parent) :
 	QWidget(parent)
@@ -32,7 +37,7 @@ void PrinterStatusView::refresh()
 		_printerType->setText(_controller->boardType());
 		_printerAutostart->setChecked(_controller->autoStart());
 		_printerUserMessage->setText(_controller->userMessage());
-		_printerBcdMode->setText(_controller->bcdMode());
+		_printerBcdMode->setText(_controller->bcdMode().toString().c_str());
 		_printerBcdStatus->setText(QString("%1").arg(_controller->currentBcdCode()));
 
 		updateErrors(_controller->errors());
@@ -48,8 +53,6 @@ void PrinterStatusView::refresh()
 		printerDisconnected();
 	}
 }
-
-#include <QLine>
 
 void PrinterStatusView::build()
 {
@@ -150,6 +153,7 @@ void PrinterStatusView::printerDisconnected()
 	_printerUserMessage->setText("---");
 	_printerBcdMode->setText("---");
 	_printerBcdStatus->setText("---");
+	_errors->clear();
 	updateInputs(QVector<TIJViewerController::PrinterInput>());
 	updateOutputs(QVector<TIJViewerController::PrinterOutput>());
 	updateProperties(QMap<QString, QString>());
@@ -165,8 +169,8 @@ void PrinterStatusView::resizeEvent(QResizeEvent * event)
 		int w = 0;
 		int c = 0;
 		_errors->setColumnWidth(c++, 100); w += 100;
-		_errors->setColumnWidth(c++, 70); w += 70;
 		_errors->setColumnWidth(c++, 100); w += 100;
+		_errors->setColumnWidth(c++, 60); w += 60;
 		w = _errors->width() - (w + 18);
 		_errors->setColumnWidth(c, w);
 	}
@@ -276,7 +280,23 @@ void PrinterStatusView::updateErrors(const QVector<TIJViewerController::PrinterE
 	for (int i = 0; i < errors.size(); i++) {
 		QTableWidgetItem* itTStamp = new QTableWidgetItem(QString("%1").arg(errors.at(i).timestamp.toString(Qt::SystemLocaleShortDate)));
 		QTableWidgetItem* itType = new QTableWidgetItem(errors.at(i).type);
+		Macsa::Printers::ErrorType type;
+		type  = errors.at(i).type.toStdString();
+		switch (type()) {
+			case Macsa::Printers::ErrorType_n::ERROR:
+				itType->setIcon(QIcon(ERROR_ICON));
+				break;
+			case Macsa::Printers::ErrorType_n::WARNING:
+				itType->setIcon(QIcon(WARN_ICON));
+				break;
+			case Macsa::Printers::ErrorType_n::INFORMATION:
+				itType->setIcon(QIcon(INFO_ICON));
+				break;
+			default:
+				break;
+		}
 		QTableWidgetItem* itPriority = new QTableWidgetItem(QString("%1").arg(errors.at(i).priority));
+		itPriority->setTextAlignment(Qt::AlignCenter);
 		QTableWidgetItem* itCode = new QTableWidgetItem(errors.at(i).code);
 
 		_errors->setItem(i, 0, itTStamp);
@@ -286,31 +306,3 @@ void PrinterStatusView::updateErrors(const QVector<TIJViewerController::PrinterE
 	}
 
 }
-/*
-void PrinterStatusView::updateInputs(const QVector<TIJViewerController::PrinterInput>& inputs)
-{
-	_inputs->clear();
-	QStringList header;
-	header << "Id" << "Descriptor" << "Mode" << "Inverted" << "Filter" << "Value";
-	_inputs->setColumnCount(header.count());
-	_inputs->setRowCount(inputs.size());
-	_inputs->setHorizontalHeaderLabels(header);
-
-	for (int i = 0; i < inputs.size(); i++) {
-		QTableWidgetItem* itId = new QTableWidgetItem(QString("%1").arg(inputs.at(i).id));
-		QTableWidgetItem* itDescriptor = new QTableWidgetItem(inputs.at(i).descriptor);
-		QTableWidgetItem* itMode = new QTableWidgetItem(inputs.at(i).mode);
-		QTableWidgetItem* itInverted = new QTableWidgetItem((inputs.at(i).inverted?"true":"false"));
-		QTableWidgetItem* itFilter = new QTableWidgetItem(QString("%1").arg(inputs.at(i).filter));
-		QTableWidgetItem* itValue = new QTableWidgetItem((inputs.at(i).value?"ENABLED":"DISABLED"));
-
-		_inputs->setItem(i, 0, itId);
-		_inputs->setItem(i, 1, itDescriptor);
-		_inputs->setItem(i, 2, itMode);
-		_inputs->setItem(i, 3, itInverted);
-		_inputs->setItem(i, 4, itFilter);
-		_inputs->setItem(i, 5, itValue);
-	}
-
-}
-*/

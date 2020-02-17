@@ -40,31 +40,31 @@ class PrinterConfigView : public QWidget
 		QCheckBox* _printRotated;
 		QComboBox* _printResolution;
 		QComboBox* _nozzlesCols;
-
-
 		QComboBox* _bcdMode;
-		QTableWidget* _bcdTable;
 		QComboBox* _printDirection;
 		//Photocell
 		QComboBox* _photocell;
 		//Encoder
 		QComboBox* _encoderMode;
-		QSpinBox*  _fixedSpeed;
-		QSpinBox*  _encoderWheelDiam;
-		QSpinBox*  _encoderResolution;
+		QDoubleSpinBox*  _fixedSpeed;
+		QDoubleSpinBox*  _encoderWheelDiam;
+		QDoubleSpinBox*  _encoderResolution;
 		//ShotMode
 		QCheckBox* _multiprint;
 		QSpinBox*  _firstDelay;
 		QSpinBox*  _nextDelay;
 		QSpinBox*  _numPrints;
 		QCheckBox* _repeatPrint;
+		//BCD Table
+		QTableWidget* _bcdTable;
+
 		//Cartridge
-		QCheckBox* _autoConfig;
-		QSpinBox*  _voltage;
-		QCheckBox* _pulseWarm;
-		QSpinBox*  _pulseTemp;
-		QSpinBox*  _pulseWidth;
-		QSpinBox*  _adjCapacity;
+		QCheckBox*		_autoConfig;
+		QDoubleSpinBox* _voltage;
+		QCheckBox*		_pulseWarm;
+		QDoubleSpinBox* _pulseTemp;
+		QDoubleSpinBox* _pulseWidth;
+		QDoubleSpinBox* _adjCapacity;
 
 		QTableWidget* _inputs;
 		QTableWidget* _outputs;
@@ -74,16 +74,34 @@ class PrinterConfigView : public QWidget
 		QWidget* buildGeneralSettings();
 		QWidget* buildPrintSetup();
 		QWidget* buildTriggerSetup();
+		QWidget* buildDateCodesSetup();
 		QWidget* buildBcdTable();
+		QWidget* buildCartridgeSetup();
+		QWidget* buildIOSetup();
+
 		void updateGeneralSettings();
 		void updatePrintSetup();
 		void updateTriggerSetup();
 		void updateBcdTable();
+		void updateDateCodes();
+		void updateCartridgeSettings();
+		void updateIOSettings();
+
 		void printerDisconnected();
 
 		QStringList printResolutions() const;
+		QWidget* buildPrintDelay(QWidget* parent, QSpinBox** editor) const;
+		QWidget* buildCartridgeSpinBox(QWidget* parent, QDoubleSpinBox** editor, const QString& units, int min, int max, int decimals = 2) const;
 		QLabel* getTitle(const QString& text);
 
+		void addInputRow(QTableWidget* table, int row, const TIJViewerController::PrinterInput& input);
+		void addOutputRow(QTableWidget* table, int row, const TIJViewerController::PrinterOutput& output);
+
+		template <typename N>
+		QStringList getPrinterEnumOptions(const Macsa::Printers::SmartEnum<N>& e) const;
+
+
+		void resizeEvent(QResizeEvent*);
 
 	private slots:
 		void onStartStop();
@@ -92,6 +110,11 @@ class PrinterConfigView : public QWidget
 		void onToggleBlockCartridge();
 		void onToggleRotated();
 		void onRequestChanges();
+		void onChangeResolution(int idx);
+		void onChangeNozzlesCols(int idx);
+
+		void validateTriggerSettings();
+		void validateCartridgeSettings();
 };
 
 

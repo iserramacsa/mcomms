@@ -350,7 +350,17 @@ QMap<int, QString> TIJViewerController::bcdTable() const
 	return bcdTable;
 }
 
-QString TIJViewerController::bcdMode() const
+BCDMode TIJViewerController::bcdMode() const
+{
+	BCDMode value;
+	const Board* board = tijPrinterBoard();
+	if (board) {
+		value = board->bcdMode();
+	}
+	return value;
+}
+
+QString TIJViewerController::bcdModeStr() const
 {
 	std::string value = "---";
 	const Board* board = tijPrinterBoard();
@@ -370,7 +380,7 @@ uint8_t TIJViewerController::currentBcdCode() const
 	return value;
 }
 
-QString TIJViewerController::printDirection() const
+QString TIJViewerController::printDirectionStr() const
 {
 	std::string value = "---";
 	const Board* board = tijPrinterBoard();
@@ -378,6 +388,16 @@ QString TIJViewerController::printDirection() const
 		value = board->printDirection().toString();
 	}
 	return _(value);
+}
+
+PrinterDir TIJViewerController::printDirection() const
+{
+	PrinterDir value;
+	const Board* board = tijPrinterBoard();
+	if (board) {
+		value = board->printDirection();
+	}
+	return value;
 }
 
 bool TIJViewerController::printRotated() const
@@ -395,7 +415,7 @@ bool TIJViewerController::setPrintRotated(bool printRotated)
 	return (_controller.setPrintRotated(printRotated) == Printers::SUCCESS);
 }
 
-QString TIJViewerController::nozzlesCol() const
+QString TIJViewerController::nozzlesColStr() const
 {
 	std::string value = "---";
 	const Board* board = tijPrinterBoard();
@@ -405,7 +425,29 @@ QString TIJViewerController::nozzlesCol() const
 	return _(value);
 }
 
-QString TIJViewerController::shotMode() const
+NozzlesCol TIJViewerController::nozzlesCol() const
+{
+	NozzlesCol value;
+	value = NozzlesCol_n::COL_A;
+	const Board* board = tijPrinterBoard();
+	if (board) {
+		value = board->nozzlesCol();
+	}
+	return value;
+}
+
+ShootingMode TIJViewerController::shotMode() const
+{
+	ShootingMode value;
+	value = ShootingMode_n::SINGLE_SHOT;
+	const Board* board = tijPrinterBoard();
+	if (board) {
+		value = board->shotMode().mode();
+	}
+	return value;
+}
+
+QString TIJViewerController::shotModeStr() const
 {
 	std::string value = "---";
 	const Board* board = tijPrinterBoard();
@@ -448,7 +490,7 @@ bool TIJViewerController::shotModeRepeat() const
 	return value;
 }
 
-QString TIJViewerController::encoderMode() const
+QString TIJViewerController::encoderModeStr() const
 {
 	std::string value = "---";
 	const Board* board = tijPrinterBoard();
@@ -457,6 +499,17 @@ QString TIJViewerController::encoderMode() const
 	}
 	return _(value);
 
+}
+
+EncoderMode TIJViewerController::encoderMode() const
+{
+	EncoderMode value;
+	value = EncoderMode_n::FIXED_SPEED;
+	const Board* board = tijPrinterBoard();
+	if (board) {
+		value = board->encoder().mode();
+	}
+	return value;
 }
 
 double TIJViewerController::encoderFixedSpeed() const
@@ -490,7 +543,7 @@ double TIJViewerController::encoderDiameter() const
 	return value;
 }
 
-QString TIJViewerController::photocell() const
+QString TIJViewerController::photocellStr() const
 {
 	std::string value = "---";
 	const Board* board = tijPrinterBoard();
@@ -498,6 +551,18 @@ QString TIJViewerController::photocell() const
 		value = board->photocell().toString();
 	}
 	return _(value);
+}
+
+Photocell TIJViewerController::photocell() const
+{
+	Macsa::Printers::Photocell value;
+	value = Macsa::Printers::Photocell_n::PHCELL_A;
+	const Board* board = tijPrinterBoard();
+	if (board) {
+		value = board->photocell();
+	}
+	return value;
+
 }
 
 QMap<QString, int> TIJViewerController::counters() const
@@ -542,7 +607,7 @@ QString TIJViewerController::statusProperty(const QString &name) const
 	std::string value = "---";
 	const Board* board = tijPrinterBoard();
 	if (board) {
-		value = board->configurationProperty(name.toStdString());
+		value = board->statusProperty(name.toStdString());
 	}
 	return _(value);
 }
@@ -565,10 +630,32 @@ QString TIJViewerController::configProperty(const QString &name) const
 	std::string value = "---";
 	const Board* board = tijPrinterBoard();
 	if (board) {
-		value = board->statusProperty(name.toStdString());
+		value = board->configurationProperty(name.toStdString());
 	}
 	return _(value);
 
+}
+
+QString TIJViewerController::configProperty(const TIJConfigProperties &param) const
+{
+	std::string value = "---";
+	const Board* board = tijPrinterBoard();
+	if (board) {
+		std::string key = "";
+		switch (param) {
+			case TIJConfigProperties::HEADER_TYPE:					key = "HeaderType";					break;
+			case TIJConfigProperties::SHUTTER_ENABLED:				key = "SHUTTER.ENABLED";			break;
+			case TIJConfigProperties::SHUTTER_TIME:					key = "SHUTTER.TIME";				break;
+			case TIJConfigProperties::HRES:							key = "HRES";						break;
+			case TIJConfigProperties::PRINTMODE:					key = "PRINTMODE";					break;
+			case TIJConfigProperties::PRINTMODE_INTENSITY:			key = "PRINTMODE.INTENSITY";		break;
+			case TIJConfigProperties::PRINTMODE_RESOLUTION_MODE:	key = "PRINTMODE.RESOLUTION.MODE";	break;
+			case TIJConfigProperties::PRINTMODE_RESOLUTION_PH:		key = "PRINTMODE.RESOLUTION.PH";	break;
+		}
+
+		value = board->configurationProperty(key);
+	}
+	return _(value);
 }
 
 bool TIJViewerController::cartridgeAutoSetup() const

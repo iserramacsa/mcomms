@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>820</width>
-    <height>460</height>
+    <width>912</width>
+    <height>467</height>
    </rect>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -34,17 +34,11 @@
        </widget>
       </item>
       <item>
-       <spacer name="horizontalSpacer_2">
+       <widget class="Line" name="line_5">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Vertical</enum>
         </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
+       </widget>
       </item>
       <item>
        <widget class="QLabel" name="lblStatus">
@@ -67,17 +61,11 @@
        </widget>
       </item>
       <item>
-       <spacer name="horizontalSpacer_3">
+       <widget class="Line" name="line_6">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Vertical</enum>
         </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
+       </widget>
       </item>
       <item>
        <widget class="QLabel" name="lblDatetime">
@@ -91,6 +79,19 @@
          <string>_dt_</string>
         </property>
        </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>
@@ -357,8 +358,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>796</width>
-            <height>243</height>
+            <width>888</width>
+            <height>258</height>
            </rect>
           </property>
          </widget>
@@ -393,8 +394,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>796</width>
-            <height>243</height>
+            <width>888</width>
+            <height>258</height>
            </rect>
           </property>
          </widget>
@@ -434,8 +435,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>796</width>
-            <height>243</height>
+            <width>888</width>
+            <height>258</height>
            </rect>
           </property>
          </widget>
@@ -445,7 +446,7 @@
      </widget>
      <widget class="QWidget" name="tabLogs">
       <attribute name="title">
-       <string>Logs</string>
+       <string>Historical Logs</string>
       </attribute>
      </widget>
     </widget>

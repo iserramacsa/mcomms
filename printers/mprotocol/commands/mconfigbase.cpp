@@ -226,7 +226,7 @@ void MConfigCommand::cartridgeToXml(const Printers::Cartridge &cartridge, XMLEle
 		XMLElement* xCartridge = createChildNode(MPRINTER_BOARD_CARTRIDGE, parent);
 		if (xCartridge != nullptr) {
 			xCartridge->SetAttribute(ATTRIBUTE_ID, cartridge.id().c_str());
-			xCartridge->SetAttribute(MPRINTER_BOARD_CARTRIDGE_AUTOCONFIG_ATTR, MTools::toCString(cartridge.autoconfig()));
+			xCartridge->SetAttribute(MPRINTER_BOARD_CARTRIDGE_AUTOCONFIG_ATTR, (cartridge.autoconfig() ? "1" : "0")); //This boolean is writed as a number
 			xCartridge->SetAttribute(MPRINTER_BOARD_CARTRIDGE_VOLTAGE_ATTR, MTools::toCString(cartridge.voltage(), 2));
 			xCartridge->SetAttribute(MPRINTER_BOARD_CARTRIDGE_PULSE_WARM_ATTR, MTools::toCString(cartridge.pulseWarming()));
 			xCartridge->SetAttribute(MPRINTER_BOARD_CARTRIDGE_WARM_TEMP_ATTR, MTools::toCString(cartridge.pulseWarmingTemp(), 2));
@@ -406,11 +406,11 @@ void MConfigCommand::shotModeFromXml(const XMLElement *xBoard, Macsa::Printers::
 		const XMLElement* xShotMode = xBoard->FirstChildElement(MPRINTER_BOARD_SHOT_MODE);
 		if (xShotMode != nullptr) {
 			Printers::ShootingMode mode;
-			mode = getTextAttribute(xShotMode, MPRINTER_BOARD_SHOT_MODE_MODE_ATTR, "");
+			mode = static_cast<Printers::ShootingMode_n>(xShotMode->UnsignedAttribute(MPRINTER_BOARD_SHOT_MODE_MODE_ATTR, static_cast<uint>(mode())));
 			uint numPrints = xShotMode->UnsignedAttribute(ATTRIBUTE_VALUE, 1);
 			uint numDelays = xShotMode->UnsignedAttribute(MPRINTER_BOARD_SHOT_MODE_DELAY_ATTR, 1);
 			bool repeat = getBoolAttribute (xShotMode, MPRINTER_BOARD_SHOT_MODE_REPEAT_ATTR, false);
-			const XMLElement* xDelay = xBoard->FirstChildElement(MPRINTER_BOARD_SHOT_DELAY);
+			const XMLElement* xDelay = xShotMode->FirstChildElement(MPRINTER_BOARD_SHOT_DELAY);
 			std::vector<Printers::Delay> delays;
 			while (xDelay != nullptr) {
 				uint delay = xDelay->UnsignedAttribute(ATTRIBUTE_VALUE, 0);
@@ -422,6 +422,7 @@ void MConfigCommand::shotModeFromXml(const XMLElement *xBoard, Macsa::Printers::
 				else{
 					break;
 				}
+				xDelay = xDelay->NextSiblingElement(MPRINTER_BOARD_SHOT_DELAY);
 			}
 			board.setShotMode(Printers::ShotMode(mode, numPrints, delays, repeat));
 		}
@@ -465,7 +466,7 @@ void MConfigCommand::propertiesFromXml(const XMLElement *xBoard, Macsa::Printers
 					std::string value = getTextAttribute(xProperty, ATTRIBUTE_VALUE, "");
 					properties.insert(Printers::Board::propertyPair(key, value));
 				}
-				xProperty = xProperties->NextSiblingElement(MPRINTER_BOARD_PROPERTY);
+				xProperty = xProperty->NextSiblingElement(MPRINTER_BOARD_PROPERTY);
 			}
 			board.setConfigurationProperties(properties);
 		}
@@ -480,7 +481,8 @@ void MConfigCommand::cartridgeFromXml(const XMLElement *xBoard, Macsa::Printers:
 			Printers::Cartridge cartridge = board.cartridge();
 
 			cartridge.setId(getTextAttribute(xCartridge, ATTRIBUTE_ID, cartridge.id()));
-			cartridge.setAutoconfig(getBoolAttribute(xCartridge, MPRINTER_BOARD_CARTRIDGE_AUTOCONFIG_ATTR, cartridge.autoconfig()));
+			cartridge.setAutoconfig(xCartridge->BoolAttribute(MPRINTER_BOARD_CARTRIDGE_AUTOCONFIG_ATTR, cartridge.autoconfig()));
+//			cartridge.setAutoconfig(getBoolAttribute(xCartridge, MPRINTER_BOARD_CARTRIDGE_AUTOCONFIG_ATTR, cartridge.autoconfig()));
 			cartridge.setVoltage(xCartridge->DoubleAttribute(MPRINTER_BOARD_CARTRIDGE_VOLTAGE_ATTR, cartridge.voltage()));
 			cartridge.setPulseWarming(getBoolAttribute(xCartridge, MPRINTER_BOARD_CARTRIDGE_PULSE_WARM_ATTR, cartridge.pulseWarming()));
 			cartridge.setPulseWarmingTemp(xCartridge->DoubleAttribute(MPRINTER_BOARD_CARTRIDGE_WARM_TEMP_ATTR, cartridge.pulseWarmingTemp()));

@@ -98,6 +98,8 @@ void PrinterConnectionDialog::configure()
 
 	QPushButton * cancelButt = ui.buttonBox->button(QDialogButtonBox::Cancel);
 	connect(cancelButt, SIGNAL(clicked()), SLOT(reject()));
+
+	onChangeServerType(ui.printerCB->currentText());
 }
 
 QStringList PrinterConnectionDialog::getAvailablePrinters()

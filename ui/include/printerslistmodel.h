@@ -17,7 +17,7 @@ class PrintersListModel : public QStringListModel
 		virtual QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
 //		virtual QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const;
 
-		Macsa::PrintersManager::AddedPrinterCallback onPrinterAdded(const std::string& printer);
+//		Macsa::PrintersManager::AddedPrinterCallback onPrinterAdded(const std::string& printer);
 	private:
 		Macsa::PrintersManager& _manager;
 };

@@ -118,13 +118,14 @@ void MainWindow::refreshPrintersList()
 	_printersListModel->setStringList(QStringList());
 	QStringList list;
 	for (int p = 0; p < static_cast<int>(_manager.size()); p++) {
-		Macsa::PrinterController* controller = _manager.getPrinter(p);
+		const Macsa::PrinterController* controller = _manager.getPrinter(p);
 		if (controller != nullptr){
 			list << QString("%1: %2").arg(controller->id().c_str()).arg(controller->address().c_str());
 		}
 	}
 	_printersListModel->setStringList(list);
 	if (!list.count()) {
+		_printerView->clear();
 		_printerView->setEnabled(false);
 	}
 }

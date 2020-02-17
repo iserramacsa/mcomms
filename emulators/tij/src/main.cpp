@@ -1,8 +1,9 @@
+#include <QApplication>
 #include <iostream>
 #include <getopt.h>
-
 #include "clientmanager.h"
 #include "tijemulator.h"
+#include "emulatorwindow.h"
 
 using namespace std;
 
@@ -60,13 +61,18 @@ int main(int argc, char* argv[])
 	cout << "#################################" << endl << endl;
 	cout << "Emulator configured at port: " << port << endl;
 
+	QApplication app(argc, argv);
 	Macsa::Printers::TIJEmulator emulator;
 	ClientManager manager(emulator);
+	EmulatorWindow win(manager);
+
 	if (manager.initServer(port)) {
-		manager.run(false);
+		win.show();
+		return app.exec();
 	}
 	else {
 		cout << "Unable tot init server" << endl;
 	}
-	return 0;
+	return 1;
+
 }

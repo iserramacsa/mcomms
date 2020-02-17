@@ -17,9 +17,9 @@ bool PrintersManager::addTijPrinter(const std::string name, const std::string &a
 	TIJPrinterController* controller = new TIJPrinterController(name, address);
 
 	bool success = _tcpNetwork.addNewNode(controller);
-	if ( success) {
-		_printerAddedEvent(name);
-	}
+//	if ( success) {
+//		_printerAddedEvent(name);
+//	}
 	return success;
 }
 

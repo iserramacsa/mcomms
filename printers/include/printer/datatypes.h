@@ -21,7 +21,7 @@
 
 #define NOZZLES_COL_A		"COL_A"
 #define NOZZLES_COL_B		"COL_B"
-#define NOZZLES_COL_BOTH	"BOTH"
+#define NOZZLES_COL_BOTH	"COL_BOTH"
 
 #define ENCODER_MODE_FIXED		"FixedSpeed"
 #define ENCODER_MODE_INTERNAL	"Internal"
@@ -134,7 +134,7 @@ namespace Macsa {
 		template <typename N>
 		inline std::ostream& operator << (std::ostream& os, const SmartEnum<N>& value) {return os << value.toString();}
 		template <typename N>
-		inline std::string& operator<<(std::string&, const SmartEnum<N>& value) {return value.toString();}
+		inline std::string& operator << (std::string&, const SmartEnum<N>& value) {return value.toString();}
 		template <typename N>
 		inline const SmartEnum<N>& operator << (SmartEnum<N>& se, const std::string& str) {se = str; return se;}
 

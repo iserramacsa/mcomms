@@ -8,13 +8,13 @@
 
 namespace Macsa {
 	class PrintersManager {
-		private:
-			typedef Signal<std::string> AddedPrinterSignal;
+//		private:
+//			typedef Signal<std::string> AddedPrinterSignal;
 
-		public:
-			typedef AddedPrinterSignal::Callback   AddedPrinterCallback;
-			typedef AddedPrinterSignal::Connection AddedPrinterConnection;
-			typedef AddedPrinterSignal::ScopedConnection AddedPrinterScopedConnection;
+//		public:
+//			typedef AddedPrinterSignal::Callback   AddedPrinterCallback;
+//			typedef AddedPrinterSignal::Connection AddedPrinterConnection;
+//			typedef AddedPrinterSignal::ScopedConnection AddedPrinterScopedConnection;
 
 		public:
 			PrintersManager();
@@ -30,14 +30,14 @@ namespace Macsa {
 
 			unsigned int size() const;
 
-			AddedPrinterConnection connect(const AddedPrinterCallback& callback) {
-				return _printerAddedEvent.connect(callback);
-			}
+//			AddedPrinterConnection connect(const AddedPrinterCallback& callback) {
+//				return _printerAddedEvent.connect(callback);
+//			}
 
 
 		private:
 			Network::MNetwork _tcpNetwork;
-			AddedPrinterSignal _printerAddedEvent;
+//			AddedPrinterSignal _printerAddedEvent;
 	};
 }
 

@@ -1,5 +1,10 @@
 #include "printerview.h"
+#include "printer/datatypes.h"
 #include <QScrollArea>
+
+#define ERROR_ICON	":/icons/error.svg"
+#define WARN_ICON	":/icons/warning.svg"
+#define INFO_ICON	":/icons/notification.svg"
 
 PrinterView::PrinterView(QWidget *parent) :
 	QWidget(parent)
@@ -82,12 +87,28 @@ void PrinterView::updateLogs()
 			_printerErrorsLog->setRowCount(log.count());
 
 			for (int i = 0; i < log.count(); i++) {
-				QTableWidgetItem* itBoard = new QTableWidgetItem(static_cast<int>(log.at(i).boardId));
+				QTableWidgetItem* itBoard = new QTableWidgetItem(QString("%1").arg(log.at(i).boardId));
+				itBoard->setTextAlignment(Qt::AlignCenter);
 				QTableWidgetItem* itTStamp = new QTableWidgetItem(QString("%1").arg(log.at(i).timestamp.toString(Qt::SystemLocaleShortDate)));
 				QTableWidgetItem* itType = new QTableWidgetItem(log.at(i).type);
+				Macsa::Printers::ErrorType type;
+				type  = log.at(i).type.toStdString();
+				switch (type()) {
+					case Macsa::Printers::ErrorType_n::ERROR:
+						itType->setIcon(QIcon(ERROR_ICON));
+						break;
+					case Macsa::Printers::ErrorType_n::WARNING:
+						itType->setIcon(QIcon(WARN_ICON));
+						break;
+					case Macsa::Printers::ErrorType_n::INFORMATION:
+						itType->setIcon(QIcon(INFO_ICON));
+						break;
+					default:
+						break;
+				}
 				QTableWidgetItem* itPriority = new QTableWidgetItem(QString("%1").arg(log.at(i).priority));
+				itPriority->setTextAlignment(Qt::AlignCenter);
 				QTableWidgetItem* itCode = new QTableWidgetItem(log.at(i).code);
-
 				int col = 0;
 				_printerErrorsLog->setItem(i, col++, itTStamp);
 				_printerErrorsLog->setItem(i, col++, itBoard);

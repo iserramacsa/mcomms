@@ -50,9 +50,9 @@ QVariant PrintersListModel::data(const QModelIndex &index, int role) const
 //	return index;
 //}
 
-Macsa::PrintersManager::AddedPrinterCallback PrintersListModel::onPrinterAdded(const std::string &printer)
-{
-	qDebug() << __func__ << " printers count: " << _manager.size();
-	emit dataChanged(QModelIndex(), QModelIndex());
-	return nullptr;
-}
+//Macsa::PrintersManager::AddedPrinterCallback PrintersListModel::onPrinterAdded(const std::string &printer)
+//{
+//	qDebug() << __func__ << " printers count: " << _manager.size();
+//	emit dataChanged(QModelIndex(), QModelIndex());
+//	return nullptr;
+//}

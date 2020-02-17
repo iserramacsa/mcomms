@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.5.0)
 set(PROJECT_NAME TIJEmulator)
 project(${PROJECT_NAME})
 
-option(ADD_MCOMMS_LIBS "Add MComms cmake projects" ON)
+option(ADD_MCOMMS_LIBS "Add MComms cmake projects" OFF)
 
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..)
 

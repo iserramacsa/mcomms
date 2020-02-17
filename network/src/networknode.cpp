@@ -208,15 +208,20 @@ bool NetworkNode::equal(const NetworkNode &other)
 	bool equal = false;
 	if  (_address.compare(other.address()) == 0) {
 		if (_connections.size() == other._connections.size()) {
-			for (unsigned int i = 0; i < _connections.size(); i++) {
-				ISocket* mySocket = _connections.at(i);
-				ISocket* otherSocket = other._connections.at(i);
-				if(mySocket != nullptr && otherSocket != nullptr){
-					equal  = (*mySocket == *otherSocket);
-					if (!equal) {
-						break;
+			if (_connections.size()){
+				for (unsigned int i = 0; i < _connections.size(); i++) {
+					ISocket* mySocket = _connections.at(i);
+					ISocket* otherSocket = other._connections.at(i);
+					if(mySocket != nullptr && otherSocket != nullptr){
+						equal  = (*mySocket == *otherSocket);
+						if (!equal) {
+							break;
+						}
 					}
 				}
+			}
+			else{
+				equal = true;
 			}
 		}
 	}

@@ -121,15 +121,7 @@ bool MNetwork::removeNode(std::string nodeId)
 
 bool MNetwork::exist(NetworkNode *node)
 {
-	if (node != nullptr){
-		for (auto* n : _nodes)  {
-			if (*n == *node){
-				return true;
-			}
-		}
-	}
-
-	return false;
+	return (findByAdrress(node->address()) != nullptr);
 }
 
 NetworkNode *MNetwork::find(const std::string& name) const

@@ -26,6 +26,18 @@ class TIJViewerController : public PrinterViewerController
 			PRINTER_DT,
 		};
 
+		enum class TIJConfigProperties
+		{
+			HEADER_TYPE = 0,
+			SHUTTER_ENABLED,
+			SHUTTER_TIME,
+			HRES,
+			PRINTMODE,
+			PRINTMODE_INTENSITY,
+			PRINTMODE_RESOLUTION_MODE,
+			PRINTMODE_RESOLUTION_PH,
+		};
+
 		struct PrinterInput {
 				int id;
 				QString descriptor;
@@ -95,18 +107,16 @@ class TIJViewerController : public PrinterViewerController
 		QString printerDateTime(const QString &format = "");
 		QVector<PrinterError> errorsLog() const;
 
-		//Config related getters or setters
-		NetworkIface networkIface(int index) const;
-		BluetoothDevice bluetooth() const;
-
-
-
 		TIJStatus printerStatus() const;
 
 		QString boardType() const;
 		QString boardControllerVersion() const;
 		QString boardFPGAVersion() const;
 		QString boardAPIVersion() const;
+
+		//Config related getters or setters
+		NetworkIface networkIface(int index) const;
+		BluetoothDevice bluetooth() const;
 
 		bool autoStart() const;
 		bool setAutoStart(bool autoStart);
@@ -127,7 +137,8 @@ class TIJViewerController : public PrinterViewerController
 		//void setUserMessage(const std::string &currentMessage);
 
 		QMap<int, QString> bcdTable() const;
-		QString bcdMode() const;
+		QString bcdModeStr() const;
+		Macsa::Printers::BCDMode bcdMode() const;
 		uint8_t currentBcdCode() const;
 		// void setBcdTable(const BCDTable& bcdTable);
 		// void setBcdMode(const BCDMode &mode);
@@ -135,7 +146,8 @@ class TIJViewerController : public PrinterViewerController
 		// void setBcdMode(const std::string &mode);
 		// void setBcdCurrent(uint8_t current);
 
-		QString printDirection() const;
+		QString printDirectionStr() const;
+		Macsa::Printers::PrinterDir printDirection() const;
 		// void setPrinterDirection(const PrinterDir &printDirection);
 		// void setPrinterDirection(const PrinterDir_n &printDirection);
 		// void setPrinterDirection(const std::string &printDirection);
@@ -143,18 +155,21 @@ class TIJViewerController : public PrinterViewerController
 		bool printRotated() const;
 		bool setPrintRotated(bool printRotated);
 
-		QString nozzlesCol() const;
+		QString nozzlesColStr() const;
+		Macsa::Printers::NozzlesCol nozzlesCol() const;
 		// void setNozzlesCol(const NozzlesCol &nozzlesCol);
 		// void setNozzlesCol(const NozzlesCol_n &nozzlesCol);
 		// void setNozzlesCol(const std::string &nozzlesCol);
 
-		QString shotMode() const;
+		QString shotModeStr() const;
+		Macsa::Printers::ShootingMode shotMode() const;
 		uint16_t shotModeNumPrints() const;
 		QVector<uint> shotModeDelays() const;
 		bool shotModeRepeat() const;
 		//void setShotMode(const ShotMode& shotMode);
 
-		QString encoderMode() const;
+		QString encoderModeStr() const;
+		Macsa::Printers::EncoderMode encoderMode() const;
 		double encoderFixedSpeed() const;
 		double encoderResolution() const;
 		double encoderDiameter() const;
@@ -164,7 +179,8 @@ class TIJViewerController : public PrinterViewerController
 		//void setEncoderResolution(double value);
 		//void setEncoderDiameter(double value);
 
-		QString photocell() const;
+		QString photocellStr() const;
+		Macsa::Printers::Photocell photocell() const;
 		//void setPhotocell(const Photocell& photocell);
 		//void setPhotocell(const Photocell_n& photocell);
 		//void setPhotocell(const std::string & photocell);
@@ -178,6 +194,7 @@ class TIJViewerController : public PrinterViewerController
 		QString statusProperty(const QString& name) const;
 		QMap<QString, QString> configProperties() const;
 		QString configProperty(const QString& name) const;
+		QString configProperty(const TIJConfigProperties& param) const;
 		//void setConfigProperties(const propertyMap& properties);
 		//void setConfigProperty(const std::string& name, const std::string& value);
 
