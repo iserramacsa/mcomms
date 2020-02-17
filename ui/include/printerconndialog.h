@@ -24,6 +24,7 @@ class PrinterConnectionDialog : public QDialog
 		QString name() const;
 		uint16_t port() const;
 		ServerType serverType() const;
+		QString strType() const;
 
 
 	private slots:

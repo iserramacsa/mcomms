@@ -42,6 +42,16 @@ PrinterConnectionDialog::ServerType PrinterConnectionDialog::serverType() const
 	return _type;
 }
 
+QString PrinterConnectionDialog::strType() const
+{
+	switch (_type)
+	{
+		case ServerType::TIJ_EMULATOR: return "TIJ_EMULATOR";
+		case ServerType::TIJ_PRINTER: return "TIJ_PRINTER";
+	}
+	return "";
+}
+
 void PrinterConnectionDialog::onValidate()
 {
 	if (_type == ServerType::TIJ_PRINTER){
