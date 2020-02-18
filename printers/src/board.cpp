@@ -31,6 +31,11 @@ int Board::id() const
 	return _id;
 }
 
+void Board::setParent(TIJPrinter *parent)
+{
+	_parent = parent;
+}
+
 std::string Board::type() const
 {
 	std::lock_guard<std::mutex>lock(*_mutex);

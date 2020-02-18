@@ -36,6 +36,7 @@ namespace Macsa {
 				virtual ~Board();
 
 				int id() const;
+				void setParent(TIJPrinter* parent);
 
 				virtual std::string type() const;
 				virtual void setType(const std::string &type);

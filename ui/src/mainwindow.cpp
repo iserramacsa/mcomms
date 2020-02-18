@@ -2,6 +2,7 @@
 #include <QMenuBar>
 #include <QToolBar>
 #include "printerconndialog.h"
+#include "networkdialog.h"
 
 #include <QDebug>
 
@@ -32,6 +33,7 @@ void MainWindow::loadMenus()
 {
 	connect(ui.butAddPrinter, SIGNAL(clicked(bool)), SLOT(onAddPrinter()));
 	connect(ui.butRemPrinter, SIGNAL(clicked(bool)), SLOT(onDelPrinter()));
+	connect(ui.butNetwork, SIGNAL(clicked(bool)), SLOT(onManageNetwork()));
 }
 
 void MainWindow::loadPrintersList()
@@ -49,6 +51,14 @@ void MainWindow::loadView()
 	ui.printerHolder->setLayout(layout);
 	layout->addWidget(_printerView);
 	_printerView->setEnabled(false);
+}
+
+void MainWindow::onManageNetwork()
+{
+	NetworkDialog* dialog = new NetworkDialog(this);
+	if(dialog->exec()) {
+
+	}
 }
 
 void MainWindow::onAddPrinter()

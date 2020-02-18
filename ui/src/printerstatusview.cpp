@@ -36,7 +36,7 @@ void PrinterStatusView::refresh()
 	if ((_controller != nullptr) && (_controller->printerStatus() != TIJViewerController::TIJStatus::DISCONNECTED)) {
 		_printerType->setText(_controller->boardType());
 		_printerAutostart->setChecked(_controller->autoStart());
-		_printerUserMessage->setText(_controller->userMessage());
+		_printerCurrentMessage->setText(_controller->currentMessage());
 		_printerBcdMode->setText(_controller->bcdMode().toString().c_str());
 		_printerBcdStatus->setText(QString("%1").arg(_controller->currentBcdCode()));
 
@@ -59,14 +59,14 @@ void PrinterStatusView::build()
 	_printerType = new QLabel("---", this);
 	_printerAutostart = new QCheckBox(this);
 	_printerAutostart->setEnabled(false);
-	_printerUserMessage = new QLabel("---", this);
+	_printerCurrentMessage = new QLabel("---", this);
 	_printerBcdMode = new QLabel("---", this);
 	_printerBcdStatus = new QLabel("---", this);
 
 	QFormLayout* layout = new QFormLayout(this);
 	layout->addRow("Type:", _printerType);
 	layout->addRow("Autostart:", _printerAutostart);
-	layout->addRow("User Message:", _printerUserMessage);
+	layout->addRow("Current Message:", _printerCurrentMessage);
 	layout->addRow("BCD Mode:", _printerBcdMode);
 	layout->addRow("BCD Status:", _printerBcdStatus);
 
@@ -150,7 +150,7 @@ void PrinterStatusView::printerDisconnected()
 {
 	_printerType->setText("---");
 	_printerAutostart->setChecked(false);
-	_printerUserMessage->setText("---");
+	_printerCurrentMessage->setText("---");
 	_printerBcdMode->setText("---");
 	_printerBcdStatus->setText("---");
 	_errors->clear();

@@ -6,11 +6,11 @@ set(SOURCES ${SOURCES}
 	PARENT_SCOPE
 	)
 
-
 set(MOC_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/mainwindow.h
 	${CMAKE_CURRENT_SOURCE_DIR}/printerslistmodel.h
 	${CMAKE_CURRENT_SOURCE_DIR}/printerconndialog.h
+	${CMAKE_CURRENT_SOURCE_DIR}/networkdialog.h
 	${CMAKE_CURRENT_SOURCE_DIR}/printerview.h
 	${CMAKE_CURRENT_SOURCE_DIR}/printerstatusview.h
 	${CMAKE_CURRENT_SOURCE_DIR}/printerconfigview.h

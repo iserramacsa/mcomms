@@ -201,6 +201,50 @@ TIJViewerController::BluetoothDevice TIJViewerController::bluetooth() const
 
 }
 
+QString TIJViewerController::loggerLevelStr() const
+{
+	std::string value = "---";
+	const TIJPrinter* tij = tijPrinter();
+	if (tij) {
+		value = tij->loggerLevel().toString();
+	}
+
+	return _(value);
+}
+
+LoggerLevel TIJViewerController::loggerLevel() const
+{
+	LoggerLevel value;
+	const TIJPrinter* tij = tijPrinter();
+	if (tij) {
+		value = tij->loggerLevel();
+	}
+
+	return value;
+}
+
+bool TIJViewerController::traceComms() const
+{
+	bool value = false;
+	const TIJPrinter* tij = tijPrinter();
+	if (tij) {
+		value = tij->logComsEnabled();
+	}
+
+	return value;
+}
+
+bool TIJViewerController::loggerEnabled() const
+{
+	bool value = false;
+	const TIJPrinter* tij = tijPrinter();
+	if (tij) {
+		value = tij->logsEnabled();
+	}
+
+	return value;
+}
+
 TIJViewerController::TIJStatus TIJViewerController::printerStatus() const
 {
 	return _controller.printerStatus();
@@ -795,6 +839,15 @@ TIJViewerController::PrinterError TIJViewerController::error(unsigned int idx) c
 		value.priority = perror.priority();
 	}
 	return value;
+}
+
+DateCodes TIJViewerController::dateCodes() const
+{
+	const TIJPrinter* tij = tijPrinter();
+	if (tij) {
+		return tij->dateCodes();
+	}
+	return DateCodes();
 }
 
 

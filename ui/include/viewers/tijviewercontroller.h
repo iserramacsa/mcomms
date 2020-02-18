@@ -106,6 +106,7 @@ class TIJViewerController : public PrinterViewerController
 		//Status related getters and setters
 		QString printerDateTime(const QString &format = "");
 		QVector<PrinterError> errorsLog() const;
+		bool printing() const;
 
 		TIJStatus printerStatus() const;
 
@@ -115,22 +116,25 @@ class TIJViewerController : public PrinterViewerController
 		QString boardAPIVersion() const;
 
 		//Config related getters or setters
+			//Network
 		NetworkIface networkIface(int index) const;
 		BluetoothDevice bluetooth() const;
 
+			//Logger
+		QString loggerLevelStr() const;
+		Macsa::Printers::LoggerLevel loggerLevel() const;
+		bool traceComms() const;
+		bool loggerEnabled() const;
+			//General config
 		bool autoStart() const;
 		bool setAutoStart(bool autoStart);
-
 		bool lowLevelOutput() const;
 		bool setLowLevelOutput(bool lowLevelOutput);
-
-		bool printing() const;
-
 		bool enabled() const;
 		bool setEnabled(bool enabled);
-
 		bool blocked() const;
 		bool setBlocked(bool blocked);
+
 
 		QString currentMessage() const;
 		QString userMessage() const;
@@ -220,6 +224,9 @@ class TIJViewerController : public PrinterViewerController
 		PrinterError error(unsigned int idx) const;
 		//		void setErrors(const std::vector<Error>& errors);
 		//		void setError(unsigned int idx, const Error& error);
+
+		Macsa::Printers::DateCodes dateCodes() const;
+//		void setDateCodes(const Macsa::Printers::DateCodes &dateCodes);
 
 	protected:
 		Macsa::TIJPrinterController& _controller;

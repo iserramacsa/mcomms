@@ -24,6 +24,7 @@ namespace Macsa {
 			bool removeTijPrinter(const std::string name);
 			bool connectPrinter(const std::string name);
 			bool disconnectPrinter(const std::string name);
+//			void discoverPrinters();
 
 			PrinterController* getPrinter(const std::string name);
 			PrinterController* getPrinter(const int index);
@@ -37,6 +38,7 @@ namespace Macsa {
 
 		private:
 			Network::MNetwork _tcpNetwork;
+//			Network::ISocket* _udpSocket;
 //			AddedPrinterSignal _printerAddedEvent;
 	};
 }

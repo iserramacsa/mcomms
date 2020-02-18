@@ -36,6 +36,7 @@ void PrinterConfigView::setController(Macsa::TIJPrinterController &controller)
 void PrinterConfigView::refresh()
 {
 	if ((_controller != nullptr) && (_controller->printerStatus() != TIJViewerController::TIJStatus::DISCONNECTED)) {
+		updateLoggerSettings();
 		updateGeneralSettings();
 		updatePrintSetup();
 		updateTriggerSetup();
@@ -53,6 +54,9 @@ void PrinterConfigView::build()
 {
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setMargin(0);
+	layout->addWidget(getTitle("Logs Configuration:"));
+	layout->addWidget(buildLoggerSettings());
+	layout->addSpacing(10);
 	layout->addWidget(getTitle("Printer General Settings:"));
 	layout->addWidget(buildGeneralSettings());
 	layout->addSpacing(10);
@@ -76,6 +80,26 @@ void PrinterConfigView::build()
 	layout->addStretch();
 }
 
+QWidget *PrinterConfigView::buildLoggerSettings()
+{
+	QWidget * loggerSettings = new QWidget(this);
+	QFormLayout* layout = new QFormLayout(loggerSettings);
+	layout->setSpacing(6);
+
+	_logsEnabled = new QCheckBox();
+	_loggerLevel = new QComboBox();
+	_loggerLevel->addItems(getPrinterEnumOptions(Macsa::Printers::LoggerLevel()));
+	_loggerLevel->setMaximumWidth(150);
+	_traceComms = new QCheckBox();
+
+	layout->addRow("Enable logs:", _logsEnabled);
+	layout->addRow("Logger level:", _loggerLevel);
+	layout->addRow("Trace comms:", _traceComms);
+
+
+	return loggerSettings;
+}
+
 QWidget *PrinterConfigView::buildGeneralSettings()
 {
 	QWidget * generalSettings = new QWidget(this);
@@ -92,10 +116,29 @@ QWidget *PrinterConfigView::buildGeneralSettings()
 	_blockCartridge = new QCheckBox(generalSettings);
 		connect(_blockCartridge, SIGNAL(clicked(bool)), SLOT(onToggleBlockCartridge()));
 
+	QWidget* userMessage =  new QWidget(generalSettings);
+	QHBoxLayout	* umLayout = new QHBoxLayout(userMessage);
+	umLayout->setMargin(0);
+	umLayout->setSpacing(10);
+	_userMessage = new QLabel(userMessage);
+	_butMessage = new QPushButton(userMessage);
+	_butMessage->setText("");
+	_butMessage->setIcon(QIcon(":/icons/folder_open.svg"));
+	_butMessage->setIconSize(QSize(24,24));
+	_butMessage->setFixedSize(QSize(30, 30));
+	connect(_butMessage, SIGNAL(clicked(bool)), SLOT(onSelectUserMessage()));
+
+	umLayout->addWidget(_userMessage);
+	umLayout->addWidget(_butMessage);
+	umLayout->addStretch();
+
+
+
 	layout->addRow("Enable print:", _butEnable);
 	layout->addRow("Autostart:", _printAutostart);
 	layout->addRow("Enable low level output:", _lowLevelOutput);
 	layout->addRow("Block cartridge:", _blockCartridge);
+	layout->addRow("User message:", userMessage);
 
 	return generalSettings;
 }
@@ -219,7 +262,29 @@ QWidget *PrinterConfigView::buildTriggerSetup()
 
 QWidget *PrinterConfigView::buildDateCodesSetup()
 {
-	QWidget * dateCodes = new QWidget(this);
+	QTabWidget * dateCodes = new QTabWidget(this);
+	QStringList list;
+	list.clear();	list << "Start Day of Week" << "Start hour" << "Start minute" << "code";
+	dateCodes->addTab(buildDateCodeTable(&_shiftCodes, list, dateCodes),	"Shift Codes");
+	list.clear();	list << "Start minute" << "code";
+	dateCodes->addTab(buildDateCodeTable(&_minuteCodes, list, dateCodes),	"Minutes Codes");
+	list.clear();	list << "Start hour" << "code";
+	dateCodes->addTab(buildDateCodeTable(&_hoursCodes, list, dateCodes),	"Hours Codes");
+	list.clear();	list << "Start Day" << "code";
+	dateCodes->addTab(buildDateCodeTable(&_daysCodes, list, dateCodes),		"DoM Codes");
+	list.clear();	list << "Start Day" << "code";
+	dateCodes->addTab(buildDateCodeTable(&_weekDayCodes, list, dateCodes),	"DoW Codes");
+	list.clear();	list << "Start Day" << "code";
+	dateCodes->addTab(buildDateCodeTable(&_julianCodes, list, dateCodes),	"Julian Codes");
+	list.clear();	list << "Start Week"<< "code";
+	dateCodes->addTab(buildDateCodeTable(&_weeksCodes, list, dateCodes),	"Weeks Codes");
+	list.clear();	list << "Start Month" << "code";
+	dateCodes->addTab(buildDateCodeTable(&_monthCodes, list, dateCodes),	"Month Codes");
+	list.clear();	list << "Start Year" << "code";
+	dateCodes->addTab(buildDateCodeTable(&_yearsCodes, list, dateCodes),	"Years Codes");
+
+
+
 	return dateCodes;
 }
 
@@ -262,9 +327,10 @@ QWidget *PrinterConfigView::buildIOSetup()
 
 	_inputs = new QTableWidget(ioSettings);
 	QStringList inHeaders;
-	inHeaders << "Id" << "Descriptor" << "Mode" << "Inverted" << "Filter";
+	inHeaders << "Id" << "Descriptor" << "Mode" << "Inverted" << "Filter" << "Id" << "Descriptor" << "Mode" << "Inverted" << "Filter";
 	_inputs->setColumnCount(inHeaders.count());
 	_inputs->setHorizontalHeaderLabels(inHeaders);
+	_inputs->setFixedHeight(264);
 
 
 	_outputs = new QTableWidget(ioSettings);
@@ -272,6 +338,7 @@ QWidget *PrinterConfigView::buildIOSetup()
 	outHeaders << "Id" << "Descriptor" << "Type" << "Time" << "Initial value";
 	_outputs->setColumnCount(outHeaders.count());
 	_outputs->setHorizontalHeaderLabels(outHeaders);
+	_outputs->setFixedHeight(175);
 
 
 	layout->addWidget(new QLabel("Inputs:"));
@@ -283,8 +350,16 @@ QWidget *PrinterConfigView::buildIOSetup()
 	return ioSettings;
 }
 
+void PrinterConfigView::updateLoggerSettings()
+{
+	_loggerLevel->setCurrentIndex(_controller->loggerLevel()());
+	_logsEnabled->setChecked(_controller->loggerEnabled());
+	_traceComms->setChecked(_controller->traceComms());
+}
+
 void PrinterConfigView::updateGeneralSettings()
 {
+	_butEnable->setChecked(_controller->enabled());
 	if (_controller->enabled()) {
 		_butEnable->setText("Stop");
 	}
@@ -294,6 +369,9 @@ void PrinterConfigView::updateGeneralSettings()
 	_printAutostart->setChecked(_controller->autoStart());
 	_lowLevelOutput->setChecked(_controller->lowLevelOutput());
 	_blockCartridge->setChecked(_controller->blocked());
+
+	_butMessage->setEnabled(_controller->bcdMode() == Macsa::Printers::BCDMode_n::USER_MODE);
+	_userMessage->setText(QString("\"%1\"").arg(_controller->userMessage()));
 }
 
 void PrinterConfigView::updatePrintSetup()
@@ -378,8 +456,49 @@ void PrinterConfigView::updateBcdTable()
 	}
 }
 
+using namespace Macsa::Printers::DateCode;
 void PrinterConfigView::updateDateCodes()
 {
+	Macsa::Printers::DateCodes dc = _controller->dateCodes();
+
+	//Shift Codes
+	{
+		const std::vector<DCShift> shiftCodes = dc.getShiftCodes();
+		int row = 0;
+		_shiftCodes->setRowCount(static_cast<int>(shiftCodes.size()));
+		for (std::vector<DCShift>::const_iterator it = shiftCodes.begin(); it != shiftCodes.end(); it++) {
+			QTableWidgetItem *startD = new QTableWidgetItem(QString("%1").arg(it->getInterval().getDayOfWeek()));
+			startD->setTextAlignment(Qt::AlignCenter);
+			QTableWidgetItem *startH = new QTableWidgetItem(QString("%1").arg(it->getInterval().getHour()));
+			startH->setTextAlignment(Qt::AlignCenter);
+			QTableWidgetItem *startM = new QTableWidgetItem(QString("%1").arg(it->getInterval().getMinute()));
+			startM->setTextAlignment(Qt::AlignCenter);
+			QTableWidgetItem *code = new QTableWidgetItem(QString("%1").arg(it->getCode().c_str()));
+
+			_shiftCodes->setItem(row, 0, startD);
+			_shiftCodes->setItem(row, 1, startH);
+			_shiftCodes->setItem(row, 2, startM);
+			_shiftCodes->setItem(row, 3, code);
+			row++;
+		}
+	}
+	//Minute codes
+	fillDateCodes(_minuteCodes, reinterpret_cast<const std::vector<DateCodeGeneric>&>(dc.getMinuteCodes()));
+	//Hour Codes
+	fillDateCodes(_hoursCodes, reinterpret_cast<const std::vector<DateCodeGeneric>&>(dc.getHourCodes()));
+	//Week days Codes
+	fillDateCodes(_daysCodes, reinterpret_cast<const std::vector<DateCodeGeneric>&>(dc.getDayCodes()));
+	//Day Of Month Codes
+	fillDateCodes(_weekDayCodes, reinterpret_cast<const std::vector<DateCodeGeneric>&>(dc.getDayOfWeekCodes()));
+	//Julian Codes
+	fillDateCodes(_julianCodes, reinterpret_cast<const std::vector<DateCodeGeneric>&>(dc.getJulianCodes()));
+	//Weeks Codes
+	fillDateCodes(_weeksCodes, reinterpret_cast<const std::vector<DateCodeGeneric>&>(dc.getWeekOfYearCodes()));
+	//Month Codes
+	fillDateCodes(_monthCodes, reinterpret_cast<const std::vector<DateCodeGeneric>&>(dc.getMonthCodes()));
+	//Year Codes
+	fillDateCodes(_yearsCodes, reinterpret_cast<const std::vector<DateCodeGeneric>&>(dc.getYearCodes()));
+
 }
 
 void PrinterConfigView::updateCartridgeSettings()
@@ -399,11 +518,12 @@ void PrinterConfigView::updateIOSettings()
 	QVector<TIJViewerController::PrinterInput> inputs = _controller->inputs();
 	QVector<TIJViewerController::PrinterOutput> outputs = _controller->outputs();
 
-	_inputs->setRowCount(inputs.count());
+	_inputs->setRowCount((inputs.count() / 2) + 1);
 	_outputs->setRowCount(outputs.count());
-
-	for (int i = 0; i < inputs.count(); ++i) {
-		addInputRow(_inputs, i, inputs.at(i));
+	for (int i = 0, row = 0; i < inputs.count(); ++i, row++) {
+		row = (row >= 8) ? 0 : row;
+		int fCol = (i / 8 == 0) ? 0 : _inputs->columnCount() / 2;
+		addInputRow(_inputs, row, fCol, inputs.at(i));
 	}
 
 	for (int o = 0; o < outputs.count(); ++o) {
@@ -468,6 +588,14 @@ QWidget *PrinterConfigView::buildCartridgeSpinBox(QWidget *parent, QDoubleSpinBo
 	return spinner;
 }
 
+QWidget *PrinterConfigView::buildDateCodeTable(QTableWidget **table, QStringList headers, QWidget *parent) const
+{
+	(*table) = new QTableWidget(parent);
+	(*table)->setColumnCount(headers.count());
+	(*table)->setHorizontalHeaderLabels(headers);
+	return (*table);
+}
+
 QLabel *PrinterConfigView::getTitle(const QString &text)
 {
 	QLabel * title = new QLabel(text, this);
@@ -476,25 +604,40 @@ QLabel *PrinterConfigView::getTitle(const QString &text)
 	return title;
 }
 
-void PrinterConfigView::addInputRow(QTableWidget *table, int row, const TIJViewerController::PrinterInput &input)
+void PrinterConfigView::fillDateCodes(QTableWidget *table, const std::vector<DateCodeGeneric> &data)
+{
+	int row = 0;
+	table->setRowCount(static_cast<int>(data.size()));
+	for (std::vector<DateCodeGeneric>::const_iterator it = data.begin(); it != data.end(); it++) {
+		QTableWidgetItem *itInterv = new QTableWidgetItem(it->getInterval().getValue().c_str());
+		itInterv->setTextAlignment(Qt::AlignCenter);
+		QTableWidgetItem *itCode = new QTableWidgetItem(it->getCode().c_str());
+
+		table->setItem(row, 0, itInterv);
+		table->setItem(row, 1, itCode);
+		row++;
+	}
+}
+
+void PrinterConfigView::addInputRow(QTableWidget *table, int row, int iniCol, const TIJViewerController::PrinterInput &input)
 {
 	QTableWidgetItem * item  = new QTableWidgetItem(QString("%1").arg(input.id));
 	item->setTextAlignment(Qt::AlignCenter);
-	table->setItem(row, 0, item);
+	table->setItem(row, iniCol++, item);
 
-	table->setItem(row, 1, new QTableWidgetItem(input.descriptor));
+	table->setItem(row, iniCol++, new QTableWidgetItem(input.descriptor));
 
 	item  = new QTableWidgetItem(input.mode);
 	item->setTextAlignment(Qt::AlignCenter);
-	table->setItem(row, 2, item);
+	table->setItem(row, iniCol++, item);
 
 	item  = new QTableWidgetItem((input.inverted ? "Inverted" : "Normal"));
 	item->setTextAlignment(Qt::AlignCenter);
-	table->setItem(row, 3, item);
+	table->setItem(row, iniCol++, item);
 
 	item  = new QTableWidgetItem(QString("%1").arg(input.filter));
 	item->setTextAlignment(Qt::AlignCenter);
-	table->setItem(row, 4, item);
+	table->setItem(row, iniCol++, item);
 
 }
 
@@ -529,6 +672,31 @@ void PrinterConfigView::resizeEvent(QResizeEvent *event)
 		_bcdTable->setColumnWidth(1, w);
 		_bcdTable->setColumnWidth(2, 60);
 		_bcdTable->setColumnWidth(3, w);
+	}
+
+	if (_shiftCodes->columnCount() == 4) {
+		int w = _shiftCodes->width() - _shiftCodes->columnCount() - 20;
+		_shiftCodes->setColumnWidth(0, w / 6);
+		_shiftCodes->setColumnWidth(1, w / 6);
+		_shiftCodes->setColumnWidth(2, w / 6);
+		_shiftCodes->setColumnWidth(3, w / 2);
+	}
+	resizeDateCodeTableColumns(_minuteCodes);
+	resizeDateCodeTableColumns(_hoursCodes);
+	resizeDateCodeTableColumns(_daysCodes);
+	resizeDateCodeTableColumns(_weekDayCodes);
+	resizeDateCodeTableColumns(_julianCodes);
+	resizeDateCodeTableColumns(_weeksCodes);
+	resizeDateCodeTableColumns(_monthCodes);
+	resizeDateCodeTableColumns(_yearsCodes);
+}
+
+void PrinterConfigView::resizeDateCodeTableColumns(QTableWidget *table)
+{
+	if (table->columnCount() == 2) {
+		int w = this->width() - table->columnCount() - 20;
+		table->setColumnWidth(0, w / 3);
+		table->setColumnWidth(1, (2 * w)/ 3);
 	}
 }
 
@@ -622,6 +790,11 @@ void PrinterConfigView::onChangeNozzlesCols(int idx)
 //			QTimer::singleShot(1000, this, SLOT(onRequestChanges()));
 //		}
 	}
+}
+
+void PrinterConfigView::onSelectUserMessage()
+{
+	//TODO
 }
 
 template<typename N>

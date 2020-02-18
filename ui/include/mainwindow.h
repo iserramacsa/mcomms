@@ -25,6 +25,7 @@ class MainWindow : public QMainWindow
 		void loadView();
 
 	private slots:
+		void onManageNetwork();
 		void onAddPrinter();
 		void onDelPrinter();
 		void onPrinterSelected(const QModelIndex& index);

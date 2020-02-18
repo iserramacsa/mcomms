@@ -15,5 +15,6 @@
         <file>icons/notification.svg</file>
         <file>icons/router.svg</file>
         <file>icons/warning.svg</file>
+        <file>icons/network.svg</file>
     </qresource>
 </RCC>

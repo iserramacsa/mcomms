@@ -95,9 +95,9 @@
 #define ERROR_CODE_PH_SC_HOST_SMARTCARD_FAIL		"SMC.HOST_SMARTCARD"
 #define ERROR_CODE_UNKNOWN							"UNKNOWN"
 
-#define LOG_LEVEL_ERROR		"Error"
-#define LOG_LEVEL_WARNING	"Warning"
-#define LOG_LEVEL_INFO		"Information"
+#define LOG_LEVEL_ERROR		"Errors"
+#define LOG_LEVEL_WARNING	"Warnings"
+#define LOG_LEVEL_INFO		"Info"
 #define LOG_LEVEL_DEBUG		"Debug"
 #define LOG_LEVEL_DISABLED	"Disabled"
 

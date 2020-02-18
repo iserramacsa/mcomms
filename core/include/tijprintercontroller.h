@@ -69,11 +69,11 @@ namespace Macsa {
 
 		protected:
 			virtual bool send(MProtocol::MCommand *cmd, Printers::ErrorCode& err);
+			MProtocol::MCommandsFactory _factory;
+			MProtocol::LiveFlags _liveFlags;
 
 		private:
-			MProtocol::LiveFlags _liveFlags;
 			Printers::TIJPrinter _printer;
-			MProtocol::MCommandsFactory _factory;
 			std::mutex _mutex;
 
 			bool getBaseBoard(Printers::Board& board);

@@ -210,6 +210,9 @@ void TIJPrinter::setBoards(const std::vector<Board> &boards)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	_boards = boards;
+	for (std::vector<Board>::iterator board = _boards.begin(); board != _boards.end(); board++) {
+		board->setParent(this);
+	}
 }
 
 std::vector<Error> TIJPrinter::errorsLog() const

@@ -30,11 +30,18 @@ class PrinterConfigView : public QWidget
 	private:
 		TIJViewerController* _controller;
 
+		//Logs
+		QCheckBox* _logsEnabled;
+		QComboBox* _loggerLevel;
+		QCheckBox* _traceComms;
+
 		//General config
 		QPushButton* _butEnable;
-		QCheckBox* _printAutostart;
-		QCheckBox* _lowLevelOutput;
-		QCheckBox* _blockCartridge;
+		QCheckBox*   _printAutostart;
+		QCheckBox*   _lowLevelOutput;
+		QCheckBox*   _blockCartridge;
+		QLabel*		 _userMessage;
+		QPushButton* _butMessage;
 
 		//Print Setup
 		QCheckBox* _printRotated;
@@ -57,7 +64,6 @@ class PrinterConfigView : public QWidget
 		QCheckBox* _repeatPrint;
 		//BCD Table
 		QTableWidget* _bcdTable;
-
 		//Cartridge
 		QCheckBox*		_autoConfig;
 		QDoubleSpinBox* _voltage;
@@ -65,12 +71,22 @@ class PrinterConfigView : public QWidget
 		QDoubleSpinBox* _pulseTemp;
 		QDoubleSpinBox* _pulseWidth;
 		QDoubleSpinBox* _adjCapacity;
-
+		//IOS
 		QTableWidget* _inputs;
 		QTableWidget* _outputs;
-//		QTableWidget* _dateCodes;
+		//Date & Shift codes
+		QTableWidget* _shiftCodes;
+		QTableWidget* _minuteCodes;
+		QTableWidget* _hoursCodes;
+		QTableWidget* _daysCodes;
+		QTableWidget* _weekDayCodes;
+		QTableWidget* _julianCodes;
+		QTableWidget* _weeksCodes;
+		QTableWidget* _monthCodes;
+		QTableWidget* _yearsCodes;
 
 		void build();
+		QWidget* buildLoggerSettings();
 		QWidget* buildGeneralSettings();
 		QWidget* buildPrintSetup();
 		QWidget* buildTriggerSetup();
@@ -79,6 +95,7 @@ class PrinterConfigView : public QWidget
 		QWidget* buildCartridgeSetup();
 		QWidget* buildIOSetup();
 
+		void updateLoggerSettings();
 		void updateGeneralSettings();
 		void updatePrintSetup();
 		void updateTriggerSetup();
@@ -89,12 +106,15 @@ class PrinterConfigView : public QWidget
 
 		void printerDisconnected();
 
+		// Helpers
 		QStringList printResolutions() const;
 		QWidget* buildPrintDelay(QWidget* parent, QSpinBox** editor) const;
 		QWidget* buildCartridgeSpinBox(QWidget* parent, QDoubleSpinBox** editor, const QString& units, int min, int max, int decimals = 2) const;
+		QWidget* buildDateCodeTable(QTableWidget** table, QStringList headers, QWidget* parent) const;
 		QLabel* getTitle(const QString& text);
 
-		void addInputRow(QTableWidget* table, int row, const TIJViewerController::PrinterInput& input);
+		void fillDateCodes(QTableWidget* table, const std::vector<Macsa::Printers::DateCode::DateCodeGeneric>& data);
+		void addInputRow(QTableWidget* table, int row, int iniCol, const TIJViewerController::PrinterInput& input);
 		void addOutputRow(QTableWidget* table, int row, const TIJViewerController::PrinterOutput& output);
 
 		template <typename N>
@@ -102,6 +122,7 @@ class PrinterConfigView : public QWidget
 
 
 		void resizeEvent(QResizeEvent*);
+		void resizeDateCodeTableColumns(QTableWidget* table);
 
 	private slots:
 		void onStartStop();
@@ -112,6 +133,7 @@ class PrinterConfigView : public QWidget
 		void onRequestChanges();
 		void onChangeResolution(int idx);
 		void onChangeNozzlesCols(int idx);
+		void onSelectUserMessage();
 
 		void validateTriggerSettings();
 		void validateCartridgeSettings();

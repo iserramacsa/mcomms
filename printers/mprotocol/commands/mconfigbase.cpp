@@ -514,7 +514,7 @@ void MConfigCommand::inputsFromXml(const XMLElement *xBoard, Macsa::Printers::Bo
 
 				inputs.push_back(input);
 
-				xInput = xInputs->NextSiblingElement(MPRINTER_BOARD_INPUT);
+				xInput = xInput->NextSiblingElement(MPRINTER_BOARD_INPUT);
 			}
 			std::sort(inputs.begin(), inputs.end());
 			board.setInputs(inputs);
@@ -541,7 +541,7 @@ void MConfigCommand::outputsFromXml(const XMLElement *xBoard, Macsa::Printers::B
 
 				outputs.push_back(output);
 
-				xOutput = xOutputs->NextSiblingElement(MPRINTER_BOARD_OUTPUT);
+				xOutput = xOutput->NextSiblingElement(MPRINTER_BOARD_OUTPUT);
 			}
 			std::sort(outputs.begin(), outputs.end());
 			board.setOutputs(outputs);

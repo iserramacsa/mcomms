@@ -243,10 +243,11 @@ bool TIJPrinterController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &e
 	if(socket->status() == ISocket::CONNECTED)
 	{
 		std::string tx = cmd->getRequest(_factory.nextId());
-		if (socket->send(tx) == ISocket::FRAME_SUCCESS)
+		ISocket::nSocketFrameStatus  status = socket->send(tx);
+		if (status == ISocket::FRAME_SUCCESS)
 		{
 			std::string resp = "";
-			ISocket::nSocketFrameStatus status = socket->receive(resp);
+			status = socket->receive(resp);
 			if(status == ISocket::FRAME_SUCCESS)
 			{
 				std::lock_guard<std::mutex> lock(_mutex);
@@ -261,6 +262,15 @@ bool TIJPrinterController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &e
 					case ISocket::FRAME_INCOMPLETED: std::cerr << "INCOMPLETED" << std::endl; break;
 					case ISocket::FRAME_ERROR:		 std::cerr << "ERROR" << std::endl; break;
 				}
+			}
+		}
+		else {
+			std::cerr << __func__ << " Send Command failed: ";
+			switch (status) {
+				case ISocket::FRAME_SUCCESS:     std::cerr << "SUCCESS" << std::endl; break;
+				case ISocket::FRAME_TIMEOUT:	 std::cerr << "TIMEOUT" << std::endl; break;
+				case ISocket::FRAME_INCOMPLETED: std::cerr << "INCOMPLETED" << std::endl; break;
+				case ISocket::FRAME_ERROR:		 std::cerr << "ERROR" << std::endl; break;
 			}
 		}
 	}

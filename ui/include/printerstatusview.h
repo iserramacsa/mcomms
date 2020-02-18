@@ -24,7 +24,7 @@ class PrinterStatusView : public QWidget
 	private:		
 		QLabel*		_printerType;
 		QCheckBox*	_printerAutostart;
-		QLabel*		_printerUserMessage;
+		QLabel*		_printerCurrentMessage;
 		QLabel*		_printerBcdMode;
 		QLabel*		_printerBcdStatus;
 

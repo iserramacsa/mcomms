@@ -2,10 +2,11 @@
 #include <cstdlib>
 #include <sstream>
 #include <iomanip>
+#include <algorithm>
 
 #define MIN_CODE_FORMATER_LENGTH 6	//[DC:H]
 using namespace Macsa::Printers;
-using namespace Macsa::Printers::MDateCode;
+using namespace Macsa::Printers::DateCode;
 
 DCInterval::DCInterval(std::string format)
 {
@@ -726,7 +727,7 @@ DateCodeGeneric* DateCodes::pushCode(std::vector<T> &data, T &dc, const std::str
 	dc.setIntervalStart(interval);
 	dc.setCode(code);
 	data.push_back(dc);
-	sort(data);
+	std::sort(data.begin(), data.end());
 	return &dc;
 }
 
@@ -741,21 +742,6 @@ int DateCodes::find(const std::vector<T> &data, std::string format, std::string 
 		}
 	}
 	return -1;
-}
-
-template<class T>
-void DateCodes::sort(std::vector<T> &data) const
-{
-	T temp;
-	for (unsigned int i = 0; i <= data.size() -1; i++){
-		for (unsigned int j = 0; j < data.size() -1; j++){
-			if (data.at(j) > data.at(j + 1)){
-				temp = data[j];
-				data[j] = data[j+1];
-				data[j+1] = temp;
-			}
-		}
-	}
 }
 
 template<class T>

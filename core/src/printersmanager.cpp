@@ -1,6 +1,7 @@
 #include "printersmanager.h"
 #include "network/tcpsocket.h"
 #include "tijprintercontroller.h"
+#include "tijprintermonitor.h"
 
 using namespace Macsa;
 using namespace Macsa::Network;
@@ -14,7 +15,7 @@ PrintersManager::~PrintersManager()
 
 bool PrintersManager::addTijPrinter(const std::string name, const std::string &address)
 {
-	TIJPrinterController* controller = new TIJPrinterController(name, address);
+	TijPrinterMonitor* controller = new TijPrinterMonitor(name, address);
 
 	bool success = _tcpNetwork.addNewNode(controller);
 //	if ( success) {
