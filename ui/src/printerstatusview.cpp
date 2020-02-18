@@ -54,6 +54,7 @@ void PrinterStatusView::refresh()
 	}
 }
 
+
 void PrinterStatusView::build()
 {
 	_printerType = new QLabel("---", this);
@@ -100,6 +101,7 @@ void PrinterStatusView::build()
 	_propLayout->setMargin(0);
 	_propLayout->setContentsMargins(0,10,0,10);
 	layout->addRow("Properties:", props);
+
 }
 
 QWidget* PrinterStatusView::buildCounters()

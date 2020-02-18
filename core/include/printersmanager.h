@@ -4,42 +4,42 @@
 #include "network/network.h"
 #include "tijprintercontroller.h"
 
-#include <signals.hpp>
+#ifdef SSIGNALS
+#include "SimpleSignal.h"
+#endif
 
 namespace Macsa {
 	class PrintersManager {
-//		private:
-//			typedef Signal<std::string> AddedPrinterSignal;
-
-//		public:
-//			typedef AddedPrinterSignal::Callback   AddedPrinterCallback;
-//			typedef AddedPrinterSignal::Connection AddedPrinterConnection;
-//			typedef AddedPrinterSignal::ScopedConnection AddedPrinterScopedConnection;
 
 		public:
 			PrintersManager();
 			~PrintersManager();
 
-			bool addTijPrinter(const std::string name, const std::string& address);
+			bool addTijPrinter(const std::string name, const std::string& address, bool monitorize = false);
 			bool removeTijPrinter(const std::string name);
 			bool connectPrinter(const std::string name);
 			bool disconnectPrinter(const std::string name);
-//			void discoverPrinters();
+			//			void discoverPrinters();
 
 			PrinterController* getPrinter(const std::string name);
 			PrinterController* getPrinter(const int index);
 
 			unsigned int size() const;
+#if SSIGNALS
+		public:
+			void onPrinterConnected(std::function<void(const std::string&, const std::string&)>& slot)
+			{
+				printerConnected.connect(slot);
+			}
 
-//			AddedPrinterConnection connect(const AddedPrinterCallback& callback) {
-//				return _printerAddedEvent.connect(callback);
-//			}
+		private:
+			Simple::Signal<void(const std::string& /*name*/, const std::string& /*address*/)> printerConnected;
+			Simple::Signal<void(const std::string& /*name*/)> printerDisconnected;
+#endif
 
 
 		private:
 			Network::MNetwork _tcpNetwork;
-//			Network::ISocket* _udpSocket;
-//			AddedPrinterSignal _printerAddedEvent;
 	};
 }
 

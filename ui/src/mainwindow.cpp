@@ -83,14 +83,14 @@ void MainWindow::onAddPrinter()
 			//case PrinterConnectionDialog::ServerType::TIJ_PRINTER:
 				break;
 		}
-		if (_manager.addTijPrinter(name.toStdString(), address.toStdString())) {
+		bool monitorize = false;
+		if (_manager.addTijPrinter(name.toStdString(), address.toStdString(), monitorize)) {
 			refreshPrintersList();
 			if (_printersListModel->stringList().count() == 1) {
 				onPrinterSelected(_printersListModel->index(0));
 			}
 		}
 	}
-
 }
 
 void MainWindow::onDelPrinter()

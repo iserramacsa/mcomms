@@ -22,11 +22,12 @@ class PrinterView : public QWidget
 
 	private:
 		TIJViewerController* _controller;
-		PrinterStatusView* _printerStatusView;
-		PrinterConfigView* _printerConfigView;
-		PrinterCommsView* _printerCommsView;
-		PrinterFilesView* _printerFilesView;
-		QTableWidget*	  _printerErrorsLog;
+		PrinterStatusView*	_printerStatusView;
+		PrinterConfigView*	_printerConfigView;
+		PrinterCommsView*	_printerCommsView;
+		PrinterFilesView*	_printerFilesView;
+		QTableWidget*		_printerErrorsLog;
+		QTimer				_dtTimer;
 		Ui::printerView ui;
 
 		virtual void resizeEvent(QResizeEvent *);
@@ -53,6 +54,7 @@ class PrinterView : public QWidget
 		void onRequestErrorsLog();
 		void onConnectClicked();
 		void onRequestedChanges();
+		void onUpdateDateTime();
 };
 
 

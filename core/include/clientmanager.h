@@ -9,11 +9,15 @@
 #include "clientHandler.h"
 #include "tij/tijprinter.h"
 
+#if SSIGNALS
+	#include "SimpleSignal.h"
+#endif
+
 using namespace Macsa;
 using namespace Macsa::Network;
 
 class AbstractSocket;
-class ClientManager : public Network::MNetwork
+class ClientManager : protected Network::MNetwork
 {
 	public:
 		ClientManager(Printers::TIJPrinter& printer);
@@ -22,8 +26,18 @@ class ClientManager : public Network::MNetwork
 		void run(bool detached = true);
 		void stop();
 
+#if SSIGNALS
+	public:
+		void connect (std::function<void(const std::string&, const std::string&)>& slot)
+		{
+			clientConnected.connect(slot);
+		}
+
 	private:
-//		Network::ISocket *_server;
+		Simple::Signal<void(const std::string& /*name*/, const std::string& /*address*/)> clientConnected;
+#endif
+
+	private:
 		std::thread _svrLoop;
 		std::atomic_bool _running;
 		std::mutex _mtx;

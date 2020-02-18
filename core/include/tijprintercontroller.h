@@ -4,6 +4,9 @@
 #include "printercontroller.h"
 #include "mprotocol/mcommandsfactory.h"
 #include <mutex>
+#ifdef SSIGNALS
+#include "SimpleSignal.h"
+#endif
 
 namespace Macsa {
 	class TIJPrinterController : public PrinterController
@@ -24,12 +27,12 @@ namespace Macsa {
 
 			//Live
 			Printers::ErrorCode getLive();
-			bool statusChanged() const {return _liveFlags.statusChanged;}
-			bool configChanged() const {return _liveFlags.configChanged;}
-			bool filesChanged() const {return _liveFlags.filesChanged;}
-			bool fontsChanged() const {return _liveFlags.fontsChanged;}
-			bool userValuesChanged() const {return _liveFlags.userValueChanged;}
-			bool errorsLogsChanged() const {return _liveFlags.errorsLogChanged;}
+			bool isStatusChanged() const {return _liveFlags.statusChanged;}
+			bool isConfigChanged() const {return _liveFlags.configChanged;}
+			bool isFilesChanged() const {return _liveFlags.filesChanged;}
+			bool isFontsChanged() const {return _liveFlags.fontsChanged;}
+			bool isUserValuesChanged() const {return _liveFlags.userValueChanged;}
+			bool isErrorsLogsChanged() const {return _liveFlags.errorsLogChanged;}
 			bool isInError() const {return _liveFlags.isInError;}
 
 			//Status
@@ -66,7 +69,20 @@ namespace Macsa {
 			inline std::vector<std::string> getImages(const std::string &drive) { return getFiles(drive, IMAGES_FOLDER);}
 
 			inline std::vector<std::string> getAllFiles() { return getFiles(ALL_FILES_FILTER); }
+#if SSIGNALS
+		public:
+			void onStatusChangedConnect(std::function<void(void)>& slot)	{ statusChanged.connect(slot);}
+			void onStatusChangedDisconnect(std::function<void(void)>& slot) { statusChanged.deactivate(slot);}
+			void onConfigChangedConnect(std::function<void(void)>& slot)	{ configChanged.connect(slot);}
+			void onConfigChangedDisconnect(std::function<void(void)>& slot) { configChanged.deactivate(slot);}
 
+		private:
+			Simple::Signal<void(void)> statusChanged;
+			Simple::Signal<void(void)> configChanged;
+			Simple::Signal<void(void)> filesChanged;
+			Simple::Signal<void(void)> fontsChanged;
+			Simple::Signal<void(void)> uvChanged;
+#endif
 		protected:
 			virtual bool send(MProtocol::MCommand *cmd, Printers::ErrorCode& err);
 			MProtocol::MCommandsFactory _factory;

@@ -11,6 +11,7 @@ set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../toolchain/cmake/macsa.cmake)	#configuration for macsa tij projects
 include(${CMAKE_CURRENT_SOURCE_DIR}/../toolchain/cmake/test.cmake)  #configuration test enabled and GTest requiered configuration
+include(${CMAKE_CURRENT_SOURCE_DIR}/../tools/tools.cmake)  #Add tools options
 
 if(UNIX)
 	if (${BUILD_SHARED_LIBS})
@@ -35,6 +36,10 @@ add_definitions(-DCORE_VERSION_STR="${MCOMMS_CORE_VERSION}")
 set(SOURCES)
 set(HEADERS)
 set(INCLUDES)
+
+##Add tools
+set(USE_SIGNALS ON)
+add_subdirectory(${PROJECT_SOURCE_DIR}/../tools ${CMAKE_BINARY_DIR}/tools)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/core/src)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/core/include)

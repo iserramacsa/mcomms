@@ -51,23 +51,23 @@ bool TIJViewerController::setData(int /*descriptor*/, const QVariant &/*value*/)
 void TIJViewerController::updatePrinterData()
 {
 	if (_controller.getLive() == ErrorCode_n::SUCCESS) {
-		if (_controller.statusChanged())
+		if (_controller.isStatusChanged())
 			_controller.updateStatus();
 
-		if (_controller.configChanged())
+		if (_controller.isConfigChanged())
 			_controller.updateConfig();
 
-		if (_controller.filesChanged())
+		if (_controller.isFilesChanged())
 			_controller.updateFilesList();
 
-		if (_controller.fontsChanged())
+		if (_controller.isFontsChanged())
 			_controller.updateFontsList();
 
-		if (_controller.userValuesChanged())
+		if (_controller.isUserValuesChanged())
 			std::cout << "Printer user values changed!" << std::endl;
 //			_controller.updateUserValues();
 
-		if (_controller.errorsLogsChanged())
+		if (_controller.isErrorsLogsChanged())
 			_controller.updateErrorsList();
 
 		if (_controller.isInError())

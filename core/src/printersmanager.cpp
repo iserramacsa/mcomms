@@ -13,15 +13,16 @@ PrintersManager::PrintersManager() :
 PrintersManager::~PrintersManager()
 {}
 
-bool PrintersManager::addTijPrinter(const std::string name, const std::string &address)
+bool PrintersManager::addTijPrinter(const std::string name, const std::string &address, bool monitorize)
 {
-	TijPrinterMonitor* controller = new TijPrinterMonitor(name, address);
-
-	bool success = _tcpNetwork.addNewNode(controller);
-//	if ( success) {
-//		_printerAddedEvent(name);
-//	}
-	return success;
+	if (monitorize){
+		TijPrinterMonitor* controller = new TijPrinterMonitor(name, address);
+		return _tcpNetwork.addNewNode(controller);
+	}
+	else {
+		TIJPrinterController* controller = new TIJPrinterController(name, address);
+		return _tcpNetwork.addNewNode(controller);
+	}
 }
 
 bool PrintersManager::removeTijPrinter(const std::string name)

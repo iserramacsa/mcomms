@@ -34,20 +34,20 @@ void TijPrinterMonitor::run()
 			_commands.pop_front();
 		}
 
-		if (statusChanged()) {
+		if (isStatusChanged()) {
 			TIJPrinterController::updateStatus();
 		}
-		if (configChanged()) {
+		if (isConfigChanged()) {
 			TIJPrinterController::updateConfig();
 		}
-		if (filesChanged()) {
+		if (isFilesChanged()) {
 			TIJPrinterController::updateFilesList();
 		}
-		if (fontsChanged())  {
+		if (isFontsChanged())  {
 			TIJPrinterController::updateFontsList();
 		}
 		//if  (userValuesChanged()){} //TODO
-		if (errorsLogsChanged()) {
+		if (isErrorsLogsChanged()) {
 			TIJPrinterController::updateErrorsList();
 		}
 	}
