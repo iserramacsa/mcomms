@@ -17,6 +17,7 @@ endif()
 
 # GTest integration
 if (${ENABLE_TESTS})
+	message("Enabling test for " ${PROJECT_NAME})
 	set(EXTERNAL_LIBS	${EXTERNAL_LIBS}
 	    				GTest::GTest
 						GTest::Main

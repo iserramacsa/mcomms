@@ -21,7 +21,8 @@ if(UNIX)
 	if (${BUILD_SHARED_LIBS})
 		add_compile_options(-fPIC)
 	endif()
-	set(EXTERNAL_LIBS	-pthread)
+	set(EXTERNAL_LIBS	${EXTERNAL_LIBS}
+						-pthread)
 endif()
 
 set(NETWORK_LIB_VERSION_MAJOR 1)
@@ -61,7 +62,8 @@ endif()
 ###########################
 ## Install targets
 ###########################
-set(SOVERSION ${NETWORK_LIB_VERSION})
+if (${BUILD_SHARED_LIBS} OR ${BUILD_STATIC_LIBS})
+	set(SOVERSION ${NETWORK_LIB_VERSION})
 	message("lib" ${NETWORK_LIB_NAME} " creating targets")
 
 	if (${BUILD_SHARED_LIBS})
@@ -77,17 +79,16 @@ set(SOVERSION ${NETWORK_LIB_VERSION})
 	endif()
 
 	target_link_libraries(${PROJECT_NAME} ${EXTERNAL_LIBS})
-	install(TARGETS ${PROJECT_NAME}
-		LIBRARY DESTINATION ${LIB_PREFIX}/lib)
+	install(TARGETS ${PROJECT_NAME}	LIBRARY DESTINATION ${LIB_PREFIX}/lib)
 
 
 	if (${ENABLE_TESTS})
 		message("Adding ${PROJECT_NAME} tests" )
-		set(PROJECT_TEST_NAME ${PROJECT_NAME}_Test)
+		set(PROJECT_TEST_NAME ${PROJECT_NAME}Tests)
 		link_directories(${PROJECT_BINARY_DIR})
 
 		add_executable(${PROJECT_TEST_NAME} ${SRC_TEST} ${HDRS_TEST})
 		target_link_libraries(${PROJECT_TEST_NAME} ${EXTERNAL_LIBS} MNetwork)
 		add_test(${PROJECT_NAME} ${PROJECT_TEST_NAME})
-
+	endif()
 endif()
