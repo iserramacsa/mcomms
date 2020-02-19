@@ -1,6 +1,7 @@
 ﻿#ifndef TIJ_VIEWER_CONTROLLER_H
 #define TIJ_VIEWER_CONTROLLER_H
 
+#include <QObject>
 #include <QVariant>
 #include <QDateTime>
 #include "viewers/printerviewercontroller.h"

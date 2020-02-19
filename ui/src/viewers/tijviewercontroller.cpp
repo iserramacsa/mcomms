@@ -1,4 +1,5 @@
 #include "viewers/tijviewercontroller.h"
+#include "tijprintermonitor.h"
 #include <QDateTime>
 #include <QVector>
 #include "printer/board.h"
@@ -9,7 +10,13 @@ using namespace Macsa::Printers;
 TIJViewerController::TIJViewerController(TIJPrinterController &controller) :
 	_controller(controller)
 {
+//	try {
+//		Macsa::TIJPrinterMonitor& monitor = dynamic_cast<TIJPrinterMonitor&>(controller);
+//		monitor.statusChanged.connect();
+//	}
+//	catch(std::bad_cast exp) {
 
+//	}
 }
 
 QVariant TIJViewerController::data(int descriptor)

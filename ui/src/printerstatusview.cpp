@@ -6,6 +6,9 @@
 #define WARN_ICON	":/icons/warning.svg"
 #define INFO_ICON	":/icons/notification.svg"
 
+#define RED_COLOR	"color:#800000;"
+#define GREEN_COLOR	"color:#008000;"
+
 PrinterStatusView::PrinterStatusView(QWidget *parent) :
 	QWidget(parent)
 {
@@ -206,6 +209,12 @@ void PrinterStatusView::updateInputs(const QVector<TIJViewerController::PrinterI
 			bool val = inputs.at(i).value;
 			if (lbl){
 				lbl->setText(val ? "ON" : "OFF");
+				if (val) {
+					lbl->setStyleSheet(GREEN_COLOR);
+				}
+				else {
+					lbl->setStyleSheet(RED_COLOR);
+				}
 				QFont f = lbl->font();
 				f.setBold(val);
 				lbl->setFont(f);
@@ -241,6 +250,13 @@ void PrinterStatusView::updateOutputs(const QVector<TIJViewerController::Printer
 			bool val = outputs.at(i).value;
 			if (lbl){
 				lbl->setText(val ? "ON" : "OFF");
+				lbl->setText(val ? "ON" : "OFF");
+				if (val) {
+					lbl->setStyleSheet(GREEN_COLOR);
+				}
+				else {
+					lbl->setStyleSheet(RED_COLOR);
+				}
 				QFont f = lbl->font();
 				f.setBold(val);
 				lbl->setFont(f);

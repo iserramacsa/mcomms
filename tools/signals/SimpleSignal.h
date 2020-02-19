@@ -1,6 +1,10 @@
 // CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
 #pragma once
 
+#ifndef SSIGNALS
+#define SSIGNALS
+#endif
+
 #include <memory>
 #include <functional>
 #include <list>

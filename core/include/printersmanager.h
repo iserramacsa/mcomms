@@ -2,11 +2,7 @@
 #define MCOMM_PRINTER_MANAGER_H
 
 #include "network/network.h"
-#include "tijprintercontroller.h"
-
-#ifdef SSIGNALS
-#include "SimpleSignal.h"
-#endif
+#include "tijprintermonitor.h"
 
 namespace Macsa {
 	class PrintersManager {
@@ -25,21 +21,9 @@ namespace Macsa {
 			PrinterController* getPrinter(const int index);
 
 			unsigned int size() const;
-#if SSIGNALS
-		public:
-			void onPrinterConnected(std::function<void(const std::string&, const std::string&)>& slot)
-			{
-				printerConnected.connect(slot);
-			}
-
-		private:
-			Simple::Signal<void(const std::string& /*name*/, const std::string& /*address*/)> printerConnected;
-			Simple::Signal<void(const std::string& /*name*/)> printerDisconnected;
-#endif
-
-
 		private:
 			Network::MNetwork _tcpNetwork;
+
 	};
 }
 

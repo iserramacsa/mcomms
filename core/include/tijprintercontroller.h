@@ -4,9 +4,6 @@
 #include "printercontroller.h"
 #include "mprotocol/mcommandsfactory.h"
 #include <mutex>
-#ifdef SSIGNALS
-#include "SimpleSignal.h"
-#endif
 
 namespace Macsa {
 	class TIJPrinterController : public PrinterController
@@ -69,24 +66,13 @@ namespace Macsa {
 			inline std::vector<std::string> getImages(const std::string &drive) { return getFiles(drive, IMAGES_FOLDER);}
 
 			inline std::vector<std::string> getAllFiles() { return getFiles(ALL_FILES_FILTER); }
-#if SSIGNALS
-		public:
-			void onStatusChangedConnect(std::function<void(void)>& slot)	{ statusChanged.connect(slot);}
-			void onStatusChangedDisconnect(std::function<void(void)>& slot) { statusChanged.deactivate(slot);}
-			void onConfigChangedConnect(std::function<void(void)>& slot)	{ configChanged.connect(slot);}
-			void onConfigChangedDisconnect(std::function<void(void)>& slot) { configChanged.deactivate(slot);}
 
-		private:
-			Simple::Signal<void(void)> statusChanged;
-			Simple::Signal<void(void)> configChanged;
-			Simple::Signal<void(void)> filesChanged;
-			Simple::Signal<void(void)> fontsChanged;
-			Simple::Signal<void(void)> uvChanged;
-#endif
 		protected:
-			virtual bool send(MProtocol::MCommand *cmd, Printers::ErrorCode& err);
+			bool _deleteAfterSend;
 			MProtocol::MCommandsFactory _factory;
 			MProtocol::LiveFlags _liveFlags;
+
+			virtual bool send(MProtocol::MCommand *cmd, Printers::ErrorCode& err) override;
 
 		private:
 			Printers::TIJPrinter _printer;

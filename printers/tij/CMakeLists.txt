@@ -9,6 +9,10 @@ set(TIJ_LIBRARY_NAME TijLibrary)
 project(${TIJ_LIBRARY_NAME})
 set (PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
+message("Parsing " ${TIJ_LIBRARY_NAME} " definitions")
+message("PROJECT_NAME: " ${PROJECT_NAME})
+message("PROJECT_BINARY_DIR: " ${PROJECT_BINARY_DIR})
+message("CMAKE_BINARY_DIR: " ${CMAKE_BINARY_DIR})
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../toolchain/cmake/macsa.cmake)	#configuration for macsa tij projects
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../toolchain/cmake/test.cmake)  #configuration test enabled and GTest requiered configuration
@@ -57,29 +61,55 @@ SET (PRINTERS_INCLUDES
 
 include_directories(${PRINTERS_INCLUDES})
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/src         ${CMAKE_BINARY_DIR}/printers/src)
-add_subdirectory(${PROJECT_SOURCE_DIR}/include     ${CMAKE_BINARY_DIR}/printers/include)
-add_subdirectory(${PROJECT_SOURCE_DIR}/mprotocol   ${CMAKE_BINARY_DIR}/mprotocol)
-add_subdirectory(${PROJECT_SOURCE_DIR}/tij/src     ${CMAKE_BINARY_DIR}/tij/src)
-add_subdirectory(${PROJECT_SOURCE_DIR}/tij/include ${CMAKE_BINARY_DIR}/tij/include)
-add_subdirectory(${PROJECT_SOURCE_DIR}/labels      ${CMAKE_BINARY_DIR}/labels)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src         ${PROJECT_BINARY_DIR}/printers/src)
+add_subdirectory(${PROJECT_SOURCE_DIR}/include     ${PROJECT_BINARY_DIR}/printers/include)
+add_subdirectory(${PROJECT_SOURCE_DIR}/mprotocol   ${PROJECT_BINARY_DIR}/mprotocol)
+add_subdirectory(${PROJECT_SOURCE_DIR}/tij/src     ${PROJECT_BINARY_DIR}/tij/src)
+add_subdirectory(${PROJECT_SOURCE_DIR}/tij/include ${PROJECT_BINARY_DIR}/tij/include)
+add_subdirectory(${PROJECT_SOURCE_DIR}/labels      ${PROJECT_BINARY_DIR}/labels)
+
+if (${ENABLE_TESTS})
+	set(SRC_TEST ${SRC_TEST})
+	set(HDRS_TEST ${HDRS_TEST})
+endif()
 
 ######################################
 ##			Targets					##
 ######################################
 #######		TIJ Libraries		######
-message("lib" ${TIJ_LIBRARY_NAME} " definition")
-set(SOVERSION ${TIJ_LIBRARY_VERSION})
-add_library(${TIJ_LIBRARY_NAME} SHARED  ${TIJ_SOURCES} ${PRINTERS_SOURCES} ${PROTOCOL_SOURCES} ${TIJ_SOURCES} ${LABELS_SOURCES}
-										${TIJ_HEADERS} ${PRINTERS_HEADERS} ${PROTOCOL_HEADERS} ${TIJ_HEADERS} ${LABELS_HEADERS})
-add_library(${TIJ_LIBRARY_NAME}-static STATIC ${TIJ_SOURCES} ${PRINTERS_SOURCES} ${PROTOCOL_SOURCES} ${TIJ_SOURCES} ${LABELS_SOURCES}
-											  ${TIJ_HEADERS} ${PRINTERS_HEADERS} ${PROTOCOL_HEADERS} ${TIJ_HEADERS} ${LABELS_HEADERS})
-set_target_properties(${TIJ_LIBRARY_NAME}
-	PROPERTIES SOVERSION ${SOVERSION})
+if (${BUILD_SHARED_LIBS} OR ${BUILD_STATIC_LIBS})
+	message("lib" ${PROJECT_NAME} " creating targets")
+	set(SOVERSION ${TIJ_LIBRARY_VERSION})
 
-set_target_properties(${TIJ_LIBRARY_NAME}-static
-		PROPERTIES SOVERSION ${SOVERSION} OUTPUT_NAME ${TIJ_LIBRARY_NAME})
+	if (${BUILD_SHARED_LIBS})
+		add_library(${PROJECT_NAME} SHARED
+							${TIJ_SOURCES} ${TIJ_HEADERS}
+							${PRINTERS_SOURCES} ${PRINTERS_HEADERS}
+							${PROTOCOL_SOURCES} ${PROTOCOL_HEADERS}
+							${LABELS_SOURCES} ${LABELS_HEADERS})
 
-target_link_libraries(${TIJ_LIBRARY_NAME} ${EXTERNAL_LIBS})
-install(TARGETS ${TIJ_LIBRARY_NAME}
-	LIBRARY DESTINATION ${LIB_PREFIX}/lib)
+		set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${SOVERSION})
+	endif()
+
+
+	if (${BUILD_STATIC_LIBS})
+		add_library(${PROJECT_NAME}-static STATIC
+						${TIJ_SOURCES} ${TIJ_HEADERS}
+						${PRINTERS_SOURCES} ${PRINTERS_HEADERS}
+						${PROTOCOL_SOURCES} ${PROTOCOL_HEADERS}
+						${LABELS_SOURCES} ${LABELS_HEADERS})
+		set_target_properties(${PROJECT_NAME}-static PROPERTIES SOVERSION ${SOVERSION} OUTPUT_NAME ${PROJECT_NAME})
+	endif()
+
+	target_link_libraries(${PROJECT_NAME} ${EXTERNAL_LIBS})
+	install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${LIB_PREFIX}/lib)
+
+	if (${ENABLE_TESTS} AND SRC_TEST)
+		set(PROJECT_TEST_NAME ${PROJECT_NAME}_Test)
+		link_directories(${PROJECT_BINARY_DIR}/tij)
+		add_executable(${PROJECT_TEST_NAME} ${SRC_TEST} ${HDRS_TEST})
+		target_link_libraries(${PROJECT_TEST_NAME} ${EXTERNAL_LIBS})
+		add_test(${PROJECT_NAME} ${PROJECT_TEST_NAME})
+
+	endif()
+endif()

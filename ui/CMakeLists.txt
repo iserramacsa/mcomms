@@ -35,11 +35,11 @@ set(INCLUDES)
 set(UIS)
 set(RESOURCES)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/ui/src)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/ui/include)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/resources ${CMAKE_BINARY_DIR}/ui/resources)
-add_subdirectory(${PROJECT_SOURCE_DIR}/../core ${CMAKE_BINARY_DIR}/core)
-add_subdirectory(${PROJECT_SOURCE_DIR}/../emulators/tij ${CMAKE_BINARY_DIR}/emulators/tij)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src			${PROJECT_BINARY_DIR}/ui/src)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include		${PROJECT_BINARY_DIR}/ui/include)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/resources		${PROJECT_BINARY_DIR}/ui/resources)
+add_subdirectory(${PROJECT_SOURCE_DIR}/../core				${PROJECT_BINARY_DIR}/core)
+add_subdirectory(${PROJECT_SOURCE_DIR}/../emulators/tij		${PROJECT_BINARY_DIR}/emulators/tij)
 
 set(SOURCES ${SOURCES})
 set(HEADERS ${HEADERS})
@@ -71,9 +71,9 @@ QT4_WRAP_CPP( MOC_SRCS ${HEADERS} )
 ###########################
 
 link_directories(
-	${CMAKE_BINARY_DIR}/core
-	${CMAKE_BINARY_DIR}/network
-	${CMAKE_BINARY_DIR}/printers/tij
+	${PROJECT_BINARY_DIR}/core
+	${PROJECT_BINARY_DIR}/network
+	${PROJECT_BINARY_DIR}/printers/tij
 	)
 
 # compile

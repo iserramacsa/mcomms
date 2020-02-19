@@ -16,7 +16,7 @@ PrintersManager::~PrintersManager()
 bool PrintersManager::addTijPrinter(const std::string name, const std::string &address, bool monitorize)
 {
 	if (monitorize){
-		TijPrinterMonitor* controller = new TijPrinterMonitor(name, address);
+		TIJPrinterMonitor* controller = new TIJPrinterMonitor(name, address);
 		return _tcpNetwork.addNewNode(controller);
 	}
 	else {

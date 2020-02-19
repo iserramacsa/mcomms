@@ -12,6 +12,7 @@ using namespace Macsa::Network;
 
 TIJPrinterController::TIJPrinterController(const std::string &id, const std::string &address) :
 	PrinterController(id, address, MPROTOCOL_PORT),
+	_deleteAfterSend(true),
 	_factory(_printer, _liveFlags)
 {}
 
@@ -246,16 +247,18 @@ bool TIJPrinterController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &e
 		ISocket::nSocketFrameStatus  status = socket->send(tx);
 		if (status == ISocket::FRAME_SUCCESS)
 		{
+			std::cout << __func__ << " " << cmd->commandName() << " sent" << std::endl;
 			std::string resp = "";
 			status = socket->receive(resp);
 			if(status == ISocket::FRAME_SUCCESS)
 			{
+				std::cout << __func__ << " " << cmd->commandName() << " Received" << std::endl;
 				std::lock_guard<std::mutex> lock(_mutex);
-				std::cout << tx << std::endl;
+//				std::cout << tx << std::endl;
 				success = _factory.parseResponse(resp, err);
 			}
 			else {
-				std::cerr << __func__ << " Receive failed: ";
+				std::cout << __func__ << " Receive failed: ";
 				switch (status) {
 					case ISocket::FRAME_SUCCESS:     std::cerr << "SUCCESS" << std::endl; break;
 					case ISocket::FRAME_TIMEOUT:	 std::cerr << "TIMEOUT" << std::endl; break;
@@ -265,7 +268,7 @@ bool TIJPrinterController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &e
 			}
 		}
 		else {
-			std::cerr << __func__ << " Send Command failed: ";
+			std::cout << __func__ << " Send Command failed: ";
 			switch (status) {
 				case ISocket::FRAME_SUCCESS:     std::cerr << "SUCCESS" << std::endl; break;
 				case ISocket::FRAME_TIMEOUT:	 std::cerr << "TIMEOUT" << std::endl; break;
@@ -274,6 +277,10 @@ bool TIJPrinterController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &e
 			}
 		}
 	}
+	if(_deleteAfterSend) {
+		delete cmd;
+	}
+
 	return success;
 }
 

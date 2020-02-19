@@ -7,11 +7,16 @@ cmake_minimum_required(VERSION 3.5.0)
 set(PROJECT_NAME MComms)
 project(${PROJECT_NAME})
 
+message("Parsing " ${PROJECT_NAME} " definitions")
+message("PROJECT_NAME: " ${PROJECT_NAME})
+message("CMAKE_BINARY_DIR: " ${CMAKE_BINARY_DIR})
+message("PROJECT_BINARY_DIR: " ${PROJECT_BINARY_DIR})
+
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../toolchain/cmake/macsa.cmake)	#configuration for macsa tij projects
 include(${CMAKE_CURRENT_SOURCE_DIR}/../toolchain/cmake/test.cmake)  #configuration test enabled and GTest requiered configuration
-include(${CMAKE_CURRENT_SOURCE_DIR}/../tools/tools.cmake)  #Add tools options
+#include(${CMAKE_CURRENT_SOURCE_DIR}/../tools/tools.cmake)  #Add tools options
 
 if(UNIX)
 	if (${BUILD_SHARED_LIBS})
@@ -38,14 +43,14 @@ set(HEADERS)
 set(INCLUDES)
 
 ##Add tools
-set(USE_SIGNALS ON)
-add_subdirectory(${PROJECT_SOURCE_DIR}/../tools ${CMAKE_BINARY_DIR}/tools)
+#set(USE_SIGNALS ON)
+#add_subdirectory(${PROJECT_SOURCE_DIR}/../tools ${PROJECT_BINARY_DIR}/tools)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/core/src)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/core/include)
-add_subdirectory(${PROJECT_SOURCE_DIR}/../network ${CMAKE_BINARY_DIR}/network)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src	 ${PROJECT_BINARY_DIR}/src)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include)
+add_subdirectory(${PROJECT_SOURCE_DIR}/../network	 ${PROJECT_BINARY_DIR}/network)
 ## Add printers ##
-add_subdirectory(${PROJECT_SOURCE_DIR}/../printers ${CMAKE_BINARY_DIR}/printers)
+add_subdirectory(${PROJECT_SOURCE_DIR}/../printers	 ${PROJECT_BINARY_DIR}/printers)
 
 
 SET (INCLUDES
@@ -71,6 +76,7 @@ endif()
 ## Install targets
 ###########################
 if (${BUILD_SHARED_LIBS} OR ${BUILD_STATIC_LIBS})
+	message("lib" ${PROJECT_NAME} " creating targets")
 	set(SOVERSION ${MCOMMS_CORE_VERSION})
 
 	if (${BUILD_SHARED_LIBS})
@@ -87,23 +93,21 @@ if (${BUILD_SHARED_LIBS} OR ${BUILD_STATIC_LIBS})
 	endif()
 
 	link_directories(
-		${CMAKE_BINARY_DIR}/network
-		${CMAKE_BINARY_DIR}/printers/tij
+		${PROJECT_BINARY_DIR}/network
+		${PROJECT_BINARY_DIR}/printers/tij
 	)
 
 	target_link_libraries(${PROJECT_NAME} ${EXTERNAL_LIBS})
 	install(TARGETS ${PROJECT_NAME}
 		LIBRARY DESTINATION ${LIB_PREFIX}/lib)
 
-if (${ENABLE_TESTS} AND SRC_TEST)
-	set(PROJECT_TEST_NAME ${PROJECT_NAME}_Test)
-	link_directories(
-		${CMAKE_BINARY_DIR}/core
-	)
-	add_executable(${PROJECT_TEST_NAME} ${SRC_TEST} ${HDRS_TEST})
-	target_link_libraries(${PROJECT_TEST_NAME} ${EXTERNAL_LIBS})
-	add_test(${PROJECT_NAME} ${PROJECT_TEST_NAME})
+	if (${ENABLE_TESTS} AND SRC_TEST)
+		set(PROJECT_TEST_NAME ${PROJECT_NAME}_Test)
+		link_directories(${PROJECT_BINARY_DIR}/core)
+		add_executable(${PROJECT_TEST_NAME} ${SRC_TEST} ${HDRS_TEST})
+		target_link_libraries(${PROJECT_TEST_NAME} ${EXTERNAL_LIBS})
+		add_test(${PROJECT_NAME} ${PROJECT_TEST_NAME})
 
-endif()
+	endif()
 
 endif()

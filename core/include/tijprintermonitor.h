@@ -1,4 +1,4 @@
-#ifndef TIJ_PRINTER_MONITOR_H
+﻿#ifndef TIJ_PRINTER_MONITOR_H
 #define TIJ_PRINTER_MONITOR_H
 
 #include <string>
@@ -10,14 +10,14 @@
 #include <thread>
 
 namespace Macsa {
-	class TijPrinterMonitor : public TIJPrinterController{
+	class TIJPrinterMonitor : public TIJPrinterController{
 		public:
-			TijPrinterMonitor(const std::string &id, const std::string &address);
-			~TijPrinterMonitor();
+			TIJPrinterMonitor(const std::string &id, const std::string &address);
+			virtual ~TIJPrinterMonitor() override;
 
 		protected:
 			virtual void run();
-			virtual bool send(MProtocol::MCommand *cmd, Printers::ErrorCode& err);
+			virtual bool send(MProtocol::MCommand *cmd, Printers::ErrorCode& err) override;
 
 		private:
 			std::atomic_bool _running;
@@ -28,7 +28,6 @@ namespace Macsa {
 			std::list<MProtocol::MCommand*> _commands;
 
 			void stop();
-
 	};
 }
 
