@@ -17,8 +17,6 @@ message("CMAKE_BINARY_DIR: " ${CMAKE_BINARY_DIR})
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../toolchain/cmake/macsa.cmake)	#configuration for macsa tij projects
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../toolchain/cmake/test.cmake)  #configuration test enabled and GTest requiered configuration
 
-#include($ENV{HOME}/workspace/tools/cmake/macsa.cmake)
-
 if (WIN32)
 	set(EXTERNAL_LIBS	${EXTERNAL_LIBS}
 						${LIB_PREFIX}/lib/tinyxml2.lib)
