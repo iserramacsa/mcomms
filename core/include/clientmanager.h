@@ -13,7 +13,7 @@ using namespace Macsa;
 using namespace Macsa::Network;
 
 class AbstractSocket;
-class ClientManager : public Network::MNetwork
+class ClientManager : protected Network::MNetwork
 {
 	public:
 		ClientManager(Printers::TIJPrinter& printer);
@@ -23,7 +23,6 @@ class ClientManager : public Network::MNetwork
 		void stop();
 
 	private:
-//		Network::ISocket *_server;
 		std::thread _svrLoop;
 		std::atomic_bool _running;
 		std::mutex _mtx;

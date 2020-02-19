@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QtGui>
+#include <QTimer>
 #include "viewers/tijviewercontroller.h"
 #include "tijprintercontroller.h"
 #include <QCheckBox>
@@ -40,8 +41,8 @@ class PrinterStatusView : public QWidget
 
 		QFormLayout* _propLayout;
 		QMap<QString, QLabel*> _props;
-		TIJViewerController* _controller;
 
+		TIJViewerController* _controller;
 
 		virtual void resizeEvent(QResizeEvent *);
 

@@ -83,14 +83,14 @@ void MainWindow::onAddPrinter()
 			//case PrinterConnectionDialog::ServerType::TIJ_PRINTER:
 				break;
 		}
-		if (_manager.addTijPrinter(name.toStdString(), address.toStdString())) {
+		bool monitorize = false;
+		if (_manager.addTijPrinter(name.toStdString(), address.toStdString(), monitorize)) {
 			refreshPrintersList();
 			if (_printersListModel->stringList().count() == 1) {
 				onPrinterSelected(_printersListModel->index(0));
 			}
 		}
 	}
-
 }
 
 void MainWindow::onDelPrinter()
@@ -111,6 +111,7 @@ void MainWindow::onDelPrinter()
 void MainWindow::onPrinterSelected(const QModelIndex &index)
 {
 	int row = index.row();
+
 	Macsa::TIJPrinterController * controller = dynamic_cast<Macsa::TIJPrinterController*>(_manager.getPrinter(row));
 	if (controller){
 		qDebug() << __func__  << " Selected printer: " << controller->id().c_str();
@@ -122,6 +123,7 @@ void MainWindow::onPrinterSelected(const QModelIndex &index)
 		_printerView->setEnabled(false);
 	}
 }
+
 
 void MainWindow::refreshPrintersList()
 {

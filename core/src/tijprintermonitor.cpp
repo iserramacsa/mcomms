@@ -1,20 +1,23 @@
 #include "tijprintermonitor.h"
+#include "mprotocol/mprotocol.h"
+#include "mprotocol/mfiles.h"
 
 using namespace Macsa;
 using namespace Macsa::Network;
 
-TijPrinterMonitor::TijPrinterMonitor(const std::string &id, const std::string &address) :
+TIJPrinterMonitor::TIJPrinterMonitor(const std::string &id, const std::string &address) :
 	TIJPrinterController(id, address)
 {
-	_th = std::thread(&TijPrinterMonitor::run, this);
+	_deleteAfterSend = false;
+	_th = std::thread(&TIJPrinterMonitor::run, this);
 }
 
-TijPrinterMonitor::~TijPrinterMonitor()
+TIJPrinterMonitor::~TIJPrinterMonitor()
 {
 	stop();
 }
 
-void TijPrinterMonitor::run()
+void TIJPrinterMonitor::run()
 {
 	_running.store(true);
 
@@ -29,32 +32,53 @@ void TijPrinterMonitor::run()
 			MProtocol::MCommand* cmd = (*_commands.begin());
 			if(TIJPrinterController::send(cmd, _lastError)) {
 
+				// TODO: Add observers and callbacks
+//				if (cmd->commandName() == MSTATUS) {
+//					statusChanged.emit();
+//				}
+//				if (cmd->commandName() == MCONFIG_GET) {
+//					configChanged.emit();
+//				}
+//				if (cmd->commandName() == MFILES_GET) {
+//					MProtocol::MGetFilesList* files = dynamic_cast<MProtocol::MGetFilesList*>(cmd);
+//					if (files->filter().find(NISX_FILTER) != std::string::npos){
+//						filesChanged.emit();
+//					}
+//					if (files->filter().find(FONTS_FILTER) != std::string::npos){
+//						fontsChanged.emit();
+//					}
+//				}
+//				// TODO: Add user values changed
+////				uvChanged;
+//				if (cmd->commandName() == MERRORS_LOGS) {
+//					errorsListChanged.emit();
+//				}
 			}
 			delete cmd;
 			_commands.pop_front();
 		}
 
-		if (statusChanged()) {
+		if (isStatusChanged()) {
 			TIJPrinterController::updateStatus();
 		}
-		if (configChanged()) {
+		if (isConfigChanged()) {
 			TIJPrinterController::updateConfig();
 		}
-		if (filesChanged()) {
+		if (isFilesChanged()) {
 			TIJPrinterController::updateFilesList();
 		}
-		if (fontsChanged())  {
+		if (isFontsChanged())  {
 			TIJPrinterController::updateFontsList();
 		}
 		//if  (userValuesChanged()){} //TODO
-		if (errorsLogsChanged()) {
+		if (isErrorsLogsChanged()) {
 			TIJPrinterController::updateErrorsList();
 		}
 	}
 
 }
 
-bool TijPrinterMonitor::send(MProtocol::MCommand *cmd, Printers::ErrorCode &)
+bool TIJPrinterMonitor::send(MProtocol::MCommand *cmd, Printers::ErrorCode &)
 {
 	ulong numCommands = _commands.size();
 	_commands.push_back(cmd);
@@ -65,7 +89,7 @@ bool TijPrinterMonitor::send(MProtocol::MCommand *cmd, Printers::ErrorCode &)
 	return ((_commands.size() - numCommands) > 0);
 }
 
-void TijPrinterMonitor::stop()
+void TIJPrinterMonitor::stop()
 {
 	_running.store(false);
 	{

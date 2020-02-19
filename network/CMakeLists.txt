@@ -8,6 +8,10 @@ set(NETWORK_LIB_NAME MNetwork)
 
 project(${NETWORK_LIB_NAME})
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+message("Parsing " ${NETWORK_LIB_NAME} " definitions")
+message("PROJECT_NAME: " ${PROJECT_NAME})
+message("PROJECT_BINARY_DIR: " ${PROJECT_BINARY_DIR})
+message("CMAKE_BINARY_DIR: " ${CMAKE_BINARY_DIR})
 
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../toolchain/cmake/macsa.cmake)	#configuration for macsa tij projects
@@ -43,8 +47,8 @@ SET (LIB_INCLUDES
 
 include_directories(${LIB_INCLUDES})
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/network/src)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/network/include)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src		${PROJECT_BINARY_DIR}/src)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include	${PROJECT_BINARY_DIR}/include)
 
 set(SOURCES ${SOURCES})
 set(HEADERS ${HEADERS})
@@ -58,32 +62,32 @@ endif()
 ## Install targets
 ###########################
 set(SOVERSION ${NETWORK_LIB_VERSION})
-if (${BUILD_SHARED_LIBS})
-	add_library(${NETWORK_LIB_NAME} SHARED ${SOURCES} ${HEADERS})
-	set_target_properties(${NETWORK_LIB_NAME}
-		PROPERTIES SOVERSION ${SOVERSION})
-endif()
+	message("lib" ${NETWORK_LIB_NAME} " creating targets")
 
-if (${BUILD_STATIC_LIBS})
-	add_library(${NETWORK_LIB_NAME}-static STATIC ${SOURCES} ${HEADERS})
-	set_target_properties(${NETWORK_LIB_NAME}-static
-			PROPERTIES SOVERSION ${SOVERSION} OUTPUT_NAME ${NETWORK_LIB_NAME})
-endif()
+	if (${BUILD_SHARED_LIBS})
+		add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
+		set_target_properties(${PROJECT_NAME}
+			PROPERTIES SOVERSION ${SOVERSION})
+	endif()
 
-target_link_libraries(${NETWORK_LIB_NAME} ${EXTERNAL_LIBS})
-install(TARGETS ${NETWORK_LIB_NAME}
-	LIBRARY DESTINATION ${LIB_PREFIX}/lib)
+	if (${BUILD_STATIC_LIBS})
+		add_library(${PROJECT_NAME}-static STATIC ${SOURCES} ${HEADERS})
+		set_target_properties(${PROJECT_NAME}-static
+				PROPERTIES SOVERSION ${SOVERSION} OUTPUT_NAME ${PROJECT_NAME})
+	endif()
+
+	target_link_libraries(${PROJECT_NAME} ${EXTERNAL_LIBS})
+	install(TARGETS ${PROJECT_NAME}
+		LIBRARY DESTINATION ${LIB_PREFIX}/lib)
 
 
-if (${ENABLE_TESTS})
-	message("Adding ${NETWORK_LIB_NAME} tests" )
-	set(PROJECT_TEST_NAME ${NETWORK_LIB_NAME}_Test)
-	link_directories(
-	    ${CMAKE_BINARY_DIR}/network
-	)
+	if (${ENABLE_TESTS})
+		message("Adding ${PROJECT_NAME} tests" )
+		set(PROJECT_TEST_NAME ${PROJECT_NAME}_Test)
+		link_directories(${PROJECT_BINARY_DIR})
 
-	add_executable(${PROJECT_TEST_NAME} ${SRC_TEST} ${HDRS_TEST})
-	target_link_libraries(${PROJECT_TEST_NAME} ${EXTERNAL_LIBS} MNetwork)
-	add_test(${NETWORK_LIB_NAME} ${PROJECT_TEST_NAME})
+		add_executable(${PROJECT_TEST_NAME} ${SRC_TEST} ${HDRS_TEST})
+		target_link_libraries(${PROJECT_TEST_NAME} ${EXTERNAL_LIBS} MNetwork)
+		add_test(${PROJECT_NAME} ${PROJECT_TEST_NAME})
 
 endif()

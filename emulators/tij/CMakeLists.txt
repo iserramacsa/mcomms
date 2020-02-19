@@ -7,7 +7,12 @@ cmake_minimum_required(VERSION 3.5.0)
 set(PROJECT_NAME TIJEmulator)
 project(${PROJECT_NAME})
 
-option(ADD_MCOMMS_LIBS "Add MComms cmake projects" OFF)
+message("Parsing " ${TIJ_LIBRARY_NAME} " definitions")
+message("PROJECT_NAME: " ${PROJECT_NAME})
+message("PROJECT_BINARY_DIR: " ${PROJECT_BINARY_DIR})
+message("CMAKE_BINARY_DIR: " ${CMAKE_BINARY_DIR})
+
+option(BUILD_EMULATOR_LIBS "Add MComms cmake projects" OFF)
 
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
@@ -38,21 +43,11 @@ set(UIS)
 set(RESOURCES)
 
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/emulators/tij/src)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/emulators/tij/include)
-if (ADD_MCOMMS_LIBS)
-    add_subdirectory(${PROJECT_SOURCE_DIR}/../core ${CMAKE_BINARY_DIR}/mcomms)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src		${PROJECT_BINARY_DIR}/tij/src)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include	${PROJECT_BINARY_DIR}/tij/include)
+if (BUILD_EMULATOR_LIBS)
+	add_subdirectory(${PROJECT_SOURCE_DIR}/../core		${PROJECT_BINARY_DIR}/core)
 endif()
-
-SET (INCLUDES
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/../core/include
-    ${PROJECT_SOURCE_DIR}/../network/include
-    ${PROJECT_SOURCE_DIR}/../printers/include
-    ${LIB_PREFIX}/include
-    ${INCLUDES}
-)
 
 set(SOURCES ${SOURCES})
 set(HEADERS ${HEADERS})
@@ -72,7 +67,7 @@ include_directories(${INCLUDES})
 find_package( Qt4 REQUIRED )
 include(${QT_USE_FILE})
 add_definitions(${QT_DEFINITIONS})
-include_directories(${CMAKE_BINARY_DIR})
+include_directories(${PROJECT_BINARY_DIR})
 
 # using Qt meta-system (precompiler)
 QT4_ADD_RESOURCES( RES_SOURCES ${RESOURCES} )
@@ -84,9 +79,9 @@ QT4_WRAP_CPP( MOC_SRCS ${HEADERS} )
 ###########################
 
 link_directories(
-    ${CMAKE_BINARY_DIR}/core
-    ${CMAKE_BINARY_DIR}/network
-    ${CMAKE_BINARY_DIR}/printers/tij
+	${PROJECT_BINARY_DIR}/core
+	${PROJECT_BINARY_DIR}/core/network
+	${PROJECT_BINARY_DIR}/core/printers/tij
     )
 
 # compile

@@ -24,12 +24,12 @@ namespace Macsa {
 
 			//Live
 			Printers::ErrorCode getLive();
-			bool statusChanged() const {return _liveFlags.statusChanged;}
-			bool configChanged() const {return _liveFlags.configChanged;}
-			bool filesChanged() const {return _liveFlags.filesChanged;}
-			bool fontsChanged() const {return _liveFlags.fontsChanged;}
-			bool userValuesChanged() const {return _liveFlags.userValueChanged;}
-			bool errorsLogsChanged() const {return _liveFlags.errorsLogChanged;}
+			bool isStatusChanged() const {return _liveFlags.statusChanged;}
+			bool isConfigChanged() const {return _liveFlags.configChanged;}
+			bool isFilesChanged() const {return _liveFlags.filesChanged;}
+			bool isFontsChanged() const {return _liveFlags.fontsChanged;}
+			bool isUserValuesChanged() const {return _liveFlags.userValueChanged;}
+			bool isErrorsLogsChanged() const {return _liveFlags.errorsLogChanged;}
 			bool isInError() const {return _liveFlags.isInError;}
 
 			//Status
@@ -68,9 +68,11 @@ namespace Macsa {
 			inline std::vector<std::string> getAllFiles() { return getFiles(ALL_FILES_FILTER); }
 
 		protected:
-			virtual bool send(MProtocol::MCommand *cmd, Printers::ErrorCode& err);
+			bool _deleteAfterSend;
 			MProtocol::MCommandsFactory _factory;
 			MProtocol::LiveFlags _liveFlags;
+
+			virtual bool send(MProtocol::MCommand *cmd, Printers::ErrorCode& err) override;
 
 		private:
 			Printers::TIJPrinter _printer;

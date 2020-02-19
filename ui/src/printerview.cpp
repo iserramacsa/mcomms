@@ -22,6 +22,9 @@ PrinterView::PrinterView(QWidget *parent) :
 	connect(ui.butGetMessages, SIGNAL(clicked(bool)), SLOT(onRequestMessages()));
 	connect(ui.butGetErrors, SIGNAL(clicked(bool)), SLOT(onRequestErrorsLog()));
 
+	_dtTimer.setParent(this);
+	_dtTimer.setInterval(1000);
+	connect(&_dtTimer, SIGNAL(timeout()), SLOT(onUpdateDateTime()));
 
 	buildStatus();
 	buildConfig();
@@ -51,6 +54,9 @@ void PrinterView::setController(Macsa::TIJPrinterController &controller)
 	_printerFilesView->setController(controller);
 	_controller->updatePrinterData();
 	refresh();
+	if (!_dtTimer.isActive()) {
+		_dtTimer.start();
+	}
 }
 
 void PrinterView::refresh()
@@ -63,8 +69,7 @@ void PrinterView::refresh()
 
 		setPrinterStatus(_controller->printerStatus());
 
-		QString dt = _controller->printerDateTime("");
-		ui.lblDatetime->setText(dt);
+		onUpdateDateTime();
 
 		ui.lblCtrlVersion->setText(_controller->boardControllerVersion());
 		ui.lblFPGAVersion->setText(_controller->boardFPGAVersion());
@@ -168,7 +173,8 @@ void PrinterView::clear()
 
 	setPrinterStatus(TIJViewerController::TIJStatus::DISCONNECTED);
 	ui.lblPrinterName->setText("");
-	ui.lblDatetime->setText("");
+	ui.lblTime->setText("");
+	ui.lblDate->setText("");
 	ui.lblCtrlVersion->setText("---");
 	ui.lblCoreVersion->setText("---");
 	ui.lblFPGAVersion->setText("---");
@@ -345,5 +351,16 @@ void PrinterView::onRequestedChanges()
 	if (_controller != nullptr) {
 		_controller->updatePrinterData();
 		refresh();
+	}
+}
+
+void PrinterView::onUpdateDateTime()
+{
+	if (_controller) {
+		ui.lblTime->setText(_controller->printerDateTime("hh:mm:ss"));
+		ui.lblDate->setText(_controller->printerDateTime("yyyy/MM/dd"));
+	}
+	else {
+		_dtTimer.stop();
 	}
 }

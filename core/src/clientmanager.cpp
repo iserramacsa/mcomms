@@ -8,7 +8,6 @@ ClientManager::ClientManager(Printers::TIJPrinter& printer) :
 	Network::MNetwork (Network::ISocket::TCP_SOCKET),
 	_printer(printer)
 {
-//  _server = nullptr;
   _running.store(false);
   _svrPort = 0;
 }
@@ -63,6 +62,9 @@ void ClientManager::serverMainLoop()
 				ClientHandler* handler = new ClientHandler(_printer, clientSocket, _svrPort);
 				_handlers.push_back(handler);
 				handler->start();
+#if SSIGNALS
+				clientConnected.emit(id.str(), clientSocket->address());
+#endif
 			}
 		}
 	}
