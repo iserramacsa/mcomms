@@ -2,7 +2,7 @@
 #define SERVER_MOCK_H
 
 #include <gmock/gmock.h>
-#include "network/abstractsocket.h"
+#include "abstractsocket.h"
 #include <condition_variable>
 #include <mutex>
 #include <thread>
@@ -10,6 +10,8 @@
 #include <atomic>
 
 using namespace Macsa::Network;
+
+#define SERVER_MOCKABLE_ADDR "127.0.0.1"
 
 class ServerMockable
 {

@@ -11,12 +11,10 @@ namespace Macsa {
 				MNetwork(ISocket::SocketType_n rootNodeType = ISocket::TCP_SOCKET);
 				virtual ~MNetwork();
 
-#ifdef NETWORK_VERSION_STR
 				static int versionMajor();
 				static int versionMinor();
 				static int versionPatch();
 				static std::string version();
-#endif
 
 				bool addNewNode(NetworkNode* node);
 				bool removeNode(NetworkNode* node);

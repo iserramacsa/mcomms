@@ -1,5 +1,5 @@
 #include "network/network.h"
-#include "network/abstractsocket.h"
+#include "abstractsocket.h"
 #include <algorithm>
 
 using namespace Macsa::Network;
@@ -12,7 +12,7 @@ std::string MNetwork::version() {return NETWORK_VERSION_STR;}
 #endif
 
 MNetwork::MNetwork(ISocket::SocketType_n rootNodeType) :
-	NetworkNode("root" , new AbstractSocket(rootNodeType))
+	NetworkNode("root" , "")//new AbstractSocket(rootNodeType))
 {
 	_nodes.clear();
 }
@@ -43,7 +43,7 @@ bool MNetwork::addNewNode(NetworkNode *node)
 NetworkNode *MNetwork::getNodeById(const std::string &id) const
 {
 	for (unsigned int i = 0; i < _nodes.size(); i++) {
-		if(_nodes.at(i)->id().compare(id) == 0) {
+		if(_nodes.at(i)->id() == id) {
 			return _nodes.at(i);
 		}
 	}
@@ -54,7 +54,7 @@ NetworkNode *MNetwork::getNodeById(const std::string &id) const
 NetworkNode *MNetwork::getNode(const std::string &address) const
 {
 	for (unsigned int i = 0; i < _nodes.size(); i++) {
-		if(_nodes.at(i)->address().compare(address) == 0) {
+		if(_nodes.at(i)->address() == address) {
 			return _nodes.at(i);
 		}
 	}
@@ -130,7 +130,7 @@ NetworkNode *MNetwork::find(const std::string& name) const
 
 	if (name.length()) {
 		auto found = [name](NetworkNode* n) {
-			return(n->id().compare(name) == 0);
+			return(n->id() == name);
 		};
 
 		std::vector<NetworkNode*>::const_iterator it = std::find_if(_nodes.begin(), _nodes.end(), found);
@@ -147,7 +147,7 @@ NetworkNode *MNetwork::findByAdrress(const std::string &address) const
 {
 	NetworkNode * node = nullptr;
 	auto found = [&](NetworkNode* n) {
-		return (n->address().compare(address) == 0);
+		return (n->address() == address);
 	};
 
 	std::vector<NetworkNode*>::const_iterator it = std::find_if(_nodes.begin(), _nodes.end(), found);

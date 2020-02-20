@@ -1,7 +1,7 @@
 #ifndef UNIX_SOCKET_H
 #define UNIX_SOCKET_H
 
-#include "isocket.h"
+#include "network/isocket.h"
 #include "netinet/in.h"
 
 namespace Macsa {
@@ -33,7 +33,7 @@ namespace Macsa {
 
 			protected:
 				virtual bool init();
-				ISocket* socketFromConnection(sConnection& conn);
+				UnixSocket* socketFromConnection(sConnection& conn);
 
 			private:
 				sConnection _sock;

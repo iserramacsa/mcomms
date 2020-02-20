@@ -1,6 +1,6 @@
 #include "network/networknode.h"
-#include "network/tcpsocket.h"
-#include "network/udpsocket.h"
+#include "tcpsocket.h"
+#include "udpsocket.h"
 
 using namespace Macsa::Network;
 
@@ -8,18 +8,6 @@ NetworkNode::NetworkNode(const std::string &id, const std::string &address)
 {
 	_id = id;
 	_address = address;
-}
-
-NetworkNode::NetworkNode(const std::string &id, ISocket* connection)
-{
-	_id = id;
-	if (connection) {
-		_connections.push_back(connection);
-		_address = connection->address();
-	}
-	else {
-		_address.clear();
-	}
 }
 
 NetworkNode::~NetworkNode()
@@ -42,19 +30,26 @@ int NetworkNode::connections() const
 	return static_cast<int>(_connections.size());
 }
 
-
 bool NetworkNode::connect(ISocket::SocketType_n type, uint16_t port)
 {
 	bool connected = false;
 	std::vector<ISocket*>::const_iterator it = connection(type, port);
-	if (it == _connections.end()) {
-		addConnection(type, port);
-	}
-	else {
-		connected = ((*it)->status() == ISocket::CONNECTED);
+
+	if (it != _connections.end()){
+		connected = ((*it)->status() <= ISocket::CONNECTED);
 		if(!connected) {
 			connected = (*it)->connect(_address, port);
 		}
+	}
+	else {
+		ISocket* socket = initSocket(type, port);
+		if (socket != nullptr) {
+			connected = socket->connect(_address, port);
+		}
+		if (connected) {
+			addConnection(socket);
+		}
+
 	}
 
 	return connected;
@@ -78,18 +73,7 @@ bool NetworkNode::addConnection(ISocket::SocketType_n type, uint16_t port)
 	AbstractSocket* asockt = nullptr;
 	if (connection(type, port) == _connections.end())
 	{
-		if (type == ISocket::TCP_SOCKET)
-		{
-			TcpSocket* sock = new TcpSocket();
-			sock->connect(_address, port);
-			asockt = sock;
-		}
-		else
-		{
-			UdpSocket* sock = new UdpSocket(port);
-			asockt = sock;
-		}
-
+		asockt = dynamic_cast<AbstractSocket*>(initSocket(type, port));
 		if (asockt != nullptr)
 		{
 			_connections.push_back(asockt);
@@ -101,7 +85,8 @@ bool NetworkNode::addConnection(ISocket::SocketType_n type, uint16_t port)
 
 bool NetworkNode::addConnection(ISocket *socket)
 {
-	if (socket->address().compare(_address) == 0){
+	std::string address = socket->address();
+	if (address == _address) {
 		if (!exist(socket))
 		{
 			_connections.push_back(socket);
@@ -171,11 +156,23 @@ bool NetworkNode::operator != (const NetworkNode &other)
 	return !equal(other);
 }
 
+ISocket *NetworkNode::initSocket(ISocket::SocketType_n type, uint16_t port)
+{
+	if (type == ISocket::TCP_SOCKET)
+	{
+		return new TcpSocket();
+	}
+	else
+	{
+		return new UdpSocket(port);
+	}
+}
+
 bool NetworkNode::initServer(uint16_t port)
 {
 	bool success = false;
 
-	if (accessPoints(port) == _accessPoints.end()) {
+	if (accessPoint(port) == _accessPoints.end()) {
 		TcpSocket* server = new TcpSocket();
 		if (server->bind(port)) {
 			success = server->listen();
@@ -192,7 +189,7 @@ ISocket * NetworkNode::accept(uint16_t port)
 {
 	AbstractSocket* client = nullptr;
 
-	std::vector<ISocket*>::const_iterator it = accessPoints(port);
+	std::vector<ISocket*>::const_iterator it = accessPoint(port);
 	if (it != _accessPoints.end()) {
 		TcpSocket* svr = dynamic_cast<TcpSocket*>(*it);
 		if (svr != nullptr) {
@@ -206,7 +203,7 @@ ISocket * NetworkNode::accept(uint16_t port)
 bool NetworkNode::equal(const NetworkNode &other)
 {
 	bool equal = false;
-	if  (_address.compare(other.address()) == 0) {
+	if  (_address == other.address()) {
 		if (_connections.size() == other._connections.size()) {
 			if (_connections.size()){
 				for (unsigned int i = 0; i < _connections.size(); i++) {

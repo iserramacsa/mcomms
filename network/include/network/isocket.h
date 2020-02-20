@@ -4,11 +4,6 @@
 #include <stdint.h>
 #include <string>
 
-#ifndef VIRTUAL_MOCK
-#define VIRTUAL_MOCK
-#endif
-
-
 namespace Macsa {
 	namespace Network {
 #define BACKLOG_CONNECTIONS	5
@@ -85,7 +80,7 @@ namespace Macsa {
 				bool equal(const ISocket& other) const {
 					return _type == other._type &&
 							_port == other._port &&
-							(address().compare(other.address()) == 0);
+							(address() == other.address());
 				}
 
 				void setStatus(SocketStatus_n status) {

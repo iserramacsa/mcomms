@@ -1,4 +1,4 @@
-#include "network/tcpsocket.h"
+#include "tcpsocket.h"
 using namespace Macsa::Network;
 
 TcpSocket::TcpSocket() :
