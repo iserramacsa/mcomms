@@ -223,6 +223,7 @@ TEST_F(MNetworkNodeUT, disconnectStoredConnectedConnection_returnDisconnected)
 
 
 
+
 /**
  * @brief Remove connections by type and port test
  */
@@ -260,65 +261,63 @@ TEST_F(MNetworkNodeUT, disconnectedSocket_returnDisconnected)
 	EXPECT_EQ(_node->status(), NetworkNode::DISCONNECTED);
 }
 
-// Review
 /**
  * @brief Connected status test
  */
-// TEST_F(MNetworkNodeUT, disconnectedAndConnectedSockets_returnConnected)
-// {
-// 	_node = new NetworkNode(LOCAL_ID, getNewSocket(DEFAULT_ADDRESS, ISocket::TCP_SOCKET, TEST_PORT, ISocket::CONNECTED));
-//
-// 	EXPECT_EQ(_node->status(), NetworkNode::CONNECTED);
-// 	EXPECT_TRUE(_node->addConnection(getNewSocket(DEFAULT_ADDRESS, ISocket::TCP_SOCKET, TEST_PORT + 1, ISocket::UNKNOWN)));
-// 	EXPECT_EQ(_node->status(), NetworkNode::CONNECTED);
-// }
+TEST_F(MNetworkNodeUT, disconnectedAndConnectedSockets_returnConnected)
+{
+	_node = new NetworkNode(LOCAL_ID, DEFAULT_ADDRESS);
+	_node->addConnection(getNewSocket(DEFAULT_ADDRESS, ISocket::TCP_SOCKET, TEST_PORT, ISocket::CONNECTED));
+	EXPECT_EQ(_node->status(), NetworkNode::CONNECTED);
+	EXPECT_TRUE(_node->addConnection(getNewSocket(DEFAULT_ADDRESS, ISocket::TCP_SOCKET, TEST_PORT + 1, ISocket::UNKNOWN)));
+	EXPECT_EQ(_node->status(), NetworkNode::CONNECTED);
+}
 
-// Review
 /**
  * @brief Add invalid connection test
  */
-// TEST_F(MNetworkNodeUT, addConnectionsInvalidAddress_returnFail)
-// {
-// 	_node = new NetworkNode(LOCAL_ID, getNewSocket(DEFAULT_ADDRESS, ISocket::TCP_SOCKET, TEST_PORT, ISocket::CONNECTED));
-// 	SocketMockable* sock = getNewSocket("192.168.0.2", ISocket::TCP_SOCKET, TEST_PORT + 1, ISocket::CONNECTED);
-// 	EXPECT_FALSE(_node->addConnection(sock));
-// 	delete sock;
-// }
+TEST_F(MNetworkNodeUT, addConnectionsInvalidAddress_returnFail)
+{
+	_node = new NetworkNode(LOCAL_ID, DEFAULT_ADDRESS);
+	SocketMockable* sock = getNewSocket(LOOP_BACK_ADDR, ISocket::TCP_SOCKET, TEST_PORT + 1, ISocket::CONNECTED);
+	EXPECT_FALSE(_node->addConnection(sock));
+	delete sock;
+}
 
-// Review
 /**
  * @brief Request invalid socket test
  */
-// TEST_F(MNetworkNodeUT, requestedSocket_ReturnNull)
-// {
-// 	_node = new NetworkNode(LOCAL_ID, getNewSocket(DEFAULT_ADDRESS, ISocket::TCP_SOCKET, TEST_PORT, ISocket::CONNECTED));
-// 	const SocketMockable* sock = dynamic_cast<const SocketMockable*>(_node->socket(ISocket::UDP_SOCKET, TEST_PORT));
-// 	EXPECT_TRUE(sock == nullptr);
-// }
+TEST_F(MNetworkNodeUT, requestedSocket_ReturnNull)
+{
+	_node = new NetworkNode(LOCAL_ID, DEFAULT_ADDRESS);
+	_node->addConnection(getNewSocket(DEFAULT_ADDRESS, ISocket::TCP_SOCKET, TEST_PORT, ISocket::CONNECTED));
+	const SocketMockable* sock = dynamic_cast<const SocketMockable*>(_node->socket(ISocket::UDP_SOCKET, TEST_PORT));
+	EXPECT_TRUE(sock == nullptr);
+}
 
-// Review
 /**
  * @brief Request valid socket test
  */
-// TEST_F(MNetworkNodeUT, requestedSocket_ReturnValidSocket)
-// {
-// 	_node = new NetworkNode(LOCAL_ID, getNewSocket(DEFAULT_ADDRESS, ISocket::TCP_SOCKET, TEST_PORT, ISocket::CONNECTED));
-// 	const SocketMockable* sock = dynamic_cast<const SocketMockable*>(_node->socket(ISocket::TCP_SOCKET, TEST_PORT));
-// 	EXPECT_TRUE(sock != nullptr);
-// }
+TEST_F(MNetworkNodeUT, requestedSocket_ReturnValidSocket)
+{
+	_node = new NetworkNode(LOCAL_ID, DEFAULT_ADDRESS);
+	_node->addConnection(getNewSocket(DEFAULT_ADDRESS, ISocket::TCP_SOCKET, TEST_PORT, ISocket::CONNECTED));
+	const SocketMockable* sock = dynamic_cast<const SocketMockable*>(_node->socket(ISocket::TCP_SOCKET, TEST_PORT));
+	EXPECT_TRUE(sock != nullptr);
+}
 
-// Review
 /**
  * @brief Request expected socket test
  */
-// TEST_F(MNetworkNodeUT, requestedSocket_ReturnExpectedSocket)
-// {
-// 	SocketMockable* local = getNewSocket(DEFAULT_ADDRESS, ISocket::TCP_SOCKET, TEST_PORT, ISocket::CONNECTED);
-// 	_node = new NetworkNode(LOCAL_ID, local);
-// 	const SocketMockable* sock = dynamic_cast<const SocketMockable*>(_node->socket(ISocket::TCP_SOCKET, TEST_PORT));
-// 	EXPECT_TRUE(sock != nullptr);
-// 	EXPECT_TRUE((local == sock));
-// }
+TEST_F(MNetworkNodeUT, requestedSocket_ReturnExpectedSocket)
+{
+	SocketMockable* local = getNewSocket(DEFAULT_ADDRESS, ISocket::TCP_SOCKET, TEST_PORT, ISocket::CONNECTED);
+	_node = new NetworkNode(LOCAL_ID, DEFAULT_ADDRESS);
+	_node->addConnection(local);
+	const SocketMockable* sock = dynamic_cast<const SocketMockable*>(_node->socket(ISocket::TCP_SOCKET, TEST_PORT));
+	EXPECT_TRUE(sock != nullptr);
+	EXPECT_TRUE((local == sock));
+}
 
 /**
  * @brief Close node test
