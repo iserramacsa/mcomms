@@ -140,7 +140,7 @@ ISocket::nSocketFrameStatus UnixSocket::send(const std::string &tx, int timeout)
 {
 	nSocketFrameStatus sent = FRAME_ERROR;
 	int fd = _sock.fd;
-	if (fd != -1) {
+	if (fd != -1 && status() >= CONNECTED) {
 		bool expired = false;
 		if (waitForWrite(fd, timeout, expired)) {
 			long bytesSent = ::send(fd, tx.c_str(), tx.length(), 0);
@@ -338,8 +338,8 @@ UnixSocket *UnixSocket::socketFromConnection(UnixSocket::sConnection &conn)
 
 bool UnixSocket::createSocket(int &fd, SocketType_n type)
 {
-	int protocol;
-	int sockType;
+    int protocol = IPPROTO_UDP;
+    int sockType = SOCK_DGRAM;
 	switch (type) {
 		case UDP_SOCKET:
 			sockType = SOCK_DGRAM;

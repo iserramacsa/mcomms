@@ -17,6 +17,7 @@ set(SOURCES ${SOURCES}
 	${CMAKE_CURRENT_SOURCE_DIR}/tcpsocket.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/udpsocket.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/networknode.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/nodeobserver.cpp
 )
 
 set(HEADERS ${HEADERS}
