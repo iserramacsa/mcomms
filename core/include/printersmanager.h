@@ -21,9 +21,9 @@ namespace Macsa {
 			PrinterController* getPrinter(const int index);
 
 			unsigned int size() const;
-		private:
-			Network::MNetwork _tcpNetwork;
 
+		private:
+			Network::MNetwork _printersNetwork;
 	};
 }
 

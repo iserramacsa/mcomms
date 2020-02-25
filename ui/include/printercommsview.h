@@ -34,7 +34,7 @@ class PrinterCommsView : public QWidget
 	public:
 		explicit PrinterCommsView(QWidget* parent = 0);
 		~PrinterCommsView();
-		void setController(Macsa::TIJPrinterController& controller);
+		void setController(Macsa::TijController& controller);
 
 	public slots:
 		void refresh();

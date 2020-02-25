@@ -8,7 +8,7 @@ namespace Macsa {
 		class MUpdate : public MCommand
 		{
 			public:
-				MUpdate(Printers::TIJPrinter& printer);
+				MUpdate(Printers::TijPrinter& printer);
 				virtual ~MUpdate();
 
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);

@@ -20,7 +20,7 @@ TIJEmulator::~TIJEmulator()
 
 void TIJEmulator::init()
 {
-	Board board(0, dynamic_cast<TIJPrinter*>(this));
+	Board board(0, dynamic_cast<TijPrinter*>(this));
 	initBoard(board);
 	_boards.insert(_boards.begin(), board);
 }

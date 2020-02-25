@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <string>
 #include <tinyxml2.h>
-
+#include <map>
 #include "printer/datatypes.h"
 #include "tij/tijprinter.h"
 
@@ -17,7 +17,7 @@ namespace Macsa{
 		class MCommand
 		{
 			public:
-				MCommand(const std::string& commandName, Printers::TIJPrinter& printer);
+				MCommand(const std::string& commandName, Printers::TijPrinter& printer);
 				virtual ~MCommand();
 
 				virtual std::string getRequest(uint32_t windId);
@@ -25,17 +25,21 @@ namespace Macsa{
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml) = 0;
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml) = 0;
 
+
 				inline std::string commandName() const{ return _commandName;}
 				inline uint32_t id() const{ return _id;}
 				inline Printers::ErrorCode getError() const{ return _error;}
 				void setError(const Printers::ErrorCode &error);
 
 
+				std::map<std::string, std::string> attributes() const;
+
 			protected:
 				uint32_t _id;
+				std::map<std::string, std::string> _attributes;
 				tinyxml2::XMLDocument _doc;
 				Printers::ErrorCode _error;
-				Printers::TIJPrinter& _printer;
+				Printers::TijPrinter& _printer;
 
 				virtual void buildRequest() = 0;
 				virtual void buildResponse() = 0;

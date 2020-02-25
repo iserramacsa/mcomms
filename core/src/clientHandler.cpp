@@ -1,10 +1,9 @@
 #include "clientHandler.h"
-#include "network/tcpsocket.h"
 
 using namespace Macsa::Network;
 using namespace Macsa::MProtocol;
 
-ClientHandler::ClientHandler(Printers::TIJPrinter &printer, ISocket *socket, uint16_t port) :
+ClientHandler::ClientHandler(Printers::TijPrinter &printer, ISocket *socket, uint16_t port) :
 	_svrPort(port),
 	_printer(printer),
 	_socket(socket),

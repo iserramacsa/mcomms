@@ -6,7 +6,7 @@
 using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
-MGetConfig::MGetConfig(Printers::TIJPrinter &printer):
+MGetConfig::MGetConfig(Printers::TijPrinter &printer):
 	MConfigCommand(MCONFIG_GET, printer)
 {}
 
@@ -24,7 +24,7 @@ bool MGetConfig::parseResponse(const XMLElement *xml)
 	if  (valid) {
 		_error = getCommandError(xml);
 		generalConfigFromXml(cmd, _printer);
-		Printers::TIJComms * comms = dynamic_cast<Printers::TIJComms *>(_printer.comms());
+		Printers::TijComms * comms = dynamic_cast<Printers::TijComms *>(_printer.comms());
 		if (comms != nullptr) {
 			printerConnectionsFromXml(cmd, *comms);
 		}
@@ -65,7 +65,7 @@ void MGetConfig::buildResponse()
 	XMLElement* cmd = newCommandNode();
 
 	generalConfigToXml(_printer, &cmd);
-	printerConnectionsToXml(dynamic_cast<const Printers::TIJComms *>(_printer.comms()), &cmd);
+	printerConnectionsToXml(dynamic_cast<const Printers::TijComms *>(_printer.comms()), &cmd);
 	XMLElement* xBoards = createChildNode(MPRINTER_BOARDS_LIST, &cmd);
 	if (xBoards) {
 		std::vector<Printers::Board> boards = _printer.boards();
@@ -80,7 +80,7 @@ void MGetConfig::buildResponse()
 //######################################################
 //	SETCONFIG
 //######################################################
-MSetConfig::MSetConfig(Macsa::Printers::TIJPrinter &printer):
+MSetConfig::MSetConfig(Macsa::Printers::TijPrinter &printer):
 	MConfigCommand(MCONFIG_SET, printer)
 {}
 
@@ -88,7 +88,7 @@ void MSetConfig::buildRequest()
 {
 	XMLElement* cmd = newCommandNode();
 	generalConfigToXml(_printer, &cmd);
-	Printers::TIJComms * comms = dynamic_cast<Printers::TIJComms *>(_printer.comms());
+	Printers::TijComms * comms = dynamic_cast<Printers::TijComms *>(_printer.comms());
 	if (comms != nullptr) {
 		printerConnectionsToXml(comms, &cmd);
 	}
@@ -108,7 +108,7 @@ bool MSetConfig::parseRequest(const XMLElement *xml)
 	if  (valid) {
 		_error = getCommandError(xml);
 		generalConfigFromXml(cmd, _printer);
-		Printers::TIJComms * comms = dynamic_cast<Printers::TIJComms *>(_printer.comms());
+		Printers::TijComms * comms = dynamic_cast<Printers::TijComms *>(_printer.comms());
 		if (comms != nullptr) {
 			printerConnectionsFromXml(cmd, *comms);
 		}
@@ -156,7 +156,7 @@ bool MSetConfig::parseResponse(const XMLElement *xml)
 //######################################################
 //	SETCONFIG (set date and time)
 //######################################################
-MSetDateTime::MSetDateTime(Macsa::Printers::TIJPrinter &printer):
+MSetDateTime::MSetDateTime(Macsa::Printers::TijPrinter &printer):
 	MSetConfig(printer)
 {}
 
@@ -169,7 +169,7 @@ void MSetDateTime::buildRequest()
 	}
 }
 //TODO
-MUpdateConfig::MUpdateConfig(Macsa::Printers::TIJPrinter &baseConfig, Macsa::Printers::TIJPrinter &newConfig):
+MUpdateConfig::MUpdateConfig(Macsa::Printers::TijPrinter &baseConfig, Macsa::Printers::TijPrinter &newConfig):
 	MSetConfig(baseConfig),
 	_newConfig(newConfig)
 {}
@@ -204,8 +204,8 @@ void MUpdateConfig::updateGeneralConfig(XMLElement **parent)
 
 void MUpdateConfig::updateCommsConfig(XMLElement ** parent)
 {
-	Printers::TIJComms * comms = dynamic_cast<Printers::TIJComms *>(_printer.comms());
-	Printers::TIJComms * newcomms = dynamic_cast<Printers::TIJComms *>(_newConfig.comms());
+	Printers::TijComms * comms = dynamic_cast<Printers::TijComms *>(_printer.comms());
+	Printers::TijComms * newcomms = dynamic_cast<Printers::TijComms *>(_newConfig.comms());
 	if (comms != nullptr && newcomms != nullptr && ((*comms) != (*newcomms))) {
 		printerConnectionsToXml(newcomms,  parent);
 	}

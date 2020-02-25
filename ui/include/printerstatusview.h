@@ -17,7 +17,7 @@ class PrinterStatusView : public QWidget
 	public:
 		explicit PrinterStatusView(QWidget* parent = 0);
 		~PrinterStatusView();
-		void setController(Macsa::TIJPrinterController& controller);
+		void setController(Macsa::TijController& controller);
 
 	public slots:
 		void refresh();

@@ -26,7 +26,7 @@ namespace Macsa {
 		class MMessageValues : public MCommand
 		{
 			public:
-				MMessageValues(const std::string& command, Printers::TIJPrinter& printer, const std::string& filename);
+				MMessageValues(const std::string& command, Printers::TijPrinter& printer, const std::string& filename);
 				virtual ~MMessageValues();
 
 				std::string filename() const;
@@ -56,7 +56,7 @@ namespace Macsa {
 		class MGetMessageValues : public MMessageValues
 		{
 			public:
-				MGetMessageValues(Printers::TIJPrinter& printer, const std::string& filename = "",
+				MGetMessageValues(Printers::TijPrinter& printer, const std::string& filename = "",
 								  const MProtocol::userFieldsMap &userFields = MProtocol::userFieldsMap());
 				virtual  ~MGetMessageValues();
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
@@ -72,7 +72,7 @@ namespace Macsa {
 		class MSetMessageValues : public MMessageValues
 		{
 			public:
-				MSetMessageValues(Printers::TIJPrinter& printer, const std::string& filename = "",
+				MSetMessageValues(Printers::TijPrinter& printer, const std::string& filename = "",
 								  const MProtocol::userFieldsMap& userFields = MProtocol::userFieldsMap());
 				virtual  ~MSetMessageValues();
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
@@ -89,7 +89,7 @@ namespace Macsa {
 		class MGetMessageDataSource : public MMessageValues
 		{
 			public:
-				MGetMessageDataSource(Printers::TIJPrinter& printer, const std::string& filename = "", const std::string& fieldType = "",
+				MGetMessageDataSource(Printers::TijPrinter& printer, const std::string& filename = "", const std::string& fieldType = "",
 									  const MProtocol::userFieldsMap &userFields = MProtocol::userFieldsMap(),
 									  const MProtocol::datesMap &dates = MProtocol::datesMap(),
 									  const MProtocol::countersMap &counters = MProtocol::countersMap());
@@ -111,7 +111,7 @@ namespace Macsa {
 		class MSetMessageDataSource : public MMessageValues
 		{
 			public:
-				MSetMessageDataSource(Printers::TIJPrinter& printer, const std::string& filename = "", const std::string& fieldType = "",
+				MSetMessageDataSource(Printers::TijPrinter& printer, const std::string& filename = "", const std::string& fieldType = "",
 									  const MProtocol::userFieldsMap &userFields = MProtocol::userFieldsMap(),
 									  const MProtocol::datesMap &dates = MProtocol::datesMap(),
 									  const MProtocol::countersMap &counters = MProtocol::countersMap());

@@ -1,7 +1,7 @@
 #############################################
 #   Printers data structures and protocols  #
 #############################################
-## TIJ Printers
+## tij Printers
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tij ${CMAKE_BINARY_DIR}/printers/tij)
 

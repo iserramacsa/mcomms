@@ -7,14 +7,14 @@
 using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
-MConfigCommand::MConfigCommand(const std::string &command, Printers::TIJPrinter &printer):
+MConfigCommand::MConfigCommand(const std::string &command, Printers::TijPrinter &printer):
 	MCommand(command, printer)
 {}
 
 MConfigCommand::~MConfigCommand()
 {}
 
-void MConfigCommand::generalConfigToXml(const Printers::TIJPrinter &printer, XMLElement **parent)
+void MConfigCommand::generalConfigToXml(const Printers::TijPrinter &printer, XMLElement **parent)
 {
 	XMLElement * xGeneral = createChildNode(MCONFIG_GENERAL, parent);
 	if(xGeneral != nullptr) {
@@ -23,12 +23,12 @@ void MConfigCommand::generalConfigToXml(const Printers::TIJPrinter &printer, XML
 	}
 }
 
-void MConfigCommand::datetimeToXml(const Macsa::Printers::TIJPrinter &printer, XMLElement **parent)
+void MConfigCommand::datetimeToXml(const Macsa::Printers::TijPrinter &printer, XMLElement **parent)
 {
 	createTextChildNode(MCONFIG_GENERAL_DT, printer.formatedDateTime(), parent);
 }
 
-void MConfigCommand::loggerToXml(const Macsa::Printers::TIJPrinter &printer, XMLElement **parent)
+void MConfigCommand::loggerToXml(const Macsa::Printers::TijPrinter &printer, XMLElement **parent)
 {
 	XMLElement * xLog = createChildNode(MCONFIG_GENERAL_LOG, parent);
 	if(xLog != nullptr) {
@@ -38,7 +38,7 @@ void MConfigCommand::loggerToXml(const Macsa::Printers::TIJPrinter &printer, XML
 	}
 }
 
-void MConfigCommand::printerConnectionsToXml(const Printers::TIJComms *comms, XMLElement **parent)
+void MConfigCommand::printerConnectionsToXml(const Printers::TijComms *comms, XMLElement **parent)
 {
 	XMLElement * xConnections = createChildNode(MCONFIG_CONNECTIONS, parent);
 	if (xConnections != nullptr && comms != nullptr) {
@@ -294,7 +294,7 @@ void MConfigCommand::dateCodesToXml(const Macsa::Printers::DateCodes &dateCodes,
 
 }
 
-void MConfigCommand::generalConfigFromXml(const tinyxml2::XMLElement *parent, Printers::TIJPrinter& printer) const
+void MConfigCommand::generalConfigFromXml(const tinyxml2::XMLElement *parent, Printers::TijPrinter& printer) const
 {
 	if (parent != nullptr) {
 		const XMLElement* xGeneral = parent->FirstChildElement(MCONFIG_GENERAL);
@@ -310,7 +310,7 @@ void MConfigCommand::generalConfigFromXml(const tinyxml2::XMLElement *parent, Pr
 	}
 }
 
-void MConfigCommand::printerConnectionsFromXml(const XMLElement *parent, Printers::TIJComms &comms) const
+void MConfigCommand::printerConnectionsFromXml(const XMLElement *parent, Printers::TijComms &comms) const
 {
 	if (parent != nullptr) {
 		const XMLElement* xConnections = parent->FirstChildElement(MCONFIG_CONNECTIONS);
@@ -549,7 +549,7 @@ void MConfigCommand::outputsFromXml(const XMLElement *xBoard, Macsa::Printers::B
 	}
 }
 
-void MConfigCommand::dateCodesFromXml(const XMLElement *xBoard, Macsa::Printers::TIJPrinter &printer) const
+void MConfigCommand::dateCodesFromXml(const XMLElement *xBoard, Macsa::Printers::TijPrinter &printer) const
 {
 	if (xBoard != nullptr) {
 		const XMLElement* xDateCodes = xBoard->FirstChildElement(MPRINTER_DATECODES_LIST);

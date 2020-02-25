@@ -9,10 +9,12 @@ using namespace Macsa;
 using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
-MCommand::MCommand(const std::string& commandName, Printers::TIJPrinter &printer):
+MCommand::MCommand(const std::string& commandName, Printers::TijPrinter &printer):
 	_printer(printer),
 	_commandName(commandName)
-{}
+{
+	_attributes.clear();
+}
 
 MCommand::~MCommand()
 {}
@@ -35,11 +37,16 @@ void MCommand::setError(const Printers::ErrorCode &error)
 	_error = error;
 }
 
+std::map<std::string, std::string> MCommand::attributes() const
+{
+    return _attributes;
+}
+
 std::string MCommand::toString()
 {
-	XMLPrinter p;
-	_doc.Print(&p);
-	return p.CStr();
+    XMLPrinter p;
+    _doc.Print(&p);
+    return p.CStr();
 }
 
 XMLElement *MCommand::newCommandNode()

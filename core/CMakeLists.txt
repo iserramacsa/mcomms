@@ -36,7 +36,6 @@ add_definitions(-DCORE_VERSION_MINOR=${MCOMMS_CORE_VERSION_MINOR})
 add_definitions(-DCORE_VERSION_PATCH=${MCOMMS_CORE_VERSION_PATCH})
 add_definitions(-DCORE_VERSION_STR="${MCOMMS_CORE_VERSION}")
 
-
 set(SOURCES)
 set(HEADERS)
 set(INCLUDES)
@@ -97,12 +96,14 @@ if (${BUILD_SHARED_LIBS} OR ${BUILD_STATIC_LIBS})
 		LIBRARY DESTINATION ${LIB_PREFIX}/lib)
 
 	if (${ENABLE_TESTS} AND SRC_TEST)
-		set(PROJECT_TEST_NAME ${PROJECT_NAME}_Test)
-		link_directories(${PROJECT_BINARY_DIR}/core)
+		set(PROJECT_TEST_NAME ${PROJECT_NAME}CoreTest)
+		link_directories(${PROJECT_BINARY_DIR}
+			${PROJECT_BINARY_DIR}/network
+			${PROJECT_BINARY_DIR}/printers/tij
+			)
 		add_executable(${PROJECT_TEST_NAME} ${SRC_TEST} ${HDRS_TEST})
-		target_link_libraries(${PROJECT_TEST_NAME} ${EXTERNAL_LIBS})
+		target_link_libraries(${PROJECT_TEST_NAME} ${EXTERNAL_LIBS} MComms MNetwork TijLibrary)
 		add_test(${PROJECT_NAME} ${PROJECT_TEST_NAME})
 
 	endif()
-
 endif()

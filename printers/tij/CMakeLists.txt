@@ -49,6 +49,11 @@ set(LABELS_HEADERS)
 ## Enable labels
 set(NISX_LABELS	true)
 
+if (${ENABLE_TESTS})
+	set(SRC_TEST)
+	set(HDRS_TEST)
+endif()
+
 SET (PRINTERS_INCLUDES
 	${PROJECT_SOURCE_DIR}/src
 	${PROJECT_SOURCE_DIR}/include

@@ -5,7 +5,7 @@ using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
 //================		STATUS COMMANDS BASE CLASS		================//
-MStatusCommand::MStatusCommand(std::string command, Macsa::Printers::TIJPrinter &printer) :
+MStatusCommand::MStatusCommand(std::string command, Macsa::Printers::TijPrinter &printer) :
 	MCommand(command, printer)
 {}
 
@@ -182,7 +182,7 @@ void MStatusCommand::propertiesFromXml(const XMLElement *parent, Macsa::Printers
 
 
 //================		GET STATUS COMMAND		================//
-MGetStatus::MGetStatus(Printers::TIJPrinter &printer):
+MGetStatus::MGetStatus(Printers::TijPrinter &printer):
 	MStatusCommand(MSTATUS, printer)
 {}
 
@@ -299,7 +299,7 @@ bool MGetStatus::parseResponse(const XMLElement *xml)
 }
 
 //================		GET IO STATUS COMMAND		================//
-MGetIOStatus::MGetIOStatus(Macsa::Printers::TIJPrinter &printer):
+MGetIOStatus::MGetIOStatus(Macsa::Printers::TijPrinter &printer):
 	MStatusCommand(MIOSTATUS, printer)
 {}
 
@@ -372,7 +372,7 @@ bool MGetIOStatus::parseResponse(const XMLElement *xml)
 }
 
 //================		GET CURRENT ERRORS COMMAND		================//
-MGetErrors::MGetErrors(Macsa::Printers::TIJPrinter &printer):
+MGetErrors::MGetErrors(Macsa::Printers::TijPrinter &printer):
 	MStatusCommand(MERRORS_GET, printer)
 {}
 

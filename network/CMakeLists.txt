@@ -61,7 +61,7 @@ set(HEADERS ${HEADERS})
 
 if (${ENABLE_TESTS})
     set(SRC_TEST ${SRC_TEST})
-    set(HDRS_TEST ${HDRS_TEST})
+	set(HDRS_TEST ${HDRS_TEST})
 endif()
 
 ###########################

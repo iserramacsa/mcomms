@@ -1,6 +1,5 @@
 #include "tijprintercontroller.h"
 #include "mprotocol/mcommandsfactory.h"
-#include "network/tcpsocket.h"
 
 using namespace Macsa;
 using namespace Macsa::Network;

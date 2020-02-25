@@ -16,7 +16,7 @@ class AbstractSocket;
 class ClientManager : protected Network::MNetwork
 {
 	public:
-		ClientManager(Printers::TIJPrinter& printer);
+		ClientManager(Printers::TijPrinter& printer);
 		~ClientManager();
 		bool initServer(uint16_t port);
 		void run(bool detached = true);
@@ -29,11 +29,11 @@ class ClientManager : protected Network::MNetwork
 		std::condition_variable _cv;
 		uint16_t _svrPort;
 
-		Printers::TIJPrinter& _printer;
+		Printers::TijPrinter& _printer;
 		std::vector<ClientHandler*> _handlers;
 
 		void serverMainLoop();
-		Network::AbstractSocket *acceptConnection();
+		ISocket *acceptConnection();
 
 };
 

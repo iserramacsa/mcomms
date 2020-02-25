@@ -10,7 +10,7 @@
 class TIJViewerController : public PrinterViewerController
 {
 	public:
-		typedef Macsa::TIJPrinterController::TIJPrinterStatus TIJStatus;
+		typedef Macsa::TijController::TijPrinterStatus TijStatus;
 		enum class TIJDataDescriptors
 		{
 			LIVE = 0,
@@ -82,9 +82,9 @@ class TIJViewerController : public PrinterViewerController
 		};
 
 	public:
-		TIJViewerController(Macsa::TIJPrinterController& controller);
+		TIJViewerController(Macsa::TijController &controller);
 		virtual ~TIJViewerController(){}
-		virtual Macsa::TIJPrinterController& controller(){ return _controller;}
+		virtual Macsa::TijController& controller(){ return _controller;}
 		virtual QVariant data(int descriptor);
 		virtual bool setData(int descriptor, const QVariant& value);
 
@@ -109,7 +109,7 @@ class TIJViewerController : public PrinterViewerController
 		QVector<PrinterError> errorsLog() const;
 		bool printing() const;
 
-		TIJStatus printerStatus() const;
+		TijStatus printerStatus() const;
 
 		QString boardType() const;
 		QString boardControllerVersion() const;
@@ -230,8 +230,8 @@ class TIJViewerController : public PrinterViewerController
 //		void setDateCodes(const Macsa::Printers::DateCodes &dateCodes);
 
 	protected:
-		Macsa::TIJPrinterController& _controller;
-		Macsa::Printers::TIJPrinter* tijPrinter() const;
+		Macsa::TijController& _controller;
+		Macsa::Printers::TijPrinter* tijPrinter() const;
 		const Macsa::Printers::Board* tijPrinterBoard() const;
 		PrinterInput printerInputToView(Macsa::Printers::Input in) const;
 		PrinterOutput printerOutputToView(Macsa::Printers::Output out) const;

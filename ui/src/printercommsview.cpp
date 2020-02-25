@@ -21,7 +21,7 @@ PrinterCommsView::~PrinterCommsView()
 	}
 }
 
-void PrinterCommsView::setController(Macsa::TIJPrinterController &controller)
+void PrinterCommsView::setController(Macsa::TijController &controller)
 {
 	if (_controller != nullptr) {
 		delete _controller;
@@ -32,7 +32,7 @@ void PrinterCommsView::setController(Macsa::TIJPrinterController &controller)
 
 void PrinterCommsView::refresh()
 {
-	if ((_controller != nullptr) && (_controller->printerStatus() != TIJViewerController::TIJStatus::DISCONNECTED)) {
+	if ((_controller != nullptr) && (_controller->printerStatus() != TIJViewerController::TijStatus::DISCONNECTED)) {
 		for (int i = 0; i < _ifaces.count(); ++i) {
 			refreshNetIface(i);
 		}

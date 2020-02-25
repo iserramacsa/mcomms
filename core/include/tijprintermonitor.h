@@ -10,10 +10,10 @@
 #include <thread>
 
 namespace Macsa {
-	class TIJPrinterMonitor : public TIJPrinterController{
+	class TijPrinterMonitor : public TijController{
 		public:
-			TIJPrinterMonitor(const std::string &id, const std::string &address);
-			virtual ~TIJPrinterMonitor() override;
+			TijPrinterMonitor(const std::string &id, const std::string &address);
+			virtual ~TijPrinterMonitor() override;
 
 		protected:
 			virtual void run();

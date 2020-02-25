@@ -8,12 +8,12 @@
 
 namespace Macsa {
 	namespace Printers {
-		class TIJPrinter : public Printer {
+		class TijPrinter : public Printer {
 
 			public:
-				TIJPrinter();
-				TIJPrinter(const TIJPrinter&);
-				virtual ~TIJPrinter() override;
+				TijPrinter();
+				TijPrinter(const TijPrinter&);
+				virtual ~TijPrinter() override;
 
 				virtual PrinterFiles* files() override;
 				virtual const PrinterFiles* files() const override;
@@ -53,11 +53,11 @@ namespace Macsa {
 				virtual void setloggerLevel(const LoggerLevel& logLevel);
 				virtual void setloggerLevel(const std::string& logLevel);
 
-				virtual void operator = (const TIJPrinter& other){return copy(other);}
+				virtual void operator = (const TijPrinter& other){return copy(other);}
 
             protected:
 				PrinterFiles _files;
-				TIJComms	_comms;
+				TijComms	_comms;
 				std::string _controllerVersion;
 				std::string _apiVersion;
 				std::string _fpgaVersion;
@@ -71,7 +71,7 @@ namespace Macsa {
 				bool _traceComms;
 
 				virtual bool equal(const Printer &other) const override;
-				virtual void copy (const TIJPrinter& other);
+				virtual void copy (const TijPrinter& other);
 
 		};
 	}

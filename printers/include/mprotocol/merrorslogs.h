@@ -10,7 +10,7 @@ namespace Macsa
 		class MErrorsLogs : public MCommand
 		{
 			public:
-				MErrorsLogs(Printers::TIJPrinter &printer);
+				MErrorsLogs(Printers::TijPrinter &printer);
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
 

@@ -11,7 +11,7 @@ namespace Macsa {
 		class MGetFilesList : public MCommand
 		{
 			public:
-				MGetFilesList(Printers::TIJPrinter& printer, const std::string& filter = "");
+				MGetFilesList(Printers::TijPrinter& printer, const std::string& filter = "");
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 
@@ -30,7 +30,7 @@ namespace Macsa {
 		class MCopyFile : public MCommand
 		{
 			public:
-				MCopyFile(Printers::TIJPrinter& printer, const std::string& sourceFilename = "", const std::string& targetFilename = "");
+				MCopyFile(Printers::TijPrinter& printer, const std::string& sourceFilename = "", const std::string& targetFilename = "");
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
 
@@ -48,7 +48,7 @@ namespace Macsa {
 		class MMoveFile : public MCommand
 		{
 			public:
-				MMoveFile(Printers::TIJPrinter& printer, const std::string& sourceFilename = "", const std::string& targetFilename = "");
+				MMoveFile(Printers::TijPrinter& printer, const std::string& sourceFilename = "", const std::string& targetFilename = "");
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
 
@@ -66,7 +66,7 @@ namespace Macsa {
 		class MDeleteFile : public MCommand
 		{
 			public:
-				MDeleteFile(Printers::TIJPrinter& printer, const std::string& filename = "");
+				MDeleteFile(Printers::TijPrinter& printer, const std::string& filename = "");
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
 
@@ -82,7 +82,7 @@ namespace Macsa {
 		class MFileContentCommand : public MCommand
 		{
 			public:
-				MFileContentCommand(const std::string& command, Printers::TIJPrinter &printer, const std::string &filename = "", bool raw = false, const std::vector<uint8_t>& content = std::vector<uint8_t>());
+				MFileContentCommand(const std::string& command, Printers::TijPrinter &printer, const std::string &filename = "", bool raw = false, const std::vector<uint8_t>& content = std::vector<uint8_t>());
 				virtual ~MFileContentCommand();
 
 				std::string filename() const;
@@ -105,7 +105,7 @@ namespace Macsa {
 		class MGetFile : public MFileContentCommand
 		{
 			public:
-				MGetFile(Macsa::Printers::TIJPrinter &printer, const std::string &filename = "", bool raw = false);
+				MGetFile(Macsa::Printers::TijPrinter &printer, const std::string &filename = "", bool raw = false);
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
 
@@ -117,7 +117,7 @@ namespace Macsa {
 		class MSetFile : public MFileContentCommand
 		{
 			public:
-				MSetFile(Macsa::Printers::TIJPrinter &printer, const std::string &filename = "", const std::vector<uint8_t>& content = std::vector<uint8_t>(), bool raw = false);
+				MSetFile(Macsa::Printers::TijPrinter &printer, const std::string &filename = "", const std::vector<uint8_t>& content = std::vector<uint8_t>(), bool raw = false);
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
 

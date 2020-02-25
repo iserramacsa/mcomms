@@ -13,7 +13,7 @@ using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
 //=============		GET FILES LIST		=============//
-MGetFilesList::MGetFilesList(Printers::TIJPrinter &printer, const std::string &filter) :
+MGetFilesList::MGetFilesList(Printers::TijPrinter &printer, const std::string &filter) :
 	MCommand(MFILES_GET_LIST, printer)
 {
 	_filter = filter;
@@ -67,6 +67,7 @@ bool MGetFilesList::parseRequest(const XMLElement *xml)
 
 bool MGetFilesList::parseResponse(const XMLElement *xml)
 {
+	_attributes.clear();
 	const XMLElement * cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if (valid) {
@@ -74,6 +75,7 @@ bool MGetFilesList::parseResponse(const XMLElement *xml)
 		{
 			std::vector<std::string> exts;
 			std::string filter = getTextAttribute(cmd, MFILES_GET_LIST_TYPE_ATTR, "");
+			_attributes[MFILES_GET_LIST_TYPE_ATTR] = filter;
 
 			if (filter.length() > 1) {
 				size_t coma = 0;
@@ -144,7 +146,7 @@ void MGetFilesList::insertFileToPrinterData(const std::string &pwd)
 }
 
 //=============		COPY FILES		=============//
-MCopyFile::MCopyFile(Macsa::Printers::TIJPrinter &printer, const std::string &sourceFilename, const std::string &targetFilename)  :
+MCopyFile::MCopyFile(Macsa::Printers::TijPrinter &printer, const std::string &sourceFilename, const std::string &targetFilename)  :
 	MCommand(MFILES_COPY, printer)
 {
 	_sourceFilename = sourceFilename;
@@ -186,10 +188,12 @@ void MCopyFile::buildResponse()
 
 bool MCopyFile::parseResponse(const XMLElement *xml)
 {
+	_attributes.clear();
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if (valid) {
 		_error = getCommandError(xml);
+//		_params[MFILES_GET_LIST_TYPE_ATTR] = filter;
 	}
 	return valid;
 }
@@ -205,7 +209,7 @@ std::string MCopyFile::targetFilename() const
 }
 
 //=============		COPY FILES		=============//
-MMoveFile::MMoveFile(Macsa::Printers::TIJPrinter &printer, const std::string &sourceFilename, const std::string &targetFilename) :
+MMoveFile::MMoveFile(Macsa::Printers::TijPrinter &printer, const std::string &sourceFilename, const std::string &targetFilename) :
 	MCommand(MFILES_MOVE, printer)
 {
 	_sourceFilename = sourceFilename;
@@ -266,7 +270,7 @@ std::string MMoveFile::targetFilename() const
 }
 
 //=============		DELETE FILE		=============//
-MDeleteFile::MDeleteFile(Macsa::Printers::TIJPrinter &printer, const std::string &filename):
+MDeleteFile::MDeleteFile(Macsa::Printers::TijPrinter &printer, const std::string &filename):
 	MCommand(MFILES_DELETE, printer)
 {
 	_filename = filename;
@@ -320,7 +324,7 @@ std::string MDeleteFile::filename() const
 
 
 //=============		FILE CONTENT COMMAND BASE		=============//
-MFileContentCommand::MFileContentCommand(const std::string &command, Printers::TIJPrinter &printer,
+MFileContentCommand::MFileContentCommand(const std::string &command, Printers::TijPrinter &printer,
 										 const std::string &filename, bool raw,
 										 const std::vector<uint8_t> &content) :
 	MCommand(command, printer)
@@ -402,7 +406,7 @@ std::vector<uint8_t> MFileContentCommand::contentFromString(const char *data, bo
 }
 
 //=============		GET FILE		=============//
-MGetFile::MGetFile(Macsa::Printers::TIJPrinter &printer, const std::string &filename, bool raw) :
+MGetFile::MGetFile(Macsa::Printers::TijPrinter &printer, const std::string &filename, bool raw) :
 	MFileContentCommand(MFILES_GET, printer, filename, raw)
 {}
 
@@ -475,7 +479,7 @@ bool MGetFile::parseResponse(const XMLElement *xml)
 
 //=============		SET FILE		=============//
  ///TODO!!!
-MSetFile::MSetFile(Macsa::Printers::TIJPrinter &printer, const std::string &filename, const std::vector<uint8_t> &content, bool raw) :
+MSetFile::MSetFile(Macsa::Printers::TijPrinter &printer, const std::string &filename, const std::vector<uint8_t> &content, bool raw) :
 	MFileContentCommand(MFILES_SET, printer, filename, raw, content)
 {
 	_filename = filename;

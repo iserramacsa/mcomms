@@ -24,7 +24,7 @@ PrinterConfigView::~PrinterConfigView()
 	}
 }
 
-void PrinterConfigView::setController(Macsa::TIJPrinterController &controller)
+void PrinterConfigView::setController(Macsa::TijController &controller)
 {
 	if (_controller != nullptr) {
 		delete _controller;
@@ -35,7 +35,7 @@ void PrinterConfigView::setController(Macsa::TIJPrinterController &controller)
 
 void PrinterConfigView::refresh()
 {
-	if ((_controller != nullptr) && (_controller->printerStatus() != TIJViewerController::TIJStatus::DISCONNECTED)) {
+	if ((_controller != nullptr) && (_controller->printerStatus() != TIJViewerController::TijStatus::DISCONNECTED)) {
 		updateLoggerSettings();
 		updateGeneralSettings();
 		updatePrintSetup();

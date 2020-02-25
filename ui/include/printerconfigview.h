@@ -19,7 +19,7 @@ class PrinterConfigView : public QWidget
 	public:
 		explicit PrinterConfigView(QWidget* parent = 0);
 		~PrinterConfigView();
-		void setController(Macsa::TIJPrinterController& controller);
+		void setController(Macsa::TijController& controller);
 
 	signals:
 		void configChangeRequested();

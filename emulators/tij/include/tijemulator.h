@@ -7,7 +7,7 @@ namespace Macsa
 {
 	namespace Printers
 	{
-		class TIJEmulator : public TIJPrinter
+		class TIJEmulator : public TijPrinter
 		{
 			public:
 				TIJEmulator();
