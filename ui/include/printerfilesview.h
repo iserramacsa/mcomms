@@ -13,7 +13,7 @@ class PrinterFilesView : public QWidget
 	public:
 		explicit PrinterFilesView(QWidget* parent = 0);
 		~PrinterFilesView();
-		void setController(Macsa::TIJPrinterController& controller);
+		void setController(Macsa::TijController& controller);
 		void clear();
 		void refresh();
 

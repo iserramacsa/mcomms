@@ -1,7 +1,8 @@
 #include "tijprintercontroller.h"
+#include "mprotocol/mprotocol.h"
 #include "mprotocol/mcommandsfactory.h"
-#include "network/isocket.h"
-#include "network/tcpsocket.h"
+#include "network/networknode.h"
+#include "tijobserver.h"
 
 #include <iostream>
 
@@ -10,13 +11,15 @@
 using namespace Macsa;
 using namespace Macsa::Network;
 
-TIJPrinterController::TIJPrinterController(const std::string &id, const std::string &address) :
+TijController::TijController(const std::string &id, const std::string &address) :
 	PrinterController(id, address, MPROTOCOL_PORT),
 	_deleteAfterSend(true),
 	_factory(_printer, _liveFlags)
-{}
+{
+	_observers.clear();
+}
 
-Printers::ErrorCode TIJPrinterController::getLive()
+Printers::ErrorCode TijController::getLive()
 {
 	Printers::ErrorCode error;
 	MProtocol::MCommand* cmd = _factory.getLiveCommand();
@@ -41,7 +44,7 @@ Printers::ErrorCode TIJPrinterController::getLive()
 	return error;
 }
 
-Printers::ErrorCode TIJPrinterController::updateStatus()
+Printers::ErrorCode TijController::updateStatus()
 {
 	Printers::ErrorCode error;
 	MProtocol::MCommand* cmd = _factory.getStatusCommand();
@@ -51,9 +54,9 @@ Printers::ErrorCode TIJPrinterController::updateStatus()
 	return error;
 }
 
-TIJPrinterController::TIJPrinterStatus TIJPrinterController::printerStatus()
+TijController::TijPrinterStatus TijController::printerStatus()
 {
-	TIJPrinterStatus status = TIJPrinterStatus::DISCONNECTED;
+	TijPrinterStatus status = TijPrinterStatus::DISCONNECTED;
 
 	if (NetworkNode::status() == NetworkNode::NodeStatus_n::CONNECTED) {
 		const Macsa::Printers::Board * board = _printer.board(0);
@@ -64,17 +67,17 @@ TIJPrinterController::TIJPrinterStatus TIJPrinterController::printerStatus()
 		if (board != nullptr) {
 			if (board->enabled()) {
 				if (board->errors().size()) {
-					status = TIJPrinterStatus::WARNING; // TODO: review
+					status = TijPrinterStatus::WARNING; // TODO: review
 				}
 				else {
-					status = TIJPrinterStatus::RUNNING;
+					status = TijPrinterStatus::RUNNING;
 					if (board->printing()){
-						status = TIJPrinterStatus::PRINTING;
+						status = TijPrinterStatus::PRINTING;
 					}
 				}
 			}
 			else {
-				status = TIJPrinterStatus::STOPPED;
+				status = TijPrinterStatus::STOPPED;
 			}
 		}
 	}
@@ -82,7 +85,7 @@ TIJPrinterController::TIJPrinterStatus TIJPrinterController::printerStatus()
 	return status;
 }
 
-Printers::ErrorCode TIJPrinterController::updateErrorsList()
+Printers::ErrorCode TijController::updateErrorsList()
 {
 	Printers::ErrorCode error;
 	MProtocol::MCommand* cmd = _factory.getErrorsList();
@@ -92,7 +95,7 @@ Printers::ErrorCode TIJPrinterController::updateErrorsList()
 	return error;
 }
 
-Printers::ErrorCode TIJPrinterController::updateConfig()
+Printers::ErrorCode TijController::updateConfig()
 {
 	Printers::ErrorCode error;
 	MProtocol::MCommand* cmd = _factory.getConfigCommand();
@@ -102,7 +105,7 @@ Printers::ErrorCode TIJPrinterController::updateConfig()
 	return error;
 }
 
-Printers::ErrorCode TIJPrinterController::setDateTime(const time_t &dt)
+Printers::ErrorCode TijController::setDateTime(const time_t &dt)
 {
 	Printers::ErrorCode error;
 	MProtocol::MCommand* cmd = _factory.setDateTimeCommand(dt);
@@ -112,7 +115,7 @@ Printers::ErrorCode TIJPrinterController::setDateTime(const time_t &dt)
 	return error;
 }
 
-Printers::ErrorCode TIJPrinterController::setEnabled(bool enabled)
+Printers::ErrorCode TijController::setEnabled(bool enabled)
 {
 	Printers::Board board(0, &_printer);
 	if (getBaseBoard(board)){
@@ -122,7 +125,7 @@ Printers::ErrorCode TIJPrinterController::setEnabled(bool enabled)
 	return Printers::ErrorCode(Printers::PARAM_BOARD_ID_NOT_FOUND);
 }
 
-Printers::ErrorCode TIJPrinterController::setAutoStart(bool enabled)
+Printers::ErrorCode TijController::setAutoStart(bool enabled)
 {
 	Printers::Board board(0, &_printer);
 	if (getBaseBoard(board)){
@@ -132,7 +135,7 @@ Printers::ErrorCode TIJPrinterController::setAutoStart(bool enabled)
 	return Printers::ErrorCode(Printers::PARAM_BOARD_ID_NOT_FOUND);
 }
 
-Printers::ErrorCode TIJPrinterController::setLowLevelOutput(bool enabled)
+Printers::ErrorCode TijController::setLowLevelOutput(bool enabled)
 {
 	Printers::Board board(0, &_printer);
 	if (getBaseBoard(board)){
@@ -142,7 +145,7 @@ Printers::ErrorCode TIJPrinterController::setLowLevelOutput(bool enabled)
 	return Printers::ErrorCode(Printers::PARAM_BOARD_ID_NOT_FOUND);
 }
 
-Printers::ErrorCode TIJPrinterController::setCartridgeBlocked(bool blocked)
+Printers::ErrorCode TijController::setCartridgeBlocked(bool blocked)
 {
 	Printers::Board board(0, &_printer);
 	if (getBaseBoard(board)){
@@ -152,7 +155,7 @@ Printers::ErrorCode TIJPrinterController::setCartridgeBlocked(bool blocked)
 	return Printers::ErrorCode(Printers::PARAM_BOARD_ID_NOT_FOUND);
 }
 
-Printers::ErrorCode TIJPrinterController::setPrintRotated(bool rotated)
+Printers::ErrorCode TijController::setPrintRotated(bool rotated)
 {
 	Printers::Board board(0, &_printer);
 	if (getBaseBoard(board)){
@@ -162,7 +165,7 @@ Printers::ErrorCode TIJPrinterController::setPrintRotated(bool rotated)
 	return Printers::ErrorCode(Printers::PARAM_BOARD_ID_NOT_FOUND);
 }
 
-Printers::ErrorCode TIJPrinterController::updateFilesList()
+Printers::ErrorCode TijController::updateFilesList()
 {
 	Printers::ErrorCode error;
 	MProtocol::MCommand* cmd = _factory.getAllFilesCommand();
@@ -172,7 +175,7 @@ Printers::ErrorCode TIJPrinterController::updateFilesList()
 	return error;
 }
 
-Printers::ErrorCode TIJPrinterController::updateFontsList()
+Printers::ErrorCode TijController::updateFontsList()
 {
 	Printers::ErrorCode error;
 	MProtocol::MCommand* cmd = _factory.getFontsCommand();
@@ -182,7 +185,7 @@ Printers::ErrorCode TIJPrinterController::updateFontsList()
 	return error;
 }
 
-Printers::ErrorCode TIJPrinterController::updateMessagesList()
+Printers::ErrorCode TijController::updateMessagesList()
 {
 	Printers::ErrorCode error;
 	MProtocol::MCommand* cmd = _factory.getMessagesCommand();
@@ -192,7 +195,7 @@ Printers::ErrorCode TIJPrinterController::updateMessagesList()
 	return error;
 }
 
-Printers::ErrorCode TIJPrinterController::updateImagesList()
+Printers::ErrorCode TijController::updateImagesList()
 {
 	Printers::ErrorCode error;
 	MProtocol::MCommand* cmd = _factory.getImagesCommand();
@@ -202,7 +205,7 @@ Printers::ErrorCode TIJPrinterController::updateImagesList()
 	return error;
 }
 
-Printers::ErrorCode TIJPrinterController::updateFile(const std::string &filepath, bool rawMode)
+Printers::ErrorCode TijController::updateFile(const std::string &filepath, bool rawMode)
 {
 	Printers::ErrorCode error;
 	MProtocol::MCommand* cmd = _factory.getFileContent(filepath, rawMode);
@@ -212,7 +215,7 @@ Printers::ErrorCode TIJPrinterController::updateFile(const std::string &filepath
 	return error;
 }
 
-std::vector<std::string> TIJPrinterController::getDrives()
+std::vector<std::string> TijController::getDrives()
 {
 	std::vector<std::string> drives;
 	if (_printer.files() != nullptr) {
@@ -224,7 +227,7 @@ std::vector<std::string> TIJPrinterController::getDrives()
 	return drives;
 }
 
-std::vector<uint8_t> TIJPrinterController::getFile(const std::string &filepath)
+std::vector<uint8_t> TijController::getFile(const std::string &filepath)
 {
 	std::vector<uint8_t> content;
 	content.clear();
@@ -237,44 +240,60 @@ std::vector<uint8_t> TIJPrinterController::getFile(const std::string &filepath)
 	return content;
 }
 
-bool TIJPrinterController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &err)
+void TijController::attach(const TijObserver *tijObserver)
+{
+	if (observer(tijObserver->id()) == _observers.end()) {
+		_observers.push_back(tijObserver);
+	}
+}
+
+void TijController::detach(const TijObserver *tijObserver)
+{
+	std::vector<const TijObserver *>::iterator it = observer(tijObserver->id());
+	if (it != _observers.end()) {
+		_observers.erase(it);
+	}
+}
+
+bool TijController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &err)
 {
 	bool success = false;
-	ISocket* socket = NetworkNode::socket(ISocket::TCP_SOCKET, MPROTOCOL_PORT);
-	if(socket->status() == ISocket::CONNECTED)
+
+
+	std::string tx = cmd->getRequest(_factory.nextId());
+	ISocket::nSocketFrameStatus  status = Network::NetworkNode::sendPacket(tx, MPROTOCOL_PORT);
+	if (status == ISocket::FRAME_SUCCESS)
 	{
-		std::string tx = cmd->getRequest(_factory.nextId());
-		ISocket::nSocketFrameStatus  status = socket->send(tx);
-		if (status == ISocket::FRAME_SUCCESS)
+		std::cout << __func__ << " " << cmd->commandName() << " sent" << std::endl;
+		std::string resp = "";
+		status = Network::NetworkNode::receivePacket(resp, MPROTOCOL_PORT);
+		if(status == ISocket::FRAME_SUCCESS)
 		{
-			std::cout << __func__ << " " << cmd->commandName() << " sent" << std::endl;
-			std::string resp = "";
-			status = socket->receive(resp);
-			if(status == ISocket::FRAME_SUCCESS)
-			{
-				std::cout << __func__ << " " << cmd->commandName() << " Received" << std::endl;
-				std::lock_guard<std::mutex> lock(_mutex);
+			std::cout << __func__ << " " << cmd->commandName() << " Received" << std::endl;
+			std::lock_guard<std::mutex> lock(_mutex);
 //				std::cout << tx << std::endl;
-				success = _factory.parseResponse(resp, err);
-			}
-			else {
-				std::cout << __func__ << " Receive failed: ";
-				switch (status) {
-					case ISocket::FRAME_SUCCESS:     std::cerr << "SUCCESS" << std::endl; break;
-					case ISocket::FRAME_TIMEOUT:	 std::cerr << "TIMEOUT" << std::endl; break;
-					case ISocket::FRAME_INCOMPLETED: std::cerr << "INCOMPLETED" << std::endl; break;
-					case ISocket::FRAME_ERROR:		 std::cerr << "ERROR" << std::endl; break;
-				}
+			success = _factory.parseResponse(resp, err);
+			if (success && err == Printers::ErrorCode_n::SUCCESS) {
+				checkCommand(cmd->commandName(), cmd->attributes());
 			}
 		}
 		else {
-			std::cout << __func__ << " Send Command failed: ";
+			std::cout << __func__ << " Receive failed: ";
 			switch (status) {
 				case ISocket::FRAME_SUCCESS:     std::cerr << "SUCCESS" << std::endl; break;
 				case ISocket::FRAME_TIMEOUT:	 std::cerr << "TIMEOUT" << std::endl; break;
 				case ISocket::FRAME_INCOMPLETED: std::cerr << "INCOMPLETED" << std::endl; break;
 				case ISocket::FRAME_ERROR:		 std::cerr << "ERROR" << std::endl; break;
 			}
+		}
+	}
+	else {
+		std::cout << __func__ << " Send Command failed: ";
+		switch (status) {
+			case ISocket::FRAME_SUCCESS:     std::cerr << "SUCCESS" << std::endl; break;
+			case ISocket::FRAME_TIMEOUT:	 std::cerr << "TIMEOUT" << std::endl; break;
+			case ISocket::FRAME_INCOMPLETED: std::cerr << "INCOMPLETED" << std::endl; break;
+			case ISocket::FRAME_ERROR:		 std::cerr << "ERROR" << std::endl; break;
 		}
 	}
 	if(_deleteAfterSend) {
@@ -284,9 +303,68 @@ bool TIJPrinterController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &e
 	return success;
 }
 
+void TijController::notifyStatusChanged()
+{
+	std::function<void (const TijObserver *)> func = &TijObserver::statusChanged;
+	notifyToObservers(func);
+}
+
+void TijController::notifyConfigChanged()
+{
+	std::function<void (const TijObserver *)> func = &TijObserver::configChanged;
+	notifyToObservers(func);
+}
+void TijController::notifyFilesListChanged()
+{
+	std::function<void (const TijObserver *)> func = &TijObserver::filesListChanged;
+	notifyToObservers(func);
+}
+
+void TijController::notifyFontsChanged()
+{
+	std::function<void (const TijObserver *)> func = &TijObserver::fontsChanged;
+	notifyToObservers(func);
+}
+
+void TijController::notifyUserValuesChanged()
+{
+	std::function<void (const TijObserver *)> func = &TijObserver::userValuesChanged;
+	notifyToObservers(func);
+}
+
+void TijController::notifyErrorsLogsChanged()
+{
+	std::function<void (const TijObserver *)> func = &TijObserver::errorsLogsChanged;
+	notifyToObservers(func);
+}
+
+#if 0 //if we have bad performance
+#include <thread>
+void TijController::notifyToObservers(std::function<void (const TijObserver *)> & alert)
+{
+	auto notify = [&]() {
+		for (std::vector<const TijObserver*>::iterator ob = _observers.begin(); ob != _observers.end(); ob++)
+		{
+			alert((*ob));
+		}
+	};
+
+	std::thread t = std::thread(notify);
+	t.detach();
+}
+#else
+void TijController::notifyToObservers(std::function<void (const TijObserver *)> & alert)
+{
+	for (std::vector<const TijObserver*>::iterator ob = _observers.begin(); ob != _observers.end(); ob++)
+	{
+		alert((*ob));
+	}
+}
+#endif
 
 
-bool TIJPrinterController::getBaseBoard(Printers::Board& board)
+
+bool TijController::getBaseBoard(Printers::Board& board)
 {
 	bool valid = (_printer.board(0) != nullptr);
 	if (valid) {
@@ -295,7 +373,7 @@ bool TIJPrinterController::getBaseBoard(Printers::Board& board)
 	return valid;
 }
 
-Printers::ErrorCode TIJPrinterController::changeBoardConfig(const Printers::Board &board)
+Printers::ErrorCode TijController::changeBoardConfig(const Printers::Board &board)
 {
 	Printers::ErrorCode error(Printers::ErrorCode_n::PARAM_BOARD_ID_NOT_FOUND);
 	MProtocol::MCommand* cmd = _factory.setConfigBoard(board);
@@ -305,7 +383,44 @@ Printers::ErrorCode TIJPrinterController::changeBoardConfig(const Printers::Boar
 	return error;
 }
 
-std::vector<std::string> TIJPrinterController::getFiles(const std::string &extension)
+void TijController::checkCommand(const std::string &cmd, const std::map<std::string,std::string>& attributes)
+{
+	if (cmd == MSTATUS || cmd == MIOSTATUS || cmd == MERRORS_GET) { // TODO: Split?
+		return notifyStatusChanged();
+	}
+	if (cmd == MCONFIG_GET) {
+		return notifyConfigChanged();
+	}
+	if (cmd == MFILES_GET_LIST) {
+		if (attributes.at(MFILES_GET_LIST_TYPE_ATTR).find(NISX_FILTER) != std::string::npos) {
+			notifyConfigChanged();
+		}
+		if (attributes.at(MFILES_GET_LIST_TYPE_ATTR).find(FONTS_FILTER) != std::string::npos) {
+			notifyConfigChanged();
+		}
+		return;
+	}
+	if (cmd == MMESSAGE_USER_FIELD_GET) {
+		return notifyUserValuesChanged(); //Attribute filename??
+	}
+	if (cmd == MERRORS_LOGS) {
+		return notifyErrorsLogsChanged();
+	}
+
+}
+
+std::vector<const TijObserver*>::iterator TijController::observer(const unsigned int id)
+{
+	std::vector<const TijObserver*>::iterator it;
+	for (it = _observers.begin(); it != _observers.end(); it++) {
+		if ((*it)->id() == id) {
+			break;
+		}
+	}
+	return it;
+}
+
+std::vector<std::string> TijController::getFiles(const std::string &extension)
 {
 	std::vector<std::string> files;
 	if (_printer.files() != nullptr){
@@ -317,7 +432,7 @@ std::vector<std::string> TIJPrinterController::getFiles(const std::string &exten
 	return files;
 }
 
-std::vector<std::string> TIJPrinterController::getFiles(const std::string &drive, const std::string &folder)
+std::vector<std::string> TijController::getFiles(const std::string &drive, const std::string &folder)
 {
 	std::vector<std::string> drives;
 	if (_printer.files() != nullptr) {

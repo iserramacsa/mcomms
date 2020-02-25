@@ -12,7 +12,7 @@
 using namespace tinyxml2;
 using namespace Macsa::MProtocol;
 
-MCommandsFactory::MCommandsFactory(Printers::TIJPrinter &printer, LiveFlags &liveFlags) :
+MCommandsFactory::MCommandsFactory(Printers::TijPrinter &printer, LiveFlags &liveFlags) :
 	_printer(printer),
 	_liveFlags(liveFlags)
 {
@@ -96,7 +96,7 @@ MCommand *MCommandsFactory::getConfigCommand()
 
 MCommand *MCommandsFactory::setDateTimeCommand(time_t dateTime)
 {
-	Macsa::Printers::TIJPrinter printer = _printer;
+	Macsa::Printers::TijPrinter printer = _printer;
 	printer.setDateTime(dateTime);
 	return new MSetDateTime(printer);
 }
@@ -105,7 +105,7 @@ MCommand *MCommandsFactory::setConfigBoard(const Macsa::Printers::Board &board)
 {
 	if (_printer.board(board.id()) != nullptr)
 	{
-		Macsa::Printers::TIJPrinter printer = _printer;
+		Macsa::Printers::TijPrinter printer = _printer;
 		printer.setBoard(board);
 		return new MUpdateConfig(_printer, printer);
 	}

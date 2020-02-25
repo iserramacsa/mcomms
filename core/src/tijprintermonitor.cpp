@@ -5,19 +5,19 @@
 using namespace Macsa;
 using namespace Macsa::Network;
 
-TIJPrinterMonitor::TIJPrinterMonitor(const std::string &id, const std::string &address) :
-	TIJPrinterController(id, address)
+TijPrinterMonitor::TijPrinterMonitor(const std::string &id, const std::string &address) :
+	TijController(id, address)
 {
 	_deleteAfterSend = false;
-	_th = std::thread(&TIJPrinterMonitor::run, this);
+	_th = std::thread(&TijPrinterMonitor::run, this);
 }
 
-TIJPrinterMonitor::~TIJPrinterMonitor()
+TijPrinterMonitor::~TijPrinterMonitor()
 {
 	stop();
 }
 
-void TIJPrinterMonitor::run()
+void TijPrinterMonitor::run()
 {
 	_running.store(true);
 
@@ -30,7 +30,7 @@ void TIJPrinterMonitor::run()
 		}
 		while (_commands.size()) {
 			MProtocol::MCommand* cmd = (*_commands.begin());
-			if(TIJPrinterController::send(cmd, _lastError)) {
+			if(TijController::send(cmd, _lastError)) {
 
 				// TODO: Add observers and callbacks
 //				if (cmd->commandName() == MSTATUS) {
@@ -59,26 +59,26 @@ void TIJPrinterMonitor::run()
 		}
 
 		if (isStatusChanged()) {
-			TIJPrinterController::updateStatus();
+			TijController::updateStatus();
 		}
 		if (isConfigChanged()) {
-			TIJPrinterController::updateConfig();
+			TijController::updateConfig();
 		}
 		if (isFilesChanged()) {
-			TIJPrinterController::updateFilesList();
+			TijController::updateFilesList();
 		}
 		if (isFontsChanged())  {
-			TIJPrinterController::updateFontsList();
+			TijController::updateFontsList();
 		}
 		//if  (userValuesChanged()){} //TODO
 		if (isErrorsLogsChanged()) {
-			TIJPrinterController::updateErrorsList();
+			TijController::updateErrorsList();
 		}
 	}
 
 }
 
-bool TIJPrinterMonitor::send(MProtocol::MCommand *cmd, Printers::ErrorCode &)
+bool TijPrinterMonitor::send(MProtocol::MCommand *cmd, Printers::ErrorCode &)
 {
 	ulong numCommands = _commands.size();
 	_commands.push_back(cmd);
@@ -89,7 +89,7 @@ bool TIJPrinterMonitor::send(MProtocol::MCommand *cmd, Printers::ErrorCode &)
 	return ((_commands.size() - numCommands) > 0);
 }
 
-void TIJPrinterMonitor::stop()
+void TijPrinterMonitor::stop()
 {
 	_running.store(false);
 	{

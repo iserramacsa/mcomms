@@ -3,7 +3,7 @@
 
 #include "mprotocol/mcommandsfactory.h"
 #include "tij/tijprinter.h"
-#include "network/tcpsocket.h"
+#include "network/isocket.h"
 #include <thread>
 #include <atomic>
 
@@ -12,7 +12,7 @@ using namespace Macsa;
 class ClientHandler
 {
 	public:
-		ClientHandler(Printers::TIJPrinter& printer, Macsa::Network::ISocket *socket, uint16_t port);
+		ClientHandler(Printers::TijPrinter& printer, Macsa::Network::ISocket *socket, uint16_t port);
 		~ClientHandler();
 		bool start();
 		bool stop();
@@ -20,7 +20,7 @@ class ClientHandler
 	private:
 		uint16_t _svrPort;
 		std::atomic_bool _running;
-		Printers::TIJPrinter& _printer;
+		Printers::TijPrinter& _printer;
 		Network::ISocket* _socket;
 		MProtocol::LiveFlags _liveFlags;
 		MProtocol::MCommandsFactory _factory;

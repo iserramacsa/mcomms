@@ -1,4 +1,4 @@
-#include "network/unixsocket.h"
+#include "unixsocket.h"
 
 #include <unistd.h>
 #include <sys/socket.h>
@@ -45,7 +45,7 @@ bool UnixSocket::bind(uint16_t port)
 		init();
 		int val = 1;
 		setSocketOption(_sock.fd, SO_REUSEADDR, val);
-		if (::bind(_sock.fd, (struct sockaddr*)&_sock.addr, sizeof (_sock.addr)) != -1) {
+		if (::bind(_sock.fd, reinterpret_cast<struct sockaddr*>(&_sock.addr), sizeof (_sock.addr)) != -1) {
 			setStatus(BINDED);
 			success = true;
 		}
@@ -79,7 +79,7 @@ bool UnixSocket::listen()
 
 ISocket *UnixSocket::accept()
 {
-	ISocket * client = nullptr;
+	UnixSocket * client = nullptr;
 	if (status() == LISTENING) {
 		sConnection remote;
 		clearSocket(remote.addr);
@@ -87,7 +87,7 @@ ISocket *UnixSocket::accept()
 
 		bool expired;
 		if(waitForRead(_sock.fd, WAIT_FOREVER, expired)) {
-			remote.fd = ::accept(_sock.fd, (struct sockaddr*)&remote.addr, &len);
+			remote.fd = ::accept(_sock.fd, reinterpret_cast<struct sockaddr*>(&remote.addr), &len);
 		}
 
 		client = socketFromConnection(remote);
@@ -109,11 +109,8 @@ bool UnixSocket::connect(const std::string &addr, uint16_t port)
 				setStatus(CONNECTED);
 			}
 		}
-		else if (status() == READY){
-			success = connect(_sock.fd, remote.addr);
-			if (success) {
-				setStatus(CONNECTED);
-			}
+		else {
+			success = (status() <= READY);
 		}
 	}
 	return success;
@@ -132,11 +129,8 @@ bool UnixSocket::connect(const std::string &addr, const std::string &port)
 				setStatus(CONNECTED);
 			}
 		}
-		else if (status() == READY){
-			success = connect(_sock.fd, remote.addr);
-			if (success) {
-				setStatus(CONNECTED);
-			}
+		else {
+			success = (status() <= READY);
 		}
 	}
 	return success;
@@ -146,7 +140,7 @@ ISocket::nSocketFrameStatus UnixSocket::send(const std::string &tx, int timeout)
 {
 	nSocketFrameStatus sent = FRAME_ERROR;
 	int fd = _sock.fd;
-	if (fd != -1) {
+	if (fd != -1 && status() >= CONNECTED) {
 		bool expired = false;
 		if (waitForWrite(fd, timeout, expired)) {
 			long bytesSent = ::send(fd, tx.c_str(), tx.length(), 0);
@@ -184,7 +178,7 @@ ISocket::nSocketFrameStatus UnixSocket::send(const std::string &tx, const std::s
 		if (waitForWrite(_sock.fd, timeout, expired)) {
 			sConnection remote;
 			initSocket(remote.addr, dest.c_str(), port);
-			long bytesSent = ::sendto(_sock.fd, tx.c_str(), tx.length(),0, (struct sockaddr*)&remote.addr, sizeof (remote.addr));
+			long bytesSent = ::sendto(_sock.fd, tx.c_str(), tx.length(),0, reinterpret_cast<struct sockaddr*>(&remote.addr), sizeof (remote.addr));
 			if (bytesSent > 0){
 				if(static_cast<unsigned>(bytesSent) == tx.length()) {
 					sent = FRAME_SUCCESS;
@@ -259,7 +253,7 @@ ISocket::nSocketFrameStatus UnixSocket::receive(std::string &rx, std::string &ad
 			sConnection remote;
 			clearSocket(remote.addr);
 			socklen_t len = sizeof(remote.addr);
-			int ret = static_cast<int>(::recvfrom(_sock.fd, buff, DEFAULT_BUFF_SIZE, 0, (struct sockaddr*)&remote.addr, &len));
+			int ret = static_cast<int>(::recvfrom(_sock.fd, buff, DEFAULT_BUFF_SIZE, 0, reinterpret_cast<struct sockaddr*>(&remote.addr), &len));
 			if (ret > 0) {
 				rx = buff;
 				addr = getAddress(remote.addr);
@@ -330,7 +324,7 @@ bool UnixSocket::init()
 	return  initSocket(_sock.addr, "", _port);
 }
 
-ISocket *UnixSocket::socketFromConnection(UnixSocket::sConnection &conn)
+UnixSocket *UnixSocket::socketFromConnection(UnixSocket::sConnection &conn)
 {
 	UnixSocket * socket = nullptr;
 	if (conn.fd != -1){
@@ -344,8 +338,8 @@ ISocket *UnixSocket::socketFromConnection(UnixSocket::sConnection &conn)
 
 bool UnixSocket::createSocket(int &fd, SocketType_n type)
 {
-	int protocol;
-	int sockType;
+    int protocol = IPPROTO_UDP;
+    int sockType = SOCK_DGRAM;
 	switch (type) {
 		case UDP_SOCKET:
 			sockType = SOCK_DGRAM;
@@ -444,7 +438,7 @@ bool UnixSocket::setAddress(sockaddr_in &socket, const char *addr)
 			struct hostent *hp = gethostbyname(addr);
 			if (hp != nullptr &&  hp->h_addrtype == AF_INET) {
 				success = true;
-				socket.sin_addr = *(struct in_addr *)hp->h_addr_list[0];
+				socket.sin_addr = *(reinterpret_cast<struct in_addr*>(hp->h_addr_list[0]));
 			}
 		}
 	}
@@ -462,7 +456,7 @@ bool UnixSocket::setAddress(sockaddr_in &socket, const char *addr)
 
 void UnixSocket::clearSocket(sockaddr_in &socket)
 {
-	memset((char *) &socket, 0, sizeof(socket));
+	memset(reinterpret_cast<char*>(&socket), 0, sizeof(socket));
 }
 
 bool UnixSocket::setSocketOption(int &fd, int optName, int &optValue)
@@ -541,10 +535,13 @@ bool UnixSocket::waitForRead(int fd, int timeout, bool& expired)
 bool UnixSocket::connect(int fd, const sockaddr_in &socket)
 {
 	bool success = false;
-	success = (::connect(fd, (const struct sockaddr*) &socket, sizeof (socket)) == 0);
+	success = (::connect(fd,reinterpret_cast<const struct sockaddr*>(&socket), sizeof (socket)) == 0);
 
+	if  (success) {
+		_sock.addr = socket;
+	}
 #ifdef DEBUG
-	if (!success) {
+	else{
 		std::cout << __func__ << " => " << strerror(errno)<< std::endl;
 	}
 #endif

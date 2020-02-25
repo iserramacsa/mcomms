@@ -11,7 +11,7 @@ namespace Macsa {
 		class MCommandsFactory
 		{
 			public:
-				MCommandsFactory(Printers::TIJPrinter& printer, LiveFlags& _liveFlags);
+				MCommandsFactory(Printers::TijPrinter& printer, LiveFlags& _liveFlags);
 				~MCommandsFactory();
 
 				bool parseResponse(const std::string &frame, Printers::ErrorCode &error);
@@ -49,7 +49,7 @@ namespace Macsa {
 
 			private:
 				tinyxml2::XMLDocument _doc;
-				Printers::TIJPrinter& _printer;
+				Printers::TijPrinter& _printer;
 				LiveFlags& _liveFlags;
 				int32_t _requestId;
 

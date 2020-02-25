@@ -1,5 +1,5 @@
 ##########################
-#  TIJ Printer Includes  #
+#  tij Printer Includes  #
 ##########################
 
 set(HEADERS_LIB

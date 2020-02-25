@@ -12,7 +12,7 @@ namespace Macsa {
 		{
 			public:
 				Ethernet();
-                                Ethernet(const Ethernet& eth);
+				Ethernet(const Ethernet& eth);
 				~Ethernet();
 				bool setAddress(const std::string& addr);
 				bool setAddress(const uint32_t& addr);
@@ -35,9 +35,9 @@ namespace Macsa {
 				std::string hostname() const;
 				uint16_t tcpPort() const;
 
-                                inline bool operator == (const Ethernet& other) const {return compare(other);}
-                                inline bool operator != (const Ethernet& other) const {return !compare(other);}
-                                inline void operator = (const Ethernet& other) {return copy(other);}
+				inline bool operator == (const Ethernet& other) const {return compare(other);}
+				inline bool operator != (const Ethernet& other) const {return !compare(other);}
+				inline void operator = (const Ethernet& other) {return copy(other);}
 
 			private:
 				std::string _address;
@@ -56,7 +56,7 @@ namespace Macsa {
 				inline bool isInRange(int val, int min, int max) const;
 
 				void copy(const Ethernet& other);
-                                bool compare(const Ethernet& other) const;
+				bool compare(const Ethernet& other) const;
 
 		};
 
@@ -76,8 +76,8 @@ namespace Macsa {
 				bool visible() const;
 				void setVisible(bool visible);
 
-                                inline bool operator == (const BlueTooth& other) const {return compare(other);}
-                                inline bool operator != (const BlueTooth& other) const {return !compare(other);}
+				inline bool operator == (const BlueTooth& other) const {return compare(other);}
+				inline bool operator != (const BlueTooth& other) const {return !compare(other);}
 				inline void operator = (const BlueTooth& other) {return copy(other);}
 
 			private:
@@ -86,10 +86,10 @@ namespace Macsa {
 				bool _visible;
 
 				void copy (const BlueTooth& other);
-                                bool compare(const BlueTooth& other) const;
+				bool compare(const BlueTooth& other) const;
 		};
 
-		class TIJComms : public PrinterComms{
+		class TijComms : public PrinterComms{
 			public:
 				int ethernetIfaces() const;
 				Ethernet * ethernetIface(int iface);
@@ -104,16 +104,16 @@ namespace Macsa {
 				void setBluetooth(const BlueTooth& bluetooth);
 				void setBluetooth(const std::string& device, const std::string& pass, bool visible);
 
-                                inline bool operator == (const TIJComms& other) const {return  compare(other);}
-                                inline bool operator != (const TIJComms& other) const {return !compare(other);}
-                                inline void operator = (const TIJComms& other) {return copy(other);}
+				inline bool operator == (const TijComms& other) const {return  compare(other);}
+				inline bool operator != (const TijComms& other) const {return !compare(other);}
+				inline void operator = (const TijComms& other) {return copy(other);}
 
 			private:
 				std::vector<Ethernet> _ifaces;
 				BlueTooth _bluetooth;
 
-                                bool compare(const TIJComms& other) const;
-                                void copy (const TIJComms& other);
+				bool compare(const TijComms& other) const;
+				void copy (const TijComms& other);
 				std::vector<Ethernet>::iterator getEthAdapter(const std::string & addr, const std::string & mac);
 
 		};

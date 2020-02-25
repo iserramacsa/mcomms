@@ -6,10 +6,11 @@
 #include <mutex>
 
 namespace Macsa {
-	class TIJPrinterController : public PrinterController
+	class TijObserver;
+	class TijController : public PrinterController
 	{
 		public:
-			enum class TIJPrinterStatus
+			enum class TijPrinterStatus
 			{
 				DISCONNECTED = -1,
 				STOPPED,
@@ -19,7 +20,7 @@ namespace Macsa {
 			};
 
 		public:
-			TIJPrinterController(const std::string& id, const std::string& address);
+			TijController(const std::string& id, const std::string& address);
 			virtual Printers::Printer* printer() override {return &_printer;}
 
 			//Live
@@ -34,7 +35,7 @@ namespace Macsa {
 
 			//Status
 			Printers::ErrorCode updateStatus();
-			TIJPrinterStatus printerStatus();
+			TijPrinterStatus printerStatus();
 
 			Printers::ErrorCode updateErrorsList();
 			//Config
@@ -67,6 +68,9 @@ namespace Macsa {
 
 			inline std::vector<std::string> getAllFiles() { return getFiles(ALL_FILES_FILTER); }
 
+			virtual void attach(const TijObserver* tijObserver);
+			virtual void detach(const TijObserver* tijObserver);
+
 		protected:
 			bool _deleteAfterSend;
 			MProtocol::MCommandsFactory _factory;
@@ -74,14 +78,25 @@ namespace Macsa {
 
 			virtual bool send(MProtocol::MCommand *cmd, Printers::ErrorCode& err) override;
 
+			virtual void notifyStatusChanged();
+			virtual void notifyConfigChanged();
+			virtual void notifyFilesListChanged();
+			virtual void notifyFontsChanged();
+			virtual void notifyUserValuesChanged();
+			virtual void notifyErrorsLogsChanged();
+			virtual void notifyToObservers(std::function<void(const TijObserver*)>& alert);
+
 		private:
-			Printers::TIJPrinter _printer;
 			std::mutex _mutex;
+			Printers::TijPrinter _printer;
+			std::vector<const TijObserver*> _observers;
 
 			bool getBaseBoard(Printers::Board& board);
 			Printers::ErrorCode changeBoardConfig(const Printers::Board& board);
 
+			void checkCommand(const std::string& cmd, const std::map<std::string, std::string> &attributes);
 
+			std::vector<const TijObserver*>::iterator observer(const unsigned int id);
 //			void checkConnection(); // TODO
 			std::vector<std::string> getFiles(const std::string &extension);
 			std::vector<std::string> getFiles(const std::string &drive,const std::string &folder);

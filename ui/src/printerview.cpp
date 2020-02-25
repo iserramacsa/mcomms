@@ -41,7 +41,7 @@ PrinterView::~PrinterView()
 	}
 }
 
-void PrinterView::setController(Macsa::TIJPrinterController &controller)
+void PrinterView::setController(Macsa::TijController &controller)
 {
 	if (_controller != nullptr) {
 		delete _controller;
@@ -129,30 +129,30 @@ void PrinterView::updateLogs()
 	}
 }
 
-void PrinterView::setPrinterStatus(TIJViewerController::TIJStatus status)
+void PrinterView::setPrinterStatus(TIJViewerController::TijStatus status)
 {
 	bool connected = false;
 	switch (status) {
-		case TIJViewerController::TIJStatus::DISCONNECTED:
+		case TIJViewerController::TijStatus::DISCONNECTED:
 			ui.lblPrinterStatus->setText("Disconnected");
 			ui.lblPrinterStatus->setStyleSheet("color:#333;");
 			break;
-		case TIJViewerController::TIJStatus::STOPPED:
+		case TIJViewerController::TijStatus::STOPPED:
 			connected = true;
 			ui.lblPrinterStatus->setText("Stopped");
 			ui.lblPrinterStatus->setStyleSheet("color:#900;");
 			break;
-		case TIJViewerController::TIJStatus::RUNNING:
+		case TIJViewerController::TijStatus::RUNNING:
 			connected = true;
 			ui.lblPrinterStatus->setText("Running");
 			ui.lblPrinterStatus->setStyleSheet("color:#050;");
 			break;
-		case TIJViewerController::TIJStatus::WARNING:
+		case TIJViewerController::TijStatus::WARNING:
 			connected = true;
 			ui.lblPrinterStatus->setText("Warning");
 			ui.lblPrinterStatus->setStyleSheet("color:#F80;");
 			break;
-		case TIJViewerController::TIJStatus::PRINTING:
+		case TIJViewerController::TijStatus::PRINTING:
 			connected = true;
 			ui.lblPrinterStatus->setText("Printing");
 			ui.lblPrinterStatus->setStyleSheet("color:#090;");
@@ -171,7 +171,7 @@ void PrinterView::clear()
 		_controller = nullptr;
 	}
 
-	setPrinterStatus(TIJViewerController::TIJStatus::DISCONNECTED);
+	setPrinterStatus(TIJViewerController::TijStatus::DISCONNECTED);
 	ui.lblPrinterName->setText("");
 	ui.lblTime->setText("");
 	ui.lblDate->setText("");
@@ -335,8 +335,8 @@ void PrinterView::onRequestErrorsLog()
 void PrinterView::onConnectClicked()
 {
 	if (_controller != nullptr) {
-		TIJViewerController::TIJStatus status = static_cast<TIJViewerController::TIJStatus>(_controller->data(static_cast<int>(TIJViewerController::TIJDataDescriptors::PRINTER_STATUS)).toInt());
-		if (status == TIJViewerController::TIJStatus::DISCONNECTED){
+		TIJViewerController::TijStatus status = static_cast<TIJViewerController::TijStatus>(_controller->data(static_cast<int>(TIJViewerController::TIJDataDescriptors::PRINTER_STATUS)).toInt());
+		if (status == TIJViewerController::TijStatus::DISCONNECTED){
 			_controller->controller().connect();
 		}
 		else {

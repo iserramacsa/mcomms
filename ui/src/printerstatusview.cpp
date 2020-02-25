@@ -25,7 +25,7 @@ PrinterStatusView::~PrinterStatusView()
 	}
 }
 
-void PrinterStatusView::setController(Macsa::TIJPrinterController &controller)
+void PrinterStatusView::setController(Macsa::TijController &controller)
 {
 	if (_controller != nullptr) {
 		delete _controller;
@@ -36,7 +36,7 @@ void PrinterStatusView::setController(Macsa::TIJPrinterController &controller)
 
 void PrinterStatusView::refresh()
 {
-	if ((_controller != nullptr) && (_controller->printerStatus() != TIJViewerController::TIJStatus::DISCONNECTED)) {
+	if ((_controller != nullptr) && (_controller->printerStatus() != TIJViewerController::TijStatus::DISCONNECTED)) {
 		_printerType->setText(_controller->boardType());
 		_printerAutostart->setChecked(_controller->autoStart());
 		_printerCurrentMessage->setText(_controller->currentMessage());

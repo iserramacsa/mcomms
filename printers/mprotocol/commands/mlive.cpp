@@ -6,7 +6,7 @@
 using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
-MLive::MLive(Macsa::Printers::TIJPrinter& printer, LiveFlags& flags):
+MLive::MLive(Macsa::Printers::TijPrinter& printer, LiveFlags& flags):
 	MCommand(MLIVE, printer),
 	_liveFlags(flags)
 {}

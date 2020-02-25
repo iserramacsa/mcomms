@@ -18,7 +18,7 @@
 #include <mutex>
 namespace Macsa {
 	namespace Printers {
-		class TIJPrinter;
+		class TijPrinter;
 		class Board {
 			public:
 #if __cplusplus >= 201103L
@@ -31,12 +31,12 @@ namespace Macsa {
 				typedef std::map<std::string, int> countersMap;
 #endif
 			public:
-				Board(const int id, TIJPrinter* parent);
-                Board(const Board& other, TIJPrinter* parent = nullptr);
+				Board(const int id, TijPrinter* parent);
+				Board(const Board& other, TijPrinter* parent = nullptr);
 				virtual ~Board();
 
 				int id() const;
-				void setParent(TIJPrinter* parent);
+				void setParent(TijPrinter* parent);
 
 				virtual std::string type() const;
 				virtual void setType(const std::string &type);
@@ -126,8 +126,8 @@ namespace Macsa {
 				virtual Error error(unsigned int idx) const;
 				virtual void setError(unsigned int idx, const Error& error);
 
-				virtual TIJPrinter* printer();
-                virtual const TIJPrinter* printer() const;
+				virtual TijPrinter* printer();
+				virtual const TijPrinter* printer() const;
 
 				virtual void clear();
 
@@ -138,7 +138,7 @@ namespace Macsa {
 
 			private:
                 const int   _id;
-                TIJPrinter*	_parent;
+				TijPrinter*	_parent;
 				std::mutex* _mutex;
 
 				bool			_autostart;

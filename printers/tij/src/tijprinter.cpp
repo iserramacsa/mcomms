@@ -14,52 +14,52 @@ using namespace Macsa::Printers;
 		typedef std::vector<Printers::Board>::const_iterator	citBoard;
 #endif
 
-TIJPrinter::TIJPrinter() :
+TijPrinter::TijPrinter() :
 	_mutex(new std::mutex())
 {
 	_type = "SM200";
 }
 
-TIJPrinter::TIJPrinter(const TIJPrinter &other) :
+TijPrinter::TijPrinter(const TijPrinter &other) :
 	_mutex(new std::mutex())
 {
 	copy(other);
 }
 
-TIJPrinter::~TIJPrinter()
+TijPrinter::~TijPrinter()
 {
 	if (_mutex) {
 		delete _mutex;
 	}
 }
 
-PrinterFiles *TIJPrinter::files()
+PrinterFiles *TijPrinter::files()
 {
 	return &_files;
 }
 
-const PrinterFiles *TIJPrinter::files() const
+const PrinterFiles *TijPrinter::files() const
 {
 	return &_files;
 }
 
-PrinterComms *TIJPrinter::comms()
+PrinterComms *TijPrinter::comms()
 {
 	return &_comms;
 }
 
-const PrinterComms *TIJPrinter::comms() const
+const PrinterComms *TijPrinter::comms() const
 {
 	return &_comms;
 }
 
-std::string TIJPrinter::formatedDateTime() const
+std::string TijPrinter::formatedDateTime() const
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	return formatedDateTime(_dt);
 }
 
-std::string TIJPrinter::formatedDateTime(time_t time) const
+std::string TijPrinter::formatedDateTime(time_t time) const
 {
 	std::stringstream dt;
 
@@ -74,7 +74,7 @@ std::string TIJPrinter::formatedDateTime(time_t time) const
 	return dt.str();
 }
 
-time_t TIJPrinter::dateTimeFromString(std::string dt) const
+time_t TijPrinter::dateTimeFromString(std::string dt) const
 {
 	time_t rawtime;
 	struct tm * timeInfo;
@@ -96,13 +96,13 @@ time_t TIJPrinter::dateTimeFromString(std::string dt) const
 	return rawtime;
 }
 
-void TIJPrinter::setDateTime(const time_t &dateTime)
+void TijPrinter::setDateTime(const time_t &dateTime)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	return Printer::setDateTime(dateTime);
 }
 
-void TIJPrinter::setDateTime(const std::string &formatedDatetime)
+void TijPrinter::setDateTime(const std::string &formatedDatetime)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	time_t rawtime;
@@ -124,25 +124,25 @@ void TIJPrinter::setDateTime(const std::string &formatedDatetime)
 	}
 }
 
-std::string TIJPrinter::controllerVersion() const
+std::string TijPrinter::controllerVersion() const
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	return _controllerVersion;
 }
 
-std::string TIJPrinter::apiVersion() const
+std::string TijPrinter::apiVersion() const
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	return _apiVersion;
 }
 
-std::string TIJPrinter::fpgaVersion() const
+std::string TijPrinter::fpgaVersion() const
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	return _fpgaVersion;
 }
 
-void TIJPrinter::setVersions(const std::string &controllerVersion, const std::string &apiVersion, const std::string &fpgaVersion)
+void TijPrinter::setVersions(const std::string &controllerVersion, const std::string &apiVersion, const std::string &fpgaVersion)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	_controllerVersion = controllerVersion;
@@ -150,25 +150,25 @@ void TIJPrinter::setVersions(const std::string &controllerVersion, const std::st
 	_fpgaVersion = fpgaVersion;
 }
 
-DateCodes TIJPrinter::dateCodes() const
+DateCodes TijPrinter::dateCodes() const
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	return _dateCodes;
 }
 
-void TIJPrinter::setDateCodes(const DateCodes &dateCodes)
+void TijPrinter::setDateCodes(const DateCodes &dateCodes)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	_dateCodes = dateCodes;
 }
 
-std::vector<Board> TIJPrinter::boards() const
+std::vector<Board> TijPrinter::boards() const
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	return _boards;
 }
 
-Board* TIJPrinter::board(int id)
+Board* TijPrinter::board(int id)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	Board* board = nullptr;
@@ -181,7 +181,7 @@ Board* TIJPrinter::board(int id)
 	return board;
 }
 
-const Board * TIJPrinter::board(int id) const
+const Board * TijPrinter::board(int id) const
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	const Board* board = nullptr;
@@ -194,7 +194,7 @@ const Board * TIJPrinter::board(int id) const
 	return board;
 }
 
-void TIJPrinter::setBoard(const Board &board)
+void TijPrinter::setBoard(const Board &board)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	for (unsigned int i = 0; i < _boards.size(); i++) {
@@ -206,7 +206,7 @@ void TIJPrinter::setBoard(const Board &board)
 
 }
 
-void TIJPrinter::setBoards(const std::vector<Board> &boards)
+void TijPrinter::setBoards(const std::vector<Board> &boards)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	_boards = boards;
@@ -215,66 +215,66 @@ void TIJPrinter::setBoards(const std::vector<Board> &boards)
 	}
 }
 
-std::vector<Error> TIJPrinter::errorsLog() const
+std::vector<Error> TijPrinter::errorsLog() const
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	return _errorsLog;
 }
 
-void TIJPrinter::setErrorsLog(const std::vector<Error> &errorsLog)
+void TijPrinter::setErrorsLog(const std::vector<Error> &errorsLog)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	_errorsLog = errorsLog;
 }
 
-bool TIJPrinter::logsEnabled() const
+bool TijPrinter::logsEnabled() const
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	return _traceLogs;
 }
 
-void TIJPrinter::setlogsEnabled(bool enable)
+void TijPrinter::setlogsEnabled(bool enable)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	_traceLogs = enable;
 }
 
-bool TIJPrinter::logComsEnabled() const
+bool TijPrinter::logComsEnabled() const
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	return  _traceComms;
 }
 
-void TIJPrinter::setlogComsEnabled(bool enable)
+void TijPrinter::setlogComsEnabled(bool enable)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	_traceComms = enable;
 }
 
-LoggerLevel TIJPrinter::loggerLevel() const
+LoggerLevel TijPrinter::loggerLevel() const
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	return _logLevel;
 }
 
-void TIJPrinter::setloggerLevel(const LoggerLevel &logLevel)
+void TijPrinter::setloggerLevel(const LoggerLevel &logLevel)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	_logLevel = logLevel;
 }
 
-void TIJPrinter::setloggerLevel(const std::string &logLevel)
+void TijPrinter::setloggerLevel(const std::string &logLevel)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	_logLevel = logLevel;
 }
 
-bool TIJPrinter::equal(const Printer &other) const
+bool TijPrinter::equal(const Printer &other) const
 {
 	bool equal = false;
 
 	try {
-		const TIJPrinter& printer = dynamic_cast<const TIJPrinter&>(other);
+		const TijPrinter& printer = dynamic_cast<const TijPrinter&>(other);
 		//TODO
 		equal = (_dateCodes == printer._dateCodes);
 	}
@@ -285,7 +285,7 @@ bool TIJPrinter::equal(const Printer &other) const
 	return equal;
 }
 
-void TIJPrinter::copy(const TIJPrinter &other)
+void TijPrinter::copy(const TijPrinter &other)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	_type = other._type;

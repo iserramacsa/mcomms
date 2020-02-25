@@ -35,7 +35,7 @@ namespace Macsa
 		class MLive : public MCommand
 		{
 			public:
-				MLive(Printers::TIJPrinter &printer, LiveFlags& liveStatus);
+				MLive(Printers::TijPrinter &printer, LiveFlags& liveStatus);
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
 

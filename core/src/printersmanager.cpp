@@ -1,13 +1,11 @@
 #include "printersmanager.h"
-#include "network/tcpsocket.h"
 #include "tijprintercontroller.h"
 #include "tijprintermonitor.h"
 
 using namespace Macsa;
 using namespace Macsa::Network;
 
-PrintersManager::PrintersManager() :
-	_tcpNetwork(ISocket::TCP_SOCKET)
+PrintersManager::PrintersManager()
 {}
 
 PrintersManager::~PrintersManager()
@@ -16,24 +14,24 @@ PrintersManager::~PrintersManager()
 bool PrintersManager::addTijPrinter(const std::string name, const std::string &address, bool monitorize)
 {
 	if (monitorize){
-		TIJPrinterMonitor* controller = new TIJPrinterMonitor(name, address);
-		return _tcpNetwork.addNewNode(controller);
+		TijPrinterMonitor* controller = new TijPrinterMonitor(name, address);
+		return _printersNetwork.addNewNode(controller);
 	}
 	else {
-		TIJPrinterController* controller = new TIJPrinterController(name, address);
-		return _tcpNetwork.addNewNode(controller);
+		TijController* controller = new TijController(name, address);
+		return _printersNetwork.addNewNode(controller);
 	}
 }
 
 bool PrintersManager::removeTijPrinter(const std::string name)
 {
-	return _tcpNetwork.removeNode(name);
+	return _printersNetwork.removeNode(name);
 }
 
 bool PrintersManager::connectPrinter(const std::string name)
 {
 	bool connected = false;
-	NetworkNode* node = _tcpNetwork.getNodeById(name);
+	NetworkNode* node = _printersNetwork.getNodeById(name);
 	if (node != nullptr) {
 		connected = dynamic_cast<PrinterController*>(node)->connect();
 	}
@@ -43,7 +41,7 @@ bool PrintersManager::connectPrinter(const std::string name)
 bool PrintersManager::disconnectPrinter(const std::string name)
 {
 	bool disconnected = false;
-	NetworkNode* node = _tcpNetwork.getNodeById(name);
+	NetworkNode* node = _printersNetwork.getNodeById(name);
 	if (node != nullptr) {
 		disconnected = dynamic_cast<PrinterController*>(node)->disconnect();
 	}
@@ -53,16 +51,16 @@ bool PrintersManager::disconnectPrinter(const std::string name)
 
 PrinterController *PrintersManager::getPrinter(const std::string name)
 {
-	return dynamic_cast<PrinterController*>(_tcpNetwork.getNodeById(name));
+	return dynamic_cast<PrinterController*>(_printersNetwork.getNodeById(name));
 }
 
 PrinterController *PrintersManager::getPrinter(const int index)
 {
-	return dynamic_cast<PrinterController*>(_tcpNetwork.getNode(static_cast<uint>(index)));
+	return dynamic_cast<PrinterController*>(_printersNetwork.getNode(static_cast<uint>(index)));
 }
 
 unsigned int PrintersManager::size() const
 {
-	return _tcpNetwork.size();
+	return _printersNetwork.size();
 }
 

@@ -7,7 +7,7 @@
 using namespace Macsa;
 using namespace Macsa::Printers;
 
-TIJViewerController::TIJViewerController(TIJPrinterController &controller) :
+TIJViewerController::TIJViewerController(TijController &controller) :
 	_controller(controller)
 {
 //	try {
@@ -134,7 +134,7 @@ std::vector<uint8_t> TIJViewerController::getFileContent(const std::string &file
 
 QString TIJViewerController::printerDateTime(const QString& format)
 {
-	TIJPrinter* tij = dynamic_cast<TIJPrinter*>(_controller.printer());
+	TijPrinter* tij = dynamic_cast<TijPrinter*>(_controller.printer());
 	if (tij){
 		time_t time = tij->dateTime();
 		QDateTime dt = QDateTime::fromTime_t(static_cast<uint32_t>(time));
@@ -151,7 +151,7 @@ QString TIJViewerController::printerDateTime(const QString& format)
 QVector<TIJViewerController::PrinterError> TIJViewerController::errorsLog() const
 {
 	QVector<PrinterError> values;
-	const TIJPrinter* tij = tijPrinter();
+	const TijPrinter* tij = tijPrinter();
 	if (tij) {
 		std::vector<Error> errors = tij->errorsLog();
 		for (std::vector<Error>::const_iterator it = errors.begin(); it != errors.end(); it++) {
@@ -170,9 +170,9 @@ QVector<TIJViewerController::PrinterError> TIJViewerController::errorsLog() cons
 TIJViewerController::NetworkIface TIJViewerController::networkIface(int index) const
 {
 	NetworkIface iface;
-	const TIJPrinter* tij = tijPrinter();
+	const TijPrinter* tij = tijPrinter();
 	if (tij) {
-		const TIJComms * comms = dynamic_cast<const TIJComms*>(tij->comms());
+		const TijComms * comms = dynamic_cast<const TijComms*>(tij->comms());
 		if (comms) {
 			const Ethernet * eth = comms->ethernetIface(index);
 			if (eth) {
@@ -192,9 +192,9 @@ TIJViewerController::NetworkIface TIJViewerController::networkIface(int index) c
 TIJViewerController::BluetoothDevice TIJViewerController::bluetooth() const
 {
 	BluetoothDevice bDev;
-	const TIJPrinter* tij = tijPrinter();
+	const TijPrinter* tij = tijPrinter();
 	if (tij) {
-		const TIJComms * comms = dynamic_cast<const TIJComms*>(tij->comms());
+		const TijComms * comms = dynamic_cast<const TijComms*>(tij->comms());
 		if (comms) {
 			const BlueTooth * ble = comms->bluetooth();
 			if (ble) {
@@ -211,7 +211,7 @@ TIJViewerController::BluetoothDevice TIJViewerController::bluetooth() const
 QString TIJViewerController::loggerLevelStr() const
 {
 	std::string value = "---";
-	const TIJPrinter* tij = tijPrinter();
+	const TijPrinter* tij = tijPrinter();
 	if (tij) {
 		value = tij->loggerLevel().toString();
 	}
@@ -222,7 +222,7 @@ QString TIJViewerController::loggerLevelStr() const
 LoggerLevel TIJViewerController::loggerLevel() const
 {
 	LoggerLevel value;
-	const TIJPrinter* tij = tijPrinter();
+	const TijPrinter* tij = tijPrinter();
 	if (tij) {
 		value = tij->loggerLevel();
 	}
@@ -233,7 +233,7 @@ LoggerLevel TIJViewerController::loggerLevel() const
 bool TIJViewerController::traceComms() const
 {
 	bool value = false;
-	const TIJPrinter* tij = tijPrinter();
+	const TijPrinter* tij = tijPrinter();
 	if (tij) {
 		value = tij->logComsEnabled();
 	}
@@ -244,7 +244,7 @@ bool TIJViewerController::traceComms() const
 bool TIJViewerController::loggerEnabled() const
 {
 	bool value = false;
-	const TIJPrinter* tij = tijPrinter();
+	const TijPrinter* tij = tijPrinter();
 	if (tij) {
 		value = tij->logsEnabled();
 	}
@@ -252,7 +252,7 @@ bool TIJViewerController::loggerEnabled() const
 	return value;
 }
 
-TIJViewerController::TIJStatus TIJViewerController::printerStatus() const
+TIJViewerController::TijStatus TIJViewerController::printerStatus() const
 {
 	return _controller.printerStatus();
 }
@@ -271,7 +271,7 @@ QString TIJViewerController::boardType() const
 QString TIJViewerController::boardControllerVersion() const
 {
 	std::string value = "---";
-	const TIJPrinter* tij = tijPrinter();
+	const TijPrinter* tij = tijPrinter();
 	if (tij) {
 		value = tij->controllerVersion();
 	}
@@ -281,7 +281,7 @@ QString TIJViewerController::boardControllerVersion() const
 QString TIJViewerController::boardFPGAVersion() const
 {
 	std::string value = "---";
-	const TIJPrinter* tij = tijPrinter();
+	const TijPrinter* tij = tijPrinter();
 	if (tij) {
 		value = tij->fpgaVersion();
 	}
@@ -291,7 +291,7 @@ QString TIJViewerController::boardFPGAVersion() const
 QString TIJViewerController::boardAPIVersion() const
 {
 	std::string value = "---";
-	const TIJPrinter* tij = tijPrinter();
+	const TijPrinter* tij = tijPrinter();
 	if (tij) {
 		value = tij->apiVersion();
 	}
@@ -850,7 +850,7 @@ TIJViewerController::PrinterError TIJViewerController::error(unsigned int idx) c
 
 DateCodes TIJViewerController::dateCodes() const
 {
-	const TIJPrinter* tij = tijPrinter();
+	const TijPrinter* tij = tijPrinter();
 	if (tij) {
 		return tij->dateCodes();
 	}
@@ -859,11 +859,11 @@ DateCodes TIJViewerController::dateCodes() const
 
 
 /**********************************************************************/
-TIJPrinter *TIJViewerController::tijPrinter() const
+TijPrinter *TIJViewerController::tijPrinter() const
 {
-	TIJPrinter* tij = nullptr;
+	TijPrinter* tij = nullptr;
 	if (_controller.status() == Network::NetworkNode::CONNECTED) {
-		tij = dynamic_cast<TIJPrinter*>(_controller.printer());
+		tij = dynamic_cast<TijPrinter*>(_controller.printer());
 	}
 	return tij;
 }
@@ -871,7 +871,7 @@ TIJPrinter *TIJViewerController::tijPrinter() const
 const Board *TIJViewerController::tijPrinterBoard() const
 {
 	const Board * board = nullptr;
-	TIJPrinter* tij = tijPrinter();
+	TijPrinter* tij = tijPrinter();
 	if (tij) {
 		board = tij->board(0);
 	}

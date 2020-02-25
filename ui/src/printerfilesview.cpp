@@ -25,7 +25,7 @@ PrinterFilesView::~PrinterFilesView()
 	}
 }
 
-void PrinterFilesView::setController(Macsa::TIJPrinterController &controller)
+void PrinterFilesView::setController(Macsa::TijController &controller)
 {
 	if (_controller != nullptr) {
 		delete _controller;

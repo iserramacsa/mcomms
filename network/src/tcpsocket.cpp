@@ -1,10 +1,10 @@
-#include "network/tcpsocket.h"
+#include "tcpsocket.h"
 using namespace Macsa::Network;
 
-TcpSocket::TcpSocket() :
+TcpSocket::TcpSocket(uint16_t port) :
 	AbstractSocket (ISocket::TCP_SOCKET)
 {
-
+	_port = port;
 }
 
 TcpSocket::~TcpSocket()

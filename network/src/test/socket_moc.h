@@ -2,7 +2,7 @@
 #define SOCKET_MOCK_H
 
 #include <gmock/gmock.h>
-#include "network/abstractsocket.h"
+#include "abstractsocket.h"
 
 using namespace Macsa::Network;
 

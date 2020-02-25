@@ -6,7 +6,7 @@ using namespace Macsa;
 using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
-MUpdate::MUpdate(Printers::TIJPrinter &printer):
+MUpdate::MUpdate(Printers::TijPrinter &printer):
 	MCommand(MUPDATE, printer)
 {}
 

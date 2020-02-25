@@ -1,13 +1,8 @@
-#ifndef ISOCKET_H
-#define ISOCKET_H
+#ifndef MACSA_NETWORK_ISOCKET_H
+#define MACSA_NETWORK_ISOCKET_H
 
 #include <stdint.h>
 #include <string>
-
-#ifndef VIRTUAL_MOCK
-#define VIRTUAL_MOCK
-#endif
-
 
 namespace Macsa {
 	namespace Network {
@@ -58,8 +53,8 @@ namespace Macsa {
 					_status = UNKNOWN;
 				}
 				virtual ~ISocket(){;}
-				VIRTUAL_MOCK uint16_t port() const {return _port;}
-				SocketType_n type() const {return  _type;}
+				virtual inline uint16_t port() const {return _port;}
+				virtual inline SocketType_n type() const {return  _type;}
 				virtual std::string address() const = 0;
 				virtual bool bind(uint16_t port) = 0;
 				virtual bool listen() = 0;
@@ -85,7 +80,7 @@ namespace Macsa {
 				bool equal(const ISocket& other) const {
 					return _type == other._type &&
 							_port == other._port &&
-							(address().compare(other.address()) == 0);
+							(address() == other.address());
 				}
 
 				void setStatus(SocketStatus_n status) {
@@ -101,4 +96,4 @@ namespace Macsa {
 	}
 }
 
-#endif //ISOCKET_H
+#endif //MACSA_NETWORK_ISOCKET_H

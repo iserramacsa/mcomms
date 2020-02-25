@@ -2,10 +2,9 @@
 #include "clientHandler.h"
 #include <iostream>
 #include <sstream>
-#include "network/abstractsocket.h"
 
-ClientManager::ClientManager(Printers::TIJPrinter& printer) :
-	Network::MNetwork (Network::ISocket::TCP_SOCKET),
+ClientManager::ClientManager(Printers::TijPrinter& printer) :
+	Network::MNetwork (),
 	_printer(printer)
 {
   _running.store(false);
@@ -19,7 +18,7 @@ ClientManager::~ClientManager()
 
 bool ClientManager::initServer(uint16_t port)
 {
-	bool success = NetworkNode::initServer(port);
+	bool success = NetworkNode::initServer(ISocket::TCP_SOCKET, port);
 	if (success){
 		_svrPort = port;
 	}
@@ -51,20 +50,18 @@ void ClientManager::serverMainLoop()
 {
 	_running.store(true);
 	while (_running.load()) {
-		Network::AbstractSocket* clientSocket = acceptConnection();
+		Network::ISocket* clientSocket = acceptConnection();
 		if (clientSocket){
 			std::stringstream id;
 			id << "Client" << std::to_string(_nodes.size());
 			std::cout << __func__ << " " << id.str() << std::endl;
-			NetworkNode* clientNode = new NetworkNode(id.str(), clientSocket);
+			NetworkNode* clientNode = new NetworkNode(id.str());
+			clientNode->addConnection(clientSocket);
 
 			if (clientNode != nullptr && addNewNode(clientNode)){
 				ClientHandler* handler = new ClientHandler(_printer, clientSocket, _svrPort);
 				_handlers.push_back(handler);
 				handler->start();
-#if SSIGNALS
-				clientConnected.emit(id.str(), clientSocket->address());
-#endif
 			}
 		}
 	}
@@ -78,10 +75,10 @@ void ClientManager::serverMainLoop()
 	}
 }
 
-Network::AbstractSocket* ClientManager::acceptConnection()
+Network::ISocket* ClientManager::acceptConnection()
 {
-	Network::AbstractSocket* client = nullptr;
-	client = dynamic_cast<Network::AbstractSocket*>(NetworkNode::accept(_svrPort));
+	Network::ISocket* client = nullptr;
+	client = dynamic_cast<Network::ISocket*>(NetworkNode::accept(_svrPort));
 
 	if (client){
 		std::cout << "Socket type:" << std::to_string(client->type()) << std::endl;

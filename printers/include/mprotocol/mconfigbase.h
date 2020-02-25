@@ -10,14 +10,14 @@ namespace Macsa {
 		class MConfigCommand : public MCommand
 		{
 			public:
-				MConfigCommand(const std::string& command, Printers::TIJPrinter& printer);
+				MConfigCommand(const std::string& command, Printers::TijPrinter& printer);
 				virtual ~MConfigCommand();
 
 			protected:
-				void generalConfigToXml(const Printers::TIJPrinter& printer, tinyxml2::XMLElement **parent);
-				void datetimeToXml(const Printers::TIJPrinter& printer, tinyxml2::XMLElement **parent);
-				void loggerToXml(const Printers::TIJPrinter& printer, tinyxml2::XMLElement **parent);
-				void printerConnectionsToXml(const Printers::TIJComms* comms, tinyxml2::XMLElement **parent);
+				void generalConfigToXml(const Printers::TijPrinter& printer, tinyxml2::XMLElement **parent);
+				void datetimeToXml(const Printers::TijPrinter& printer, tinyxml2::XMLElement **parent);
+				void loggerToXml(const Printers::TijPrinter& printer, tinyxml2::XMLElement **parent);
+				void printerConnectionsToXml(const Printers::TijComms* comms, tinyxml2::XMLElement **parent);
 				void boardToXml(const Printers::Board& board, tinyxml2::XMLElement **parent);
 				void boardTypeToXml(const std::string &boardType, tinyxml2::XMLElement **parent);
 				void autostartToXml(bool autostart, tinyxml2::XMLElement **parent);
@@ -38,8 +38,8 @@ namespace Macsa {
 				void outputsToXml(const std::vector<Printers::Output>& outputs, tinyxml2::XMLElement **parent);
 				void dateCodesToXml(const Printers::DateCodes& dateCodes, tinyxml2::XMLElement **parent);
 
-				void generalConfigFromXml(const tinyxml2::XMLElement *parent, Printers::TIJPrinter& printer) const;
-				void printerConnectionsFromXml(const tinyxml2::XMLElement *parent, Printers::TIJComms& comms) const;
+				void generalConfigFromXml(const tinyxml2::XMLElement *parent, Printers::TijPrinter& printer) const;
+				void printerConnectionsFromXml(const tinyxml2::XMLElement *parent, Printers::TijComms& comms) const;
 				void boardFromXml(const tinyxml2::XMLElement *xBoard, Printers::Board& board) const;
 				void bcdFromXml(const tinyxml2::XMLElement *xBoard, Printers::Board& board) const;
 				void shotModeFromXml(const tinyxml2::XMLElement *xBoard, Printers::Board& board) const;
@@ -48,7 +48,7 @@ namespace Macsa {
 				void cartridgeFromXml(const tinyxml2::XMLElement *xBoard, Printers::Board& board) const;
 				void inputsFromXml(const tinyxml2::XMLElement *xBoard, Printers::Board& board) const;
 				void outputsFromXml(const tinyxml2::XMLElement *xBoard, Printers::Board& board) const;
-				void dateCodesFromXml(const tinyxml2::XMLElement *xBoard, Printers::TIJPrinter& printer) const;
+				void dateCodesFromXml(const tinyxml2::XMLElement *xBoard, Printers::TijPrinter& printer) const;
 
 			private:
 				template<class T>

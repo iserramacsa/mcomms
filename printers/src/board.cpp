@@ -3,7 +3,7 @@
 
 using namespace Macsa::Printers;
 
-Board::Board(const int id, TIJPrinter* parent) :
+Board::Board(const int id, TijPrinter* parent) :
 	_id(id),
 	_parent(parent),
 	_mutex(new std::mutex())
@@ -11,7 +11,7 @@ Board::Board(const int id, TIJPrinter* parent) :
 	clear();
 }
 
-Board::Board(const Board &other, TIJPrinter* parent) :
+Board::Board(const Board &other, TijPrinter* parent) :
 	_id(other.id()),
 	_parent(parent),
 	_mutex(new std::mutex())
@@ -31,7 +31,7 @@ int Board::id() const
 	return _id;
 }
 
-void Board::setParent(TIJPrinter *parent)
+void Board::setParent(TijPrinter *parent)
 {
 	_parent = parent;
 }
@@ -476,12 +476,12 @@ void Board::setError(unsigned int idx, const Error &error)
 	}
 }
 
-TIJPrinter *Board::printer()
+TijPrinter *Board::printer()
 {
 	return _parent;
 }
 
-const TIJPrinter *Board::printer() const
+const TijPrinter *Board::printer() const
 {
 	return _parent;
 }

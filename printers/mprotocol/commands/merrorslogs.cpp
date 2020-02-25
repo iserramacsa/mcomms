@@ -35,7 +35,7 @@ using namespace Macsa::MProtocol;
  </WIND>
 ****************************************************** */
 
-MErrorsLogs::MErrorsLogs(Macsa::Printers::TIJPrinter &printer) :
+MErrorsLogs::MErrorsLogs(Macsa::Printers::TijPrinter &printer) :
 	MCommand(MERRORS_LOGS, printer)
 {}
 

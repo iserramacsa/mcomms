@@ -8,7 +8,7 @@ namespace Macsa {
 		class TcpSocket: public AbstractSocket
 		{
 			public:
-				TcpSocket();
+				TcpSocket(uint16_t port = 0);
 				virtual ~TcpSocket();
 			private:
 				virtual bool enableBroadcast(){return false;}

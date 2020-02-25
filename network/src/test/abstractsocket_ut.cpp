@@ -7,8 +7,8 @@
 #include <atomic>
 #include <tuple>
 
-#include "network/tcpsocket.h"
-#include "network/udpsocket.h"
+#include "tcpsocket.h"
+#include "udpsocket.h"
 #include "server_moc.h"
 
 #define TEST_PORT				8080
@@ -127,6 +127,42 @@ TEST_F(SocketUT, listenTcpServerSocket_returnListening)
 	_socket->close();
 }
 
+TEST_F(SocketUT, connectedSocket_returnExpectedAddress)
+{
+	_socket = new TcpSocket();
+	_socket->bind(TEST_PORT);
+	_socket->listen();
+
+	AbstractSocket* client = nullptr;
+	/* Accept connection is runned in another thread due to his blocking nature and
+	 * needs another socket connecting to it, in order to unblock the execution */
+	std::thread th = std::thread(&SocketUT::acceptNewConnection, this, &client);
+
+
+	/* sleeping this thread forces scheduler to start acceptNewConnection thread */
+	std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+	/* New we create the client socket that connect to the server socket to unblock
+	 * the accept execution */
+	AbstractSocket remote(ISocket::TCP_SOCKET);
+	remote.connect(LOOPBACK_ADDR, TEST_PORT);
+	{
+		std::unique_lock<std::mutex>lck(_mutex);
+		_cv.wait_for(lck, std::chrono::milliseconds(CONNECTION_TIMEOUT_MS));
+	}
+	EXPECT_TRUE(client != nullptr);
+
+	EXPECT_STREQ(remote.address().c_str(), LOOPBACK_ADDR);
+
+	th.join();
+
+	if (client != nullptr) {
+		delete client;
+	}
+	_socket->close();
+
+}
+
 TEST_F(SocketUT, acceptTcpServerSocket_returnNewClientSocket)
 {
 	_socket = new TcpSocket();
@@ -150,10 +186,8 @@ TEST_F(SocketUT, acceptTcpServerSocket_returnNewClientSocket)
 		std::unique_lock<std::mutex>lck(_mutex);
 		_cv.wait_for(lck, std::chrono::milliseconds(CONNECTION_TIMEOUT_MS));
 	}
-	bool hasClient = (client != nullptr);
+	EXPECT_TRUE(client != nullptr);
 	th.join();
-
-	EXPECT_EQ(hasClient, true);
 
 	if (client != nullptr) {
 		delete client;
@@ -206,8 +240,8 @@ TEST_F(SocketUT, receiveTcpServerSocket_returnEchoMessage)
 	}
 	_socket->close();
 
-	EXPECT_EQ(server_rx.compare(ECHO_MSG), 0);
-	EXPECT_EQ(remote_rx.compare(ECHO_MSG), 0);
+	EXPECT_STREQ(server_rx.c_str(), ECHO_MSG);
+	EXPECT_STREQ(remote_rx.c_str(), ECHO_MSG);
 }
 
 TEST_F(SocketUT, receiveTcpServerSocket_returnClientClosed)
@@ -301,7 +335,7 @@ TEST_F(SocketUT, tcpClientSocket_returnReceiveEcho)
 	EXPECT_EQ(_socket->send(ECHO_MSG), ISocket::FRAME_SUCCESS);
 	std::string msg = "";
 	EXPECT_EQ(_socket->receive(msg), ISocket::FRAME_SUCCESS);
-	EXPECT_EQ(msg.compare(ECHO_MSG), 0);
+	EXPECT_STREQ(msg.c_str(), ECHO_MSG);
 
 	_server.stop();
 	_socket->close();

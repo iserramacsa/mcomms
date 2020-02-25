@@ -8,7 +8,7 @@ using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
 //================		BASE CLASS		================//
-MMessageValues::MMessageValues(const std::string &command, Printers::TIJPrinter& printer, const std::string &filename) :
+MMessageValues::MMessageValues(const std::string &command, Printers::TijPrinter& printer, const std::string &filename) :
 	MCommand(command, printer)
 {
 	_filename = filename;
@@ -169,7 +169,7 @@ void MMessageValues::countersFromXml(const XMLElement *parent, Macsa::MProtocol:
 }
 
 //================		GET USER FIELDS		================//
-MGetMessageValues::MGetMessageValues(Printers::TIJPrinter &printer, const std::string &filename, const Macsa::MProtocol::userFieldsMap &userFields) :
+MGetMessageValues::MGetMessageValues(Printers::TijPrinter &printer, const std::string &filename, const Macsa::MProtocol::userFieldsMap &userFields) :
 	MMessageValues(MMESSAGE_USER_FIELD_GET, printer, filename)
 {
 	_userFieldsMap = userFields;
@@ -222,7 +222,7 @@ bool MGetMessageValues::parseResponse(const XMLElement *xml)
 }
 
 //================		SET USER FIELDS		================//
-MSetMessageValues::MSetMessageValues(Printers::TIJPrinter &printer, const std::string &filename, const Macsa::MProtocol::userFieldsMap &userFields) :
+MSetMessageValues::MSetMessageValues(Printers::TijPrinter &printer, const std::string &filename, const Macsa::MProtocol::userFieldsMap &userFields) :
 	MMessageValues(MMESSAGE_USER_FIELD_SET, printer, filename)
 {
 	_userFieldsMap = userFields;
@@ -271,7 +271,7 @@ bool MSetMessageValues::parseResponse(const XMLElement *xml)
 }
 
 //================		GET VARIABLE FIELDS		================//
-MGetMessageDataSource::MGetMessageDataSource(Printers::TIJPrinter &printer,
+MGetMessageDataSource::MGetMessageDataSource(Printers::TijPrinter &printer,
 											 const std::string& filename,
 											 const std::string& fieldType,
 											 const MProtocol::userFieldsMap& userFields,
@@ -358,7 +358,7 @@ std::string MGetMessageDataSource::fieldType() const
 }
 
 //================		SET VARIABLE FIELDS		================//
-MSetMessageDataSource::MSetMessageDataSource(Printers::TIJPrinter &printer,
+MSetMessageDataSource::MSetMessageDataSource(Printers::TijPrinter &printer,
 											 const std::string &filename,
 											 const std::string &fieldType,
 											 const MProtocol::userFieldsMap &userFields,
