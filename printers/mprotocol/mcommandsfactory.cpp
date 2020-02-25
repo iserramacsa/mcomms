@@ -7,7 +7,6 @@
 #include "mprotocol/merrorslogs.h"
 #include "mprotocol/mmessagevalues.h"
 #include "mprotocol/mupdate.h"
-#include <iostream>
 
 using namespace tinyxml2;
 using namespace Macsa::MProtocol;
@@ -43,7 +42,6 @@ bool MCommandsFactory::parseResponse(const std::string &frame, Printers::ErrorCo
 				XMLElement* eCmd = eError->NextSiblingElement();
 				MCommand* cmd = getCommand(eCmd);
 				if (cmd != nullptr){
-					std::cout << frame << std::endl;
 					valid = cmd->parseResponse(wind);
 					error = cmd->getError();
 					delete cmd;

@@ -85,6 +85,7 @@ void MainWindow::onAddPrinter()
 		}
 		bool monitorize = false;
 		if (_manager.addTijPrinter(name.toStdString(), address.toStdString(), monitorize)) {
+			_manager.connectPrinter(name.toStdString());
 			refreshPrintersList();
 			if (_printersListModel->stringList().count() == 1) {
 				onPrinterSelected(_printersListModel->index(0));

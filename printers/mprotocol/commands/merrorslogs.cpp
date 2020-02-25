@@ -67,7 +67,8 @@ bool MErrorsLogs::parseResponse(const XMLElement *xml)
 {
 	bool valid = false;
 	const XMLElement * cmd = getCommand(xml, _id);
-	if (cmd != nullptr)
+	valid = cmd != nullptr;
+	if (valid)
 	{
 		std::vector<Printers::Error> log;
 		_error = getCommandError(xml);

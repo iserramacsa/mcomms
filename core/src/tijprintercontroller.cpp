@@ -276,6 +276,10 @@ bool TijController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &err)
 			if (success && err == Printers::ErrorCode_n::SUCCESS) {
 				checkCommand(cmd->commandName(), cmd->attributes());
 			}
+			if (!success) {
+				std::cout << __func__ << " " << cmd->commandName() << " failed on parse response:" << std::endl;
+				std::cout << resp << std::endl;
+			}
 		}
 		else {
 			std::cout << __func__ << " Receive failed: ";
