@@ -4,11 +4,11 @@
 #include <vector>
 #include <string>
 #include "isocket.h"
-#include "nodeobserver.h"
-
 
 namespace Macsa {
 	namespace Network {
+		class NodeObserver;
+
 		///
 		/// \brief The NetworkNode class. TODO: add definition
 		///
@@ -55,9 +55,9 @@ namespace Macsa {
 				///
 				/// \brief Status of this network node. This is a unified status of the node connections
 				/// \return CONNECTED if at least one connection is connected, DISCONNECTED if all connections
-				///			are disconnected.
+				///			are disconnected and CONNECTING if only have one connetion and is trying to connect
 				///
-				virtual NodeStatus_n status() const { return checkStatus();	}
+				virtual NodeStatus_n status() const { return _status; }
 
 				///
 				/// \brief Simplified status of ISocket status.
@@ -175,7 +175,11 @@ namespace Macsa {
 				///
 				bool removeConnection(ISocket* connection);
 
-
+				///
+				/// \brief attach
+				/// \param observer
+				/// \return
+				///
 				bool attach(NodeObserver* observer);
 				bool detach(NodeObserver* observer);
 
@@ -218,8 +222,8 @@ namespace Macsa {
 				virtual bool stopServer(ISocket::SocketType_n type, uint16_t port);
 
 				//Notifiers
-				virtual void notifyConnected() const;
-				virtual void notifyDisconnected() const;
+				virtual void notifyStatusChanged(const NodeStatus_n& status) const;
+				virtual void notifyTimeout() const;
 
 
 				//Socket helpers
@@ -283,12 +287,19 @@ namespace Macsa {
 				std::vector<NodeObserver*>::iterator observer(unsigned id);
 
 				///
+				/// \brief statusChanged
+				/// \param status
+				///
+				void setStatus(const NodeStatus_n& status);
+
+				///
 				/// \brief checkStatus. Helper method to loop over the connections and creates a simplified node status
 				/// \return CONNECTED if at least one connection is connected, otherwise returns DISCONNECTED
 				///
 				NodeStatus_n checkStatus() const;
 
 			private:
+				NodeStatus_n _status;
 				// hidden constructors
 				NetworkNode(){}
 				NetworkNode(const NetworkNode&){}

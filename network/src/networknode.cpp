@@ -1,4 +1,5 @@
 #include "network/networknode.h"
+#include "network/nodeobserver.h"
 #include "tcpsocket.h"
 #include "udpsocket.h"
 
@@ -8,6 +9,7 @@ NetworkNode::NetworkNode(const std::string &id, const std::string &address)
 {
 	_id = id;
 	_address = address;
+	_status = DISCONNECTED;
 }
 
 NetworkNode::~NetworkNode()
@@ -32,6 +34,7 @@ bool NetworkNode::connect(ISocket::SocketType_n type, uint16_t port)
 	bool connected = false;
 	std::vector<ISocket*>::const_iterator it = connection(type, port);
 
+	setStatus(CONNECTING);
 	if (it != _connections.end()){
 		connected = ((*it)->status() >= ISocket::CONNECTED);
 		if(!connected) {
@@ -49,9 +52,7 @@ bool NetworkNode::connect(ISocket::SocketType_n type, uint16_t port)
 
 	}
 
-	if (connected) {
-		notifyConnected();
-	}
+	setStatus(connected ? CONNECTED : DISCONNECTED);
 
 	return connected;
 
@@ -69,9 +70,7 @@ bool NetworkNode::disconnect(uint16_t port)
 		}
 	}
 
-	if (disconnected) {
-		notifyDisconnected();
-	}
+	setStatus(DISCONNECTED);
 
 	return disconnected ;
 }
@@ -96,6 +95,7 @@ bool NetworkNode::addConnection(ISocket *socket)
 	if (!exist(socket) && socket->address() == _address)
 	{
 		_connections.push_back(socket);
+		setStatus((socket->status() == ISocket::CONNECTED) ? CONNECTED : DISCONNECTED);
 		return true;
 	}
 
@@ -193,6 +193,9 @@ ISocket::nSocketFrameStatus NetworkNode::receivePacket(std::string &rx, uint16_t
 		TcpSocket* socket = dynamic_cast<TcpSocket*>(*it);
 		if (socket) {
 			status = socket->receive(rx, timeout);
+			if (status == ISocket::FRAME_TIMEOUT) {
+				notifyTimeout();
+			}
 		}
 	}
 
@@ -221,6 +224,9 @@ ISocket::nSocketFrameStatus NetworkNode::receiveDatagram(std::string &rx, std::s
 		UdpSocket* socket = dynamic_cast<UdpSocket*>(*it);
 		if (socket && socket->status() >= ISocket::BINDED) {
 			status = socket->receive(rx, remoteAddr,timeout);
+			if (status == ISocket::FRAME_TIMEOUT) {
+				notifyTimeout();
+			}
 		}
 	}
 
@@ -287,28 +293,26 @@ bool NetworkNode::stopServer(ISocket::SocketType_n type, uint16_t port)
 	return success;
 }
 
-void NetworkNode::notifyConnected() const
+void NetworkNode::notifyStatusChanged(const NetworkNode::NodeStatus_n &status) const
 {
 	for (std::vector<NodeObserver*>::const_iterator ob = _observers.begin(); ob != _observers.end(); ob++) {
-		(*ob)->OnNodeConnected();
+		(*ob)->nodeStatusChanged(status);
 	}
 }
 
-void NetworkNode::notifyDisconnected() const
+void NetworkNode::notifyTimeout() const
 {
 	for (std::vector<NodeObserver*>::const_iterator ob = _observers.begin(); ob != _observers.end(); ob++) {
-		(*ob)->OnNodeDisconnected();
+		(*ob)->nodeTimeout();
 	}
 }
 
 ISocket *NetworkNode::initSocket(ISocket::SocketType_n type, uint16_t port)
 {
-	if (type == ISocket::TCP_SOCKET)
-	{
+	if (type == ISocket::TCP_SOCKET) {
 		return new TcpSocket(port);
 	}
-	else
-	{
+	else {
 		return new UdpSocket(port);
 	}
 }
@@ -382,6 +386,22 @@ std::vector<NodeObserver*>::iterator NetworkNode::observer(unsigned id)
 		}
 	}
 	return ob;
+}
+
+void NetworkNode::setStatus(const NodeStatus_n &status)
+{
+	NodeStatus_n current = _status;
+	if (checkStatus() == CONNECTED) {
+		_status = CONNECTED;
+	}
+	else {
+		_status = status;
+	}
+
+	if (current != _status){
+		notifyStatusChanged(_status);
+	}
+
 }
 
 NetworkNode::NodeStatus_n NetworkNode::checkStatus() const

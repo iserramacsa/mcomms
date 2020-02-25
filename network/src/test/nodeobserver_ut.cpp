@@ -6,35 +6,38 @@
 using namespace Macsa::Network;
 using ::testing::Return;
 
-#define NODE_NAME	"root"
-#define NODE_ADDR	"127.0.0.1"
-#define TEST_PORT	8080
+#define NODE_NAME		"root"
+#define NODE_ADDR		"127.0.0.1"
+#define TEST_PORT		8080
+
+#define ECHO_MSG		"<ECHO>"
+#define TEST_TIMEOUT	25	//25 ms
 
 class MyObserver : public NodeObserver
 {
 	public:
-		MyObserver(NetworkNode* node, std::function<void()>* onConnected, std::function<void()>* onDisconnected) :
+		MyObserver(NetworkNode* node, std::function<void(const NetworkNode::NodeStatus_n&)>* onStatusChanged, std::function<void()>* onMessageTimedOut) :
 			NodeObserver(node),
-			_onConnected(onConnected),
-			_onDisconnected(onDisconnected)
+			_onStatusChanged(onStatusChanged),
+			_onMessageTimedOut(onMessageTimedOut)
 		{}
 
-		virtual void OnNodeDisconnected() override
+		virtual void nodeStatusChanged(const NetworkNode::NodeStatus_n& status) override
 		{
-			if (_onDisconnected!= nullptr) {
-				(*_onDisconnected)();
+			if (_onStatusChanged != nullptr) {
+				(*_onStatusChanged)(status);
 			}
 		}
-		virtual void OnNodeConnected() override
+		virtual void nodeTimeout() override
 		{
-			if (_onConnected != nullptr) {
-				(*_onConnected)();
+			if (_onMessageTimedOut != nullptr) {
+				(*_onMessageTimedOut)();
 			}
 		}
 
 	  private:
-		const std::function<void()>* _onConnected;
-		const std::function<void()>* _onDisconnected;
+		const std::function<void(const NetworkNode::NodeStatus_n&)>* _onStatusChanged;
+		const std::function<void()>* _onMessageTimedOut;
 };
 
 class MyNode : public NetworkNode
@@ -124,10 +127,12 @@ TEST_F(MNodeObserverUT, equalObservers_returnTrue)
 	EXPECT_EQ((*_observer), (*other));
 }
 
-TEST_F(MNodeObserverUT, onConnect_returnConnected)
+TEST_F(MNodeObserverUT, nodeStatusChanged_returnConnected)
 {
 	bool connected = false;
-	std::function<void()> onConnected = [&](){ connected = true;};
+	std::function<void(const NetworkNode::NodeStatus_n&)> onConnected = [&](const NetworkNode::NodeStatus_n& status) {
+		connected = (status == NetworkNode::CONNECTED);
+	};
 
 	_observer = new MyObserver(_node, &onConnected, nullptr);
 	_server.init(ISocket::TCP_SOCKET, TEST_PORT);
@@ -139,22 +144,64 @@ TEST_F(MNodeObserverUT, onConnect_returnConnected)
 	_server.stop();
 }
 
-
-TEST_F(MNodeObserverUT, onNodeDisconnects_returnDisconnected)
+TEST_F(MNodeObserverUT, nodeStatusChanged_returnConnecting)
 {
-	bool connected = true;
-	std::function<void()> onDisconnected = [&](){ connected = false;};
+	bool connecting = false;
+	std::function<void(const NetworkNode::NodeStatus_n&)> onConnected = [&](const NetworkNode::NodeStatus_n& status) {
+		if (status == NetworkNode::CONNECTING){
+			connecting = true;
+		}
+	};
 
-	_observer = new MyObserver(_node, nullptr, &onDisconnected);
+	_observer = new MyObserver(_node, &onConnected, nullptr);
 	_server.init(ISocket::TCP_SOCKET, TEST_PORT);
 	_server.runTcpServer();
 
+	EXPECT_FALSE(connecting);
+	EXPECT_TRUE(_node->connect(ISocket::TCP_SOCKET, TEST_PORT));
+	EXPECT_TRUE(connecting);
+	_server.stop();
+}
 
-	EXPECT_TRUE(connected);
+TEST_F(MNodeObserverUT, nodeStatusChanged_returnDisconnected)
+{
+	bool disconnected = false;
+	std::function<void(const NetworkNode::NodeStatus_n&)> onConnected = [&](const NetworkNode::NodeStatus_n& status) {
+		disconnected = (status == NetworkNode::DISCONNECTED);
+	};
+
+	_observer = new MyObserver(_node, &onConnected, nullptr);
+	_server.init(ISocket::TCP_SOCKET, TEST_PORT);
+	_server.runTcpServer();
+
+	EXPECT_FALSE(disconnected);
 	_node->connect(ISocket::TCP_SOCKET, TEST_PORT);
 	EXPECT_EQ(_node->status(), NetworkNode::CONNECTED);
 	EXPECT_TRUE(_node->disconnect(TEST_PORT));
-	EXPECT_FALSE(connected);
+	EXPECT_TRUE(disconnected);
+	_server.stop();
+}
+
+TEST_F(MNodeObserverUT, timeout)
+{
+	bool timedOut = false;
+	std::function<void()> onNodeTimeout = [&](){ timedOut = true;};
+
+	_observer = new MyObserver(_node, nullptr, &onNodeTimeout);
+	_server.init(ISocket::TCP_SOCKET, TEST_PORT);
+	_server.run([](AbstractSocket* client) {
+		std::string rx = "";
+		client->receive(rx, WAIT_FOREVER);
+		EXPECT_STREQ(rx.c_str(), ECHO_MSG);
+	});
+
+
+	EXPECT_FALSE(timedOut);
+	_node->connect(ISocket::TCP_SOCKET, TEST_PORT);
+	EXPECT_EQ(_node->sendPacket(ECHO_MSG, TEST_PORT), ISocket::FRAME_SUCCESS);
+	std::string rx = "";
+	_node->receivePacket(rx, TEST_PORT, TEST_TIMEOUT);
+	EXPECT_TRUE(timedOut);
 
 	_server.stop();
 }
