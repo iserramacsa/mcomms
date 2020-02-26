@@ -24,7 +24,7 @@ MCommandsFactory::~MCommandsFactory()
 	_doc.Clear();
 }
 
-bool MCommandsFactory::parseResponse(const std::string &frame, Printers::ErrorCode &error)
+bool MCommandsFactory::parseResponse(const std::string &frame, MCommand * cmd)
 {
 	bool valid = false;
 
@@ -36,15 +36,15 @@ bool MCommandsFactory::parseResponse(const std::string &frame, Printers::ErrorCo
 	{
 		_doc.Parse(frame.c_str());
 		XMLElement* wind = _doc.FirstChildElement();
-		if(isWindValid(wind)) {
+		if(isWindValid(wind))
+		{
 			XMLElement* eError = wind->FirstChildElement();
-			if (eError) {
+			if (eError)
+			{
 				XMLElement* eCmd = eError->NextSiblingElement();
-				MCommand* cmd = getCommand(eCmd);
-				if (cmd != nullptr){
+				if (eCmd->Name() != nullptr && (cmd->commandName().compare(eCmd->Name()) == 0))
+				{
 					valid = cmd->parseResponse(wind);
-					error = cmd->getError();
-					delete cmd;
 				}
 			}
 		}

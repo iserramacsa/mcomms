@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
 	EmulatorWindow win(emulator);
 
 	int result = 1;
-	if (manager.initServer(port)) {
+	if (manager.initTcpServer(port)) {
 		win.show();
 		manager.run();
 		result = app.exec();

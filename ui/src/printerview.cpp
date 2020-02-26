@@ -63,8 +63,8 @@ void PrinterView::refresh()
 {
 	this->setEnabled(_controller != nullptr);
 	if (_controller) {
-		QString name = _controller->data(static_cast<int>(TIJViewerController::TIJDataDescriptors::PRINTER_ID)).toString();
-		QString addr = _controller->data(static_cast<int>(TIJViewerController::TIJDataDescriptors::PRINTER_ADDRS)).toString();
+		QString name = _controller->id();
+		QString addr = _controller->address();
 		ui.lblPrinterName->setText(QString("%1: %2").arg(name).arg(addr));
 
 		setPrinterStatus(_controller->printerStatus());
@@ -270,7 +270,7 @@ void PrinterView::resizeErrorsLog()
 void PrinterView::onRequestLive()
 {
 	if (_controller) {
-		_controller->data(static_cast<int>(TIJViewerController::TIJDataDescriptors::LIVE));
+		_controller->requestLive();
 	}
 	refresh();
 }
@@ -278,7 +278,7 @@ void PrinterView::onRequestLive()
 void PrinterView::onRequestConfig()
 {
 	if (_controller) {
-		_controller->data(static_cast<int>(TIJViewerController::TIJDataDescriptors::CONFIG));
+		_controller->requestConfig();
 	}
 	refresh();
 }
@@ -286,7 +286,7 @@ void PrinterView::onRequestConfig()
 void PrinterView::onRequestStatus()
 {
 	if (_controller) {
-		_controller->data(static_cast<int>(TIJViewerController::TIJDataDescriptors::STATUS));
+		_controller->requestStatus();
 	}
 	refresh();
 }
@@ -294,7 +294,7 @@ void PrinterView::onRequestStatus()
 void PrinterView::onRequestFiles()
 {
 	if (_controller) {
-		_controller->data(static_cast<int>(TIJViewerController::TIJDataDescriptors::ALL_FILES));
+		_controller->requestAllFiles();
 	}
 	refresh();
 }
@@ -302,7 +302,7 @@ void PrinterView::onRequestFiles()
 void PrinterView::onRequestFonts()
 {
 	if (_controller) {
-		_controller->data(static_cast<int>(TIJViewerController::TIJDataDescriptors::FONTS_FILES));
+		_controller->requestFontFiles();
 	}
 	refresh();
 }
@@ -310,7 +310,7 @@ void PrinterView::onRequestFonts()
 void PrinterView::onRequestImages()
 {
 	if (_controller) {
-		_controller->data(static_cast<int>(TIJViewerController::TIJDataDescriptors::IMAGES_FILES));
+		_controller->requestImagesFiles();
 	}
 	refresh();
 }
@@ -318,7 +318,7 @@ void PrinterView::onRequestImages()
 void PrinterView::onRequestMessages()
 {
 	if (_controller) {
-		_controller->data(static_cast<int>(TIJViewerController::TIJDataDescriptors::MESSAGES_FILES));
+		_controller->requestMessagesFiles();
 	}
 	refresh();
 }
@@ -335,7 +335,7 @@ void PrinterView::onRequestErrorsLog()
 void PrinterView::onConnectClicked()
 {
 	if (_controller != nullptr) {
-		TIJViewerController::TijStatus status = static_cast<TIJViewerController::TijStatus>(_controller->data(static_cast<int>(TIJViewerController::TIJDataDescriptors::PRINTER_STATUS)).toInt());
+		TIJViewerController::TijStatus status = _controller->printerStatus();
 		if (status == TIJViewerController::TijStatus::DISCONNECTED){
 			_controller->controller().connect();
 		}

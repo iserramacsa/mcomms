@@ -55,7 +55,7 @@ void MainWindow::loadView()
 
 void MainWindow::onManageNetwork()
 {
-	NetworkDialog* dialog = new NetworkDialog(this);
+	NetworkDialog* dialog = new NetworkDialog(_manager, this);
 	if(dialog->exec()) {
 
 	}

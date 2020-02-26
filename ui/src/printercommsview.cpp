@@ -27,7 +27,7 @@ void PrinterCommsView::setController(Macsa::TijController &controller)
 		delete _controller;
 	}
 	_controller = new TIJViewerController(controller);
-	refresh();
+	connect(_controller, SIGNAL(printerConfigChanged()), SLOT(refresh()));
 }
 
 void PrinterCommsView::refresh()

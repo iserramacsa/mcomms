@@ -14,7 +14,7 @@ namespace Macsa {
 				MCommandsFactory(Printers::TijPrinter& printer, LiveFlags& _liveFlags);
 				~MCommandsFactory();
 
-				bool parseResponse(const std::string &frame, Printers::ErrorCode &error);
+				bool parseResponse(const std::string &frame, MCommand *cmd);
 				bool parseRequest(const std::string &frame, MCommand **cmd);
 
 //				//SERVER

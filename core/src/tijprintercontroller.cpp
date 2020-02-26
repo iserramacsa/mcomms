@@ -16,7 +16,12 @@ TijController::TijController(const std::string &id, const std::string &address) 
 	_deleteAfterSend(true),
 	_factory(_printer, _liveFlags)
 {
-	_observers.clear();
+	_tijObservers.clear();
+}
+
+TijController::~TijController()
+{
+	notifyDestruction();
 }
 
 Printers::ErrorCode TijController::getLive()
@@ -240,22 +245,22 @@ std::vector<uint8_t> TijController::getFile(const std::string &filepath)
 	return content;
 }
 
-void TijController::attach(const TijObserver *tijObserver)
+void TijController::attach(TijObserver *tijObserver)
 {
-	if (observer(tijObserver->id()) == _observers.end()) {
-		_observers.push_back(tijObserver);
+	if (observer(tijObserver->id()) == _tijObservers.end()) {
+		_tijObservers.push_back(tijObserver);
 	}
 }
 
-void TijController::detach(const TijObserver *tijObserver)
+void TijController::detach(TijObserver *tijObserver)
 {
-	std::vector<const TijObserver *>::iterator it = observer(tijObserver->id());
-	if (it != _observers.end()) {
-		_observers.erase(it);
+	std::vector<TijObserver *>::iterator it = observer(tijObserver->id());
+	if (it != _tijObservers.end()) {
+		_tijObservers.erase(it);
 	}
 }
 
-bool TijController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &err)
+bool TijController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &/*err*/)
 {
 	bool success = false;
 
@@ -264,25 +269,22 @@ bool TijController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &err)
 	ISocket::nSocketFrameStatus  status = Network::NetworkNode::sendPacket(tx, MPROTOCOL_PORT);
 	if (status == ISocket::FRAME_SUCCESS)
 	{
-		std::cout << __func__ << " " << cmd->commandName() << " sent" << std::endl;
 		std::string resp = "";
 		status = Network::NetworkNode::receivePacket(resp, MPROTOCOL_PORT);
 		if(status == ISocket::FRAME_SUCCESS)
 		{
-			std::cout << __func__ << " " << cmd->commandName() << " Received" << std::endl;
 			std::lock_guard<std::mutex> lock(_mutex);
-//				std::cout << tx << std::endl;
-			success = _factory.parseResponse(resp, err);
-			if (success && err == Printers::ErrorCode_n::SUCCESS) {
+			success = _factory.parseResponse(resp, cmd);
+			if (success && cmd->getError() == Printers::ErrorCode_n::SUCCESS) {
 				checkCommand(cmd->commandName(), cmd->attributes());
 			}
 			if (!success) {
-				std::cout << __func__ << " " << cmd->commandName() << " failed on parse response:" << std::endl;
+				std::cout << __FILE__ << " " << cmd->commandName() << " failed on parse response:" << std::endl;
 				std::cout << resp << std::endl;
 			}
 		}
 		else {
-			std::cout << __func__ << " Receive failed: ";
+			std::cout << __FILE__ << " Receive failed: ";
 			switch (status) {
 				case ISocket::FRAME_SUCCESS:     std::cerr << "SUCCESS" << std::endl; break;
 				case ISocket::FRAME_TIMEOUT:	 std::cerr << "TIMEOUT" << std::endl; break;
@@ -292,7 +294,7 @@ bool TijController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &err)
 		}
 	}
 	else {
-		std::cout << __func__ << " Send Command failed: ";
+		std::cout << __FILE__ << " Send Command failed: ";
 		switch (status) {
 			case ISocket::FRAME_SUCCESS:     std::cerr << "SUCCESS" << std::endl; break;
 			case ISocket::FRAME_TIMEOUT:	 std::cerr << "TIMEOUT" << std::endl; break;
@@ -309,64 +311,78 @@ bool TijController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &err)
 
 void TijController::notifyStatusChanged()
 {
-	std::function<void (const TijObserver *)> func = &TijObserver::statusChanged;
+	std::function<void (TijObserver *)> func = &TijObserver::statusChanged;
+	notifyToObservers(func);
+}
+
+void TijController::notifyIOStatusChanged()
+{
+	std::function<void (TijObserver *)> func = &TijObserver::ioStatusChanged;
 	notifyToObservers(func);
 }
 
 void TijController::notifyConfigChanged()
 {
-	std::function<void (const TijObserver *)> func = &TijObserver::configChanged;
+	std::function<void (TijObserver *)> func = &TijObserver::configChanged;
 	notifyToObservers(func);
 }
 void TijController::notifyFilesListChanged()
 {
-	std::function<void (const TijObserver *)> func = &TijObserver::filesListChanged;
+	std::function<void (TijObserver *)> func = &TijObserver::filesListChanged;
 	notifyToObservers(func);
 }
 
 void TijController::notifyFontsChanged()
 {
-	std::function<void (const TijObserver *)> func = &TijObserver::fontsChanged;
+	std::function<void (TijObserver *)> func = &TijObserver::fontsChanged;
 	notifyToObservers(func);
 }
 
 void TijController::notifyUserValuesChanged()
 {
-	std::function<void (const TijObserver *)> func = &TijObserver::userValuesChanged;
+	std::function<void (TijObserver *)> func = &TijObserver::userValuesChanged;
 	notifyToObservers(func);
 }
 
 void TijController::notifyErrorsLogsChanged()
 {
-	std::function<void (const TijObserver *)> func = &TijObserver::errorsLogsChanged;
+	std::function<void (TijObserver *)> func = &TijObserver::errorsLogsChanged;
 	notifyToObservers(func);
 }
 
-#if 0 //if we have bad performance
-#include <thread>
-void TijController::notifyToObservers(std::function<void (const TijObserver *)> & alert)
+void TijController::notifyFileChanged(const std::string& unit, const std::string& filepath)
 {
-	auto notify = [&]() {
-		for (std::vector<const TijObserver*>::iterator ob = _observers.begin(); ob != _observers.end(); ob++)
-		{
-			alert((*ob));
-		}
-	};
+	std::function<void (TijObserver *, const std::string&, const std::string& )> func = &TijObserver::fileChanged;
+	notifyToObservers(func, unit, filepath);
+}
 
-	std::thread t = std::thread(notify);
-	t.detach();
+void TijController::notifyDestruction()
+{
+	std::function<void (TijObserver *)> func = &TijObserver::controllerDeleted;
+	notifyToObservers(func);
+}
+
+#if 1 //if we have bad performance
+#include <thread>
+template<typename ... Args>
+void TijController::notifyToObservers(std::function<void (TijObserver *, const Args&...)> & callback, const Args&... arg)
+{
+	for (std::vector<TijObserver*>::iterator ob = _tijObservers.begin(); ob != _tijObservers.end(); ob++)
+	{
+		std::function<void(const Args&...)> cb = std::bind(callback, (*ob), arg...);
+		std::thread t(cb, arg...);
+		t.detach();
+	}
 }
 #else
-void TijController::notifyToObservers(std::function<void (const TijObserver *)> & alert)
+template<typename ... Args>
+void TijController::notifyToObservers(std::function<void (TijObserver *, const Args&...)> & callback, const Args&... arg)
 {
-	for (std::vector<const TijObserver*>::iterator ob = _observers.begin(); ob != _observers.end(); ob++)
-	{
-		alert((*ob));
+	for (std::vector<TijObserver*>::iterator ob = _observers.begin(); ob != _observers.end(); ob++) {
+		callback((*ob), arg...);
 	}
 }
 #endif
-
-
 
 bool TijController::getBaseBoard(Printers::Board& board)
 {
@@ -396,13 +412,22 @@ void TijController::checkCommand(const std::string &cmd, const std::map<std::str
 		return notifyConfigChanged();
 	}
 	if (cmd == MFILES_GET_LIST) {
-		if (attributes.at(MFILES_GET_LIST_TYPE_ATTR).find(NISX_FILTER) != std::string::npos) {
-			notifyConfigChanged();
-		}
-		if (attributes.at(MFILES_GET_LIST_TYPE_ATTR).find(FONTS_FILTER) != std::string::npos) {
-			notifyConfigChanged();
+		if (attributes.find(MFILES_GET_LIST_TYPE_ATTR) != attributes.end()){
+			if (attributes.at(MFILES_GET_LIST_TYPE_ATTR).find(NISX_FILTER) != std::string::npos) {
+				notifyFilesListChanged();
+			}
+			if (attributes.at(MFILES_GET_LIST_TYPE_ATTR).find(FONTS_FILTER) != std::string::npos) {
+				notifyFontsChanged();
+			}
 		}
 		return;
+	}
+	if (cmd == MFILES_GET) {
+		if (attributes.find(MFILES_DEVICE_UNIT) != attributes.end() &&
+			attributes.find(MFILES_FILE_PATH) != attributes.end())
+		{
+			return notifyFileChanged(attributes.at(MFILES_DEVICE_UNIT), attributes.at(MFILES_FILE_PATH));
+		}
 	}
 	if (cmd == MMESSAGE_USER_FIELD_GET) {
 		return notifyUserValuesChanged(); //Attribute filename??
@@ -413,10 +438,10 @@ void TijController::checkCommand(const std::string &cmd, const std::map<std::str
 
 }
 
-std::vector<const TijObserver*>::iterator TijController::observer(const unsigned int id)
+std::vector<TijObserver*>::iterator TijController::observer(const unsigned int id)
 {
-	std::vector<const TijObserver*>::iterator it;
-	for (it = _observers.begin(); it != _observers.end(); it++) {
+	std::vector<TijObserver*>::iterator it;
+	for (it = _tijObservers.begin(); it != _tijObservers.end(); it++) {
 		if ((*it)->id() == id) {
 			break;
 		}

@@ -98,7 +98,7 @@ void PrinterFilesView::AddFilesChild(QTreeWidgetItem *item, const QString &folde
 
 void PrinterFilesView::onRequestFiles()
 {
-	if (_controller->data(static_cast<int>(TIJViewerController::TIJDataDescriptors::ALL_FILES)).toBool()) {
+	if (_controller->requestAllFiles()) {
 		refresh();
 	}
 }

@@ -71,6 +71,7 @@ bool MGetFilesList::parseResponse(const XMLElement *xml)
 	const XMLElement * cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if (valid) {
+		_error = getCommandError(xml);
 		if (std::string(cmd->Value()).compare(MFILES_GET_LIST) == 0)
 		{
 			std::vector<std::string> exts;
@@ -452,6 +453,7 @@ void MGetFile::buildResponse()
 bool MGetFile::parseResponse(const XMLElement *xml)
 {
 	bool valid = false;
+	_attributes.clear();
 	const XMLElement* cmd = getCommand(xml, _id);
 	valid = (cmd != nullptr);
 	if (valid)
@@ -466,6 +468,10 @@ bool MGetFile::parseResponse(const XMLElement *xml)
 				const XMLElement* contentNode = cmd->FirstChildElement();
 				if (dynamic_cast<const XMLText*>(contentNode->FirstChild()))
 				{
+					std::string drive = pwd.substr(0, pwd.find("//") + 2);
+					_attributes[MFILES_DEVICE_UNIT] = drive;
+					_attributes[MFILES_FILE_PATH] = pwd;
+
 					const XMLText* content = dynamic_cast<const XMLText*>(contentNode->FirstChild());
 					_raw = content->CData();
 					_content = contentFromString(content->Value(), _raw);

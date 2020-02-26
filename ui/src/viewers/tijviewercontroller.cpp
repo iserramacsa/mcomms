@@ -7,7 +7,9 @@
 using namespace Macsa;
 using namespace Macsa::Printers;
 
-TIJViewerController::TIJViewerController(TijController &controller) :
+TIJViewerController::TIJViewerController(TijController &controller, QObject *parent) :
+	QObject(parent),
+	TijObserver(&controller),
 	_controller(controller)
 {
 //	try {
@@ -19,40 +21,40 @@ TIJViewerController::TIJViewerController(TijController &controller) :
 //	}
 }
 
-QVariant TIJViewerController::data(int descriptor)
-{
-	switch (static_cast<TIJDataDescriptors>(descriptor))
-	{
-		case TIJDataDescriptors::LIVE:
-			return requestLive();
-		case TIJDataDescriptors::STATUS:
-			return requestStatus();
-		case TIJDataDescriptors::CONFIG:
-			return requestConfig();
-		case TIJDataDescriptors::ALL_FILES:
-			return  requestAllFiles();
-		case TIJDataDescriptors::MESSAGES_FILES:
-			return requestMessagesFiles();
-		case TIJDataDescriptors::FONTS_FILES:
-			return requestFontFiles();
-		case TIJDataDescriptors::IMAGES_FILES:
-			return requestImagesFiles();
-		case TIJDataDescriptors::PRINTER_ID:
-			return _(_controller.id());
-		case TIJDataDescriptors::PRINTER_ADDRS:
-			return _(_controller.address());
-		case TIJDataDescriptors::PRINTER_STATUS:
-			return static_cast<int>(_controller.printerStatus());
-		case TIJDataDescriptors::PRINTER_DT:
-			return printerDateTime();
-	}
-	return QVariant();
-}
+//QVariant TIJViewerController::data(int descriptor)
+//{
+//	switch (static_cast<TIJDataDescriptors>(descriptor))
+//	{
+//		case TIJDataDescriptors::LIVE:
+//			return requestLive();
+//		case TIJDataDescriptors::STATUS:
+//			return requestStatus();
+//		case TIJDataDescriptors::CONFIG:
+//			return requestConfig();
+//		case TIJDataDescriptors::ALL_FILES:
+//			return  requestAllFiles();
+//		case TIJDataDescriptors::MESSAGES_FILES:
+//			return requestMessagesFiles();
+//		case TIJDataDescriptors::FONTS_FILES:
+//			return requestFontFiles();
+//		case TIJDataDescriptors::IMAGES_FILES:
+//			return requestImagesFiles();
+//		case TIJDataDescriptors::PRINTER_ID:
+//			return _(_controller.id());
+//		case TIJDataDescriptors::PRINTER_ADDRS:
+//			return _(_controller.address());
+//		case TIJDataDescriptors::PRINTER_STATUS:
+//			return static_cast<int>(_controller.printerStatus());
+//		case TIJDataDescriptors::PRINTER_DT:
+//			return printerDateTime();
+//	}
+//	return QVariant();
+//}
 
-bool TIJViewerController::setData(int /*descriptor*/, const QVariant &/*value*/)
-{
-	return false;
-}
+//bool TIJViewerController::setData(int /*descriptor*/, const QVariant &/*value*/)
+//{
+//	return false;
+//}
 
 #include <iostream>
 void TIJViewerController::updatePrinterData()

@@ -18,7 +18,7 @@ class ClientManager : protected Network::MNetwork
 	public:
 		ClientManager(Printers::TijPrinter& printer);
 		~ClientManager();
-		bool initServer(uint16_t port);
+		bool initTcpServer(uint16_t port);
 		void run(bool detached = true);
 		void stop();
 

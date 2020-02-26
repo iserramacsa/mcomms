@@ -14,6 +14,13 @@ using namespace Macsa::Printers;
 		typedef std::vector<Printers::Board>::const_iterator	citBoard;
 #endif
 
+
+int TijPrinter::versionMajor()	  { return TIJ_LIBRARY_VERSION_MAJOR;}
+int TijPrinter::versionMinor()	  { return TIJ_LIBRARY_VERSION_MINOR;}
+int TijPrinter::versionRevision() { return TIJ_LIBRARY_VERSION_PATCH;}
+std::string TijPrinter::version() { return TIJ_LIBRARY_VERSION_STR;  }
+
+
 TijPrinter::TijPrinter() :
 	_mutex(new std::mutex())
 {
@@ -304,3 +311,4 @@ void TijPrinter::copy(const TijPrinter &other)
 	_traceLogs = other._traceLogs;
 	_traceComms = other._traceComms;
 }
+

@@ -12,12 +12,15 @@ namespace Macsa {
 
 			unsigned int id() const;
 
-			virtual void statusChanged()	 const{}
-			virtual void configChanged()	 const{}
-			virtual void filesListChanged()  const{}
-			virtual void fontsChanged()		 const{}
-			virtual void userValuesChanged() const{}
-			virtual void errorsLogsChanged() const{}
+			virtual void statusChanged()	  {}
+			virtual void ioStatusChanged()	  {}
+			virtual void configChanged()	  {}
+			virtual void filesListChanged()   {}
+			virtual void fontsChanged()		  {}
+			virtual void userValuesChanged()  {}
+			virtual void errorsLogsChanged()  {}
+			virtual void fileChanged(const std::string& unit, const std::string& filepath) {}
+			void controllerDeleted();
 
 		private:
 			const unsigned int _id;

@@ -16,9 +16,9 @@ ClientManager::~ClientManager()
 	stop();
 }
 
-bool ClientManager::initServer(uint16_t port)
+bool ClientManager::initTcpServer(uint16_t port)
 {
-	bool success = NetworkNode::initServer(ISocket::TCP_SOCKET, port);
+	bool success = initServer(ISocket::TCP_SOCKET, port);
 	if (success){
 		_svrPort = port;
 	}
