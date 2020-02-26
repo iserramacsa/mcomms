@@ -244,6 +244,56 @@ TEST_F(SocketUT, receiveTcpServerSocket_returnEchoMessage)
 	EXPECT_STREQ(remote_rx.c_str(), ECHO_MSG);
 }
 
+#include "loremipsum.h"
+
+TEST_F(SocketUT, receive5KMessageTcpServerSocket_returnEcho)
+{
+	_socket = new TcpSocket();
+	_socket->bind(TEST_PORT);
+	_socket->listen();
+
+	AbstractSocket* client = nullptr;
+	/* Accept connection is runned in another thread due to his blocking nature and
+	 * needs another socket connecting to it, in order to unblock the execution */
+	std::thread th = std::thread(&SocketUT::acceptNewConnection, this, &client);
+
+
+	/* sleeping this thread forces scheduler to start acceptNewConnection thread */
+	std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+	/* Creation of client's socket that connects to the server socket to unblocks
+	 * the accept execution */
+	AbstractSocket remote(ISocket::TCP_SOCKET);
+	std::string server_rx = "";
+	std::string remote_rx = "";
+	if(remote.connect(LOOPBACK_ADDR, TEST_PORT))
+	{
+		{/* Scoped wait */
+			std::unique_lock<std::mutex>lck(_mutex);
+			_cv.wait_for(lck, std::chrono::milliseconds(CONNECTION_TIMEOUT_MS));
+		}
+		bool hasClient = (client != nullptr);
+		th.join();
+
+		if(hasClient) {
+			remote.send(LOREM_IPSUM_5K);
+			ISocket::nSocketFrameStatus fStatus = client->receive(server_rx);
+			EXPECT_EQ(fStatus, ISocket::FRAME_SUCCESS);
+			if(fStatus == ISocket::FRAME_SUCCESS){
+				client->send(LOREM_IPSUM_10K);
+				remote.receive(remote_rx);
+			}
+		}
+	}
+	if (client != nullptr) {
+		delete client;
+	}
+	_socket->close();
+
+	EXPECT_STREQ(server_rx.c_str(), LOREM_IPSUM_5K);
+	EXPECT_STREQ(remote_rx.c_str(), LOREM_IPSUM_10K);
+}
+
 TEST_F(SocketUT, receiveTcpServerSocket_returnClientClosed)
 {
 	_socket = new TcpSocket();

@@ -17,7 +17,7 @@ namespace Macsa {
 				enum NodeStatus_n{
 					DISCONNECTED = 0,
 					CONNECTING,
-					CONNECTED
+					CONNECTED,
 				};
 
 			public:
@@ -141,7 +141,6 @@ namespace Macsa {
 				/// \return number of active servers (Access point)
 				///
 				virtual inline int accessPoints() const { return static_cast<int>(_accessPoints.size()); }
-
 
 				//TODO
 				/* ¿¿ Needed ?? */ // ISocket* socket(ISocket::SocketType_n type, uint16_t port) const;
@@ -300,6 +299,7 @@ namespace Macsa {
 
 			private:
 				NodeStatus_n _status;
+
 				// hidden constructors
 				NetworkNode(){}
 				NetworkNode(const NetworkNode&){}

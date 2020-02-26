@@ -208,7 +208,7 @@ ISocket::nSocketFrameStatus UnixSocket::receive(std::string &rx, int timeout)
 ISocket::nSocketFrameStatus UnixSocket::receive(std::string &rx, std::string &addr, int timeout)
 {
 	nSocketFrameStatus received = FRAME_ERROR;
-	char buff[DEFAULT_BUFF_SIZE] = {0};
+	char buff[DEFAULT_BUFF_SIZE  + 1] = {0};
 	rx.clear();
 	bool expired = false;
 	if (_type == TCP_SOCKET && status() >= LISTENING){
@@ -224,7 +224,7 @@ ISocket::nSocketFrameStatus UnixSocket::receive(std::string &rx, std::string &ad
 				int len = ret;
 				while(len > 0) {
 					bool end = false;
-					if (waitForRead(_sock.fd, 10, end)){
+					if (waitForRead(_sock.fd, 100, end)){
 						memset(buff, 0, DEFAULT_BUFF_SIZE);
 						len = static_cast<int>(::recv(_sock.fd, buff, DEFAULT_BUFF_SIZE, 0));
 						if (len > 0) {
