@@ -10,7 +10,7 @@ namespace Macsa {
 
 #define MIN_IP_SIZE			7
 #define IP_NUM_CHARS		4
-#define DEFAULT_BUFF_SIZE	(2048 << 1)
+#define DEFAULT_BUFF_SIZE	1024
 
 #define UDP_PROTOCOL		"udp"
 #define TCP_PROTOCOL		"tcp"
