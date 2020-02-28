@@ -10,7 +10,7 @@
 
 typedef Macsa::Network::NetworkNode::NodeStatus_n NodeStatus;
 
-class PrinterItem : public QWidget, public Macsa::Network::NodeObserver
+class PrinterItem : public QFrame, public Macsa::Network::NodeObserver
 {
 		Q_OBJECT
 	public:
@@ -40,9 +40,11 @@ class NetworkDialog : public QDialog
 		Macsa::PrintersManager& _manager;
 		Ui::networkDialog ui;
 		QVBoxLayout* _printersList;
+		QVector<PrinterItem*> _items;
 
 		void configure();
 		void refreshPrintersList();
+		void clearItems();
 };
 
 #endif //PRINTERS_NETWORK_DIALOG_H

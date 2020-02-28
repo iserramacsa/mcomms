@@ -4,15 +4,15 @@
 #include <vector>
 #include <string>
 #include "isocket.h"
+#include "network/nodenotifier.h"
 
 namespace Macsa {
 	namespace Network {
 		class NodeObserver;
-
 		///
 		/// \brief The NetworkNode class. TODO: add definition
 		///
-		class NetworkNode {
+		class NetworkNode : public NodeNotifier {
 			public:
 				enum NodeStatus_n{
 					DISCONNECTED = 0,
@@ -191,7 +191,6 @@ namespace Macsa {
 				std::vector<ISocket*> _accessPoints;
 				std::string _id;
 				std::string _address;
-				std::vector<NodeObserver*> _observers;
 
 				//Server control methods
 				///
@@ -219,11 +218,6 @@ namespace Macsa {
 				/// \return true if the access point exist and is closed and deleted.
 				///
 				virtual bool stopServer(ISocket::SocketType_n type, uint16_t port);
-
-				//Notifiers
-				virtual void notifyStatusChanged(const NodeStatus_n& status) const;
-				virtual void notifyTimeout() const;
-
 
 				//Socket helpers
 				///

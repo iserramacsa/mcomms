@@ -31,6 +31,8 @@ void PrinterStatusView::setController(Macsa::TijController &controller)
 		delete _controller;
 	}
 	_controller = new TIJViewerController(controller);
+	connect(_controller, SIGNAL(printerConfigChanged()), SLOT(refresh()));
+	connect(_controller, SIGNAL(printerStatusChanged()), SLOT(refresh()));
 	refresh();
 }
 

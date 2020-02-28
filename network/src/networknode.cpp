@@ -293,20 +293,6 @@ bool NetworkNode::stopServer(ISocket::SocketType_n type, uint16_t port)
 	return success;
 }
 
-void NetworkNode::notifyStatusChanged(const NetworkNode::NodeStatus_n &status) const
-{
-	for (std::vector<NodeObserver*>::const_iterator ob = _observers.begin(); ob != _observers.end(); ob++) {
-		(*ob)->nodeStatusChanged(status);
-	}
-}
-
-void NetworkNode::notifyTimeout() const
-{
-	for (std::vector<NodeObserver*>::const_iterator ob = _observers.begin(); ob != _observers.end(); ob++) {
-		(*ob)->nodeTimeout();
-	}
-}
-
 ISocket *NetworkNode::initSocket(ISocket::SocketType_n type, uint16_t port)
 {
 	if (type == ISocket::TCP_SOCKET) {

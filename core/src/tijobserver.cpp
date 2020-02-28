@@ -1,35 +1,33 @@
 #include "tijobserver.h"
-
+#include "tijnotifier.h"
 #include <iostream>
 
 using namespace Macsa;
 
-static unsigned int seed = 0;
+TijObserver::TijObserver(TijNotifier *controller) :
+	Utils::Observer<TijObserver>(controller)
+{}
 
-TijObserver::TijObserver(TijController *controller) :
-	_id(seed++),
-	_controller(controller)
-{
-	std::cout <<  __PRETTY_FUNCTION__ << " Observer: " <<  _id << std::endl;
-	if (_controller != nullptr) {
-		_controller->attach(this);
-	}
-}
+void TijObserver::statusChanged()
+{}
 
-TijObserver::~TijObserver()
-{
-	std::cout <<  __PRETTY_FUNCTION__ << " Observer: " <<  _id << std::endl;
-	if (_controller != nullptr) {
-		_controller->detach(this);
-	}
-}
+void TijObserver::ioStatusChanged()
+{}
 
-unsigned int TijObserver::id() const
-{
-	return _id;
-}
+void TijObserver::configChanged()
+{}
 
-void TijObserver::controllerDeleted()
-{
-	_controller = nullptr;
-}
+void TijObserver::filesListChanged()
+{}
+
+void TijObserver::fontsChanged()
+{}
+
+void TijObserver::userValuesChanged()
+{}
+
+void TijObserver::errorsLogsChanged()
+{}
+
+void TijObserver::fileChanged(const std::string &/*unit*/, const std::string &/*filepath*/)
+{}

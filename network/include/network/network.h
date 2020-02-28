@@ -2,11 +2,12 @@
 #define MACSA_NETWORK_MNETWORK_H
 
 #include "networknode.h"
+#include "network/networknotifier.h"
 #include <vector>
 
 namespace Macsa {
 	namespace Network {
-		class MNetwork : public NetworkNode {
+		class MNetwork : public NetworkNotifier, protected NetworkNode {
 			public:
                 MNetwork();
 				virtual ~MNetwork();
@@ -24,6 +25,7 @@ namespace Macsa {
                 NetworkNode* getNodeByAddress(const std::string& address) const;
 				NetworkNode* getNode(unsigned int index) const;
 				int getNodeIdx(NetworkNode* node) const;
+
 				virtual NodeStatus_n status() const;
 				virtual unsigned int size() const {return static_cast<unsigned int>(_nodes.size());}
 

@@ -32,7 +32,6 @@ class PrinterView : public QWidget
 
 		virtual void resizeEvent(QResizeEvent *);
 
-		void refresh();
 		void updateLogs();
 		void setPrinterStatus(TIJViewerController::TijStatus status);
 
@@ -43,7 +42,8 @@ class PrinterView : public QWidget
 		void buildErrorsLog();
 		void resizeErrorsLog();
 
-	private slots:
+	private slots:		
+		void refresh();
 		void onRequestLive();
 		void onRequestConfig();
 		void onRequestStatus();

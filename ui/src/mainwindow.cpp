@@ -83,7 +83,7 @@ void MainWindow::onAddPrinter()
 			//case PrinterConnectionDialog::ServerType::TIJ_PRINTER:
 				break;
 		}
-		bool monitorize = false;
+		bool monitorize = true;
 		if (_manager.addTijPrinter(name.toStdString(), address.toStdString(), monitorize)) {
 			_manager.connectPrinter(name.toStdString());
 			refreshPrintersList();

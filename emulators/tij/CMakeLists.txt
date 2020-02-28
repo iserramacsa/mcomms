@@ -17,6 +17,7 @@ option(BUILD_EMULATOR_LIBS "Add MComms cmake projects" OFF)
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 include(${PROJECT_SOURCE_DIR}/../toolchain/cmake/macsa.cmake)
+set(UTILS_DIR ${PROJECT_SOURCE_DIR}/../utils)
 
 if(UNIX)
 	add_compile_options(-fPIC)
@@ -59,6 +60,7 @@ set(INCLUDES ${INCLUDES}
     ${PROJECT_SOURCE_DIR}/../printers/include
     ${PROJECT_SOURCE_DIR}/../printers/tij/include
     ${LIB_PREFIX}/include
+	${UTILS_DIR}/include
 )
 
 include_directories(${INCLUDES})

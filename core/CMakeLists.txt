@@ -16,6 +16,7 @@ set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../toolchain/cmake/macsa.cmake)	#configuration for macsa tij projects
 include(${CMAKE_CURRENT_SOURCE_DIR}/../toolchain/cmake/test.cmake)  #configuration test enabled and GTest requiered configuration
+set (UTILS_DIR	${CMAKE_CURRENT_SOURCE_DIR}/../utils)
 
 if(UNIX)
 	if (${BUILD_SHARED_LIBS})
@@ -53,6 +54,7 @@ SET (INCLUDES
 	${PROJECT_SOURCE_DIR}/../network/include
 	${PROJECT_SOURCE_DIR}/../printers/include
 	${LIB_PREFIX}/include
+	${UTILS_DIR}/include
 	${INCLUDES}
 )
 

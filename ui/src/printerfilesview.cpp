@@ -31,6 +31,9 @@ void PrinterFilesView::setController(Macsa::TijController &controller)
 		delete _controller;
 	}
 	_controller = new TIJViewerController(controller);
+	connect(_controller, SIGNAL(printerFilesListChanged()), SLOT(refresh()));
+	connect(_controller, SIGNAL(printerFontsChanged()), SLOT(refresh()));
+	connect(_controller, SIGNAL(printerFileChanged(const QString &, const QString &)), SLOT(onFileChanged(const QString &, const QString &)));
 	refresh();
 }
 
@@ -96,11 +99,21 @@ void PrinterFilesView::AddFilesChild(QTreeWidgetItem *item, const QString &folde
 	}
 }
 
+void PrinterFilesView::onFileChanged(const QString &unit, const QString &filePath)
+{
+	QString pwd = filePath;
+	pwd.replace("//", "/");
+	QStringList route = pwd.split("/");
+	QList<QTreeWidgetItem*> items =_treeFiles->findItems(route.last(), Qt::MatchFlag::MatchExactly);
+	if (items.count()){
+		qDebug() << items;
+	}
+	refresh();
+}
+
 void PrinterFilesView::onRequestFiles()
 {
-	if (_controller->requestAllFiles()) {
-		refresh();
-	}
+	_controller->requestAllFiles();
 }
 
 void PrinterFilesView::onRequestFile(QTreeWidgetItem *item, int)
@@ -114,9 +127,7 @@ void PrinterFilesView::onRequestFile(QTreeWidgetItem *item, int)
 		path.replace("///", "//");
 
 		if (_controller != nullptr) {
-			if (_controller->requestFileContent(path.toStdString())) {
-				refresh();
-			}
+			_controller->requestFileContent(path.toStdString());
 		}
 	}
 }
