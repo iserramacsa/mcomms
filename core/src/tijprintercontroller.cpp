@@ -15,14 +15,7 @@ TijController::TijController(const std::string &id, const std::string &address) 
 	PrinterController(id, address, MPROTOCOL_PORT),
 	_deleteAfterSend(true),
 	_factory(_printer, _liveFlags)
-{
-	_tijObservers.clear();
-}
-
-TijController::~TijController()
-{
-	notifyDestruction();
-}
+{}
 
 Printers::ErrorCode TijController::getLive()
 {
@@ -245,21 +238,6 @@ std::vector<uint8_t> TijController::getFile(const std::string &filepath)
 	return content;
 }
 
-void TijController::attach(TijObserver *tijObserver)
-{
-	if (observer(tijObserver->id()) == _tijObservers.end()) {
-		_tijObservers.push_back(tijObserver);
-	}
-}
-
-void TijController::detach(TijObserver *tijObserver)
-{
-	std::vector<TijObserver *>::iterator it = observer(tijObserver->id());
-	if (it != _tijObservers.end()) {
-		_tijObservers.erase(it);
-	}
-}
-
 bool TijController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &/*err*/)
 {
 	bool success = false;
@@ -308,82 +286,6 @@ bool TijController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &/*err*/)
 
 	return success;
 }
-
-void TijController::notifyStatusChanged()
-{
-	std::function<void (TijObserver *)> func = &TijObserver::statusChanged;
-	notifyToObservers(func);
-}
-
-void TijController::notifyIOStatusChanged()
-{
-	std::function<void (TijObserver *)> func = &TijObserver::ioStatusChanged;
-	notifyToObservers(func);
-}
-
-void TijController::notifyConfigChanged()
-{
-	std::function<void (TijObserver *)> func = &TijObserver::configChanged;
-	notifyToObservers(func);
-}
-void TijController::notifyFilesListChanged()
-{
-	std::function<void (TijObserver *)> func = &TijObserver::filesListChanged;
-	notifyToObservers(func);
-}
-
-void TijController::notifyFontsChanged()
-{
-	std::function<void (TijObserver *)> func = &TijObserver::fontsChanged;
-	notifyToObservers(func);
-}
-
-void TijController::notifyUserValuesChanged()
-{
-	std::function<void (TijObserver *)> func = &TijObserver::userValuesChanged;
-	notifyToObservers(func);
-}
-
-void TijController::notifyErrorsLogsChanged()
-{
-	std::function<void (TijObserver *)> func = &TijObserver::errorsLogsChanged;
-	notifyToObservers(func);
-}
-
-void TijController::notifyFileChanged(const std::string& unit, const std::string& filepath)
-{
-	std::function<void (TijObserver *, const std::string&, const std::string& )> func = &TijObserver::fileChanged;
-	notifyToObservers(func, unit, filepath);
-}
-
-void TijController::notifyDestruction()
-{
-	std::function<void (TijObserver *)> func = &TijObserver::controllerDeleted;
-	notifyToObservers(func);
-}
-
-#if 1 //if we have bad performance
-#include <thread>
-template<typename ... Args>
-void TijController::notifyToObservers(std::function<void (TijObserver *, const Args&...)> & callback, const Args&... arg)
-{
-	for (std::vector<TijObserver*>::iterator ob = _tijObservers.begin(); ob != _tijObservers.end(); ob++)
-	{
-		std::function<void(const Args&...)> cb = std::bind(callback, (*ob), arg...);
-		std::thread t(cb, arg...);
-		t.detach();
-	}
-}
-#else
-template<typename ... Args>
-void TijController::notifyToObservers(std::function<void (TijObserver *, const Args&...)> & callback, const Args&... arg)
-{
-	for (std::vector<TijObserver*>::iterator ob = _observers.begin(); ob != _observers.end(); ob++) {
-		callback((*ob), arg...);
-	}
-}
-#endif
-
 bool TijController::getBaseBoard(Printers::Board& board)
 {
 	bool valid = (_printer.board(0) != nullptr);
@@ -406,7 +308,7 @@ Printers::ErrorCode TijController::changeBoardConfig(const Printers::Board &boar
 void TijController::checkCommand(const std::string &cmd, const std::map<std::string,std::string>& attributes)
 {
 	if (cmd == MSTATUS || cmd == MIOSTATUS || cmd == MERRORS_GET) { // TODO: Split?
-		return notifyStatusChanged();
+		return TijNotifier::notifyStatusChanged();
 	}
 	if (cmd == MCONFIG_GET) {
 		return notifyConfigChanged();
@@ -436,17 +338,6 @@ void TijController::checkCommand(const std::string &cmd, const std::map<std::str
 		return notifyErrorsLogsChanged();
 	}
 
-}
-
-std::vector<TijObserver*>::iterator TijController::observer(const unsigned int id)
-{
-	std::vector<TijObserver*>::iterator it;
-	for (it = _tijObservers.begin(); it != _tijObservers.end(); it++) {
-		if ((*it)->id() == id) {
-			break;
-		}
-	}
-	return it;
 }
 
 std::vector<std::string> TijController::getFiles(const std::string &extension)

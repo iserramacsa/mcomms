@@ -1,30 +1,23 @@
 #ifndef MACSA_MCOMMS_TIJ_OBSERVER_H
 #define MACSA_MCOMMS_TIJ_OBSERVER_H
 
-#include "tijprintercontroller.h"
+#include "utils/observer.h"
 
 namespace Macsa {
-	class TijObserver
+	class TijNotifier;
+	class TijObserver : public Utils::Observer<TijObserver>
 	{
 		public:
-			TijObserver(TijController* controller);
-			virtual ~TijObserver();
+			TijObserver(TijNotifier* controller);
 
-			unsigned int id() const;
-
-			virtual void statusChanged()	  {}
-			virtual void ioStatusChanged()	  {}
-			virtual void configChanged()	  {}
-			virtual void filesListChanged()   {}
-			virtual void fontsChanged()		  {}
-			virtual void userValuesChanged()  {}
-			virtual void errorsLogsChanged()  {}
-			virtual void fileChanged(const std::string& unit, const std::string& filepath) {}
-			void controllerDeleted();
-
-		private:
-			const unsigned int _id;
-			TijController* _controller;
+			virtual void statusChanged();
+			virtual void ioStatusChanged();
+			virtual void configChanged();
+			virtual void filesListChanged();
+			virtual void fontsChanged();
+			virtual void userValuesChanged();
+			virtual void errorsLogsChanged();
+			virtual void fileChanged(const std::string& unit, const std::string& filepath);
 	};
 }
 
