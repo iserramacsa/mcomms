@@ -1,4 +1,5 @@
 #include "network/network.h"
+#include "network/networkobserver.h"
 #include "abstractsocket.h"
 #include <algorithm>
 
@@ -12,7 +13,7 @@ int MNetwork::versionPatch() {return NETWORK_VERSION_PATCH;}
 std::string MNetwork::version() {return NETWORK_VERSION_STR;}
 
 MNetwork::MNetwork() :
-    NetworkNode(ROOT_NODE_ID)
+	NetworkNode(ROOT_NODE_ID)
 {
 	_nodes.clear();
 }

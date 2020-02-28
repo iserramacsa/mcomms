@@ -16,6 +16,10 @@ message("CMAKE_BINARY_DIR: " ${CMAKE_BINARY_DIR})
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../toolchain/cmake/macsa.cmake)	#configuration for macsa tij projects
 include(${CMAKE_CURRENT_SOURCE_DIR}/../toolchain/cmake/test.cmake)  #configuration test enabled and GTest requiered configuration
+#include(${CMAKE_CURRENT_SOURCE_DIR}/../utils/utils.cmake)	#configuration for macsa tij projects
+#Enabling options
+#set (ADD_OBSERVER_PATTERN ON)
+set (UTILS_DIR	${CMAKE_CURRENT_SOURCE_DIR}/../utils)
 
 if(UNIX)
 	if (${BUILD_SHARED_LIBS})
@@ -48,6 +52,7 @@ endif()
 SET (LIB_INCLUDES
 	${CMAKE_CURRENT_SOURCE_DIR}/src
 	${CMAKE_CURRENT_SOURCE_DIR}/include
+	${UTILS_DIR}/include
 	${LIB_PREFIX}/include
 	)
 

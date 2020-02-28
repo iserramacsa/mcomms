@@ -4,7 +4,6 @@
 #include "server_moc.h"
 
 using namespace Macsa::Network;
-using ::testing::Return;
 
 #define NODE_NAME		"root"
 #define NODE_ADDR		"127.0.0.1"
@@ -13,16 +12,19 @@ using ::testing::Return;
 #define ECHO_MSG		"<ECHO>"
 #define TEST_TIMEOUT	25	//25 ms
 
+#define DEFAULT_CALLBACK_TIMEOUT	std::chrono::milliseconds(10)
+
+
 class MyObserver : public NodeObserver
 {
 	public:
-		MyObserver(NetworkNode* node, std::function<void(const NetworkNode::NodeStatus_n&)>* onStatusChanged, std::function<void()>* onMessageTimedOut) :
+		MyObserver(NetworkNode* node, std::function<void(const int&)>* onStatusChanged, std::function<void()>* onMessageTimedOut) :
 			NodeObserver(node),
 			_onStatusChanged(onStatusChanged),
 			_onMessageTimedOut(onMessageTimedOut)
 		{}
 
-		virtual void nodeStatusChanged(const NetworkNode::NodeStatus_n& status) override
+		virtual void nodeStatusChanged(const int& status) override
 		{
 			if (_onStatusChanged != nullptr) {
 				(*_onStatusChanged)(status);
@@ -36,7 +38,7 @@ class MyObserver : public NodeObserver
 		}
 
 	  private:
-		const std::function<void(const NetworkNode::NodeStatus_n&)>* _onStatusChanged;
+		const std::function<void(const int&)>* _onStatusChanged;
 		const std::function<void()>* _onMessageTimedOut;
 };
 
@@ -109,7 +111,6 @@ TEST_F(MNodeObserverUT, observerConstruct_attachesToNode)
 	EXPECT_EQ(_node->attachedObservers(), 0);
 	_observer = new MyObserver(_node, nullptr, nullptr);
 	EXPECT_EQ(_node->attachedObservers(), 1);
-
 }
 
 TEST_F(MNodeObserverUT, observerDestructor_detachesFromNode)
@@ -129,9 +130,15 @@ TEST_F(MNodeObserverUT, equalObservers_returnTrue)
 
 TEST_F(MNodeObserverUT, nodeStatusChanged_returnConnected)
 {
+	std::mutex mutex;
+	std::condition_variable cv;
 	bool connected = false;
-	std::function<void(const NetworkNode::NodeStatus_n&)> onConnected = [&](const NetworkNode::NodeStatus_n& status) {
-		connected = (status == NetworkNode::CONNECTED);
+	std::function<void(const int&)> onConnected = [&](const int& status) {
+		if(status == static_cast<int>(NetworkNode::CONNECTED)) {
+			std::unique_lock<std::mutex>lock(mutex);
+			connected = true;
+			cv.notify_all();
+		}
 	};
 
 	_observer = new MyObserver(_node, &onConnected, nullptr);
@@ -140,16 +147,24 @@ TEST_F(MNodeObserverUT, nodeStatusChanged_returnConnected)
 
 	EXPECT_FALSE(connected);
 	EXPECT_TRUE(_node->connect(ISocket::TCP_SOCKET, TEST_PORT));
+	{
+		std::unique_lock<std::mutex>lock(mutex);
+		cv.wait_for(lock, DEFAULT_CALLBACK_TIMEOUT);
+	}
 	EXPECT_TRUE(connected);
 	_server.stop();
 }
 
 TEST_F(MNodeObserverUT, nodeStatusChanged_returnConnecting)
 {
+	std::mutex mutex;
+	std::condition_variable cv;
 	bool connecting = false;
-	std::function<void(const NetworkNode::NodeStatus_n&)> onConnected = [&](const NetworkNode::NodeStatus_n& status) {
-		if (status == NetworkNode::CONNECTING){
+	std::function<void(const int&)> onConnected = [&](const int& status) {
+		if (status == static_cast<int>(NetworkNode::CONNECTING)){
+			std::unique_lock<std::mutex>lock(mutex);
 			connecting = true;
+			cv.notify_all();
 		}
 	};
 
@@ -159,15 +174,23 @@ TEST_F(MNodeObserverUT, nodeStatusChanged_returnConnecting)
 
 	EXPECT_FALSE(connecting);
 	EXPECT_TRUE(_node->connect(ISocket::TCP_SOCKET, TEST_PORT));
+	{
+		std::unique_lock<std::mutex>lock(mutex);
+		cv.wait_for(lock, DEFAULT_CALLBACK_TIMEOUT);
+	}
 	EXPECT_TRUE(connecting);
 	_server.stop();
 }
 
 TEST_F(MNodeObserverUT, nodeStatusChanged_returnDisconnected)
 {
+	std::mutex mutex;
+	std::condition_variable cv;
 	bool disconnected = false;
-	std::function<void(const NetworkNode::NodeStatus_n&)> onConnected = [&](const NetworkNode::NodeStatus_n& status) {
-		disconnected = (status == NetworkNode::DISCONNECTED);
+	std::function<void(const int&)> onConnected = [&](const int& status) {
+		std::unique_lock<std::mutex>lock(mutex);
+		disconnected = (status == static_cast<int>(NetworkNode::DISCONNECTED));
+		cv.notify_all();
 	};
 
 	_observer = new MyObserver(_node, &onConnected, nullptr);
@@ -178,14 +201,24 @@ TEST_F(MNodeObserverUT, nodeStatusChanged_returnDisconnected)
 	_node->connect(ISocket::TCP_SOCKET, TEST_PORT);
 	EXPECT_EQ(_node->status(), NetworkNode::CONNECTED);
 	EXPECT_TRUE(_node->disconnect(TEST_PORT));
+	{
+		std::unique_lock<std::mutex>lock(mutex);
+		cv.wait_for(lock, DEFAULT_CALLBACK_TIMEOUT);
+	}
 	EXPECT_TRUE(disconnected);
 	_server.stop();
 }
 
 TEST_F(MNodeObserverUT, timeout)
 {
+	std::mutex mutex;
+	std::condition_variable cv;
 	bool timedOut = false;
-	std::function<void()> onNodeTimeout = [&](){ timedOut = true;};
+	std::function<void()> onNodeTimeout = [&](){
+		std::unique_lock<std::mutex>lock(mutex);
+		timedOut = true;
+		cv.notify_all();
+	};
 
 	_observer = new MyObserver(_node, nullptr, &onNodeTimeout);
 	_server.init(ISocket::TCP_SOCKET, TEST_PORT);
@@ -201,6 +234,10 @@ TEST_F(MNodeObserverUT, timeout)
 	EXPECT_EQ(_node->sendPacket(ECHO_MSG, TEST_PORT), ISocket::FRAME_SUCCESS);
 	std::string rx = "";
 	_node->receivePacket(rx, TEST_PORT, TEST_TIMEOUT);
+	{
+		std::unique_lock<std::mutex>lock(mutex);
+		cv.wait_for(lock, DEFAULT_CALLBACK_TIMEOUT);
+	}
 	EXPECT_TRUE(timedOut);
 
 	_server.stop();

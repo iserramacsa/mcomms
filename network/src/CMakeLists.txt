@@ -14,10 +14,13 @@ endif()
 
 set(SOURCES ${SOURCES}
 	${CMAKE_CURRENT_SOURCE_DIR}/network.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/tcpsocket.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/udpsocket.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/networkobserver.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/networknotifier.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/networknode.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/nodeobserver.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/nodenotifier.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/tcpsocket.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/udpsocket.cpp
 )
 
 set(HEADERS ${HEADERS}
