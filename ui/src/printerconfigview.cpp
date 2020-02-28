@@ -30,6 +30,7 @@ void PrinterConfigView::setController(Macsa::TijController &controller)
 		delete _controller;
 	}
 	_controller = new TIJViewerController(controller);
+	connect(_controller, SIGNAL(printerConfigChanged()), SLOT(refresh()));
 	refresh();
 }
 

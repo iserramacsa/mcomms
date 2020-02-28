@@ -15,6 +15,8 @@ class PrinterFilesView : public QWidget
 		~PrinterFilesView();
 		void setController(Macsa::TijController& controller);
 		void clear();
+
+	public slots:
 		void refresh();
 
 	private:
@@ -25,6 +27,7 @@ class PrinterFilesView : public QWidget
 		void AddFilesChild(QTreeWidgetItem* item, const QString& folder, std::vector<std::string> files);
 
 	private slots:
+		void onFileChanged(const QString & unit, const QString & filePath);
 		void onRequestFiles();
 		void onRequestFile(QTreeWidgetItem *item, int column);
 };

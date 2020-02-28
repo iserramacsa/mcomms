@@ -57,6 +57,7 @@ void PrinterView::setController(Macsa::TijController &controller)
 	if (!_dtTimer.isActive()) {
 		_dtTimer.start();
 	}
+	connect(_controller, SIGNAL(printerStatusChanged()), SLOT(refresh()));
 }
 
 void PrinterView::refresh()
@@ -76,10 +77,6 @@ void PrinterView::refresh()
 		ui.lblCoreVersion->setText(_controller->boardAPIVersion());
 
 	}
-	_printerStatusView->refresh();
-	_printerConfigView->refresh();
-	_printerCommsView->refresh();
-	_printerFilesView->refresh();
 	updateLogs();
 }
 
