@@ -10,7 +10,7 @@ namespace Macsa {
 		{
 			public:
 				NetworkNotifier();
-				virtual void notifyNodeDiscovered(const std::string& name, const std::string& addr);
+				void notifyNodeDiscovered(const std::string& name, const std::string& addr);
 		};
 	}
 }
