@@ -10,7 +10,7 @@ set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 ## Include macsa common code
 include(${CMAKE_CURRENT_SOURCE_DIR}/../toolchain/cmake/macsa.cmake)
-
+set (UTILS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../utils)
 
 if (WIN32)
 	message("Windows version")
@@ -51,6 +51,7 @@ set(INCLUDES ${INCLUDES}
 	${PROJECT_SOURCE_DIR}/../printers/include
 	${PROJECT_SOURCE_DIR}/../printers/tij/include
 	${LIB_PREFIX}/include
+	${UTILS_DIR}/include
 )
 
 include_directories(${INCLUDES})

@@ -9,7 +9,6 @@
 namespace Macsa {
 	namespace Network {
 		class NodeObserver;
-
 		///
 		/// \brief The NetworkNode class. TODO: add definition
 		///

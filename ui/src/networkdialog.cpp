@@ -6,13 +6,14 @@
 #include <QDebug>
 
 using namespace Macsa::Network;
-
+// #####################   PrinterItem   ######################## //
 PrinterItem::PrinterItem(Macsa::PrinterController *printer, Macsa::PrintersManager &manager, QWidget *parent) :
-	QWidget(parent),
+	QFrame(parent),
 	Macsa::Network::NodeObserver(printer),
 	_printer(printer),
 	_manager(manager)
 {
+	setFrameShape(QFrame::Box);
 	QHBoxLayout * layout = new QHBoxLayout(this);
 
 	QLabel* name = new QLabel(this);
@@ -45,8 +46,7 @@ void PrinterItem::nodeTimeout()
 	qDebug() << __PRETTY_FUNCTION__;
 }
 
-
-
+// #####################   NetworkDialog   ######################## //
 NetworkDialog::NetworkDialog(Macsa::PrintersManager& manager, QWidget *parent) :
 	QDialog(parent),
 	_manager(manager)
@@ -66,14 +66,15 @@ void NetworkDialog::onDiscoverPrinters()
 
 void NetworkDialog::onPrinterDetected(const QString &name, const QString address)
 {
-	Q_UNUSED(name)
-	Q_UNUSED(address)
+	qDebug() << __func__ << " Name: " << name << " Addr: " << address;
 
+	refreshPrintersList();
 }
 
 void NetworkDialog::configure()
 {
 	ui.setupUi(this);
+	_items.clear();
 
 	_printersList = new QVBoxLayout(ui.networkWidget);
 
@@ -84,4 +85,32 @@ void NetworkDialog::configure()
 	connect(cancelButt, SIGNAL(clicked()), SLOT(reject()));
 
 	connect(ui.butDiscover, SIGNAL(clicked()), SLOT(onDiscoverPrinters()));
+	refreshPrintersList();
+}
+
+void NetworkDialog::refreshPrintersList()
+{
+	clearItems();
+	for (unsigned i = 0; i < _manager.size(); i++) {
+		Macsa::PrinterController* controller = _manager.getPrinter(i);
+		if (controller != nullptr) {
+			PrinterItem* item = new PrinterItem(controller, _manager, this);
+			_printersList->addWidget(item);
+		}
+	}
+	_printersList->addStretch();
+}
+
+void NetworkDialog::clearItems()
+{
+	QLayoutItem* item;
+	while ( ( item = _printersList->takeAt( 0 ) ) != nullptr )
+	{
+		delete item->widget();
+		delete item;
+	}
+
+	_items.clear();
+
+	update();
 }
