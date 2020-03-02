@@ -5,7 +5,7 @@
 #include <cstdint>
 
 #define DISCOVER_PORT  31416
-#define CLIENT_MSG "WHO ARE YOU?"
+#define DISCOVER_MSG "WHO ARE YOU?"
 
 using namespace Macsa;
 using namespace Macsa::Network;
@@ -58,21 +58,38 @@ bool PrintersManager::disconnectPrinter(const std::string name)
 	return disconnected;
 
 }
-
-void PrintersManager::sendDiscover()
+#include <iostream>
+void PrintersManager::sendDiscover(int timeout)
 {
-	if (initServer(ISocket::UDP_SOCKET, DISCOVER_PORT)) {
+	if (runDiscoverServer()) {
+		std::vector<ISocket*>::const_iterator ap = accessPoint(DISCOVER_PORT);
+		if (ap != _accessPoints.end()){
+			ISocket* server = (*ap);
+			if (server->enableBroadcast()){
+				std::cout << server->address() << std::endl;
+//				sendDatagram(DISCOVER_MSG, DISCOVER_PORT);
 
+			}
+		}
 	}
 }
 
-PrinterController *PrintersManager::getPrinter(const std::string name)
+PrinterController * PrintersManager::getPrinter(const std::string name)
 {
 	return dynamic_cast<PrinterController*>(getNodeById(name));
 }
 
-PrinterController *PrintersManager::getPrinter(const uint index)
+PrinterController * PrintersManager::getPrinter(const uint index)
 {
 	return dynamic_cast<PrinterController*>(getNode(static_cast<uint>(index)));
+}
+
+bool PrintersManager::runDiscoverServer()
+{
+	bool running = (accessPoint(DISCOVER_PORT) != _accessPoints.end());
+	if (!running) {
+		running = initServer(ISocket::UDP_SOCKET, DISCOVER_PORT);
+	}
+	return running;
 }
 

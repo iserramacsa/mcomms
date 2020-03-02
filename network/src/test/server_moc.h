@@ -18,7 +18,7 @@ class ServerMockable
 	public:
 		ServerMockable();
 		virtual ~ServerMockable();
-		virtual bool init(ISocket::SocketType_n type, uint16_t port, bool bcast = false);
+		virtual bool init(ISocket::nSocketType type, uint16_t port, bool bcast = false);
 		virtual void run(std::function<void (AbstractSocket*)> onNewConnection);
 		virtual void runTcpServer();
 		virtual void runUdpServer();

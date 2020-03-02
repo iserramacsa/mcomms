@@ -9,7 +9,7 @@ namespace Macsa {
 		class UnixSocket : public ISocket
 		{
 			public:
-				UnixSocket(SocketType_n type);
+				UnixSocket(nSocketType type);
 				virtual ~UnixSocket();
 
 				virtual bool bind(uint16_t port);
@@ -24,6 +24,7 @@ namespace Macsa {
 				virtual bool enableBroadcast();
 				virtual bool close();
 				virtual std::string address() const;
+				virtual std::vector<InetAddr> localAddress() const;
 
 			protected:
 				struct sConnection {
@@ -38,7 +39,7 @@ namespace Macsa {
 			private:
 				sConnection _sock;
 
-				bool createSocket(int& fd, SocketType_n type);
+				bool createSocket(int& fd, nSocketType type);
 				bool initSocket(struct sockaddr_in& socket, const char *addr, uint16_t port);
 				bool initSocket(struct sockaddr_in& socket, const char *addr, const char *port);
 				bool setAddress(struct sockaddr_in& socket,  const char *addr = "");

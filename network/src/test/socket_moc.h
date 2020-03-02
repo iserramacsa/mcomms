@@ -9,14 +9,14 @@ using namespace Macsa::Network;
 class SocketMockable : public AbstractSocket
 {
 	public:
-		SocketMockable(SocketType_n type, uint16_t port);
+		SocketMockable(nSocketType type, uint16_t port);
 		virtual ~SocketMockable();
 
 		MOCK_CONST_METHOD0 (port, uint16_t());
 		uint16_t mock_port();
 
-		MOCK_CONST_METHOD0 (status, ISocket::SocketStatus_n());
-		ISocket::SocketStatus_n mock_status();
+		MOCK_CONST_METHOD0 (status, ISocket::nSocketStatus());
+		ISocket::nSocketStatus mock_status();
 
 		MOCK_CONST_METHOD0 (address, std::string());
 		virtual std::string mock_address() const;

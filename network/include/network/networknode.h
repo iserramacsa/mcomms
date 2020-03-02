@@ -67,7 +67,7 @@ namespace Macsa {
 				/// reconnect to remote device. If socket is not connected yet or if maximum reconnections
 				/// attempted socket status will return DISCONNECTED.
 				///
-				virtual NodeStatus_n status(ISocket::SocketType_n type, uint16_t port) const;
+				virtual NodeStatus_n status(ISocket::nSocketType type, uint16_t port) const;
 
 				///
 				/// \brief getter for connections
@@ -84,7 +84,7 @@ namespace Macsa {
 				/// \param port: port to connect
 				/// \return true if the socket returns connected, otherwise returns false
 				///
-				virtual bool connect(ISocket::SocketType_n type, uint16_t port);
+				virtual bool connect(ISocket::nSocketType type, uint16_t port);
 
 				///
 				/// \brief Socket disconnection method. Disconnects and removes a stored tcp connection
@@ -143,7 +143,7 @@ namespace Macsa {
 				virtual inline int accessPoints() const { return static_cast<int>(_accessPoints.size()); }
 
 				//TODO
-				/* ¿¿ Needed ?? */ // ISocket* socket(ISocket::SocketType_n type, uint16_t port) const;
+				/* ¿¿ Needed ?? */ // ISocket* socket(ISocket::nSocketType type, uint16_t port) const;
 
 				//Connections list Methods
 				///
@@ -152,7 +152,7 @@ namespace Macsa {
 				/// \param port: Port to connect the socket.
 				/// \return true if the connection doesn't exist and can be created and added successfully.
 				///
-				bool addConnection(ISocket::SocketType_n type, uint16_t port);
+				bool addConnection(ISocket::nSocketType type, uint16_t port);
 				///
 				/// \brief Aadds the socket connection in the connections list.
 				/// \param connection: valid socket to add.
@@ -166,21 +166,13 @@ namespace Macsa {
 				/// \param port: Port to connect the socket.
 				/// \return true if the connection exist and is removed
 				///
-				bool removeConnection(ISocket::SocketType_n type, uint16_t port);
+				bool removeConnection(ISocket::nSocketType type, uint16_t port);
 				///
 				/// \brief Remove the specified socket connection if exist
 				/// \param connection: socket related wth the connection
 				/// \return true if the connection exist and is removed
 				///
 				bool removeConnection(ISocket* connection);
-
-				///
-				/// \brief attach
-				/// \param observer
-				/// \return
-				///
-				bool attach(NodeObserver* observer);
-				bool detach(NodeObserver* observer);
 
 				//Operators
 				virtual inline bool operator == (const NetworkNode& other){ return  equal(other); }
@@ -201,7 +193,7 @@ namespace Macsa {
 				/// \param port. Port to bind the specified socket.
 				/// \return true if the initialization was succesfull.
 				///
-				virtual bool initServer(ISocket::SocketType_n type, uint16_t port);
+				virtual bool initServer(ISocket::nSocketType type, uint16_t port);
 
 				///
 				/// \brief accept method for tcp initialized server on specified port
@@ -217,7 +209,7 @@ namespace Macsa {
 				/// \param port: Port of the specified socket to close.
 				/// \return true if the access point exist and is closed and deleted.
 				///
-				virtual bool stopServer(ISocket::SocketType_n type, uint16_t port);
+				virtual bool stopServer(ISocket::nSocketType type, uint16_t port);
 
 				//Socket helpers
 				///
@@ -226,7 +218,7 @@ namespace Macsa {
 				/// \param port: Port where the socket have to associate.
 				/// \return new TcpSocket or UdpSocket depending on the type.
 				///
-				virtual ISocket* initSocket(ISocket::SocketType_n type, uint16_t port);
+				virtual ISocket* initSocket(ISocket::nSocketType type, uint16_t port);
 
 				//Helpers
 				///
@@ -248,7 +240,7 @@ namespace Macsa {
 				/// \param port: Specified socket port
 				/// \return const iterator in connections vector
 				///
-				inline std::vector<ISocket*>::const_iterator connection(ISocket::SocketType_n type, uint16_t port) const {return find(_connections, type, port);}
+				inline std::vector<ISocket*>::const_iterator connection(ISocket::nSocketType type, uint16_t port) const {return find(_connections, type, port);}
 				///
 				/// \brief accessPoint. Helper method to find in the accessPoints vector
 				/// \param type: Specified server type
@@ -264,20 +256,7 @@ namespace Macsa {
 				/// \param port: Specified socket port
 				/// \return const iterator in the specified vector
 				///
-				std::vector<ISocket*>::const_iterator find(const std::vector<ISocket*>& list, ISocket::SocketType_n type, uint16_t port) const;
-
-				///
-				/// \brief Access method to observers vector
-				/// \param id: Id to the expected observer
-				/// \return const_iterator to observer on observers vector
-				///
-				std::vector<NodeObserver*>::const_iterator observer(unsigned id) const;
-				///
-				/// \brief Overloaded access method to observers vector
-				/// \param id: Id to the expected observer
-				/// \return const_iterator to observer on observers vector
-				///
-				std::vector<NodeObserver*>::iterator observer(unsigned id);
+				std::vector<ISocket*>::const_iterator find(const std::vector<ISocket*>& list, ISocket::nSocketType type, uint16_t port) const;
 
 				///
 				/// \brief statusChanged

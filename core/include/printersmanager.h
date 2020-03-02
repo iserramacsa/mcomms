@@ -4,6 +4,8 @@
 #include "network/network.h"
 #include "tijprintermonitor.h"
 
+#define DEFAULT_DISCOVER_TIMEOUT	5
+
 namespace Macsa {
 	class PrintersManager : protected Network::MNetwork{
 
@@ -17,11 +19,13 @@ namespace Macsa {
 			bool removeTijPrinter(const std::string name);
 			bool connectPrinter(const std::string name);
 			bool disconnectPrinter(const std::string name);
-			void sendDiscover();
+			void sendDiscover(int timeout = DEFAULT_DISCOVER_TIMEOUT);
 
 			PrinterController* getPrinter(const std::string name);
 			PrinterController* getPrinter(const uint index);
 
+		private:
+			bool runDiscoverServer();
 	};
 }
 

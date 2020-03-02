@@ -22,9 +22,9 @@ class ServerPublicNode : public NetworkNode
 		{}
 
 
-		virtual bool initServer(ISocket::SocketType_n type, uint16_t port)  override  {return NetworkNode::initServer(type, port);}
+		virtual bool initServer(ISocket::nSocketType type, uint16_t port)  override  {return NetworkNode::initServer(type, port);}
 		virtual ISocket* accept(uint16_t port)								override  {return NetworkNode::accept(port);}
-		virtual bool stopServer(ISocket::SocketType_n type, uint16_t port)  override  {return NetworkNode::stopServer(type, port);}
+		virtual bool stopServer(ISocket::nSocketType type, uint16_t port)  override  {return NetworkNode::stopServer(type, port);}
 };
 
 class MNetworkNodeUT: public ::testing::Test {
@@ -62,7 +62,7 @@ class MNetworkNodeUT: public ::testing::Test {
 		* @param expectedStatus: Status of the socket
 		* @return Mocked socket pointer
 		*/
-	   SocketMockable * getNewSocket(const std::string expectedAddress, ISocket::SocketType_n type, uint16_t port, ISocket::SocketStatus_n expectedStatus) {
+	   SocketMockable * getNewSocket(const std::string expectedAddress, ISocket::nSocketType type, uint16_t port, ISocket::nSocketStatus expectedStatus) {
 		   SocketMockable * sock = new SocketMockable(type, port);
 		   EXPECT_CALL(*sock, address()).WillRepeatedly(Return(expectedAddress));
 		   EXPECT_CALL(*sock, status()).WillRepeatedly(Return(expectedStatus));

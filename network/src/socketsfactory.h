@@ -12,7 +12,7 @@ namespace Macsa {
 				~SocketsFactory();
 				ISocket* tcpSocket();
 				ISocket* udpSocket(uint16_t port);
-				ISocket* socket(ISocket::SocketType_n type, uint16_t port);
+				ISocket* socket(ISocket::nSocketType type, uint16_t port);
 		};
 	}
 }

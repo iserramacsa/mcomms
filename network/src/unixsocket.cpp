@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <ifaddrs.h> ///Local address
 
 #include <string>
 #include <cstring>
@@ -20,7 +21,7 @@
 using namespace Macsa::Network;
 
 
-UnixSocket::UnixSocket(SocketType_n type) :
+UnixSocket::UnixSocket(nSocketType type) :
 	ISocket (type)
 {
 	_sock.fd = -1;
@@ -319,6 +320,23 @@ std::string UnixSocket::address() const
 	return addr;
 }
 
+std::vector<InetAddr> UnixSocket::localAddress() const
+{
+	std::vector<InetAddr> local;
+	struct ifaddrs *ifaddr = nullptr;
+	if (getifaddrs(&ifaddr) == 0) {
+		for (struct ifaddrs *ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next) {
+
+		}
+	}
+	if (ifaddr != nullptr) {
+		freeifaddrs(ifaddr);
+	}
+
+
+	return local;
+}
+
 bool UnixSocket::init()
 {
 	return  initSocket(_sock.addr, "", _port);
@@ -331,12 +349,12 @@ UnixSocket *UnixSocket::socketFromConnection(UnixSocket::sConnection &conn)
 		socket = new UnixSocket(this->type());
 		socket->_sock.fd = conn.fd;
 		socket->_sock.addr = conn.addr;
-		socket->setStatus(SocketStatus_n::CONNECTED);
+		socket->setStatus(nSocketStatus::CONNECTED);
 	}
 	return socket;
 }
 
-bool UnixSocket::createSocket(int &fd, SocketType_n type)
+bool UnixSocket::createSocket(int &fd, nSocketType type)
 {
     int protocol = IPPROTO_UDP;
     int sockType = SOCK_DGRAM;

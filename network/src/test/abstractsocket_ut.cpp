@@ -447,3 +447,22 @@ TEST_F(SocketUT, udpClientSocket_returnEchoThroughBroadcast)
 	_socket->close();
 	_server.stop();
 }
+
+TEST_F(SocketUT, inetAddress_conversions)
+{
+	InetAddr addr("192.168.1.64");
+	InetAddr addr2(3232235840);
+	EXPECT_EQ(addr.toIpv4(), addr2.toIpv4());
+	EXPECT_STREQ(addr.toString().c_str(), addr2.toString().c_str());
+}
+
+TEST_F(SocketUT, socket_localAddress)
+{
+	_socket = new TcpSocket(TEST_PORT);
+	std::vector<InetAddr> ips = _socket->localAddress();
+	for (auto ip : ips) {
+		std::cout  << ip.toString() << std::endl;
+	}
+}
+
+

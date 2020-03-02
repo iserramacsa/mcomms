@@ -61,7 +61,7 @@ void NetworkDialog::onValidate()
 
 void NetworkDialog::onDiscoverPrinters()
 {
-
+	_manager.sendDiscover();
 }
 
 void NetworkDialog::onPrinterDetected(const QString &name, const QString address)

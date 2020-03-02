@@ -2,16 +2,17 @@
 #define MACSA_NETWORK_NODE_OBSERVER_H
 
 #include "utils/observer.h"
+#include "networknode.h"
 namespace Macsa {
 	namespace Network {
+		class NodeNotifier;
 		class NodeObserver : public Utils::Observer<NodeObserver>
 		{
 			public:
-				NodeObserver(Utils::Notifier<NodeObserver>* subject) :
-					Utils::Observer<NodeObserver>(subject){}
+				NodeObserver(NodeNotifier* subject);
 
-				virtual void nodeStatusChanged(const int& status){;}
-				virtual void nodeTimeout(){;}
+				virtual void nodeStatusChanged(const NetworkNode::NodeStatus_n& status);
+				virtual void nodeTimeout();
 		};
 	}
 }

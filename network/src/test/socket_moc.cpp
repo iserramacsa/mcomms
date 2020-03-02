@@ -1,7 +1,7 @@
 #include "socket_moc.h"
 
 
-SocketMockable::SocketMockable(ISocket::SocketType_n type, uint16_t port) :
+SocketMockable::SocketMockable(ISocket::nSocketType type, uint16_t port) :
 	AbstractSocket(type)
 {
 	EXPECT_CALL(*this, port()).WillRepeatedly(::testing::Return(port));
@@ -15,7 +15,7 @@ uint16_t SocketMockable::mock_port()
 	return AbstractSocket::port();
 }
 
-ISocket::SocketStatus_n SocketMockable::mock_status()
+ISocket::nSocketStatus SocketMockable::mock_status()
 {
 	return AbstractSocket::status();
 }

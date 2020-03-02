@@ -17,7 +17,7 @@ NetworkNode::~NetworkNode()
 	close();
 }
 
-NetworkNode::NodeStatus_n NetworkNode::status(ISocket::SocketType_n type, uint16_t port) const
+NetworkNode::NodeStatus_n NetworkNode::status(ISocket::nSocketType type, uint16_t port) const
 {
 	NetworkNode::NodeStatus_n status = NetworkNode::DISCONNECTED;
 	std::vector<ISocket*>::const_iterator it = connection(type, port);
@@ -29,7 +29,7 @@ NetworkNode::NodeStatus_n NetworkNode::status(ISocket::SocketType_n type, uint16
 
 
 
-bool NetworkNode::connect(ISocket::SocketType_n type, uint16_t port)
+bool NetworkNode::connect(ISocket::nSocketType type, uint16_t port)
 {
 	bool connected = false;
 	std::vector<ISocket*>::const_iterator it = connection(type, port);
@@ -75,7 +75,7 @@ bool NetworkNode::disconnect(uint16_t port)
 	return disconnected ;
 }
 
-bool NetworkNode::addConnection(ISocket::SocketType_n type, uint16_t port)
+bool NetworkNode::addConnection(ISocket::nSocketType type, uint16_t port)
 {
 	AbstractSocket* asockt = nullptr;
 	if (connection(type, port) == _connections.end())
@@ -102,7 +102,7 @@ bool NetworkNode::addConnection(ISocket *socket)
 	return false;
 }
 
-bool NetworkNode::removeConnection(ISocket::SocketType_n type, uint16_t port)
+bool NetworkNode::removeConnection(ISocket::nSocketType type, uint16_t port)
 {
 	bool removed = false;
 
@@ -127,27 +127,8 @@ bool NetworkNode::removeConnection(ISocket *socket)
 	return removeConnection(socket->type(), socket->port());
 }
 
-bool NetworkNode::attach(NodeObserver *ob)
-{
-	if (observer(ob->id()) == _observers.end()) {
-		_observers.push_back(ob);
-		return true;
-	}
-	return false;
-}
-
-bool NetworkNode::detach(NodeObserver *ob)
-{
-	std::vector<NodeObserver*>::iterator it = observer(ob->id());
-	if (it != _observers.end()) {
-		_observers.erase(it);
-		return true;
-	}
-	return false;
-
-}
-
-// ISocket *NetworkNode::socket(ISocket::SocketType_n type, uint16_t port) const
+// TODO: Remove
+// ISocket *NetworkNode::socket(ISocket::nSocketType type, uint16_t port) const
 // {
 // 	std::vector<ISocket*>::const_iterator it = connection(type, port);
 // 	if (it != _connections.end()) {
@@ -233,7 +214,7 @@ ISocket::nSocketFrameStatus NetworkNode::receiveDatagram(std::string &rx, std::s
 	return status;
 }
 
-bool NetworkNode::initServer(ISocket::SocketType_n type, uint16_t port)
+bool NetworkNode::initServer(ISocket::nSocketType type, uint16_t port)
 {
 	bool success = false;
 
@@ -276,7 +257,7 @@ ISocket * NetworkNode::accept(uint16_t port)
 	return client;
 }
 
-bool NetworkNode::stopServer(ISocket::SocketType_n type, uint16_t port)
+bool NetworkNode::stopServer(ISocket::nSocketType type, uint16_t port)
 {
     bool success = false;
 
@@ -293,7 +274,7 @@ bool NetworkNode::stopServer(ISocket::SocketType_n type, uint16_t port)
 	return success;
 }
 
-ISocket *NetworkNode::initSocket(ISocket::SocketType_n type, uint16_t port)
+ISocket *NetworkNode::initSocket(ISocket::nSocketType type, uint16_t port)
 {
 	if (type == ISocket::TCP_SOCKET) {
 		return new TcpSocket(port);
@@ -340,7 +321,7 @@ std::vector<ISocket*>::const_iterator NetworkNode::accessPoint(uint16_t port) co
     return it;
 }
 
-std::vector<ISocket*>::const_iterator NetworkNode::find(const std::vector<ISocket *>& list, ISocket::SocketType_n type, uint16_t port) const
+std::vector<ISocket*>::const_iterator NetworkNode::find(const std::vector<ISocket *>& list, ISocket::nSocketType type, uint16_t port) const
 {
 	std::vector<ISocket*>::const_iterator it;
 	for (it = list.begin(); it != list.end(); it++) {
@@ -349,29 +330,6 @@ std::vector<ISocket*>::const_iterator NetworkNode::find(const std::vector<ISocke
 		}
 	}
 	return it;
-}
-
-std::vector<NodeObserver*>::const_iterator NetworkNode::observer(unsigned id) const
-{
-	std::vector<NodeObserver*>::const_iterator ob;
-	for (ob = _observers.begin(); ob != _observers.end(); ob++) {
-		if ((*ob)->id() == id) {
-			break;
-		}
-	}
-
-	return ob;
-}
-
-std::vector<NodeObserver*>::iterator NetworkNode::observer(unsigned id)
-{
-	std::vector<NodeObserver*>::iterator ob;
-	for (ob = _observers.begin(); ob != _observers.end(); ob++) {
-		if ((*ob)->id() == id) {
-			break;
-		}
-	}
-	return ob;
 }
 
 void NetworkNode::setStatus(const NodeStatus_n &status)

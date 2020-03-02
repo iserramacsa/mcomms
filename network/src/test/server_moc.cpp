@@ -15,7 +15,7 @@ ServerMockable::~ServerMockable()
 	}
 }
 
-bool ServerMockable::init(ISocket::SocketType_n type, uint16_t port, bool bcast)
+bool ServerMockable::init(ISocket::nSocketType type, uint16_t port, bool bcast)
 {
 	bool initiated = false;
 	switch (type) {

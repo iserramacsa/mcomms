@@ -48,7 +48,7 @@ namespace Macsa {
 		{
 			public:
 				Notifier(){}
-				virtual ~Notifier(){ /*notifyDestruction();*/ }
+				virtual ~Notifier(){ notifyDestruction(); }
 				inline void attach(T* observer)
 				{
 					if (observer && !exist(observer)) {
@@ -83,9 +83,10 @@ namespace Macsa {
 
 				inline void notifyDestruction()
 				{
-					for (typename std::vector<T*>::iterator ob = _observers.begin(); ob != _observers.end(); ob++)
+					for (typename std::vector<T*>::const_iterator ob = _observers.begin(); ob != _observers.end(); ob++)
 					{
-						dynamic_cast<Observer<T> *>((*ob))->notifierDestroyed();
+						T* observer = (*ob);
+						reinterpret_cast<Observer<T> *>(observer)->notifierDestroyed(); //dynamic_cast<Observer<T> *>()
 					}
 				}
 
