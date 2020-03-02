@@ -9,6 +9,7 @@
 
 using namespace Macsa;
 using namespace Macsa::Network;
+using namespace std::chrono;
 
 PrintersManager::PrintersManager()
 {}
@@ -23,14 +24,17 @@ unsigned int PrintersManager::size() const
 
 bool PrintersManager::addTijPrinter(const std::string name, const std::string &address, bool monitorize)
 {
+	bool added;
 	if (monitorize){
 		TijPrinterMonitor* controller = new TijPrinterMonitor(name, address);
-		return addNewNode(controller);
+		controller->connect();
+		added = addNewNode(controller);
 	}
 	else {
 		TijController* controller = new TijController(name, address);
-		return addNewNode(controller);
+		added = addNewNode(controller);
 	}
+	return added;
 }
 
 bool PrintersManager::removeTijPrinter(const std::string name)
@@ -58,7 +62,7 @@ bool PrintersManager::disconnectPrinter(const std::string name)
 	return disconnected;
 
 }
-#include <iostream>
+
 void PrintersManager::sendDiscover(int timeout)
 {
 	if (runDiscoverServer()) {
@@ -66,12 +70,16 @@ void PrintersManager::sendDiscover(int timeout)
 		if (ap != _accessPoints.end()){
 			ISocket* server = (*ap);
 			if (server->enableBroadcast()){
-				std::cout << server->address() << std::endl;
-//				sendDatagram(DISCOVER_MSG, DISCOVER_PORT);
-
+				std::thread t(&PrintersManager::sendDiscoverFrames, this, std::move(server), timeout);
+				t.detach();
 			}
 		}
 	}
+}
+
+void PrintersManager::clear()
+{
+	MNetwork::close();
 }
 
 PrinterController * PrintersManager::getPrinter(const std::string name)
@@ -91,5 +99,54 @@ bool PrintersManager::runDiscoverServer()
 		running = initServer(ISocket::UDP_SOCKET, DISCOVER_PORT);
 	}
 	return running;
+}
+
+void PrintersManager::sendDiscoverFrames(ISocket* server, int timeout)
+{
+	std::atomic_bool listenDiscover;
+	std::thread receive (&PrintersManager::receiveDiscoverFrames, this, std::ref(listenDiscover));
+
+	std::vector<InetAddr> local = server->localAddress();
+	steady_clock::time_point start = steady_clock::now();
+	duration<double> diff = std::chrono::steady_clock::now() - start;
+	while (diff.count() < timeout) {
+		diff = std::chrono::steady_clock::now() - start;
+		for (auto inet : local){
+			uint32_t  ipv4 = inet.toIpv4() | (0x000000FF);
+			if (ipv4){
+				InetAddr addr (inet.name(), ipv4);
+				server->send(DISCOVER_MSG, addr.toString(), DISCOVER_PORT);
+			}
+		}
+		std::this_thread::sleep_for(seconds(1));
+	}
+	removeConnection(ISocket::UDP_SOCKET, DISCOVER_PORT);
+	listenDiscover.store(false);
+	server->close();
+	receive.join();
+}
+
+#include <iostream>
+void PrintersManager::receiveDiscoverFrames(std::atomic_bool &condition)
+{
+	condition.store(true);
+	std::vector<ISocket*>::const_iterator ap = accessPoint(DISCOVER_PORT);
+	if (ap != _accessPoints.end()) {
+		ISocket* server = (*ap);
+		if (server) {
+			std::vector<InetAddr> local = server->localAddress();
+			while (condition.load()) {
+				std::string rx, addr;
+				if (server->receive(rx, addr, WAIT_FOREVER) == ISocket::FRAME_SUCCESS) {
+					std::string name = rx.substr((rx.find_first_of(",") + 1));
+					if ((rx != DISCOVER_MSG) && (getPrinter(name) == nullptr)) {
+						std::cout << "Discovered printer: " << name << " @:"  << addr << std::endl;
+						notifyNodeDiscovered(name, addr);
+					}
+				}
+			}
+		}
+	}
+	std::cout << "Closing receive discover frames" << std::endl;
 }
 

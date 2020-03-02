@@ -124,7 +124,16 @@ namespace Macsa {
 				/// \param timeout: send timeout. Zero by default.
 				/// \return Socket frame transmision status.
 				///
-				virtual ISocket::nSocketFrameStatus sendDatagram(const std::string tx, uint16_t port, int timeout = NO_WAIT);
+				virtual ISocket::nSocketFrameStatus sendDatagram(const std::string& tx, uint16_t port, int timeout = NO_WAIT);
+				///
+				/// \brief Send a datagram with stored connected udp connection.
+				/// \param destAddr: Destination Address
+				/// \param tx: Message to send.
+				/// \param port: port of the connection.
+				/// \param timeout: send timeout. Zero by default.
+				/// \return Socket frame transmision status.
+				///
+				virtual ISocket::nSocketFrameStatus sendDatagram(const std::string &destAddr, const std::string &tx, uint16_t port, int timeout = NO_WAIT);
 
 				///
 				/// \brief Receive a datagram of binded udp connection.
@@ -247,7 +256,7 @@ namespace Macsa {
 				/// \param port: Specified server port
 				/// \return const iterator in accessPoints vector
 				///
-				inline std::vector<ISocket*>::const_iterator accessPoint(uint16_t port) const;
+				std::vector<ISocket*>::const_iterator accessPoint(uint16_t port) const;
 
 				///
 				/// \brief find. Generic find algorithm

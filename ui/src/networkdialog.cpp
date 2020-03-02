@@ -49,9 +49,11 @@ void PrinterItem::nodeTimeout()
 // #####################   NetworkDialog   ######################## //
 NetworkDialog::NetworkDialog(Macsa::PrintersManager& manager, QWidget *parent) :
 	QDialog(parent),
+	Macsa::Network::NetworkObserver(&manager),
 	_manager(manager)
 {
 	configure();
+	connect(this, SIGNAL(refresh()), this, SLOT(refreshPrintersList()), Qt::QueuedConnection);
 }
 
 void NetworkDialog::onValidate()
@@ -61,14 +63,16 @@ void NetworkDialog::onValidate()
 
 void NetworkDialog::onDiscoverPrinters()
 {
+	_manager.clear();
 	_manager.sendDiscover();
 }
 
-void NetworkDialog::onPrinterDetected(const QString &name, const QString address)
+void NetworkDialog::nodeDiscovered(const std::string &name, const std::string &addr)
 {
-	qDebug() << __func__ << " Name: " << name << " Addr: " << address;
-
-	refreshPrintersList();
+	qDebug() << __func__ << " Name: " << name.c_str() << " Addr: " << addr.c_str();
+	if(_manager.addTijPrinter(name, addr, true)) {
+		emit refresh();
+	}
 }
 
 void NetworkDialog::configure()

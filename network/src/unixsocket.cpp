@@ -18,6 +18,8 @@
 	#include <errno.h>
 #endif
 
+#define LOOPBACK_IFACE	"lo"
+
 using namespace Macsa::Network;
 
 
@@ -26,9 +28,7 @@ UnixSocket::UnixSocket(nSocketType type) :
 {
 	_sock.fd = -1;
 	_port = 0;
-	if (createSocket(_sock.fd, _type) /*&& init()*/) {
-//		int val = 1;
-//		setSocketOption(_local.fd, SO_REUSEPORT, val);
+	if (createSocket(_sock.fd, _type)) {
 		setStatus(CREATED);
 	}
 }
@@ -249,7 +249,7 @@ ISocket::nSocketFrameStatus UnixSocket::receive(std::string &rx, std::string &ad
 			received = FRAME_TIMEOUT;
 		}
 	}
-	else {
+	else if (_type == UDP_SOCKET){
 		if (waitForRead(_sock.fd, timeout, expired)) {
 			sConnection remote;
 			clearSocket(remote.addr);
@@ -326,6 +326,15 @@ std::vector<InetAddr> UnixSocket::localAddress() const
 	struct ifaddrs *ifaddr = nullptr;
 	if (getifaddrs(&ifaddr) == 0) {
 		for (struct ifaddrs *ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next) {
+			if (ifa->ifa_addr->sa_family == AF_INET) {
+				char host[NI_MAXHOST];
+				if ( 0 == getnameinfo(ifa->ifa_addr, sizeof(struct sockaddr_in), host, NI_MAXHOST, nullptr, 0, NI_NUMERICHOST))
+				{
+					if (std::strcmp(ifa->ifa_name, LOOPBACK_IFACE) != 0){
+						local.push_back(InetAddr(ifa->ifa_name, host));
+					}
+				}
+			}
 
 		}
 	}

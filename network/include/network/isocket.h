@@ -24,21 +24,24 @@ namespace Macsa {
 		class InetAddr
 		{
 			public:
-				InetAddr(const std::string& add) {
+				InetAddr(const std::string& name, const std::string& add) {
+					_name = name;
 					_address = add;
 					_ipv4 = fromString(add);
 				}
-				InetAddr(uint32_t ipv4)
-				{
+				InetAddr(const std::string& name, uint32_t ipv4) {
+					_name = name;
 					_ipv4 = ipv4;
 					_address = fromIpv4(ipv4);
 				}
 
+				inline std::string name() const { return _name;}
 				inline uint32_t toIpv4() { return _ipv4;}
 				inline std::string toString() { return _address;}
 
 			private:
 				InetAddr(){}
+				std::string _name;
 				std::string _address;
 				uint32_t	_ipv4;
 				uint32_t fromString(const std::string& ip) {
