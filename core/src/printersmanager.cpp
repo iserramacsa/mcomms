@@ -25,14 +25,20 @@ unsigned int PrintersManager::size() const
 bool PrintersManager::addTijPrinter(const std::string name, const std::string &address, bool monitorize)
 {
 	bool added;
+	TijController* controller = nullptr;
 	if (monitorize){
-		TijPrinterMonitor* controller = new TijPrinterMonitor(name, address);
-		controller->connect();
-		added = addNewNode(controller);
+		controller = new TijPrinterMonitor(name, address);
 	}
 	else {
-		TijController* controller = new TijController(name, address);
-		added = addNewNode(controller);
+		controller = new TijController(name, address);
+	}
+
+	added = addNewNode(controller);
+	if (added) {
+		controller->connect();
+	}
+	else {
+		delete controller;
 	}
 	return added;
 }
