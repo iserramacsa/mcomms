@@ -1,4 +1,4 @@
-#include "network/udpsocket.h"
+#include "udpsocket.h"
 
 using namespace Macsa::Network;
 

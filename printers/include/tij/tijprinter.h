@@ -8,10 +8,20 @@
 
 namespace Macsa {
 	namespace Printers {
-		class TIJPrinter : public Printer{
+		class TijPrinter : public Printer {
+
 			public:
-				TIJPrinter();
-				virtual ~TIJPrinter() override;
+				static int versionMajor();
+				static int versionMinor();
+				static int versionRevision();
+				static std::string version();
+
+			public:
+				TijPrinter();
+				TijPrinter(const TijPrinter&);
+
+
+				virtual ~TijPrinter() override;
 
 				virtual PrinterFiles* files() override;
 				virtual const PrinterFiles* files() const override;
@@ -20,8 +30,11 @@ namespace Macsa {
 				virtual const PrinterComms* comms() const override;
 
 				virtual std::string formatedDateTime() const;
+				virtual std::string formatedDateTime(time_t time) const;
+				virtual std::time_t dateTimeFromString(std::string dt) const;
+
+				virtual void setDateTime(const std::time_t& dateTime) override;
 				virtual void setDateTime(const std::string& formatedDatetime);
-				virtual void setDateTime(const std::time_t &dateTime) override;
 
 				virtual std::string controllerVersion() const;
 				virtual std::string apiVersion() const;
@@ -37,6 +50,9 @@ namespace Macsa {
 				virtual void setBoard(const Board& board);
 				virtual void setBoards(const std::vector<Board>& boards);
 
+				virtual std::vector<Error> errorsLog() const;
+				virtual void setErrorsLog(const std::vector<Error>& errorsLog);
+
 				virtual bool logsEnabled() const;
 				virtual void setlogsEnabled(bool enable);
 				virtual bool logComsEnabled() const;
@@ -45,20 +61,25 @@ namespace Macsa {
 				virtual void setloggerLevel(const LoggerLevel& logLevel);
 				virtual void setloggerLevel(const std::string& logLevel);
 
-			private:
+				virtual void operator = (const TijPrinter& other){return copy(other);}
+
+            protected:
 				PrinterFiles _files;
-				TIJComms	_comms;
+				TijComms	_comms;
 				std::string _controllerVersion;
 				std::string _apiVersion;
 				std::string _fpgaVersion;
 				DateCodes	_dateCodes;
+				std::mutex* _mutex;
 
 				std::vector<Board> _boards;
+				std::vector<Error> _errorsLog;
 				LoggerLevel _logLevel;
 				bool _traceLogs;
 				bool _traceComms;
 
 				virtual bool equal(const Printer &other) const override;
+				virtual void copy (const TijPrinter& other);
 
 		};
 	}

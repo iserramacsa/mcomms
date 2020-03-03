@@ -6,8 +6,9 @@
 using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
-MLive::MLive(Macsa::Printers::TIJPrinter& printer):
-	MCommand(MLIVE, printer)
+MLive::MLive(Macsa::Printers::TijPrinter& printer, LiveFlags& flags):
+	MCommand(MLIVE, printer),
+	_liveFlags(flags)
 {}
 
 void MLive::buildRequest()
@@ -18,15 +19,17 @@ void MLive::buildRequest()
 void MLive::buildResponse()
 {
 	XMLElement* live = newCommandNode();
-//	live->SetAttribute(MLIVE_DT_ATTR,		MTools::dateTime().c_str());
+	live->SetAttribute(MLIVE_DT_ATTR, _printer.formatedDateTime ().c_str());
 
 	_error = Printers::ErrorCode_n::SUCCESS;
 
-	//live->SetAttribute(MLIVE_STATUS_ATTR,	_printer.statusChanged());			//TODO: refactor live monitor
-	//live->SetAttribute(MLIVE_CONFIG_ATTR,	_printer.configChanged());			//TODO: refactor live monitor
-	//live->SetAttribute(MLIVE_FILES_ATTR,		_printer.filesChanged());		//TODO: refactor live monitor
-	//live->SetAttribute(MLIVE_FONTS_ATTR,		_printer.fontsChanged());		//TODO: refactor live monitor
-	//live->SetAttribute(MLIVE_ERRORS_ATTR,	_printer.errorsChanged());			//TODO: refactor live monitor
+	live->SetAttribute(MLIVE_STATUS_ATTR, MTools::toCString(_liveFlags.statusChanged));
+	live->SetAttribute(MLIVE_CONFIG_ATTR, MTools::toCString(_liveFlags.configChanged));
+	live->SetAttribute(MLIVE_FILES_ATTR,  MTools::toCString(_liveFlags.filesChanged));
+	live->SetAttribute(MLIVE_FONTS_ATTR,  MTools::toCString(_liveFlags.fontsChanged));
+	live->SetAttribute(MLIVE_USER_VALUES_ATTR,  MTools::toCString(_liveFlags.userValueChanged));
+	live->SetAttribute(MLIVE_ERRORS_LOG_ATTR,  MTools::toCString(_liveFlags.errorsLogChanged));
+	live->SetAttribute(MLIVE_ERROR_ATTR,	MTools::toCString(_liveFlags.isInError));
 
 	XMLElement* eBoards = createChildNode(MPRINTER_BOARDS_LIST, &live);
 	if (eBoards != nullptr) {
@@ -52,11 +55,11 @@ void MLive::buildResponse()
 
 				// <PRINT_SPEED value="[Actual print speed]"/>
 				XMLElement* eSpeed = createChildNode(MPRINTER_BOARD_PRINT_SPEED, &eBoard);
-				eSpeed->SetAttribute(ATTRIBUTE_VALUE, board.property(key_prop_status_general_print_speed).c_str());
+				eSpeed->SetAttribute(ATTRIBUTE_VALUE, board.configurationProperty(key_prop_status_general_print_speed).c_str());
 
 				// <NUM_PRINTS_REMAIN Value="[Num prints remaining]"/>
 				XMLElement* ePrintsRemain = createChildNode(MPRINTER_BOARD_PRINTS_REMAIN, &eBoard);
-				ePrintsRemain->SetAttribute(ATTRIBUTE_VALUE, board.property(key_prop_status_general_print_remain).c_str());
+				ePrintsRemain->SetAttribute(ATTRIBUTE_VALUE, board.configurationProperty(key_prop_status_general_print_remain).c_str());
 			}
 		}
 	}
@@ -65,9 +68,9 @@ void MLive::buildResponse()
 
 bool MLive::parseRequest(const XMLElement *xml)
 {
-	//TODO: refactor
-	//return parseSingleCommand(xml);
-	return false;
+	const XMLElement* cmd = getCommand(xml, _id);
+	bool valid = (cmd != nullptr && cmd->NoChildren());
+	return valid;
 }
 
 bool MLive::parseResponse(const XMLElement *xml)
@@ -77,25 +80,32 @@ bool MLive::parseResponse(const XMLElement *xml)
 	if (cmd != nullptr)
 	{
 		_error = getCommandError(xml);
-		const char* dt = cmd->Attribute(MLIVE_DT_ATTR);
-		valid = (!cmd->NoChildren() && dt != nullptr);
+		std::string dt = getTextAttribute(cmd, MLIVE_DT_ATTR);
+		valid = (!cmd->NoChildren() && dt.length());
 		if (valid){
 			_printer.setDateTime(dt);
-			// _printer.setStatusChanged(cmd->BoolAttribute(MLIVE_STATUS_ATTR));  //TODO refactor live monitor
-			// _printer.setConfigChanged(cmd->BoolAttribute(MLIVE_CONFIG_ATTR));  //TODO refactor live monitor
-			// _printer.setFilesChanged(cmd->BoolAttribute(MLIVE_FILES_ATTR));	  //TODO refactor live monitor
-			// _printer.setFontsChanged(cmd->BoolAttribute(MLIVE_FONTS_ATTR));	  //TODO refactor live monitor
-			// _printer.setErrorsChanged(cmd->BoolAttribute(MLIVE_ERRORS_ATTR));  //TODO refactor live monitor
+
+			_liveFlags.statusChanged = getBoolAttribute(cmd, MLIVE_STATUS_ATTR, _liveFlags.statusChanged);
+			_liveFlags.configChanged = getBoolAttribute(cmd, MLIVE_CONFIG_ATTR, _liveFlags.configChanged);
+			_liveFlags.filesChanged = getBoolAttribute(cmd, MLIVE_FILES_ATTR, _liveFlags.filesChanged);
+			_liveFlags.fontsChanged = getBoolAttribute(cmd, MLIVE_FONTS_ATTR, _liveFlags.fontsChanged);
+			_liveFlags.userValueChanged = getBoolAttribute(cmd, MLIVE_USER_VALUES_ATTR, _liveFlags.userValueChanged);
+			_liveFlags.errorsLogChanged = getBoolAttribute(cmd, MLIVE_ERRORS_LOG_ATTR, _liveFlags.errorsLogChanged);
+			_liveFlags.isInError = getBoolAttribute(cmd, MLIVE_ERROR_ATTR, _liveFlags.isInError);
 
 			const XMLElement* eBoards = cmd->FirstChildElement(MPRINTER_BOARDS_LIST);
 			if (eBoards != nullptr) {
 				const XMLElement* eBoard = eBoards->FirstChildElement(MPRINTER_BOARD);
 				while (eBoard != nullptr) {
 					int id = eBoard->IntAttribute(ATTRIBUTE_ID, -1);
-					Printers::Board* pBoard = _printer.board(id);
-					if  (id != -1 && pBoard != nullptr) {
-						pBoard->setEnabled(eBoard->BoolAttribute(MPRINTER_BOARD_ENABLED_ATTR));
-						pBoard->setPrinting(eBoard->BoolAttribute(MPRINTER_BOARD_PRINT_ATTR));
+					if (id != -1) {
+						Printers::Board* pBoard = _printer.board(id);
+						bool newBoard = (pBoard == nullptr);
+						if (newBoard) {
+							pBoard = new Printers::Board(id, &_printer);
+						}
+						pBoard->setEnabled( getBoolAttribute(eBoard,MPRINTER_BOARD_ENABLED_ATTR, pBoard->enabled()));
+						pBoard->setPrinting(getBoolAttribute(eBoard,MPRINTER_BOARD_PRINT_ATTR, pBoard->printing ()));
 						if (pBoard->enabled()) {
 							const XMLElement* eCounters = eBoard->FirstChildElement(MPRINTER_BOARD_COUNTERS_LIST);
 							if (eCounters != nullptr) {
@@ -112,15 +122,19 @@ bool MLive::parseResponse(const XMLElement *xml)
 
 							const XMLElement* eSpeed = eBoard->FirstChildElement(MPRINTER_BOARD_PRINT_SPEED);
 							if (eSpeed != nullptr){
-								pBoard->setProperty(key_prop_status_general_print_speed, eSpeed->Attribute(ATTRIBUTE_VALUE));
+								pBoard->setConfigurationProperty(key_prop_status_general_print_speed, getTextAttribute(eSpeed, ATTRIBUTE_VALUE));
 							}
 
 							const XMLElement* ePrintsRemain = eBoard->FirstChildElement(MPRINTER_BOARD_PRINTS_REMAIN);
 							if  (ePrintsRemain){
-								pBoard->setProperty(key_prop_status_general_print_remain, ePrintsRemain->Attribute(ATTRIBUTE_VALUE));
+								pBoard->setConfigurationProperty(key_prop_status_general_print_remain, getTextAttribute(ePrintsRemain, ATTRIBUTE_VALUE));
 							}
+
 						}
 						_printer.setBoard(*pBoard);
+						if (newBoard) {
+							delete pBoard;
+						}
 					}
 					eBoard = eBoard->NextSiblingElement(MPRINTER_BOARD);
 				}

@@ -15,6 +15,11 @@ using namespace Macsa::Printers;
 Ethernet::Ethernet()
 {}
 
+Ethernet::Ethernet(const Ethernet &eth)
+{
+	copy(eth);
+}
+
 Ethernet::~Ethernet()
 {}
 
@@ -218,7 +223,7 @@ void Ethernet::copy(const Ethernet &other)
 	_tcpPort  = other._tcpPort ;
 }
 
-bool Ethernet::compare(const Ethernet &other)
+bool Ethernet::compare(const Ethernet &other) const
 {
 	if (_address.compare(other._address) != 0)   { return false; }
 	if (_mask.compare(other._mask) != 0)         { return false; }
@@ -275,18 +280,18 @@ void BlueTooth::copy(const BlueTooth &other)
 	_visible = other._visible;
 }
 
-bool BlueTooth::compare(const BlueTooth &other)
+bool BlueTooth::compare(const BlueTooth &other) const
 {
 	return (_name.compare(other._name) == 0 && _pass.compare(other._pass) == 0);
 }
 
 // ========== PrinterComms  ===========//
-int TIJComms::ethernetIfaces() const
+int TijComms::ethernetIfaces() const
 {
 	return static_cast<int>(_ifaces.size());
 }
 
-Ethernet *TIJComms::ethernetIface(int iface)
+Ethernet *TijComms::ethernetIface(int iface)
 {
 	Ethernet * eth = nullptr;
 	if (iface >= 0 && static_cast<unsigned long>(iface) < _ifaces.size())
@@ -296,7 +301,7 @@ Ethernet *TIJComms::ethernetIface(int iface)
 	return eth;
 }
 
-const Ethernet *TIJComms::ethernetIface(int iface) const
+const Ethernet *TijComms::ethernetIface(int iface) const
 {
 	if (iface >= 0 && static_cast<unsigned long>(iface) < _ifaces.size())
 	{
@@ -305,7 +310,7 @@ const Ethernet *TIJComms::ethernetIface(int iface) const
 	return nullptr;
 }
 
-int TIJComms::setEthernetIface(const std::string &addr, const std::string &mask, const std::string &gw, const std::string hw, uint16_t tcpPort)
+int TijComms::setEthernetIface(const std::string &addr, const std::string &mask, const std::string &gw, const std::string hw, uint16_t tcpPort)
 {
 	std::vector<Ethernet>::iterator it = getEthAdapter(addr, hw);
 
@@ -329,7 +334,7 @@ int TIJComms::setEthernetIface(const std::string &addr, const std::string &mask,
 	}
 }
 
-int TIJComms::setEthernetIface(const Ethernet *ethAdapter)
+int TijComms::setEthernetIface(const Ethernet *ethAdapter)
 {
 	if (ethAdapter != nullptr) {
 		std::vector<Ethernet>::iterator it = getEthAdapter(ethAdapter->address(), ethAdapter->macAddress());
@@ -350,22 +355,44 @@ int TIJComms::setEthernetIface(const Ethernet *ethAdapter)
 
 }
 
-BlueTooth * TIJComms::bluetooth()
+BlueTooth * TijComms::bluetooth()
 {
 	return &_bluetooth;
 }
 
-const BlueTooth *TIJComms::bluetooth() const
+const BlueTooth *TijComms::bluetooth() const
 {
 	return &_bluetooth;
 }
 
-void TIJComms::setBluetooth(const BlueTooth &bluetooth)
+void TijComms::setBluetooth(const BlueTooth &bluetooth)
 {
 	_bluetooth = bluetooth;
 }
 
-std::vector<Ethernet>::iterator TIJComms::getEthAdapter(const std::string &addr, const std::string &mac)
+bool TijComms::compare(const TijComms &other) const
+{
+	if (_ifaces.size() != _ifaces.size()) {
+		return false;
+	}
+
+	for (uint eth = 0; eth < _ifaces.size(); ++eth) {
+		if (_ifaces.at(eth) != other._ifaces.at(eth)) {
+			return false;
+		}
+	}
+
+	return (_bluetooth != other._bluetooth);
+}
+
+void TijComms::copy(const TijComms &other)
+{
+	_ifaces.clear();
+	_ifaces = other._ifaces;
+	_bluetooth = other._bluetooth;
+}
+
+std::vector<Ethernet>::iterator TijComms::getEthAdapter(const std::string &addr, const std::string &mac)
 {
 	for (std::vector<Ethernet>::iterator it = _ifaces.begin(); it != _ifaces.end(); it++) {
 		if ((it->address().compare(addr) == 0) || (it->macAddress().compare(mac) == 0)) {

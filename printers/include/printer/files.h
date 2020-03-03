@@ -18,7 +18,7 @@
 #define IMAGES_FILTER_JPG	".jpg"
 #define IMAGES_FILTER_JPEG	".jpeg"
 #define IMAGES_FILTER_BMP	".bmp"
-//#define IMG_FILTER			"*.png,*.jpg,*.jpeg,*.bmp"
+#define IMAGES_FILTER		".png,.jpg,.jpeg,s.bmp"
 
 #define ALL_FILES_FILTER	"*.*"
 #define EXTENSIONS_SEPARATOR ","
@@ -34,6 +34,7 @@ namespace Macsa {
 		{
 			public:
 				FileSystemAbstract();
+				FileSystemAbstract(const FileSystemAbstract& other);
 				virtual ~FileSystemAbstract();
 
 				virtual bool operator == (const FileSystemAbstract& other) const {return equal(other);}
@@ -63,13 +64,13 @@ namespace Macsa {
 				bool compare(const std::map<std::string, T*>& map1, const std::map<std::string, T*>& map2) const;
 
 				virtual bool equal (const FileSystemAbstract& other) const = 0;
-
 		};
 
 		class PrinterFiles : public FileSystemAbstract
 		{
 			public:
 				PrinterFiles();
+				PrinterFiles(const PrinterFiles& other);
 				virtual ~PrinterFiles() override;
 
 				std::vector<std::string> getDrives() const;
@@ -78,8 +79,10 @@ namespace Macsa {
 				std::vector<std::string> getAllFiles(const std::string& filter) const;
 
 				const Drive* getDrive(const std::string& drive) const;
+//				const Folder* getFolder(const std::string& path) const;
 				const Folder* getFolder(const std::string& drive, const std::string& folder) const;
 				const File* getFile(const std::string& drive, const std::string& folder, const std::string& filename) const;
+				const File* getFile(const std::string& filepath) const;
 
 				bool driveExist(const std::string& drive) const;
 				bool folderExist(const std::string& drive, const std::string& folder) const;
@@ -91,6 +94,7 @@ namespace Macsa {
 				bool addNewFile(const std::string& drive, const std::string& folder, const std::string& filename);
 				bool addFile(const std::string& drive, const std::string& folder, const std::string& filename, const std::vector<uint8_t>& data);
 				bool setFile(const std::string& drive, const std::string& folder, const std::string& filename, const std::vector<uint8_t>& data);
+				bool setFile(const std::string& filepath, const std::vector<uint8_t>& data);
 				bool clearDrive(const std::string& drive);
 				bool clearFolder(const std::string& drive, const std::string& folder);
 				bool deleteDrive(const std::string& drive);
@@ -110,14 +114,21 @@ namespace Macsa {
 				Folder* removeFolder(const std::string &drive, const std::string &folder);/*Full transfer*/
 				File*	removeFile(const std::string &drive, const std::string& folder, const std::string& filename);/*Full transfer*/
 
-				virtual bool equal (const FileSystemAbstract& other) const override;
+
+				void splitFilepath(const std::string &pwd, std::string &drive, std::vector<std::string> &folders, std::string &file) const;
+				void splitFilepath(const std::string &pwd, std::string &drive, std::string &folder, std::string &file) const;
 
 				IFilesManager *filesManager() const;
 				void setFilesManager(IFilesManager *filesManager);
 
+				virtual void operator = (const PrinterFiles& other){copy(other);}
+
 			private:
 				std::map<std::string, Drive*> _drives;
 				IFilesManager*	_filesManager;
+
+				virtual bool equal (const FileSystemAbstract& other) const override;
+				virtual void copy (const PrinterFiles& other);
 		};
 
 		class Drive : public FileSystemAbstract
@@ -152,12 +163,15 @@ namespace Macsa {
 				Folder* removeFolder(const std::string& folder);
 				File* removeFile(const std::string& folder, const std::string& filename);
 
+				virtual void operator = (const Drive& other){return copy(other);}
+
 			private:
 				const std::string _name;
 				const PrinterFiles* _parent;
 				std::map<std::string, Folder*> _folders;
 
 				virtual bool equal (const FileSystemAbstract& other) const override;
+				virtual void copy (const Drive& other);
 
 		};
 
@@ -186,6 +200,7 @@ namespace Macsa {
 				bool deleteFile(const std::string& file);
 				bool renameFile(const std::string& oldName, const std::string& newName);
 
+				virtual void operator = (const Folder& other){return copy(other);}
 
 			private:
 				const Drive* _parent;
@@ -193,6 +208,7 @@ namespace Macsa {
 				std::map<std::string, File*> _files;
 
 				virtual bool equal (const FileSystemAbstract& other) const override;
+				virtual void copy (const Folder& other);
 		};
 
 		class File {
@@ -214,6 +230,7 @@ namespace Macsa {
 
 				virtual bool operator == (const File& other) const {return equal(other);}
 				virtual bool operator != (const File& other) const {return !equal(other);}
+				virtual void operator = (const File& other) {return copy(other);}
 
 			private:
 				const Folder* _parent;
@@ -221,6 +238,7 @@ namespace Macsa {
 				std::vector<uint8_t>* _data;
 
 				bool equal (const File& other) const;
+				void copy (const File& other);
 		};
 	}
 }

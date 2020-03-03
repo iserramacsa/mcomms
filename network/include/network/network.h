@@ -1,44 +1,43 @@
-#ifndef MNETWORK_H
-#define MNETWORK_H
+#ifndef MACSA_NETWORK_MNETWORK_H
+#define MACSA_NETWORK_MNETWORK_H
 
 #include "networknode.h"
+#include "network/networknotifier.h"
 #include <vector>
 
 namespace Macsa {
 	namespace Network {
-		class MNetwork : public NetworkNode {
+		class MNetwork : public NetworkNotifier, protected NetworkNode {
 			public:
-				MNetwork(ISocket::SocketType_n rootNodeType = ISocket::TCP_SOCKET);
-				~MNetwork();
+                MNetwork();
+				virtual ~MNetwork();
 
-#ifdef NETWORK_VERSION_STR
 				static int versionMajor();
 				static int versionMinor();
 				static int versionPatch();
 				static std::string version();
-#endif
 
 				bool addNewNode(NetworkNode* node);
 				bool removeNode(NetworkNode* node);
 				bool removeNode(std::string nodeId);
 
-				NetworkNode* getNode(const std::string& address) const;
+				NetworkNode* getNodeById(const std::string& id) const;
+                NetworkNode* getNodeByAddress(const std::string& address) const;
 				NetworkNode* getNode(unsigned int index) const;
 				int getNodeIdx(NetworkNode* node) const;
+
 				virtual NodeStatus_n status() const;
 				virtual unsigned int size() const {return static_cast<unsigned int>(_nodes.size());}
-
 
 			protected:
 				bool exist(NetworkNode* node);
 				NetworkNode* find(const std::string &name) const;
-				NetworkNode* findByAdrress(const std::string &address) const;
+				NetworkNode* findByAddress(const std::string &address) const;
 
 			protected:
 				std::vector<NetworkNode*> _nodes;
-				NetworkNode* _rootNode;
 		};
 	}
 }
 
-#endif //MNETWORK_H
+#endif //MACSA_NETWORK_MNETWORK_H

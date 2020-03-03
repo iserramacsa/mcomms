@@ -15,10 +15,10 @@
 #include "cartridge.h"
 #include "errors.h"
 #include "messagemanager.h"
-
+#include <mutex>
 namespace Macsa {
 	namespace Printers {
-		class TIJPrinter;
+		class TijPrinter;
 		class Board {
 			public:
 #if __cplusplus >= 201103L
@@ -31,11 +31,12 @@ namespace Macsa {
 				typedef std::map<std::string, int> countersMap;
 #endif
 			public:
-				Board(const int id, TIJPrinter* parent);
-				Board(const Board& other);
+				Board(const int id, TijPrinter* parent);
+				Board(const Board& other, TijPrinter* parent = nullptr);
 				virtual ~Board();
 
 				int id() const;
+				void setParent(TijPrinter* parent);
 
 				virtual std::string type() const;
 				virtual void setType(const std::string &type);
@@ -97,10 +98,15 @@ namespace Macsa {
 				virtual void setCounters(const countersMap& counters);
 				virtual void setCounter(const std::string& name, int value);
 
-				virtual propertyMap properties() const;
-				virtual std::string property(const std::string& name) const;
-				virtual void setProperties(const propertyMap& properties);
-				virtual void setProperty(const std::string& name, const std::string& value);
+				virtual propertyMap statusProperties() const;
+				virtual std::string statusProperty(const std::string& name) const;
+				virtual void setStatusProperties(const propertyMap& properties);
+				virtual void setStatusProperty(const std::string& name, const std::string& value);
+
+				virtual propertyMap configurationProperties() const;
+				virtual std::string configurationProperty(const std::string& name) const;
+				virtual void setConfigurationProperties(const propertyMap& properties);
+				virtual void setConfigurationProperty(const std::string& name, const std::string& value);
 
 				virtual Cartridge cartridge() const;
 				virtual void setCartridge(const Cartridge &cartridge);
@@ -120,8 +126,8 @@ namespace Macsa {
 				virtual Error error(unsigned int idx) const;
 				virtual void setError(unsigned int idx, const Error& error);
 
-				virtual TIJPrinter* printer();
-				virtual const TIJPrinter* printer() const;
+				virtual TijPrinter* printer();
+				virtual const TijPrinter* printer() const;
 
 				virtual void clear();
 
@@ -131,8 +137,9 @@ namespace Macsa {
 				virtual void operator = (const Board& other) { return copy(other);}
 
 			private:
-				const int		_id;
-				TIJPrinter*		_parent;
+                const int   _id;
+				TijPrinter*	_parent;
+				std::mutex* _mutex;
 
 				bool			_autostart;
 				bool			_lowLvlOutput;
@@ -149,7 +156,8 @@ namespace Macsa {
 				Photocell		_photocell;
 				Cartridge		_cartridge;
 				countersMap		_counters;
-				propertyMap		_properties;
+				propertyMap		_configProperties;
+				propertyMap		_statusProperties;
 
 				std::vector<Input>	_inputs;
 				std::vector<Output>	_outputs;
@@ -159,12 +167,9 @@ namespace Macsa {
 #else
 				typedef propertyMap::const_iterator itProp;
 #endif
-
 				bool equal(const Board& other) const;
 				void copy(const Board& other);
-				bool checkProperties(const Board::propertyMap& other) const;
-				template<class T>
-				bool isSameVector(const std::vector<T> a, const std::vector<T> b) const;
+				void setProperty(std::map<std::string, std::string>&map, const std::string& key, const std::string& value) const;
 		};
 	}
 }

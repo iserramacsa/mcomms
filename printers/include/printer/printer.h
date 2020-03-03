@@ -34,6 +34,8 @@ namespace Macsa {
 			protected:
 				int _id;
 				std::string _type;
+				std::time_t _dt;
+				std::time_t _lastUpdate;
 
 				virtual bool equal (const Printer& other) const = 0;
 

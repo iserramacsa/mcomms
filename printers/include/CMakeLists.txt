@@ -2,7 +2,10 @@
 #    MComms Includes     #
 ##########################
 
-file(GLOB HEADERS_LIB ${CMAKE_CURRENT_SOURCE_DIR}/*/*.h)
+add_subdirectory(printer)
+add_subdirectory(tij)
+add_subdirectory(mprotocol)
+add_subdirectory(nisx)
 
 set(SOURCES ${SOURCES}
 	PARENT_SCOPE

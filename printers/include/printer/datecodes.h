@@ -19,8 +19,7 @@
 
 namespace Macsa {
 	namespace Printers {
-		namespace MDateCode {
-
+		namespace DateCode {
 			class DCInterval{
 				public:
 					DCInterval(std::string format);
@@ -136,25 +135,25 @@ namespace Macsa {
 				bool removeCode(std::string format, std::string interval);
 				void clear();
 
-				const std::vector<MDateCode::DCMinute>& getMinuteCodes() const;
-				const std::vector<MDateCode::DCHour>& getHourCodes() const;
-				const std::vector<MDateCode::DCDay>& getDayCodes() const;
-				const std::vector<MDateCode::DCWeekDay>& getDayOfWeekCodes() const;
-				const std::vector<MDateCode::DCJulian>& getJulianCodes() const;
-				const std::vector<MDateCode::DCWeekOfYear>& getWeekOfYearCodes() const;
-				const std::vector<MDateCode::DCMonth>& getMonthCodes() const;
-				const std::vector<MDateCode::DCYear>& getYearCodes() const;
-				const std::vector<MDateCode::DCShift>& getShiftCodes() const;
-				std::vector<MDateCode::DateCodeGeneric> getAllCodes() const;
-				void setMinuteCodes(const std::vector<MDateCode::DCMinute>& minuteCodes);
-				void setHourCodes(const std::vector<MDateCode::DCHour>& hourCodes);
-				void setDayCodes(const std::vector<MDateCode::DCDay>& dayCodes);
-				void setDayOfWeekCodes(const std::vector<MDateCode::DCWeekDay>& dowCodes);
-				void setJulianCodes(const std::vector<MDateCode::DCJulian>& julianCodes);
-				void setWeekOfYearCodes(const std::vector<MDateCode::DCWeekOfYear>& woyCodes);
-				void setMonthCodes(const std::vector<MDateCode::DCMonth>& monthCodes);
-				void setYearCodes(const std::vector<MDateCode::DCYear>& yearCodes);
-				void setShiftCodes(const std::vector<MDateCode::DCShift>& shiftCodes);
+				const std::vector<DateCode::DCMinute>& getMinuteCodes() const;
+				const std::vector<DateCode::DCHour>& getHourCodes() const;
+				const std::vector<DateCode::DCDay>& getDayCodes() const;
+				const std::vector<DateCode::DCWeekDay>& getDayOfWeekCodes() const;
+				const std::vector<DateCode::DCJulian>& getJulianCodes() const;
+				const std::vector<DateCode::DCWeekOfYear>& getWeekOfYearCodes() const;
+				const std::vector<DateCode::DCMonth>& getMonthCodes() const;
+				const std::vector<DateCode::DCYear>& getYearCodes() const;
+				const std::vector<DateCode::DCShift>& getShiftCodes() const;
+				std::vector<DateCode::DateCodeGeneric> getAllCodes() const;
+				void setMinuteCodes(const std::vector<DateCode::DCMinute>& minuteCodes);
+				void setHourCodes(const std::vector<DateCode::DCHour>& hourCodes);
+				void setDayCodes(const std::vector<DateCode::DCDay>& dayCodes);
+				void setDayOfWeekCodes(const std::vector<DateCode::DCWeekDay>& dowCodes);
+				void setJulianCodes(const std::vector<DateCode::DCJulian>& julianCodes);
+				void setWeekOfYearCodes(const std::vector<DateCode::DCWeekOfYear>& woyCodes);
+				void setMonthCodes(const std::vector<DateCode::DCMonth>& monthCodes);
+				void setYearCodes(const std::vector<DateCode::DCYear>& yearCodes);
+				void setShiftCodes(const std::vector<DateCode::DCShift>& shiftCodes);
 
 
 				void parserDateTime(std::string & dateTimeFormat, const std::tm date) const;
@@ -168,15 +167,15 @@ namespace Macsa {
 
 
 			protected:
-				std::vector<MDateCode::DCMinute>	 _minuteCodes;
-				std::vector<MDateCode::DCHour>		 _hourCodes;
-				std::vector<MDateCode::DCDay>		 _dayCodes;
-				std::vector<MDateCode::DCWeekDay>	 _dayOfWeekCodes;
-				std::vector<MDateCode::DCJulian>	 _julianCodes;
-				std::vector<MDateCode::DCWeekOfYear> _weekOfYearCodes;
-				std::vector<MDateCode::DCMonth>		 _monthCodes;
-				std::vector<MDateCode::DCYear>		 _yearCodes;
-				std::vector<MDateCode::DCShift>		 _shiftCodes;
+				std::vector<DateCode::DCMinute>	 _minuteCodes;
+				std::vector<DateCode::DCHour>		 _hourCodes;
+				std::vector<DateCode::DCDay>		 _dayCodes;
+				std::vector<DateCode::DCWeekDay>	 _dayOfWeekCodes;
+				std::vector<DateCode::DCJulian>	 _julianCodes;
+				std::vector<DateCode::DCWeekOfYear> _weekOfYearCodes;
+				std::vector<DateCode::DCMonth>		 _monthCodes;
+				std::vector<DateCode::DCYear>		 _yearCodes;
+				std::vector<DateCode::DCShift>		 _shiftCodes;
 				std::map <std::string, std::string>  _codeFormaters;
 
 				std::string getFormatByCodeFormater(const std::string& formater) const;
@@ -192,7 +191,7 @@ namespace Macsa {
 				template<class T>
 				std::string getCode(const std::vector<T>& data, const tm dateTime) const;
 				template<class T>
-				MDateCode::DateCodeGeneric* pushCode(std::vector<T> &data, T &dc, const std::string& interval, const std::string& code);
+				DateCode::DateCodeGeneric* pushCode(std::vector<T> &data, T &dc, const std::string& interval, const std::string& code);
 
 		};
 	}

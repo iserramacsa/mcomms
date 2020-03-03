@@ -9,10 +9,12 @@ using namespace Macsa;
 using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
-MCommand::MCommand(const std::string& commandName, Printers::TIJPrinter &printer):
+MCommand::MCommand(const std::string& commandName, Printers::TijPrinter &printer):
 	_printer(printer),
 	_commandName(commandName)
-{}
+{
+	_attributes.clear();
+}
 
 MCommand::~MCommand()
 {}
@@ -35,11 +37,16 @@ void MCommand::setError(const Printers::ErrorCode &error)
 	_error = error;
 }
 
+std::map<std::string, std::string> MCommand::attributes() const
+{
+    return _attributes;
+}
+
 std::string MCommand::toString()
 {
-	XMLPrinter p;
-	_doc.Print(&p);
-	return p.CStr();
+    XMLPrinter p;
+    _doc.Print(&p);
+    return p.CStr();
 }
 
 XMLElement *MCommand::newCommandNode()
@@ -102,7 +109,7 @@ Printers::ErrorCode MCommand::getCommandError(const XMLElement *wind) const
 	if (wind != nullptr){
 		const XMLElement* error = wind->FirstChildElement(MERROR);
 		if (error != nullptr) {
-			err = error->Attribute(ATTRIBUTE_CODE, err.toString().c_str());
+			err = getTextAttribute(error, ATTRIBUTE_CODE, err.toString().c_str());
 		}
 	}
 	return err;
@@ -114,7 +121,7 @@ std::string MCommand::getTextFromChildNode(const XMLElement *parent, const std::
 	if (parent)	{
 		const XMLElement * node = parent->FirstChildElement(child.c_str());
 		if (node) {
-			text = node->GetText();
+			text = (node->GetText() != nullptr) ? node->GetText() : "";
 		}
 	}
 	return text;
@@ -178,11 +185,32 @@ double MCommand::getDoubleFromChildNode(const XMLElement *parent, const std::str
 	return value;
 }
 
+std::string MCommand::getTextAttribute(const XMLElement *element, const std::string &attribute, const std::string &defaultValue) const
+{
+	std::string value = defaultValue;
+	if(element != nullptr && !attribute.empty()) {
+		const XMLAttribute* attr = element->FindAttribute(attribute.c_str());
+		if (attr != nullptr) {
+			value = attr->Value();
+		}
+	}
+	return value;
+}
+
+bool MCommand::getBoolAttribute(const XMLElement *element, const std::string &attribute, bool defaultValue) const
+{
+	std::string def = MTools::toString (defaultValue);
+	return MTools::boolfromString (getTextAttribute(element, attribute, def));
+}
+
 XMLElement *MCommand::createChildNode(const std::string &child, XMLElement **parent)
 {
-	XMLElement * node = _doc.NewElement(child.c_str());
-	if (parent != nullptr && *parent != nullptr){
-		(*parent)->InsertEndChild(node);
+	XMLElement * node = (*parent)->FirstChildElement(child.c_str());
+	if (node == nullptr){
+		node = _doc.NewElement(child.c_str());
+		if (parent != nullptr && *parent != nullptr){
+			(*parent)->InsertEndChild(node);
+		}
 	}
 
 	return node;

@@ -63,15 +63,22 @@ SET (INCLUDES
 
 include_directories(${INCLUDES})
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/src)
-add_subdirectory(${PROJECT_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/include)
+add_subdirectory(${PROJECT_SOURCE_DIR} ${CMAKE_BINARY_DIR}/src)
+
 
 set(SOURCES ${SOURCES}
-	main.cpp
+    ${SRC_TEST}
+    main.cpp
 )
 
 set(HEADERS ${HEADERS}
+    ${HDRS_TEST}
 )
 
-add_executable(${PROJECT_NAME} ${SOURCES})
-target_link_libraries(${PROJECT_NAME} ${EXTERNAL_LIBS})
+link_directories(
+    ${CMAKE_BINARY_DIR}/network
+)
+
+add_executable( ${PROJECT_NAME} ${SOURCES} ${HEADERS})
+# build it (link libraries)
+target_link_libraries( ${PROJECT_NAME} ${EXTERNAL_LIBS} MNetwork)

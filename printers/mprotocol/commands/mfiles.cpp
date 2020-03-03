@@ -13,7 +13,7 @@ using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
 //=============		GET FILES LIST		=============//
-MGetFilesList::MGetFilesList(Printers::TIJPrinter &printer, const std::string &filter) :
+MGetFilesList::MGetFilesList(Printers::TijPrinter &printer, const std::string &filter) :
 	MCommand(MFILES_GET_LIST, printer)
 {
 	_filter = filter;
@@ -58,11 +58,7 @@ bool MGetFilesList::parseRequest(const XMLElement *xml)
 	if  (cmd != nullptr) {
 		valid = (cmd != nullptr && cmd->NoChildren());
 		if (valid){
-			_filter = "*.*";
-			const char* filter = cmd->Attribute(MFILES_GET_LIST_TYPE_ATTR);
-			if (filter != nullptr) {
-				_filter = filter;
-			}
+			_filter = getTextAttribute(cmd, MFILES_GET_LIST_TYPE_ATTR, "*.*");
 		}
 	}
 
@@ -71,23 +67,26 @@ bool MGetFilesList::parseRequest(const XMLElement *xml)
 
 bool MGetFilesList::parseResponse(const XMLElement *xml)
 {
+	_attributes.clear();
 	const XMLElement * cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if (valid) {
+		_error = getCommandError(xml);
 		if (std::string(cmd->Value()).compare(MFILES_GET_LIST) == 0)
 		{
 			std::vector<std::string> exts;
-			const char* filter = cmd->Attribute(MFILES_GET_LIST_TYPE_ATTR);
-			if (filter != nullptr && strlen(filter) > 1) {
-				std::string f = filter;
+			std::string filter = getTextAttribute(cmd, MFILES_GET_LIST_TYPE_ATTR, "");
+			_attributes[MFILES_GET_LIST_TYPE_ATTR] = filter;
+
+			if (filter.length() > 1) {
 				size_t coma = 0;
-				while ((coma = f.find_first_of(",", coma)) != f.npos)
+				while ((coma = filter.find_first_of(",", coma)) != filter.npos)
 				{
-					exts.push_back(f.substr(0, coma));
-					f = f.substr(coma + 1);
+					exts.push_back(filter.substr(0, coma));
+					filter = filter.substr(coma + 1);
 				}
-				if (f.length()) {
-					exts.push_back(f);
+				if (filter.length()) {
+					exts.push_back(filter);
 				}
 			}
 
@@ -95,8 +94,8 @@ bool MGetFilesList::parseResponse(const XMLElement *xml)
 			std::vector<std::string> drives;
 			const XMLElement * unit = cmd->FirstChildElement(MFILES_DEVICE_UNIT);
 			while (unit != nullptr) {
-				const char* drive = unit->Attribute(ATTRIBUTE_NAME);
-				if (drive != nullptr) {
+				std::string drive = getTextAttribute(unit, ATTRIBUTE_NAME);
+				if (drive.length()) {
 					drives.push_back(drive);
 				}
 				unit = unit->NextSiblingElement(MFILES_DEVICE_UNIT);
@@ -110,8 +109,8 @@ bool MGetFilesList::parseResponse(const XMLElement *xml)
 			/* Insert new files */
 			const XMLElement * xmlfile = cmd->FirstChildElement(MFILES_FILE_PATH);
 			while (xmlfile != nullptr) {
-				const char* path = xmlfile->Attribute(MFILES_FILE_PATH_ATTR);
-				if (path != nullptr) {
+				std::string path = getTextAttribute(xmlfile, MFILES_FILE_PATH_ATTR);
+				if (path.length()) {
 					insertFileToPrinterData(path);
 				}
 				xmlfile = xmlfile->NextSiblingElement(MFILES_FILE_PATH);
@@ -126,32 +125,20 @@ std::string MGetFilesList::filter() const
 	return _filter;
 }
 
-void MGetFilesList::splitFilePwd(const std::string &pwd, std::string &drive, std::string &folder, std::string &file)
-{
-	drive.clear();
-	folder.clear();
-	file = pwd;
-	std::vector<std::string> s;
-
-	size_t slash = file.find(DRIVE_CHARS);
-	if(slash != file.npos) {
-		drive = file.substr(0, slash + strlen(DRIVE_CHARS));
-		file = file.substr(slash + strlen(DRIVE_CHARS));
-	}
-	slash = file.find_last_of(SLASH_CHAR);
-	if(slash != file.npos) {
-		folder = file.substr(0, slash);
-		file = file.substr(slash + 1);
-	}
-}
-
 void MGetFilesList::insertFileToPrinterData(const std::string &pwd)
 {
 	std::string drive, folder, file;
-	splitFilePwd(pwd, drive, folder, file);
+	std::vector<std::string>folders;
+	_printer.files()->splitFilepath(pwd, drive, folders, file);
 
 	if (!_printer.files()->driveExist(drive)) {
 		_printer.files()->addNewDrive(drive);
+	}
+	for (uint i = 0; i < folders.size(); i++){
+		if (i > 0) {
+			folder += "/";
+		}
+		folder += folders.at(i);
 	}
 	if (!_printer.files()->folderExist(drive, folder)) {
 		_printer.files()->addNewFolder(drive, folder);
@@ -160,7 +147,7 @@ void MGetFilesList::insertFileToPrinterData(const std::string &pwd)
 }
 
 //=============		COPY FILES		=============//
-MCopyFile::MCopyFile(Macsa::Printers::TIJPrinter &printer, const std::string &sourceFilename, const std::string &targetFilename)  :
+MCopyFile::MCopyFile(Macsa::Printers::TijPrinter &printer, const std::string &sourceFilename, const std::string &targetFilename)  :
 	MCommand(MFILES_COPY, printer)
 {
 	_sourceFilename = sourceFilename;
@@ -181,8 +168,8 @@ bool MCopyFile::parseRequest(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if (valid) {
-		_sourceFilename = cmd->Attribute(MFILES_SOURCE_PATH_ATTR, "");
-		_targetFilename = cmd->Attribute(MFILES_TARGET_PATH_ATTR, "");
+		_sourceFilename = getTextAttribute(cmd, MFILES_SOURCE_PATH_ATTR);
+		_targetFilename = getTextAttribute(cmd, MFILES_TARGET_PATH_ATTR);
 	}
 
 	return valid;
@@ -202,10 +189,12 @@ void MCopyFile::buildResponse()
 
 bool MCopyFile::parseResponse(const XMLElement *xml)
 {
+	_attributes.clear();
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if (valid) {
 		_error = getCommandError(xml);
+//		_params[MFILES_GET_LIST_TYPE_ATTR] = filter;
 	}
 	return valid;
 }
@@ -221,7 +210,7 @@ std::string MCopyFile::targetFilename() const
 }
 
 //=============		COPY FILES		=============//
-MMoveFile::MMoveFile(Macsa::Printers::TIJPrinter &printer, const std::string &sourceFilename, const std::string &targetFilename) :
+MMoveFile::MMoveFile(Macsa::Printers::TijPrinter &printer, const std::string &sourceFilename, const std::string &targetFilename) :
 	MCommand(MFILES_MOVE, printer)
 {
 	_sourceFilename = sourceFilename;
@@ -242,8 +231,8 @@ bool MMoveFile::parseRequest(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if (valid) {
-		_sourceFilename = cmd->Attribute(MFILES_SOURCE_PATH_ATTR, "");
-		_targetFilename = cmd->Attribute(MFILES_TARGET_PATH_ATTR, "");
+		_sourceFilename = getTextAttribute(cmd, MFILES_SOURCE_PATH_ATTR);
+		_targetFilename = getTextAttribute(cmd, MFILES_TARGET_PATH_ATTR);
 	}
 	return valid;
 }
@@ -282,7 +271,7 @@ std::string MMoveFile::targetFilename() const
 }
 
 //=============		DELETE FILE		=============//
-MDeleteFile::MDeleteFile(Macsa::Printers::TIJPrinter &printer, const std::string &filename):
+MDeleteFile::MDeleteFile(Macsa::Printers::TijPrinter &printer, const std::string &filename):
 	MCommand(MFILES_DELETE, printer)
 {
 	_filename = filename;
@@ -301,7 +290,7 @@ bool MDeleteFile::parseRequest(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if (valid) {
-		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
+		_filename = getTextAttribute(cmd, ATTRIBUTE_FILEPATH);
 	}
 	return valid;
 }
@@ -336,7 +325,7 @@ std::string MDeleteFile::filename() const
 
 
 //=============		FILE CONTENT COMMAND BASE		=============//
-MFileContentCommand::MFileContentCommand(const std::string &command, Printers::TIJPrinter &printer,
+MFileContentCommand::MFileContentCommand(const std::string &command, Printers::TijPrinter &printer,
 										 const std::string &filename, bool raw,
 										 const std::vector<uint8_t> &content) :
 	MCommand(command, printer)
@@ -345,6 +334,9 @@ MFileContentCommand::MFileContentCommand(const std::string &command, Printers::T
 	_content = content;
 	_raw = raw;
 }
+
+MFileContentCommand::~MFileContentCommand()
+{}
 
 bool MFileContentCommand::raw() const
 {
@@ -415,7 +407,7 @@ std::vector<uint8_t> MFileContentCommand::contentFromString(const char *data, bo
 }
 
 //=============		GET FILE		=============//
-MGetFile::MGetFile(Macsa::Printers::TIJPrinter &printer, const std::string &filename, bool raw) :
+MGetFile::MGetFile(Macsa::Printers::TijPrinter &printer, const std::string &filename, bool raw) :
 	MFileContentCommand(MFILES_GET, printer, filename, raw)
 {}
 
@@ -433,8 +425,8 @@ bool MGetFile::parseRequest(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if (valid) {
-		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
-		_raw = MTools::boolfromString(cmd->Attribute(MFILES_FILE_RAW_ATTR, "false"));
+		_filename = getTextAttribute(cmd, ATTRIBUTE_FILEPATH);
+		_raw = getBoolAttribute(cmd, MFILES_FILE_RAW_ATTR);
 	}
 	return valid;
 }
@@ -461,15 +453,31 @@ void MGetFile::buildResponse()
 bool MGetFile::parseResponse(const XMLElement *xml)
 {
 	bool valid = false;
+	_attributes.clear();
 	const XMLElement* cmd = getCommand(xml, _id);
 	valid = (cmd != nullptr);
-	if (valid) {
+	if (valid)
+	{
 		_error = getCommandError(xml);
-		const XMLText* content = dynamic_cast<const XMLText*>(cmd->FirstChild());
-		if (content) {
-			_raw = content->CData();
+		if (_error == Printers::ErrorCode_n::SUCCESS)
+		{
 			_content.clear();
-			_content = contentFromString(content->Value(), _raw);
+			std::string pwd = getTextAttribute(cmd, ATTRIBUTE_FILEPATH, "");
+			if (pwd.length() && _printer.files() && _printer.files()->getFile(pwd) != nullptr)
+			{
+				const XMLElement* contentNode = cmd->FirstChildElement();
+				if (dynamic_cast<const XMLText*>(contentNode->FirstChild()))
+				{
+					std::string drive = pwd.substr(0, pwd.find("//") + 2);
+					_attributes[MFILES_DEVICE_UNIT] = drive;
+					_attributes[MFILES_FILE_PATH] = pwd;
+
+					const XMLText* content = dynamic_cast<const XMLText*>(contentNode->FirstChild());
+					_raw = content->CData();
+					_content = contentFromString(content->Value(), _raw);
+					_printer.files()->setFile(pwd, _content);
+				}
+			}
 		}
 	}
 	return valid;
@@ -477,7 +485,7 @@ bool MGetFile::parseResponse(const XMLElement *xml)
 
 //=============		SET FILE		=============//
  ///TODO!!!
-MSetFile::MSetFile(Macsa::Printers::TIJPrinter &printer, const std::string &filename, const std::vector<uint8_t> &content, bool raw) :
+MSetFile::MSetFile(Macsa::Printers::TijPrinter &printer, const std::string &filename, const std::vector<uint8_t> &content, bool raw) :
 	MFileContentCommand(MFILES_SET, printer, filename, raw, content)
 {
 	_filename = filename;
@@ -500,8 +508,8 @@ bool MSetFile::parseRequest(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if (valid) {
-		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
-		_raw = MTools::boolfromString(cmd->Attribute(MFILES_FILE_RAW_ATTR, "false"));
+		_filename = getTextAttribute(cmd, ATTRIBUTE_FILEPATH);
+		_raw = getBoolAttribute(cmd, MFILES_FILE_RAW_ATTR);
 	}
 	return valid;
 }

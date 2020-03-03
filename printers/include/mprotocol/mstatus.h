@@ -12,7 +12,7 @@ namespace Macsa {
 		class MStatusCommand : public MCommand
 		{
 			public:
-				MStatusCommand(std::string command, Printers::TIJPrinter& printer);
+				MStatusCommand(std::string command, Printers::TijPrinter& printer);
 				virtual ~MStatusCommand();
 
 			protected:
@@ -35,7 +35,7 @@ namespace Macsa {
 		class MGetStatus : public MStatusCommand
 		{
 			public:
-				MGetStatus(Printers::TIJPrinter& printer);
+				MGetStatus(Printers::TijPrinter& printer);
 				virtual ~MGetStatus();
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement* xml);
@@ -51,7 +51,7 @@ namespace Macsa {
 		class MGetIOStatus : public MStatusCommand
 		{
 			public:
-				MGetIOStatus(Printers::TIJPrinter& printer);
+				MGetIOStatus(Printers::TijPrinter& printer);
 				virtual ~MGetIOStatus();
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement* xml);
@@ -67,7 +67,7 @@ namespace Macsa {
 		class MGetErrors : public MStatusCommand
 		{
 			public:
-				MGetErrors(Printers::TIJPrinter& printer);
+				MGetErrors(Printers::TijPrinter& printer);
 				virtual ~MGetErrors();
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement* xml);

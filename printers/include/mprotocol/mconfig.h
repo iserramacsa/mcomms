@@ -10,7 +10,7 @@ namespace Macsa {
 		class MGetConfig : public MConfigCommand
 		{
 			public:
-				MGetConfig(Printers::TIJPrinter& printer);
+				MGetConfig(Printers::TijPrinter& printer);
 
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
@@ -27,7 +27,7 @@ namespace Macsa {
 		class MSetConfig : public MConfigCommand
 		{
 			public:
-				MSetConfig(Printers::TIJPrinter& printer);
+				MSetConfig(Printers::TijPrinter& printer);
 
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
@@ -43,12 +43,24 @@ namespace Macsa {
 		class MSetDateTime : public MSetConfig
 		{
 			public:
-				MSetDateTime(Printers::TIJPrinter& printer);
-
-				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
-
+				MSetDateTime(Printers::TijPrinter& printer);
 			private:
 				virtual void buildRequest();
+		};
+
+		/**
+		 * @brief The SETCONFIG command class
+		 */
+		class MUpdateConfig : public MSetConfig
+		{
+			public:
+				MUpdateConfig(Printers::TijPrinter& baseConfig, Printers::TijPrinter& newConfig);
+			private:
+				virtual void buildRequest();
+				Printers::TijPrinter _newConfig;
+				void updateGeneralConfig(tinyxml2::XMLElement** parent);
+				void updateCommsConfig(tinyxml2::XMLElement** parent);
+				void updateBoards(tinyxml2::XMLElement** parent);
 		};
 	}
 }

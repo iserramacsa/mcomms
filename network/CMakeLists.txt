@@ -4,100 +4,101 @@
 ## Project configuration
 cmake_minimum_required(VERSION 3.5)
 
-set(LIBRARY_NAME MNetwork)
+set(NETWORK_LIB_NAME MNetwork)
 
-if (NOT PROJECT_NAME)
-	set(PROJECT_NAME ${LIBRARY_NAME})
-	project(${PROJECT_NAME})
-	set(STANDALONE)
+project(${NETWORK_LIB_NAME})
+set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+message("Parsing " ${NETWORK_LIB_NAME} " definitions")
+message("PROJECT_NAME: " ${PROJECT_NAME})
+message("PROJECT_BINARY_DIR: " ${PROJECT_BINARY_DIR})
+message("CMAKE_BINARY_DIR: " ${CMAKE_BINARY_DIR})
 
-	set (CMAKE_CXX_STANDARD 11)
-	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-unused-parameter -g2")
-	set (CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-unused-parameter -g2")
 
-	if (WIN32)
-		set(LIB_PREFIX		$ENV{HOME}/TIJLibraries/x64)
-	elseif(UNIX)
-		message("Linux version: " CMAKE_CXX_COMPILER)
-		if (CMAKE_CXX_COMPILER MATCHES "gnueabihf")
-			message("gnueabihf variant")
-			set(LIB_PREFIX		$ENV{HOME}/TIJLibraries/arm-linux-gnueabihf)
-		elseif(CMAKE_CXX_COMPILER MATCHES "gnueabi")
-			message("gnueabi variant")
-			set(LIB_PREFIX		$ENV{HOME}/TIJLibraries/arm-buildroot-linux-gnueabi)
-		else()
-			message("Linux desktop version")
-			set(LIB_PREFIX		$ENV{HOME}/TIJLibraries/x64)
-		endif()
-		set(EXTERNAL_LIBS	-pthread)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../toolchain/cmake/macsa.cmake)	#configuration for macsa tij projects
+include(${CMAKE_CURRENT_SOURCE_DIR}/../toolchain/cmake/test.cmake)  #configuration test enabled and GTest requiered configuration
+#include(${CMAKE_CURRENT_SOURCE_DIR}/../utils/utils.cmake)	#configuration for macsa tij projects
+#Enabling options
+#set (ADD_OBSERVER_PATTERN ON)
+set (UTILS_DIR	${CMAKE_CURRENT_SOURCE_DIR}/../utils)
+
+if(UNIX)
+	if (${BUILD_SHARED_LIBS})
+		add_compile_options(-fPIC)
 	endif()
-
-	add_definitions(-DVIRTUAL_MOCK=)
-	add_definitions(-DHOME=$ENV{HOME})
-
+	set(EXTERNAL_LIBS	${EXTERNAL_LIBS}
+						-pthread)
 endif()
 
-set(LIBRARY_VERSION_MAJOR 1)
-set(LIBRARY_VERSION_MINOR 0)
-set(LIBRARY_VERSION_PATCH 0)
-set(LIBRARY_VERSION ${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}.${LIBRARY_VERSION_PATCH})
+set(NETWORK_LIB_VERSION_MAJOR 1)
+set(NETWORK_LIB_VERSION_MINOR 0)
+set(NETWORK_LIB_VERSION_PATCH 0)
+set(NETWORK_LIB_VERSION ${NETWORK_LIB_VERSION_MAJOR}.${NETWORK_LIB_VERSION_MINOR}.${NETWORK_LIB_VERSION_PATCH})
 
 #add_definitions(-DDEBUG)
-add_definitions(-DNETWORK_VERSION_MAJOR=${LIBRARY_VERSION_MAJOR})
-add_definitions(-DNETWORK_VERSION_MINOR=${LIBRARY_VERSION_MINOR})
-add_definitions(-DNETWORK_VERSION_PATCH=${LIBRARY_VERSION_PATCH})
-add_definitions(-DNETWORK_VERSION_STR="${LIBRARY_VERSION}")
+add_definitions(-DNETWORK_VERSION_MAJOR=${NETWORK_LIB_VERSION_MAJOR})
+add_definitions(-DNETWORK_VERSION_MINOR=${NETWORK_LIB_VERSION_MINOR})
+add_definitions(-DNETWORK_VERSION_PATCH=${NETWORK_LIB_VERSION_PATCH})
+add_definitions(-DNETWORK_VERSION_STR="${NETWORK_LIB_VERSION}")
 
-set(_SRCS)
-set(_HDRS)
+
+set(SOURCES)
+set(HEADERS)
+
+if (${ENABLE_TESTS})
+	set(SRC_TEST)
+	set(HDRS_TEST)
+endif()
 
 SET (LIB_INCLUDES
 	${CMAKE_CURRENT_SOURCE_DIR}/src
 	${CMAKE_CURRENT_SOURCE_DIR}/include
+	${UTILS_DIR}/include
 	${LIB_PREFIX}/include
 	)
 
 include_directories(${LIB_INCLUDES})
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/network/src)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/network/include)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src		${PROJECT_BINARY_DIR}/src)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include	${PROJECT_BINARY_DIR}/include)
 
-set(_SRCS ${_SRCS}
-)
-set(_HDRS ${_HDRS}
-)
+set(SOURCES ${SOURCES})
+set(HEADERS ${HEADERS})
+
+if (${ENABLE_TESTS})
+    set(SRC_TEST ${SRC_TEST})
+	set(HDRS_TEST ${HDRS_TEST})
+endif()
 
 ###########################
 ## Install targets
 ###########################
-if (NOT INCLUDE_TESTS)
-set(SOVERSION ${LIBRARY_VERSION})
-add_library(${LIBRARY_NAME} SHARED ${_SRCS} ${_HDRS})
-add_library(${LIBRARY_NAME}-static STATIC ${_SRCS} ${_HDRS})
-set_target_properties(${LIBRARY_NAME}
-	PROPERTIES SOVERSION ${SOVERSION})
+if (${BUILD_SHARED_LIBS} OR ${BUILD_STATIC_LIBS})
+	set(SOVERSION ${NETWORK_LIB_VERSION})
+	message("lib" ${NETWORK_LIB_NAME} " creating targets")
 
-set_target_properties(${LIBRARY_NAME}-static
-		PROPERTIES SOVERSION ${SOVERSION} OUTPUT_NAME ${LIBRARY_NAME})
+	if (${BUILD_SHARED_LIBS})
+		add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
+		set_target_properties(${PROJECT_NAME}
+			PROPERTIES SOVERSION ${SOVERSION})
+	endif()
 
-target_link_libraries(${LIBRARY_NAME} ${EXTERNAL_LIBS})
-install(TARGETS ${LIBRARY_NAME}
-	LIBRARY DESTINATION ${LIB_PREFIX}/lib)
-endif()
+	if (${BUILD_STATIC_LIBS})
+		add_library(${PROJECT_NAME}-static STATIC ${SOURCES} ${HEADERS})
+		set_target_properties(${PROJECT_NAME}-static
+				PROPERTIES SOVERSION ${SOVERSION} OUTPUT_NAME ${PROJECT_NAME})
+	endif()
 
-if (NOT STANDALONE)
-	SET (INCLUDES ${INCLUDES}
-		${CMAKE_CURRENT_SOURCE_DIR}/include
-		PARENT_SCOPE)
-	if (INCLUDE_TESTS)
-		set(SOURCES ${SOURCES}
-			${_SRCS}
-			PARENT_SCOPE
-		)
-		set(HEADERS ${HEADERS}
-			${_HDRS}
-			PARENT_SCOPE
-		)
-	set(EXTERNAL_LIBS	${EXTERNAL_LIBS}	PARENT_SCOPE)
+	target_link_libraries(${PROJECT_NAME} ${EXTERNAL_LIBS})
+	install(TARGETS ${PROJECT_NAME}	LIBRARY DESTINATION ${LIB_PREFIX}/lib)
+
+
+	if (${ENABLE_TESTS})
+		message("Adding ${PROJECT_NAME} tests" )
+		set(PROJECT_TEST_NAME ${PROJECT_NAME}Tests)
+		link_directories(${PROJECT_BINARY_DIR})
+
+		add_executable(${PROJECT_TEST_NAME} ${SRC_TEST} ${HDRS_TEST})
+		target_link_libraries(${PROJECT_TEST_NAME} ${EXTERNAL_LIBS} MNetwork)
+		add_test(${PROJECT_NAME} ${PROJECT_TEST_NAME})
 	endif()
 endif()

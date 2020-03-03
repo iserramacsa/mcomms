@@ -1,19 +1,20 @@
 #include "network/network.h"
-#include "network/abstractsocket.h"
+#include "network/networkobserver.h"
+#include "abstractsocket.h"
 #include <algorithm>
+
+#define ROOT_NODE_ID    "root"
 
 using namespace Macsa::Network;
 
-#ifdef NETWORK_VERSION_STR
 int MNetwork::versionMajor() {return NETWORK_VERSION_MAJOR;}
 int MNetwork::versionMinor() {return NETWORK_VERSION_MINOR;}
 int MNetwork::versionPatch() {return NETWORK_VERSION_PATCH;}
 std::string MNetwork::version() {return NETWORK_VERSION_STR;}
-#endif
 
-MNetwork::MNetwork(ISocket::SocketType_n rootNodeType)
+MNetwork::MNetwork() :
+	NetworkNode(ROOT_NODE_ID)
 {
-	_rootNode = new NetworkNode("root", new AbstractSocket(rootNodeType));
 	_nodes.clear();
 }
 
@@ -23,11 +24,7 @@ MNetwork::~MNetwork()
 		std::vector<NetworkNode*>::iterator it = _nodes.begin();
 		delete (*it);
 		_nodes.erase(it);
-	}
-
-	if(_rootNode != nullptr) {
-		delete _rootNode;
-	}
+    }
 }
 
 bool MNetwork::addNewNode(NetworkNode *node)
@@ -40,10 +37,21 @@ bool MNetwork::addNewNode(NetworkNode *node)
 	return added;
 }
 
-NetworkNode *MNetwork::getNode(const std::string &address) const
+NetworkNode *MNetwork::getNodeById(const std::string &id) const
 {
 	for (unsigned int i = 0; i < _nodes.size(); i++) {
-		if(_nodes.at(i)->address().compare(address) == 0) {
+		if(_nodes.at(i)->id() == id) {
+			return _nodes.at(i);
+		}
+	}
+
+	return nullptr;
+}
+
+NetworkNode *MNetwork::getNodeByAddress(const std::string &address) const
+{
+	for (unsigned int i = 0; i < _nodes.size(); i++) {
+		if(_nodes.at(i)->address() == address) {
 			return _nodes.at(i);
 		}
 	}
@@ -84,7 +92,6 @@ NetworkNode::NodeStatus_n MNetwork::status() const
 	return DISCONNECTED;
 }
 
-
 bool MNetwork::removeNode(NetworkNode *node)
 {
 	bool removed = false;
@@ -108,17 +115,10 @@ bool MNetwork::removeNode(std::string nodeId)
 	return removeNode(find(nodeId));
 }
 
+
 bool MNetwork::exist(NetworkNode *node)
 {
-	if (node != nullptr){
-		for (auto* n : _nodes)  {
-			if (*n == *node){
-				return true;
-			}
-		}
-	}
-
-	return false;
+	return (findByAddress(node->address()) != nullptr);
 }
 
 NetworkNode *MNetwork::find(const std::string& name) const
@@ -127,7 +127,7 @@ NetworkNode *MNetwork::find(const std::string& name) const
 
 	if (name.length()) {
 		auto found = [name](NetworkNode* n) {
-			return(n->id().compare(name) == 0);
+			return(n->id() == name);
 		};
 
 		std::vector<NetworkNode*>::const_iterator it = std::find_if(_nodes.begin(), _nodes.end(), found);
@@ -140,11 +140,11 @@ NetworkNode *MNetwork::find(const std::string& name) const
 	return node;
 }
 
-NetworkNode *MNetwork::findByAdrress(const std::string &address) const
+NetworkNode *MNetwork::findByAddress(const std::string &address) const
 {
 	NetworkNode * node = nullptr;
 	auto found = [&](NetworkNode* n) {
-		return (n->address().compare(address) == 0);
+		return (n->address() == address);
 	};
 
 	std::vector<NetworkNode*>::const_iterator it = std::find_if(_nodes.begin(), _nodes.end(), found);

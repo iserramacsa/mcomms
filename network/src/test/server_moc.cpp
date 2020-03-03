@@ -1,6 +1,6 @@
 #include "server_moc.h"
-#include "network/tcpsocket.h"
-#include "network/udpsocket.h"
+#include "tcpsocket.h"
+#include "udpsocket.h"
 
 ServerMockable::ServerMockable()
 {
@@ -15,7 +15,7 @@ ServerMockable::~ServerMockable()
 	}
 }
 
-bool ServerMockable::init(ISocket::SocketType_n type, uint16_t port, bool bcast)
+bool ServerMockable::init(ISocket::nSocketType type, uint16_t port, bool bcast)
 {
 	bool initiated = false;
 	switch (type) {
@@ -36,7 +36,7 @@ bool ServerMockable::init(ISocket::SocketType_n type, uint16_t port, bool bcast)
 			break;
 	}
 
-	_running.store(true);
+	_running.store(initiated);
 	return initiated;
 }
 
@@ -49,9 +49,7 @@ void ServerMockable::run(std::function<void (AbstractSocket *)> onNewConnection)
 
 void ServerMockable::runTcpServer()
 {
-	std::unique_lock<std::mutex>lock(_mutex);
-	_serverThread = std::thread(&ServerMockable::serverMainLoop, this, std::bind(&ServerMockable::echoSocketLoop, this, std::placeholders::_1));
-	_cv.wait(lock);
+	return run (std::bind(&ServerMockable::echoSocketLoop, this, std::placeholders::_1));
 }
 
 void ServerMockable::runUdpServer()
@@ -64,11 +62,15 @@ void ServerMockable::runUdpServer()
 void ServerMockable::stop()
 {
 	if (_server != nullptr && _running.load()){
-		std::unique_lock<std::mutex>lock(_mutex);
-		_running.store(false);
-		_server->close();
-		if (_server->type() == ISocket::TCP_SOCKET) {
-			_cv.wait_for(lock, std::chrono::milliseconds(500));
+		{
+			std::unique_lock<std::mutex>lock(_mutex);
+			_running.store(false);
+			_server->close();
+			if (_server->type() == ISocket::TCP_SOCKET) {
+				if(_cv.wait_for(lock, std::chrono::milliseconds(500)) == std::cv_status::timeout) {
+					std::cout << __PRETTY_FUNCTION__ << ": Waiting for close server timed out" << std::endl;
+				}
+			}
 		}
 		_serverThread.join();
 	}

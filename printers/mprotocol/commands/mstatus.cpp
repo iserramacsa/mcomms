@@ -1,12 +1,11 @@
 #include "mprotocol/mstatus.h"
 #include "mprotocol/mprotocol.h"
-#include "mboard.h"
 #include "mtools.h"
 using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
 //================		STATUS COMMANDS BASE CLASS		================//
-MStatusCommand::MStatusCommand(std::string command, Macsa::Printers::TIJPrinter &printer) :
+MStatusCommand::MStatusCommand(std::string command, Macsa::Printers::TijPrinter &printer) :
 	MCommand(command, printer)
 {}
 
@@ -80,7 +79,7 @@ void MStatusCommand::propertiesToXml(const Macsa::Printers::Board &board, XMLEle
 {
 	XMLElement* xProperties = createChildNode(MPRINTER_BOARD_PROPERTIES_LIST, parent);
 	if (xProperties == nullptr) {
-		const Printers::Board::propertyMap& properties =  board.properties();
+		const Printers::Board::propertyMap& properties =  board.statusProperties();
 		for (Printers::Board::propertyMap::const_iterator property = properties.begin(); property != properties.end(); property++) {
 			XMLElement* xProperty = createChildNode(MPRINTER_BOARD_PROPERTY, &xProperties);
 			xProperty->SetAttribute(ATTRIBUTE_KEY, (*property).first.c_str());
@@ -94,7 +93,7 @@ void MStatusCommand::countersFromXml(const XMLElement *parent, Macsa::Printers::
 	if (parent) {
 		const XMLElement* xCounter = parent->FirstChildElement(MPRINTER_BOARD_COUNTER);
 		while (xCounter != nullptr) {
-			std::string key = xCounter->Attribute(ATTRIBUTE_ID);
+			std::string key = getTextAttribute(xCounter, ATTRIBUTE_ID);
 			if (key.length()) {
 				int value = board.counter(key);
 				value = (value != -1) ? value : 0;
@@ -114,9 +113,9 @@ void MStatusCommand::errorsFromXml(const XMLElement *parent, Macsa::Printers::Bo
 		const XMLElement* xError = parent->FirstChildElement(MPRINTER_BOARD_ERROR);
 		while (xError != nullptr) {
 			Printers::Error error;
-			error.setType(xError->Attribute(MPRINTER_BOARD_ERR_TYPE_ATTR));
+			error.setType(getTextAttribute(xError, MPRINTER_BOARD_ERR_TYPE_ATTR));
 			error.setPriority(xError->UnsignedAttribute(MPRINTER_BOARD_ERR_PRIO_ATTR));
-			error.setCode(xError->Attribute(MPRINTER_BOARD_ERR_CODE_ATTR));
+			error.setCode(getTextAttribute(xError, MPRINTER_BOARD_ERR_CODE_ATTR));
 
 			errors.push_back(error);
 
@@ -134,12 +133,12 @@ void MStatusCommand::inputsFromXml(const XMLElement *parent, Macsa::Printers::Bo
 		while (xInput != nullptr) {
 			unsigned int inputId = xInput->UnsignedAttribute(ATTRIBUTE_ID);
 			Printers::Input input = board.input(inputId);
-			input.setDescriptor(xInput->Attribute(MPRINTER_BOARD_IO_DESCRIPT_ATTR));
-			input.setValue(MTools::boolfromString(xInput->Attribute(ATTRIBUTE_VALUE)));
+			input.setDescriptor(getTextAttribute(xInput, MPRINTER_BOARD_IO_DESCRIPT_ATTR));
+			input.setValue(getBoolAttribute(xInput,ATTRIBUTE_VALUE));
 
 			inputs.push_back(input);
 
-			xInput = xInput->NextSiblingElement();
+			xInput = xInput->NextSiblingElement(MPRINTER_BOARD_INPUT);
 		}
 		board.setInputs(inputs);
 	}
@@ -153,13 +152,14 @@ void MStatusCommand::outputsFromXml(const XMLElement *parent, Macsa::Printers::B
 		while (xOutput != nullptr) {
 			unsigned int outputId = xOutput->UnsignedAttribute(ATTRIBUTE_ID);
 			Printers::Output output = board.output(outputId);
-			output.setDescriptor(xOutput->Attribute(MPRINTER_BOARD_IO_DESCRIPT_ATTR));
-			output.setValue(MTools::boolfromString(xOutput->Attribute(ATTRIBUTE_VALUE)));
+			output.setDescriptor(getTextAttribute(xOutput, MPRINTER_BOARD_IO_DESCRIPT_ATTR));
+			output.setValue(getBoolAttribute(xOutput, ATTRIBUTE_VALUE));
 
 			outputs.push_back(output);
 
-			xOutput = xOutput->NextSiblingElement();
+			xOutput = xOutput->NextSiblingElement(MPRINTER_BOARD_OUTPUT);
 		}
+		board.setOutputs(outputs);
 	}
 }
 
@@ -169,20 +169,20 @@ void MStatusCommand::propertiesFromXml(const XMLElement *parent, Macsa::Printers
 		const XMLElement* xProperty = parent->FirstChildElement(MPRINTER_BOARD_PROPERTY);
 		Printers::Board::propertyMap properties;
 		while (xProperty != nullptr) {
-			std::string key = xProperty->Attribute(ATTRIBUTE_KEY);
+			std::string key = getTextAttribute(xProperty, ATTRIBUTE_KEY);
 			if (key.length()) {
-				std::string value = xProperty->Attribute(ATTRIBUTE_VALUE);
+				std::string value = getTextAttribute(xProperty, ATTRIBUTE_VALUE);
 				properties.insert(std::pair<std::string,std::string>(key, value));
 			}
 			xProperty = xProperty->NextSiblingElement(MPRINTER_BOARD_PROPERTY);
 		}
-		board.setProperties(properties);
+		board.setStatusProperties(properties);
 	}
 }
 
 
 //================		GET STATUS COMMAND		================//
-MGetStatus::MGetStatus(Printers::TIJPrinter &printer):
+MGetStatus::MGetStatus(Printers::TijPrinter &printer):
 	MStatusCommand(MSTATUS, printer)
 {}
 
@@ -255,10 +255,10 @@ bool MGetStatus::parseResponse(const XMLElement *xml)
 			_printer.setDateTime(getTextFromChildNode(cmd, MSTATUS_DT, _printer.formatedDateTime()));
 			const XMLElement* xVersion = cmd->FirstChildElement(MSTATUS_VERSION);
 			if (xVersion != nullptr){
-				std::string ctrlVersion = getTextFromChildNode(xVersion, MSTATUS_VERSION_CTRL,_printer.controllerVersion());
+				std::string mpkVersion = getTextFromChildNode(xVersion, MSTATUS_VERSION_CTRL,_printer.controllerVersion());
 				std::string fpgaVersion = getTextFromChildNode(xVersion, MSTATUS_VERSION_FPGA, _printer.fpgaVersion());
-				std::string mpkVersion  = getTextFromChildNode(xVersion, MSTATUS_VERSION_API, _printer.apiVersion());
-				_printer.setVersions(ctrlVersion, fpgaVersion, mpkVersion);
+				std::string coreVersion = getTextFromChildNode(xVersion, MSTATUS_VERSION_API, _printer.apiVersion());
+				_printer.setVersions(mpkVersion, coreVersion, fpgaVersion);
 			}
 			const XMLElement * xBoardsList = cmd->FirstChildElement(MPRINTER_BOARDS_LIST);
 			if (xBoardsList != nullptr) {
@@ -270,13 +270,15 @@ bool MGetStatus::parseResponse(const XMLElement *xml)
 					if (_printer.board(id) != nullptr) {
 						board = *_printer.board(id);
 					}
-					board.setType(getTextFromChildNode(xBoard, MPRINTER_BOARD_TYPE, board.type().c_str()));
+					board.setType(getTextFromChildNode(xBoard, MPRINTER_BOARD_TYPE, board.type()));
 					board.setEnabled(getBoolFromChildNode(xBoard, MPRINTER_BOARD_ENABLED, board.enabled()));
 					board.setPrinting(getBoolFromChildNode(xBoard, MPRINTER_BOARD_PRINTING, board.printing()));
-					const XMLElement * xUserMessage = xBoard->FirstChildElement(MPRINTER_BOARD_CURRENT_MSG);
-					if (xUserMessage != nullptr){
-						board.setUserMessage(xUserMessage->Attribute(ATTRIBUTE_FILEPATH, board.userMessage().c_str()));
-					}
+					board.setUserMessage(getTextFromChildNode(xBoard, MPRINTER_BOARD_CURRENT_MSG, board.userMessage()));
+//					const XMLElement * xUserMessage = xBoard->FirstChildElement(MPRINTER_BOARD_CURRENT_MSG);
+//					if (xUserMessage != nullptr){
+//						std::string userMessage = getTextAttribute(xUserMessage, ATTRIBUTE_FILEPATH, board.userMessage().c_str());
+//						board.setUserMessage(userMessage);
+//					}
 					board.setBcdMode(getTextFromChildNode(xBoard, MPRINTER_BOARD_BCD_MODE, board.bcdMode().toString()));
 					board.setBcdCurrent(static_cast<uint8_t>(getUnsignedFromChildNode(xBoard, MPRINTER_BOARD_BCD_STATUS, board.currentBcdCode())));
 
@@ -286,7 +288,7 @@ bool MGetStatus::parseResponse(const XMLElement *xml)
 					outputsFromXml(xBoard->FirstChildElement(MPRINTER_BOARD_OUTPUTS_LIST), board);
 					propertiesFromXml(xBoard->FirstChildElement(MPRINTER_BOARD_PROPERTIES_LIST), board);
 
-					boards.push_back(board);
+					boards.push_back(std::move(board));
 					xBoard = xBoard->NextSiblingElement(MPRINTER_BOARD);
 				}
 				_printer.setBoards(boards);
@@ -297,7 +299,7 @@ bool MGetStatus::parseResponse(const XMLElement *xml)
 }
 
 //================		GET IO STATUS COMMAND		================//
-MGetIOStatus::MGetIOStatus(Macsa::Printers::TIJPrinter &printer):
+MGetIOStatus::MGetIOStatus(Macsa::Printers::TijPrinter &printer):
 	MStatusCommand(MIOSTATUS, printer)
 {}
 
@@ -370,7 +372,7 @@ bool MGetIOStatus::parseResponse(const XMLElement *xml)
 }
 
 //================		GET CURRENT ERRORS COMMAND		================//
-MGetErrors::MGetErrors(Macsa::Printers::TIJPrinter &printer):
+MGetErrors::MGetErrors(Macsa::Printers::TijPrinter &printer):
 	MStatusCommand(MERRORS_GET, printer)
 {}
 

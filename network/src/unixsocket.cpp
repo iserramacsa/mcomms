@@ -1,9 +1,10 @@
-#include "network/unixsocket.h"
+#include "unixsocket.h"
 
 #include <unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <ifaddrs.h> ///Local address
 
 #include <string>
 #include <cstring>
@@ -17,17 +18,17 @@
 	#include <errno.h>
 #endif
 
+#define LOOPBACK_IFACE	"lo"
+
 using namespace Macsa::Network;
 
 
-UnixSocket::UnixSocket(SocketType_n type) :
+UnixSocket::UnixSocket(nSocketType type) :
 	ISocket (type)
 {
 	_sock.fd = -1;
 	_port = 0;
-	if (createSocket(_sock.fd, _type) /*&& init()*/) {
-//		int val = 1;
-//		setSocketOption(_local.fd, SO_REUSEPORT, val);
+	if (createSocket(_sock.fd, _type)) {
 		setStatus(CREATED);
 	}
 }
@@ -45,7 +46,7 @@ bool UnixSocket::bind(uint16_t port)
 		init();
 		int val = 1;
 		setSocketOption(_sock.fd, SO_REUSEADDR, val);
-		if (::bind(_sock.fd, (struct sockaddr*)&_sock.addr, sizeof (_sock.addr)) != -1) {
+		if (::bind(_sock.fd, reinterpret_cast<struct sockaddr*>(&_sock.addr), sizeof (_sock.addr)) != -1) {
 			setStatus(BINDED);
 			success = true;
 		}
@@ -79,7 +80,7 @@ bool UnixSocket::listen()
 
 ISocket *UnixSocket::accept()
 {
-	ISocket * client = nullptr;
+	UnixSocket * client = nullptr;
 	if (status() == LISTENING) {
 		sConnection remote;
 		clearSocket(remote.addr);
@@ -87,7 +88,7 @@ ISocket *UnixSocket::accept()
 
 		bool expired;
 		if(waitForRead(_sock.fd, WAIT_FOREVER, expired)) {
-			remote.fd = ::accept(_sock.fd, (struct sockaddr*)&remote.addr, &len);
+			remote.fd = ::accept(_sock.fd, reinterpret_cast<struct sockaddr*>(&remote.addr), &len);
 		}
 
 		client = socketFromConnection(remote);
@@ -99,13 +100,18 @@ ISocket *UnixSocket::accept()
 bool UnixSocket::connect(const std::string &addr, uint16_t port)
 {
 	bool success = false;
-	if (_sock.fd != -1 && status() < LISTENING){
+	if (_sock.fd != -1) {
 		sConnection remote;
-		clearSocket(remote.addr);
-		initSocket(remote.addr, addr.c_str(), port);
-		success = connect(_sock.fd, remote.addr);
-		if (success) {
-			setStatus(CONNECTED);
+		if (status() < LISTENING) {
+			clearSocket(remote.addr);
+			initSocket(remote.addr, addr.c_str(), port);
+			success = connect(_sock.fd, remote.addr);
+			if (success) {
+				setStatus(CONNECTED);
+			}
+		}
+		else {
+			success = (status() <= READY);
 		}
 	}
 	return success;
@@ -114,13 +120,18 @@ bool UnixSocket::connect(const std::string &addr, uint16_t port)
 bool UnixSocket::connect(const std::string &addr, const std::string &port)
 {
 	bool success = false;
-	if (_sock.fd != -1 && status() < LISTENING){
+	if (_sock.fd != -1) {
 		sConnection remote;
-		clearSocket(remote.addr);
-		initSocket(remote.addr, addr.c_str(), port.c_str());
-		success = connect(_sock.fd, remote.addr);
-		if (success) {
-			setStatus(CONNECTED);
+		if (status() < LISTENING) {
+			clearSocket(remote.addr);
+			initSocket(remote.addr, addr.c_str(), port.c_str());
+			success = connect(_sock.fd, remote.addr);
+			if (success) {
+				setStatus(CONNECTED);
+			}
+		}
+		else {
+			success = (status() <= READY);
 		}
 	}
 	return success;
@@ -130,12 +141,12 @@ ISocket::nSocketFrameStatus UnixSocket::send(const std::string &tx, int timeout)
 {
 	nSocketFrameStatus sent = FRAME_ERROR;
 	int fd = _sock.fd;
-	if (fd != -1) {
+	if (fd != -1 && status() >= CONNECTED) {
 		bool expired = false;
 		if (waitForWrite(fd, timeout, expired)) {
 			long bytesSent = ::send(fd, tx.c_str(), tx.length(), 0);
 			if (bytesSent > 0){
-				if((unsigned)bytesSent == tx.length()) {
+				if(static_cast<unsigned>(bytesSent) == tx.length()) {
 					sent = FRAME_SUCCESS;
 				}
 				else {
@@ -168,7 +179,7 @@ ISocket::nSocketFrameStatus UnixSocket::send(const std::string &tx, const std::s
 		if (waitForWrite(_sock.fd, timeout, expired)) {
 			sConnection remote;
 			initSocket(remote.addr, dest.c_str(), port);
-			long bytesSent = ::sendto(_sock.fd, tx.c_str(), tx.length(),0, (struct sockaddr*)&remote.addr, sizeof (remote.addr));
+			long bytesSent = ::sendto(_sock.fd, tx.c_str(), tx.length(),0, reinterpret_cast<struct sockaddr*>(&remote.addr), sizeof (remote.addr));
 			if (bytesSent > 0){
 				if(static_cast<unsigned>(bytesSent) == tx.length()) {
 					sent = FRAME_SUCCESS;
@@ -198,12 +209,12 @@ ISocket::nSocketFrameStatus UnixSocket::receive(std::string &rx, int timeout)
 ISocket::nSocketFrameStatus UnixSocket::receive(std::string &rx, std::string &addr, int timeout)
 {
 	nSocketFrameStatus received = FRAME_ERROR;
-	char buff[DEFAULT_BUFF_SIZE] = {0};
+	char buff[DEFAULT_BUFF_SIZE  + 1] = {0};
 	rx.clear();
 	bool expired = false;
 	if (_type == TCP_SOCKET && status() >= LISTENING){
 		if (waitForRead(_sock.fd, timeout, expired)) {
-			int ret = ::recv(_sock.fd, buff, DEFAULT_BUFF_SIZE, 0);
+			int ret = static_cast<int>(::recv(_sock.fd, buff, DEFAULT_BUFF_SIZE, 0));
 			if (ret > 0) {
 				if (ret > DEFAULT_BUFF_SIZE){
 					buff[DEFAULT_BUFF_SIZE - 1] = '\0';
@@ -214,9 +225,9 @@ ISocket::nSocketFrameStatus UnixSocket::receive(std::string &rx, std::string &ad
 				int len = ret;
 				while(len > 0) {
 					bool end = false;
-					if (waitForRead(_sock.fd, 10, end)){
+					if (waitForRead(_sock.fd, 100, end)){
 						memset(buff, 0, DEFAULT_BUFF_SIZE);
-						len = ::recv(_sock.fd, buff, DEFAULT_BUFF_SIZE, 0);
+						len = static_cast<int>(::recv(_sock.fd, buff, DEFAULT_BUFF_SIZE, 0));
 						if (len > 0) {
 							if (ret > DEFAULT_BUFF_SIZE){
 								buff[DEFAULT_BUFF_SIZE - 1] = '\0';
@@ -238,12 +249,12 @@ ISocket::nSocketFrameStatus UnixSocket::receive(std::string &rx, std::string &ad
 			received = FRAME_TIMEOUT;
 		}
 	}
-	else {
+	else if (_type == UDP_SOCKET){
 		if (waitForRead(_sock.fd, timeout, expired)) {
 			sConnection remote;
 			clearSocket(remote.addr);
 			socklen_t len = sizeof(remote.addr);
-			int ret = ::recvfrom(_sock.fd, buff, DEFAULT_BUFF_SIZE, 0, (struct sockaddr*)&remote.addr, &len);
+			int ret = static_cast<int>(::recvfrom(_sock.fd, buff, DEFAULT_BUFF_SIZE, 0, reinterpret_cast<struct sockaddr*>(&remote.addr), &len));
 			if (ret > 0) {
 				rx = buff;
 				addr = getAddress(remote.addr);
@@ -309,27 +320,53 @@ std::string UnixSocket::address() const
 	return addr;
 }
 
+std::vector<InetAddr> UnixSocket::localAddress() const
+{
+	std::vector<InetAddr> local;
+	struct ifaddrs *ifaddr = nullptr;
+	if (getifaddrs(&ifaddr) == 0) {
+		for (struct ifaddrs *ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next) {
+			if (ifa->ifa_addr->sa_family == AF_INET) {
+				char host[NI_MAXHOST];
+				if ( 0 == getnameinfo(ifa->ifa_addr, sizeof(struct sockaddr_in), host, NI_MAXHOST, nullptr, 0, NI_NUMERICHOST))
+				{
+					if (std::strcmp(ifa->ifa_name, LOOPBACK_IFACE) != 0){
+						local.push_back(InetAddr(ifa->ifa_name, host));
+					}
+				}
+			}
+
+		}
+	}
+	if (ifaddr != nullptr) {
+		freeifaddrs(ifaddr);
+	}
+
+
+	return local;
+}
+
 bool UnixSocket::init()
 {
 	return  initSocket(_sock.addr, "", _port);
 }
 
-ISocket *UnixSocket::socketFromConnection(UnixSocket::sConnection &conn)
+UnixSocket *UnixSocket::socketFromConnection(UnixSocket::sConnection &conn)
 {
 	UnixSocket * socket = nullptr;
 	if (conn.fd != -1){
 		socket = new UnixSocket(this->type());
 		socket->_sock.fd = conn.fd;
 		socket->_sock.addr = conn.addr;
-		socket->setStatus(SocketStatus_n::CONNECTED);
+		socket->setStatus(nSocketStatus::CONNECTED);
 	}
 	return socket;
 }
 
-bool UnixSocket::createSocket(int &fd, SocketType_n type)
+bool UnixSocket::createSocket(int &fd, nSocketType type)
 {
-	int protocol;
-	int sockType;
+    int protocol = IPPROTO_UDP;
+    int sockType = SOCK_DGRAM;
 	switch (type) {
 		case UDP_SOCKET:
 			sockType = SOCK_DGRAM;
@@ -426,9 +463,9 @@ bool UnixSocket::setAddress(sockaddr_in &socket, const char *addr)
 		else {
 			//Assume a hostname
 			struct hostent *hp = gethostbyname(addr);
-			if (hp != NULL &&  hp->h_addrtype == AF_INET) {
+			if (hp != nullptr &&  hp->h_addrtype == AF_INET) {
 				success = true;
-				socket.sin_addr = *(struct in_addr *)hp->h_addr_list[0];
+				socket.sin_addr = *(reinterpret_cast<struct in_addr*>(hp->h_addr_list[0]));
 			}
 		}
 	}
@@ -446,7 +483,7 @@ bool UnixSocket::setAddress(sockaddr_in &socket, const char *addr)
 
 void UnixSocket::clearSocket(sockaddr_in &socket)
 {
-	memset((char *) &socket, 0, sizeof(socket));
+	memset(reinterpret_cast<char*>(&socket), 0, sizeof(socket));
 }
 
 bool UnixSocket::setSocketOption(int &fd, int optName, int &optValue)
@@ -464,7 +501,7 @@ bool UnixSocket::waitForWrite(int fd, int timeout, bool& expired)
 {
 	bool ready = false;
 	expired = false;
-	struct timeval *ptout = NULL;
+	struct timeval *ptout = nullptr;
 	struct timeval tout;
 	if (timeout >= 0){
 		tout.tv_sec = timeout / 1000;
@@ -476,7 +513,7 @@ bool UnixSocket::waitForWrite(int fd, int timeout, bool& expired)
 	FD_ZERO(&wfds);
 	FD_SET(fd, &wfds);
 
-	int ret = select(fd + 1, NULL, &wfds, NULL, ptout);
+	int ret = select(fd + 1, nullptr, &wfds, nullptr, ptout);
 
 	ready = (ret > 0);
 	expired = (ret == 0);
@@ -488,7 +525,7 @@ bool UnixSocket::waitForRead(int fd, int timeout, bool& expired)
 {
 	bool ready = false;
 	expired = false;
-	struct timeval *ptout = NULL;
+	struct timeval *ptout = nullptr;
 	struct timeval tout;
 	if (timeout >= 0){
 		tout.tv_sec = timeout / 1000;
@@ -502,7 +539,7 @@ bool UnixSocket::waitForRead(int fd, int timeout, bool& expired)
 	FD_SET(fd, &rfds);
 	FD_SET(fd, &excfds);
 
-	int ret = select(fd + 1, &rfds, NULL, &excfds, ptout);
+	int ret = select(fd + 1, &rfds, nullptr, &excfds, ptout);
 
 	if (FD_ISSET(fd, &rfds)){
 		ready = (ret > 0);
@@ -525,10 +562,13 @@ bool UnixSocket::waitForRead(int fd, int timeout, bool& expired)
 bool UnixSocket::connect(int fd, const sockaddr_in &socket)
 {
 	bool success = false;
-	success = (::connect(fd, (const struct sockaddr*) &socket, sizeof (socket)) == 0);
+	success = (::connect(fd,reinterpret_cast<const struct sockaddr*>(&socket), sizeof (socket)) == 0);
 
+	if  (success) {
+		_sock.addr = socket;
+	}
 #ifdef DEBUG
-	if (!success) {
+	else{
 		std::cout << __func__ << " => " << strerror(errno)<< std::endl;
 	}
 #endif

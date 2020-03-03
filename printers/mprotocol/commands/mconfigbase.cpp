@@ -7,28 +7,38 @@
 using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
-MConfigCommand::MConfigCommand(const std::string &command, Printers::TIJPrinter &printer):
+MConfigCommand::MConfigCommand(const std::string &command, Printers::TijPrinter &printer):
 	MCommand(command, printer)
 {}
 
 MConfigCommand::~MConfigCommand()
 {}
 
-void MConfigCommand::generalConfigToXml(const Printers::TIJPrinter &printer, XMLElement **parent)
+void MConfigCommand::generalConfigToXml(const Printers::TijPrinter &printer, XMLElement **parent)
 {
 	XMLElement * xGeneral = createChildNode(MCONFIG_GENERAL, parent);
 	if(xGeneral != nullptr) {
-		createTextChildNode(MCONFIG_GENERAL_DT, printer.formatedDateTime(), parent);
-		XMLElement * xLog = createChildNode(MCONFIG_GENERAL_LOG, parent);
-		if(xLog != nullptr) {
-			xLog->SetAttribute(MCONFIG_GENERAL_LOG_ENABLED_ATTR, MTools::toCString(printer.logsEnabled()));
-			xLog->SetAttribute(MCONFIG_GENERAL_LOG_LEVEL_ATTR, printer.loggerLevel().toCString());
-			xLog->SetAttribute(MCONFIG_GENERAL_LOG_COMMS, MTools::toCString(printer.logComsEnabled()));
-		}
+		datetimeToXml(printer, &xGeneral);
+		loggerToXml(printer, &xGeneral);
 	}
 }
 
-void MConfigCommand::printerConnectionsToXml(const Printers::TIJComms *comms, XMLElement **parent)
+void MConfigCommand::datetimeToXml(const Macsa::Printers::TijPrinter &printer, XMLElement **parent)
+{
+	createTextChildNode(MCONFIG_GENERAL_DT, printer.formatedDateTime(), parent);
+}
+
+void MConfigCommand::loggerToXml(const Macsa::Printers::TijPrinter &printer, XMLElement **parent)
+{
+	XMLElement * xLog = createChildNode(MCONFIG_GENERAL_LOG, parent);
+	if(xLog != nullptr) {
+		xLog->SetAttribute(MCONFIG_GENERAL_LOG_ENABLED_ATTR, MTools::toCString(printer.logsEnabled()));
+		xLog->SetAttribute(MCONFIG_GENERAL_LOG_LEVEL_ATTR, printer.loggerLevel().toString().c_str());
+		xLog->SetAttribute(MCONFIG_GENERAL_LOG_COMMS, MTools::toCString(printer.logComsEnabled()));
+	}
+}
+
+void MConfigCommand::printerConnectionsToXml(const Printers::TijComms *comms, XMLElement **parent)
 {
 	XMLElement * xConnections = createChildNode(MCONFIG_CONNECTIONS, parent);
 	if (xConnections != nullptr && comms != nullptr) {
@@ -43,8 +53,9 @@ void MConfigCommand::printerConnectionsToXml(const Printers::TIJComms *comms, XM
 					createTextChildNode(MCONFIG_CONN_NETWORK_SUBNET, eth->netmask().c_str(), &xNetwork);
 					createTextChildNode(MCONFIG_CONN_NETWORK_GATEWAY, eth->gateway().c_str(), &xNetwork);
 					createTextChildNode(MCONFIG_CONN_NETWORK_DHCP, MTools::toString(eth->dhcp()), &xNetwork);
-					createTextChildNode(MCONFIG_CONN_NETWORK_HOSTNAME, eth->macAddress().c_str(), &xNetwork);
+					createTextChildNode(MCONFIG_CONN_NETWORK_HOSTNAME, eth->hostname().c_str(), &xNetwork);
 					createTextChildNode(MCONFIG_CONN_NETWORK_TCPPORT, MTools::toString(eth->tcpPort()), &xNetwork);
+					createTextChildNode(MCONFIG_CONN_NETWORK_HW_ADDRESS, eth->macAddress().c_str(), &xNetwork);
 				}
 			}
 		}
@@ -57,14 +68,14 @@ void MConfigCommand::printerConnectionsToXml(const Printers::TIJComms *comms, XM
 		}
 	}
 }
-
-void MConfigCommand::boardToXml(const Printers::Board &board, XMLElement **parent)
+void MConfigCommand::boardToXml(const Printers::Board& board, tinyxml2::XMLElement **parent)
 {
 	XMLElement * xBoard = createChildNode(MPRINTER_BOARD, parent);
 	if (xBoard != nullptr) {
 		xBoard->SetAttribute(ATTRIBUTE_ID, board.id());
 		boardTypeToXml(board.type(), &xBoard);
 		autostartToXml(board.autoStart(), &xBoard);
+		lowLevelOutputToXml(board.lowLevelOutput(), &xBoard);
 		enabledToXml(board.enabled(), &xBoard);
 		blockToXml(board.blocked(), &xBoard);
 		userMessageToXml(board.userMessage(), &xBoard);
@@ -75,7 +86,7 @@ void MConfigCommand::boardToXml(const Printers::Board &board, XMLElement **paren
 		shotModeToXml(board.shotMode(), &xBoard);
 		encoderToXml(board.encoder(), &xBoard);
 		photocellToXml(board.photocell(), &xBoard);
-		propertiesToXml(board.properties(), &xBoard);
+		propertiesToXml(board.configurationProperties(), &xBoard);
 		cartridgeToXml(board.cartridge(), &xBoard);
 		inputsToXml(board.inputs(), &xBoard);
 		outputsToXml(board.outputs(), &xBoard);
@@ -94,6 +105,11 @@ void MConfigCommand::boardTypeToXml(const std::string  &boardType, XMLElement **
 void MConfigCommand::autostartToXml(bool autostart, XMLElement **parent)
 {
 	return boardTextValueToXml(MPRINTER_BOARD_AUTOSTART, MTools::toString(autostart), parent);
+}
+
+void MConfigCommand::lowLevelOutputToXml(bool lowLevel, XMLElement **parent)
+{
+	return boardTextValueToXml(MPRINTER_BOARD_LOW_LEVEL, MTools::toString(lowLevel), parent);
 }
 
 void MConfigCommand::enabledToXml(bool enabled, XMLElement **parent)
@@ -149,15 +165,15 @@ void MConfigCommand::shotModeToXml(const Printers::ShotMode &shotMode, XMLElemen
 		XMLElement* xShotMode = createChildNode(MPRINTER_BOARD_SHOT_MODE, parent);
 		if (xShotMode != nullptr) {
 			const std::vector<Printers::Delay>& delays = shotMode.delays();
-			xShotMode->SetAttribute(MPRINTER_BOARD_SHOT_MODE_MODE_ATTR, shotMode.mode().toCString());
+			xShotMode->SetAttribute(MPRINTER_BOARD_SHOT_MODE_MODE_ATTR, shotMode.mode().toString().c_str());
 			xShotMode->SetAttribute(ATTRIBUTE_VALUE, shotMode.numPrints());
-			xShotMode->SetAttribute(MPRINTER_BOARD_SHOT_MODE_DELAY_ATTR, delays.size());
+			xShotMode->SetAttribute(MPRINTER_BOARD_SHOT_MODE_DELAY_ATTR, static_cast<uint32_t>(delays.size()));
 			xShotMode->SetAttribute(MPRINTER_BOARD_SHOT_MODE_REPEAT_ATTR, MTools::toCString(shotMode.repeat()));
 			for (uint i = 0; i < delays.size(); i++) {
 				XMLElement* xDelay = createChildNode(MPRINTER_BOARD_SHOT_DELAY, &xShotMode);
 				if  (xDelay != nullptr) {
 					xDelay->SetAttribute(ATTRIBUTE_VALUE, delays.at(i).delay());
-					xDelay->SetAttribute(MPRINTER_BOARD_SHOT_DELAY_UNITS_ATTR, delays.at(i).units().toCString());
+					xDelay->SetAttribute(MPRINTER_BOARD_SHOT_DELAY_UNITS_ATTR, delays.at(i).units().toString().c_str());
 				}
 			}
 		}
@@ -169,7 +185,7 @@ void MConfigCommand::encoderToXml(const Printers::Encoder &encoder, XMLElement *
 	if (*parent != nullptr && std::strcmp((*parent)->Name(), MPRINTER_BOARD) == 0) {
 		XMLElement* xEncoder = createChildNode(MPRINTER_BOARD_ENCODER, parent);
 		if (xEncoder != nullptr) {
-			xEncoder->SetAttribute(MPRINTER_BOARD_ENCODER_MODE_ATTR, encoder.mode().toCString());
+			xEncoder->SetAttribute(MPRINTER_BOARD_ENCODER_MODE_ATTR, encoder.mode().toString().c_str());
 			XMLElement* xFixedSpeed = createChildNode(MPRINTER_BOARD_ENCODER_FIXED, &xEncoder);
 			if (xFixedSpeed != nullptr){
 				xFixedSpeed->SetAttribute(ATTRIBUTE_VALUE, MTools::toCString(encoder.fixedSpeed(), 1));
@@ -210,7 +226,7 @@ void MConfigCommand::cartridgeToXml(const Printers::Cartridge &cartridge, XMLEle
 		XMLElement* xCartridge = createChildNode(MPRINTER_BOARD_CARTRIDGE, parent);
 		if (xCartridge != nullptr) {
 			xCartridge->SetAttribute(ATTRIBUTE_ID, cartridge.id().c_str());
-			xCartridge->SetAttribute(MPRINTER_BOARD_CARTRIDGE_AUTOCONFIG_ATTR, MTools::toCString(cartridge.autoconfig()));
+			xCartridge->SetAttribute(MPRINTER_BOARD_CARTRIDGE_AUTOCONFIG_ATTR, (cartridge.autoconfig() ? "1" : "0")); //This boolean is writed as a number
 			xCartridge->SetAttribute(MPRINTER_BOARD_CARTRIDGE_VOLTAGE_ATTR, MTools::toCString(cartridge.voltage(), 2));
 			xCartridge->SetAttribute(MPRINTER_BOARD_CARTRIDGE_PULSE_WARM_ATTR, MTools::toCString(cartridge.pulseWarming()));
 			xCartridge->SetAttribute(MPRINTER_BOARD_CARTRIDGE_WARM_TEMP_ATTR, MTools::toCString(cartridge.pulseWarmingTemp(), 2));
@@ -231,7 +247,7 @@ void MConfigCommand::inputsToXml(const std::vector<Printers::Input> &inputs, XML
 				if (xInput != nullptr) {
 					xInput->SetAttribute(ATTRIBUTE_ID, input->id());
 					xInput->SetAttribute(MPRINTER_BOARD_IO_DESCRIPT_ATTR, input->descriptor().c_str());
-					xInput->SetAttribute(MPRINTER_BOARD_IO_CONFIG_ATTR, input->mode().toCString());
+					xInput->SetAttribute(MPRINTER_BOARD_IO_CONFIG_ATTR, input->mode().toString().c_str());
 					xInput->SetAttribute(MPRINTER_BOARD_IO_INVERTED_ATTR, MTools::toCString(input->inverted()));
 					xInput->SetAttribute(MPRINTER_BOARD_IO_FILTER_ATTR, input->filter());
 				}
@@ -250,7 +266,7 @@ void MConfigCommand::outputsToXml(const std::vector<Macsa::Printers::Output> &ou
 				if (xOutput != nullptr) {
 					xOutput->SetAttribute(ATTRIBUTE_ID, output->id());
 					xOutput->SetAttribute(MPRINTER_BOARD_IO_DESCRIPT_ATTR, output->descriptor().c_str());
-					xOutput->SetAttribute(MPRINTER_BOARD_IO_TYPE_ATTR, output->type().toCString());
+					xOutput->SetAttribute(MPRINTER_BOARD_IO_TYPE_ATTR, output->type().toString().c_str());
 					xOutput->SetAttribute(MPRINTER_BOARD_IO_TIME_ATTR, output->time());
 					xOutput->SetAttribute(MPRINTER_BOARD_IO_INI_VAL_ATTR, MTools::toCString(output->initialValue()));
 				}
@@ -278,7 +294,7 @@ void MConfigCommand::dateCodesToXml(const Macsa::Printers::DateCodes &dateCodes,
 
 }
 
-void MConfigCommand::generalConfigFromXml(const XMLElement *parent, Printers::TIJPrinter &printer) const
+void MConfigCommand::generalConfigFromXml(const tinyxml2::XMLElement *parent, Printers::TijPrinter& printer) const
 {
 	if (parent != nullptr) {
 		const XMLElement* xGeneral = parent->FirstChildElement(MCONFIG_GENERAL);
@@ -286,18 +302,18 @@ void MConfigCommand::generalConfigFromXml(const XMLElement *parent, Printers::TI
 			printer.setDateTime(getTextFromChildNode(xGeneral, MCONFIG_GENERAL_DT, _printer.formatedDateTime()));
 			const XMLElement* xLog = xGeneral->FirstChildElement(MCONFIG_GENERAL_LOG);
 			if (xLog != nullptr) {
-				printer.setlogsEnabled(MTools::boolfromString(xLog->Attribute(MCONFIG_GENERAL_LOG_ENABLED_ATTR)));
-				printer.setloggerLevel(xLog->Attribute(MCONFIG_GENERAL_LOG_LEVEL_ATTR));
-				printer.setlogComsEnabled(MTools::boolfromString(xLog->Attribute(MCONFIG_GENERAL_LOG_COMMS)));
+				printer.setlogsEnabled(getBoolAttribute(xLog, MCONFIG_GENERAL_LOG_ENABLED_ATTR, printer.logsEnabled()));
+				printer.setloggerLevel(getTextAttribute(xLog, MCONFIG_GENERAL_LOG_LEVEL_ATTR, printer.loggerLevel().toString()));
+				printer.setlogComsEnabled(getBoolAttribute(xLog, MCONFIG_GENERAL_LOG_COMMS, printer.logComsEnabled ()));
 			}
 		}
 	}
 }
 
-void MConfigCommand::printerConnectionsFromXml(const XMLElement *parent, Printers::TIJComms &comms) const
+void MConfigCommand::printerConnectionsFromXml(const XMLElement *parent, Printers::TijComms &comms) const
 {
 	if (parent != nullptr) {
-		const XMLElement* xConnections = parent->FirstChildElement(MCONFIG_GENERAL);
+		const XMLElement* xConnections = parent->FirstChildElement(MCONFIG_CONNECTIONS);
 		if (xConnections != nullptr) {
 			const XMLElement* xNetwork = xConnections->FirstChildElement(MCONFIG_CONN_NETWORK);
 			if (xNetwork != nullptr) {
@@ -313,7 +329,8 @@ void MConfigCommand::printerConnectionsFromXml(const XMLElement *parent, Printer
 					eth.setNetmask(getTextFromChildNode(xAdapter, MCONFIG_CONN_NETWORK_SUBNET,  eth.netmask()));
 					eth.setGateway(getTextFromChildNode(xAdapter, MCONFIG_CONN_NETWORK_GATEWAY,  eth.gateway()));
 					eth.setDhcp(getBoolFromChildNode(xAdapter, MCONFIG_CONN_NETWORK_DHCP, eth.dhcp()));
-					eth.setMacAddress(getTextFromChildNode(xAdapter, MCONFIG_CONN_NETWORK_HOSTNAME, eth.macAddress()));
+					eth.setHostname(getTextFromChildNode(xAdapter, MCONFIG_CONN_NETWORK_HOSTNAME, eth.hostname()));
+					eth.setMacAddress(getTextFromChildNode(xAdapter, MCONFIG_CONN_NETWORK_HW_ADDRESS, eth.macAddress()));
 					eth.setTcpPort(static_cast<uint16_t>(getUnsignedFromChildNode(xAdapter, MCONFIG_CONN_NETWORK_TCPPORT, eth.tcpPort())));
 
 					comms.setEthernetIface(&eth);
@@ -341,16 +358,17 @@ void MConfigCommand::boardFromXml(const XMLElement *xBoard, Printers::Board &boa
 		if (id == board.id()) {
 			board.setType(getTextFromChildNode(xBoard, MPRINTER_BOARD_TYPE, board.type()));
 			board.setAutoStart(getBoolFromChildNode(xBoard, MPRINTER_BOARD_AUTOSTART, board.autoStart()));
+			board.setLowLevelOutput(getBoolFromChildNode(xBoard, MPRINTER_BOARD_LOW_LEVEL, board.lowLevelOutput()));
 			board.setEnabled(getBoolFromChildNode(xBoard, MPRINTER_BOARD_ENABLED, board.enabled()));
 			board.setBlocked(getBoolFromChildNode(xBoard, MPRINTER_BOARD_BLOCKED, board.blocked()));
 			board.setUserMessage(getTextFromChildNode(xBoard, MPRINTER_BOARD_CURRENT_MSG, board.userMessage()));
 			bcdFromXml(xBoard, board);
-			board.setPrinterDirection(getTextFromChildNode(xBoard, MPRINTER_BOARD_PRINT_DIR, board.printDirection().toCString()));
+			board.setPrinterDirection(getTextFromChildNode(xBoard, MPRINTER_BOARD_PRINT_DIR, board.printDirection().toString().c_str()));
 			board.setPrintRotated(getBoolFromChildNode(xBoard, MPRINTER_BOARD_PRINT_INVERTED, board.printRotated()));
-			board.setNozzlesCol(getTextFromChildNode(xBoard, MPRINTER_BOARD_NOZZLES_COL, board.nozzlesCol().toCString()));
+			board.setNozzlesCol(getTextFromChildNode(xBoard, MPRINTER_BOARD_NOZZLES_COL, board.nozzlesCol().toString().c_str()));
 			shotModeFromXml(xBoard, board);
 			encoderFromXml(xBoard, board);
-			board.setPhotocell(getTextFromChildNode(xBoard, MPRINTER_BOARD_PHOTOCELL, board.photocell().toCString()));
+			board.setPhotocell(getTextFromChildNode(xBoard, MPRINTER_BOARD_PHOTOCELL, board.photocell().toString().c_str()));
 			propertiesFromXml(xBoard, board);
 			cartridgeFromXml(xBoard, board);
 			inputsFromXml(xBoard, board);
@@ -373,7 +391,7 @@ void MConfigCommand::bcdFromXml(const XMLElement *xBoard, Macsa::Printers::Board
 			while (xBcdCode != nullptr) {
 				uint code = xBcdCode->UnsignedAttribute(ATTRIBUTE_CODE);
 				if (code < MAX_BCD_CODES) {
-					bcdTable[code] = xBcdCode->Attribute(ATTRIBUTE_FILEPATH, "");
+					bcdTable[code] = getTextAttribute(xBcdCode, ATTRIBUTE_FILEPATH, "");
 				}
 				xBcdCode = xBcdCode->NextSiblingElement(MPRINTER_BOARD_BCD_CODE);
 			}
@@ -388,22 +406,23 @@ void MConfigCommand::shotModeFromXml(const XMLElement *xBoard, Macsa::Printers::
 		const XMLElement* xShotMode = xBoard->FirstChildElement(MPRINTER_BOARD_SHOT_MODE);
 		if (xShotMode != nullptr) {
 			Printers::ShootingMode mode;
-			mode = xShotMode->Attribute(MPRINTER_BOARD_SHOT_MODE_MODE_ATTR, "");
+			mode = static_cast<Printers::ShootingMode_n>(xShotMode->UnsignedAttribute(MPRINTER_BOARD_SHOT_MODE_MODE_ATTR, static_cast<uint>(mode())));
 			uint numPrints = xShotMode->UnsignedAttribute(ATTRIBUTE_VALUE, 1);
 			uint numDelays = xShotMode->UnsignedAttribute(MPRINTER_BOARD_SHOT_MODE_DELAY_ATTR, 1);
-			bool repeat = MTools::boolfromString(xShotMode->Attribute(MPRINTER_BOARD_SHOT_MODE_REPEAT_ATTR, "false"));
-			const XMLElement* xDelay = xBoard->FirstChildElement(MPRINTER_BOARD_SHOT_DELAY);
+			bool repeat = getBoolAttribute (xShotMode, MPRINTER_BOARD_SHOT_MODE_REPEAT_ATTR, false);
+			const XMLElement* xDelay = xShotMode->FirstChildElement(MPRINTER_BOARD_SHOT_DELAY);
 			std::vector<Printers::Delay> delays;
 			while (xDelay != nullptr) {
 				uint delay = xDelay->UnsignedAttribute(ATTRIBUTE_VALUE, 0);
 				Printers::DelayUnits units;
-				units = xDelay->Attribute(MPRINTER_BOARD_SHOT_DELAY_UNITS_ATTR, "");
+				units = getTextAttribute(xDelay, MPRINTER_BOARD_SHOT_DELAY_UNITS_ATTR, "");
 				if (delays.size() < numDelays){
 					delays.push_back(Printers::Delay(delay, units()));
 				}
 				else{
 					break;
 				}
+				xDelay = xDelay->NextSiblingElement(MPRINTER_BOARD_SHOT_DELAY);
 			}
 			board.setShotMode(Printers::ShotMode(mode, numPrints, delays, repeat));
 		}
@@ -417,7 +436,7 @@ void MConfigCommand::encoderFromXml(const XMLElement *xBoard, Macsa::Printers::B
 		if (xEncoder) {
 			Printers::Encoder encoder = board.encoder();
 			Printers::EncoderMode mode = encoder.mode();
-			mode = xEncoder->Attribute(MPRINTER_BOARD_ENCODER_MODE_ATTR, encoder.mode().toCString());
+			mode = getTextAttribute(xEncoder, MPRINTER_BOARD_ENCODER_MODE_ATTR, encoder.mode().toString());
 			encoder.setMode(mode);
 			const XMLElement* xFixed = xEncoder->FirstChildElement(MPRINTER_BOARD_ENCODER_FIXED);
 			if (xFixed) {
@@ -442,14 +461,14 @@ void MConfigCommand::propertiesFromXml(const XMLElement *xBoard, Macsa::Printers
 			Printers::Board::propertyMap properties;
 			const XMLElement* xProperty = xProperties->FirstChildElement(MPRINTER_BOARD_PROPERTY);
 			while (xProperty != nullptr) {
-				std::string key = xProperty->Attribute(ATTRIBUTE_KEY, "");
+				std::string key = getTextAttribute(xProperty, ATTRIBUTE_KEY, "");
 				if (!key.empty()){
-					std::string value = xProperty->Attribute(ATTRIBUTE_VALUE, "");
+					std::string value = getTextAttribute(xProperty, ATTRIBUTE_VALUE, "");
 					properties.insert(Printers::Board::propertyPair(key, value));
 				}
-				xProperty = xProperties->NextSiblingElement(MPRINTER_BOARD_PROPERTY);
+				xProperty = xProperty->NextSiblingElement(MPRINTER_BOARD_PROPERTY);
 			}
-			board.setProperties(properties);
+			board.setConfigurationProperties(properties);
 		}
 	}
 }
@@ -461,10 +480,11 @@ void MConfigCommand::cartridgeFromXml(const XMLElement *xBoard, Macsa::Printers:
 		if (xCartridge) {
 			Printers::Cartridge cartridge = board.cartridge();
 
-			cartridge.setId(xCartridge->Attribute(ATTRIBUTE_ID, cartridge.id().c_str()));
-			cartridge.setAutoconfig(MTools::boolfromString(xCartridge->Attribute(MPRINTER_BOARD_CARTRIDGE_AUTOCONFIG_ATTR, MTools::toCString(cartridge.autoconfig()))));
+			cartridge.setId(getTextAttribute(xCartridge, ATTRIBUTE_ID, cartridge.id()));
+			cartridge.setAutoconfig(xCartridge->BoolAttribute(MPRINTER_BOARD_CARTRIDGE_AUTOCONFIG_ATTR, cartridge.autoconfig()));
+//			cartridge.setAutoconfig(getBoolAttribute(xCartridge, MPRINTER_BOARD_CARTRIDGE_AUTOCONFIG_ATTR, cartridge.autoconfig()));
 			cartridge.setVoltage(xCartridge->DoubleAttribute(MPRINTER_BOARD_CARTRIDGE_VOLTAGE_ATTR, cartridge.voltage()));
-			cartridge.setPulseWarming(MTools::boolfromString(xCartridge->Attribute(MPRINTER_BOARD_CARTRIDGE_PULSE_WARM_ATTR, MTools::toCString(cartridge.pulseWarming()))));
+			cartridge.setPulseWarming(getBoolAttribute(xCartridge, MPRINTER_BOARD_CARTRIDGE_PULSE_WARM_ATTR, cartridge.pulseWarming()));
 			cartridge.setPulseWarmingTemp(xCartridge->DoubleAttribute(MPRINTER_BOARD_CARTRIDGE_WARM_TEMP_ATTR, cartridge.pulseWarmingTemp()));
 			cartridge.setColumnDistance(xCartridge->UnsignedAttribute(MPRINTER_BOARD_CARTRIDGE_COL_DIST_ATTR, cartridge.columnDistance()));
 			cartridge.setPulseWidth(xCartridge->DoubleAttribute(MPRINTER_BOARD_CARTRIDGE_PULSE_WIDTH_ATTR, cartridge.pulseWidth()));
@@ -484,17 +504,17 @@ void MConfigCommand::inputsFromXml(const XMLElement *xBoard, Macsa::Printers::Bo
 
 			const XMLElement* xInput = xInputs->FirstChildElement(MPRINTER_BOARD_INPUT);
 			while (xInput != nullptr) {
-				uint id = xInput->UnsignedAttribute(ATTRIBUTE_ID, inputs.size());
+				uint id = xInput->UnsignedAttribute(ATTRIBUTE_ID, static_cast<unsigned>(inputs.size()));
 				Printers::Input input(id);
 				input = board.input(id);
-				input.setDescriptor(xInput->Attribute(MPRINTER_BOARD_IO_DESCRIPT_ATTR, input.descriptor().c_str()));
-				input.setMode(xInput->Attribute(MPRINTER_BOARD_IO_CONFIG_ATTR, input.mode().toCString()));
-				input.setInverted(MTools::boolfromString(xInput->Attribute(MPRINTER_BOARD_IO_INVERTED_ATTR, MTools::toCString(input.inverted()))));
+				input.setDescriptor(getTextAttribute(xInput, MPRINTER_BOARD_IO_DESCRIPT_ATTR, input.descriptor()));
+				input.setMode(getTextAttribute(xInput, MPRINTER_BOARD_IO_CONFIG_ATTR, input.mode().toString()));
+				input.setInverted(getBoolAttribute(xInput, MPRINTER_BOARD_IO_INVERTED_ATTR, input.inverted()));
 				input.setFilter(xInput->UnsignedAttribute(MPRINTER_BOARD_IO_FILTER_ATTR, input.filter()));
 
 				inputs.push_back(input);
 
-				xInput = xInputs->NextSiblingElement(MPRINTER_BOARD_INPUT);
+				xInput = xInput->NextSiblingElement(MPRINTER_BOARD_INPUT);
 			}
 			std::sort(inputs.begin(), inputs.end());
 			board.setInputs(inputs);
@@ -511,17 +531,17 @@ void MConfigCommand::outputsFromXml(const XMLElement *xBoard, Macsa::Printers::B
 
 			const XMLElement* xOutput = xOutputs->FirstChildElement(MPRINTER_BOARD_OUTPUT);
 			while (xOutput != nullptr) {
-				uint id = xOutput->UnsignedAttribute(ATTRIBUTE_ID, outputs.size());
+				uint id = xOutput->UnsignedAttribute(ATTRIBUTE_ID, static_cast<unsigned>(outputs.size()));
 				Printers::Output output(id);
 				output = board.output(id);
-				output.setDescriptor(xOutput->Attribute(MPRINTER_BOARD_IO_DESCRIPT_ATTR, output.descriptor().c_str()));
-				output.setType(xOutput->Attribute(MPRINTER_BOARD_IO_TYPE_ATTR, output.type().toCString()));
+				output.setDescriptor(getTextAttribute(xOutput, MPRINTER_BOARD_IO_DESCRIPT_ATTR, output.descriptor()));
+				output.setType(getTextAttribute(xOutput, MPRINTER_BOARD_IO_TYPE_ATTR, output.type().toString()));
 				output.setTime(xOutput->UnsignedAttribute(MPRINTER_BOARD_IO_TIME_ATTR, output.time()));
-				output.setInitialValue(MTools::boolfromString(xOutput->Attribute(MPRINTER_BOARD_IO_INI_VAL_ATTR, MTools::toCString(output.initialValue()))));
+				output.setInitialValue(getBoolAttribute(xOutput, MPRINTER_BOARD_IO_INI_VAL_ATTR, output.initialValue()));
 
 				outputs.push_back(output);
 
-				xOutput = xOutputs->NextSiblingElement(MPRINTER_BOARD_INPUT);
+				xOutput = xOutput->NextSiblingElement(MPRINTER_BOARD_OUTPUT);
 			}
 			std::sort(outputs.begin(), outputs.end());
 			board.setOutputs(outputs);
@@ -529,7 +549,7 @@ void MConfigCommand::outputsFromXml(const XMLElement *xBoard, Macsa::Printers::B
 	}
 }
 
-void MConfigCommand::dateCodesFromXml(const XMLElement *xBoard, Macsa::Printers::TIJPrinter &printer) const
+void MConfigCommand::dateCodesFromXml(const XMLElement *xBoard, Macsa::Printers::TijPrinter &printer) const
 {
 	if (xBoard != nullptr) {
 		const XMLElement* xDateCodes = xBoard->FirstChildElement(MPRINTER_DATECODES_LIST);
@@ -537,10 +557,10 @@ void MConfigCommand::dateCodesFromXml(const XMLElement *xBoard, Macsa::Printers:
 			Printers::DateCodes dateCodes;
 			const XMLElement* xDateCode = xDateCodes->FirstChildElement(MPRINTER_DATECODE);
 			while (xDateCode != nullptr){
-				std::string format = xDateCode->Attribute(MPRINTER_DATECODE_FORMAT_ATTR, "");
+				std::string format = getTextAttribute(xDateCode, MPRINTER_DATECODE_FORMAT_ATTR, "");
 				const XMLElement* xCode = xDateCode->FirstChildElement(MPRINTER_DATECODE_CODE);
 				while (xCode != nullptr) {
-					std::string interval = xCode->Attribute(MPRINTER_DATECODE_INTERVAL_ATTR, "");
+					std::string interval = getTextAttribute(xCode, MPRINTER_DATECODE_INTERVAL_ATTR, "");
 					const char* code = xCode->GetText();
 					if (code == nullptr) {
 						code = "";

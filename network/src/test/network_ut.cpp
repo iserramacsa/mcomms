@@ -49,17 +49,25 @@ class MNetworkUT: public ::testing::Test {
 TEST_F(MNetworkUT, setupTeardown)
 {}
 
+///
+/// \brief Add node test
+///
 TEST_F(MNetworkUT, addNewNode_returnIncrementedSize)
 {
 	EXPECT_EQ(network->size(), 0);
-	network->addNewNode(new NetworkNode("testNode", getNewSocket("192.168.0.1")));
+	NetworkNode* node = new NetworkNode("testNode", "192.168.0.1");
+	network->addNewNode(node);
 	EXPECT_EQ(network->size(), 1);
 }
 
+///
+/// \brief remove node test
+///
 TEST_F(MNetworkUT, removeNode_returnDecrementedSize)
 {
 	EXPECT_EQ(network->size(), 0);
-	network->addNewNode(new NetworkNode("testNode", getNewSocket("192.168.0.1")));
+	NetworkNode* node = new NetworkNode("testNode", "192.168.0.1");
+	network->addNewNode(node);
 	EXPECT_EQ(network->size(), 1);
 	network->removeNode("testNode");
 	EXPECT_EQ(network->size(), 0);

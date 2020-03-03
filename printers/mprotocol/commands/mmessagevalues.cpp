@@ -8,7 +8,7 @@ using namespace Macsa::MProtocol;
 using namespace tinyxml2;
 
 //================		BASE CLASS		================//
-MMessageValues::MMessageValues(const std::string &command, Printers::TIJPrinter& printer, const std::string &filename) :
+MMessageValues::MMessageValues(const std::string &command, Printers::TijPrinter& printer, const std::string &filename) :
 	MCommand(command, printer)
 {
 	_filename = filename;
@@ -102,8 +102,8 @@ void MMessageValues::userFieldsFromXml(const XMLElement *parent, Macsa::MProtoco
 {
 	const XMLElement* uifield = parent->FirstChildElement(MMESSAGE_USER_FIELD_ELEMENT);
 	while (uifield != nullptr) {
-		std::string key = uifield->Attribute(ATTRIBUTE_NAME, "");
-		std::string value = uifield->Attribute(ATTRIBUTE_VALUE, "");
+		std::string key   = getTextAttribute(uifield, ATTRIBUTE_NAME);
+		std::string value = getTextAttribute(uifield, ATTRIBUTE_VALUE);
 		if (key.length() > 0) {
 			if (map.find(key) == map.end()) {
 					map.insert(std::pair<std::string, std::string>(key, value));
@@ -120,12 +120,12 @@ void MMessageValues::datesFromXml(const XMLElement *parent, Macsa::MProtocol::da
 {
 	const XMLElement* dtfield = parent->FirstChildElement(MMESSAGE_DATETIME_FIELD_ELEMENT);
 	while (dtfield != nullptr) {
-		std::string key = dtfield->Attribute(ATTRIBUTE_NAME, "");
+		std::string key = getTextAttribute(dtfield, ATTRIBUTE_NAME);
 		Macsa::Nisx::DateTime dt;
 		if  (map.find(key) != map.end()) {
 			dt = map.at(key);
 		}
-		dt.setFormat(dtfield->Attribute(MMESSAGE_DATETIME_FORMAT_ATTR, dt.format().c_str()));
+		dt.setFormat(getTextAttribute(dtfield, MMESSAGE_DATETIME_FORMAT_ATTR, dt.format()));
 		dt.setDayOffset(dtfield->IntAttribute(MMESSAGE_DATETIME_DOFFSET_ATTR, dt.dayOffset()));
 		dt.setMonthOffset(dtfield->IntAttribute(MMESSAGE_DATETIME_MOFFSET_ATTR, dt.monthOffset()));
 		dt.setYearOffset(dtfield->IntAttribute(MMESSAGE_DATETIME_YOFFSET_ATTR, dt.yearOffset()));
@@ -146,7 +146,7 @@ void MMessageValues::countersFromXml(const XMLElement *parent, Macsa::MProtocol:
 {
 	const XMLElement* counterfield = parent->FirstChildElement(MMESSAGE_COUNTER_FIELD_ELEMENT);
 	while (counterfield != nullptr) {
-		std::string key = counterfield->Attribute(ATTRIBUTE_NAME, "");
+		std::string key = getTextAttribute(counterfield, ATTRIBUTE_NAME);
 		Macsa::Nisx::Counter counter;
 		if  (map.find(key) != map.end()) {
 			counter = map.at(key);
@@ -155,7 +155,7 @@ void MMessageValues::countersFromXml(const XMLElement *parent, Macsa::MProtocol:
 		counter.setMin(counterfield->IntAttribute(MMESSAGE_COUNTER_MIN_ATTR, counter.min()));
 		counter.setMax(counterfield->IntAttribute(MMESSAGE_COUNTER_MAX_ATTR, counter.max()));
 		counter.setStep(counterfield->IntAttribute(MMESSAGE_COUNTER_STEP_ATTR, counter.step()));
-		counter.setRepeat(counterfield->BoolAttribute(MMESSAGE_COUNTER_REPEAT_ATTR, counter.repeat()));
+		counter.setRepeat(getBoolAttribute(counterfield, MMESSAGE_COUNTER_REPEAT_ATTR, counter.repeat()));
 
 		if  (map.find(key) != map.end()) {
 			map[key] = counter;
@@ -169,7 +169,7 @@ void MMessageValues::countersFromXml(const XMLElement *parent, Macsa::MProtocol:
 }
 
 //================		GET USER FIELDS		================//
-MGetMessageValues::MGetMessageValues(Printers::TIJPrinter &printer, const std::string &filename, const Macsa::MProtocol::userFieldsMap &userFields) :
+MGetMessageValues::MGetMessageValues(Printers::TijPrinter &printer, const std::string &filename, const Macsa::MProtocol::userFieldsMap &userFields) :
 	MMessageValues(MMESSAGE_USER_FIELD_GET, printer, filename)
 {
 	_userFieldsMap = userFields;
@@ -191,7 +191,7 @@ bool MGetMessageValues::parseRequest(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if  (valid) {
-		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
+		_filename = getTextAttribute(cmd, ATTRIBUTE_FILEPATH);
 	}
 	return valid;
 }
@@ -212,7 +212,7 @@ bool MGetMessageValues::parseResponse(const XMLElement *xml)
 	bool valid = (cmd != nullptr);
 	if  (valid) {
 		_error = getCommandError(xml);
-		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
+		_filename = getTextAttribute(cmd, ATTRIBUTE_FILEPATH);
 		if (_error == Printers::ErrorCode_n::SUCCESS) {
 			_userFieldsMap.clear();
 			userFieldsFromXml(cmd, _userFieldsMap);
@@ -222,7 +222,7 @@ bool MGetMessageValues::parseResponse(const XMLElement *xml)
 }
 
 //================		SET USER FIELDS		================//
-MSetMessageValues::MSetMessageValues(Printers::TIJPrinter &printer, const std::string &filename, const Macsa::MProtocol::userFieldsMap &userFields) :
+MSetMessageValues::MSetMessageValues(Printers::TijPrinter &printer, const std::string &filename, const Macsa::MProtocol::userFieldsMap &userFields) :
 	MMessageValues(MMESSAGE_USER_FIELD_SET, printer, filename)
 {
 	_userFieldsMap = userFields;
@@ -245,7 +245,7 @@ bool MSetMessageValues::parseRequest(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if  (valid) {
-		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
+		_filename = getTextAttribute(cmd, ATTRIBUTE_FILEPATH);
 		userFieldsFromXml(cmd, _userFieldsMap);
 	}
 	return valid;
@@ -265,13 +265,13 @@ bool MSetMessageValues::parseResponse(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if  (valid) {
-		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
+		_filename = getTextAttribute(cmd, ATTRIBUTE_FILEPATH);
 	}
 	return valid;
 }
 
 //================		GET VARIABLE FIELDS		================//
-MGetMessageDataSource::MGetMessageDataSource(Printers::TIJPrinter &printer,
+MGetMessageDataSource::MGetMessageDataSource(Printers::TijPrinter &printer,
 											 const std::string& filename,
 											 const std::string& fieldType,
 											 const MProtocol::userFieldsMap& userFields,
@@ -301,8 +301,8 @@ bool MGetMessageDataSource::parseRequest(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if  (valid) {
-		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
-		_fieldType = cmd->Attribute(MMESSAGE_DATA_SOURCE_FIELD_TYPE_ATTR, DATA_SOURCE_ALL_FIELDS);
+		_filename  = getTextAttribute(cmd, ATTRIBUTE_FILEPATH);
+		_fieldType = getTextAttribute(cmd, MMESSAGE_DATA_SOURCE_FIELD_TYPE_ATTR, DATA_SOURCE_ALL_FIELDS);
 	}
 	return valid;
 
@@ -333,8 +333,8 @@ bool MGetMessageDataSource::parseResponse(const XMLElement *xml)
 	bool valid = (cmd != nullptr);
 	if  (valid) {
 		_error = getCommandError(xml);
-		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
-		_fieldType = cmd->Attribute(MMESSAGE_DATA_SOURCE_FIELD_TYPE_ATTR, DATA_SOURCE_ALL_FIELDS);
+		_filename  = getTextAttribute(cmd, ATTRIBUTE_FILEPATH);
+		_fieldType = getTextAttribute(cmd, MMESSAGE_DATA_SOURCE_FIELD_TYPE_ATTR, DATA_SOURCE_ALL_FIELDS);
 		if (_error == Printers::ErrorCode_n::SUCCESS) {
 			_userFieldsMap.clear();
 			if (_fieldType.empty() || _fieldType.compare(DATA_SOURCE_USER_FIELDS) == 0) {
@@ -358,7 +358,7 @@ std::string MGetMessageDataSource::fieldType() const
 }
 
 //================		SET VARIABLE FIELDS		================//
-MSetMessageDataSource::MSetMessageDataSource(Printers::TIJPrinter &printer,
+MSetMessageDataSource::MSetMessageDataSource(Printers::TijPrinter &printer,
 											 const std::string &filename,
 											 const std::string &fieldType,
 											 const MProtocol::userFieldsMap &userFields,
@@ -397,7 +397,7 @@ bool MSetMessageDataSource::parseRequest(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if  (valid) {
-		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
+		_filename = getTextAttribute(cmd, ATTRIBUTE_FILEPATH);
 		userFieldsFromXml(cmd, _userFieldsMap);
 		datesFromXml(cmd, _datesMap);
 		countersFromXml(cmd, _countersMap);
@@ -420,7 +420,7 @@ bool MSetMessageDataSource::parseResponse(const XMLElement *xml)
 	const XMLElement* cmd = getCommand(xml, _id);
 	bool valid = (cmd != nullptr);
 	if  (valid) {
-		_filename = cmd->Attribute(ATTRIBUTE_FILEPATH, "");
+		_filename = getTextAttribute(cmd, ATTRIBUTE_FILEPATH);
 	}
 	return valid;
 }

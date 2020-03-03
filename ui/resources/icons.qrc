@@ -1,0 +1,22 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/folder_open.svg</file>
+        <file>icons/folder.svg</file>
+        <file>icons/play_arrow.svg</file>
+        <file>icons/playlist_add.svg</file>
+        <file>icons/playlist_del.svg</file>
+        <file>icons/printer.svg</file>
+        <file>icons/sd_card.svg</file>
+        <file>icons/update.svg</file>
+        <file>icons/usb.svg</file>
+        <file>icons/extension.svg</file>
+        <file>icons/error.svg</file>
+        <file>icons/location.svg</file>
+        <file>icons/notification.svg</file>
+        <file>icons/router.svg</file>
+        <file>icons/warning.svg</file>
+        <file>icons/network.svg</file>
+        <file>icons/toggle_on.svg</file>
+        <file>icons/toggle_off.svg</file>
+    </qresource>
+</RCC>

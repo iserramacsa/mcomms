@@ -27,7 +27,9 @@ namespace  Macsa {
 #define MLIVE_CONFIG_ATTR		"ConfigChanged"
 #define MLIVE_FILES_ATTR		"FilesChanged"
 #define MLIVE_FONTS_ATTR		"FontsChanged"
-#define MLIVE_ERRORS_ATTR		"HaveError"
+#define MLIVE_USER_VALUES_ATTR	"UVChanged"
+#define MLIVE_ERROR_ATTR		"HaveError"
+#define MLIVE_ERRORS_LOG_ATTR	"ErrLogChanged"
 
 #define MSTATUS					"STATUS"
 #define MIOSTATUS				"IOSTATUS"
@@ -57,6 +59,7 @@ namespace  Macsa {
 #define MCONFIG_CONN_NETWORK_DHCP				"DHCP"
 #define MCONFIG_CONN_NETWORK_HOSTNAME			"HOSTNAME"
 #define MCONFIG_CONN_NETWORK_TCPPORT			"TCP_PORT"
+#define MCONFIG_CONN_NETWORK_HW_ADDRESS			"HW_ADDRESS"
 #define MCONFIG_CONN_BLUETOOTH			"BLUETOOTH"
 #define MCONFIG_CONN_BLUETOOTH_DEVNAME		"DEVICE_NAME"
 #define MCONFIG_CONN_BLUETOOTH_VISIBILITY	"VISIBILITY"
@@ -71,6 +74,7 @@ namespace  Macsa {
 #define MPRINTER_BOARD_BLOCKED		"BLOCK"
 #define MPRINTER_BOARD_PRINTING		"PRINTING"
 #define MPRINTER_BOARD_AUTOSTART	"AUTOSTART"
+#define MPRINTER_BOARD_LOW_LEVEL	"LOWLEVEL_OUTPUT"
 #define MPRINTER_BOARD_CURRENT_MSG	"CURRENT_MESSAGE"
 
 #define MPRINTER_BOARD_PRINT_SPEED		"PRINT_SPEED"
@@ -147,9 +151,10 @@ namespace  Macsa {
 #define NISX_FILTER		".nisx"
 #define IMG_FILTER		".png,.jpg,.jpeg,.bmp"
 #define NO_FILTER		"*.*"
+#define ALL_FILES		".nisx,.ttf,.png,.jpg,.jpeg,.bmp"
 
 #define MFILES_GET_LIST				"GETFILESLIST"
-#define MFILES_GET_LIST_TYPE_ATTR		"Type"
+#define MFILES_GET_LIST_TYPE_ATTR		"type"
 #define MFILES_DEVICE_UNIT			"UNIT"
 #define MFILES_FILE_PATH			"FILE"
 #define MFILES_FILE_PATH_ATTR			"Path"
@@ -187,7 +192,13 @@ namespace  Macsa {
 #define MMESSAGE_COUNTER_STEP_ATTR			"Step"
 #define MMESSAGE_COUNTER_REPEAT_ATTR		"Repeat"
 
-
+#define MERRORS_LOGS			"GETERRORLOG"
+#define MERRORS_LOGS_ITEM			"ITEM"
+#define MERRORS_LOGS_BOARD_ATTR			"BoardId"
+#define MERRORS_LOGS_TSTAMP_ATTR	    "When"
+#define MERRORS_LOGS_TYPE_ATTR		    "Type"
+#define MERRORS_LOGS_PRIO_ATTR		    "Priority"
+#define MERRORS_LOGS_CODE_ATTR		    "ErrorCode"
 
 
 #define MUPDATE					"UPDATE"

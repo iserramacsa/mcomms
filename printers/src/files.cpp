@@ -2,11 +2,19 @@
 #include <algorithm> // Update methods
 #include <typeinfo>
 #include <iostream>
+#include <string.h> // strlen
+
+#include <exception>
 
 using namespace Macsa;
 using namespace Macsa::Printers;
 using namespace std;
 
+#define DRIVE_STRING_DELIMITER	"//"
+#define SLASH_CHAR	'/'
+
+
+//#define TRACE	std::cout << __FILE__ <<  ":" << __LINE__ << "::" << __FUNCTION__ << std::endl;
 #if __cplusplus >= 201103L
 	using citDrive  = std::map<std::string, Drive*>::const_iterator;
 	using citFolder = std::map<std::string, Folder*>::const_iterator;
@@ -22,15 +30,25 @@ using namespace std;
 FileSystemAbstract::FileSystemAbstract()
 {}
 
+FileSystemAbstract::FileSystemAbstract(const FileSystemAbstract &other)
+{
+	*this = other;
+}
+
 FileSystemAbstract::~FileSystemAbstract()
 {}
 
 template<class T>
 T *FileSystemAbstract::getItem(const string &name, const std::map<string, T*> &map) const
 {
-	if (map.find(name) != map.end()){
-		return map.at(name);
+	try {
+		if (map.size() && map.find(name) != map.end()){
+			return map.at(name);
+		}
+	} catch (std::exception e) {
+		std::cerr << "EXCEPTION!! " << __FILE__ <<  ":" << __LINE__ << "::" << __FUNCTION__ << "  reason:" << e.what();
 	}
+
 	return nullptr;
 }
 
@@ -87,16 +105,10 @@ bool FileSystemAbstract::deleteItem(const std::string& name, std::map<string, T*
 template<class T>
 bool FileSystemAbstract::clear(std::map<string, T*> &map)
 {
-#if __cplusplus >= 201103L
-	for (auto& item : map) {
-		delete item.second;
+
+	while (map.size()){
+		deleteItem(map.begin()->first, map);
 	}
-#else
-	for (typename std::map<string, T *>::const_iterator it = map.begin(); it != map.end(); it++) {
-		delete it->second;
-	}
-#endif
-	map.clear();
 	return (map.size() == 0);
 }
 
@@ -128,6 +140,13 @@ PrinterFiles::PrinterFiles()
 {
 	clear();
 	_filesManager = nullptr;
+}
+
+PrinterFiles::PrinterFiles(const PrinterFiles &other)
+{
+	clear();
+	_filesManager = nullptr;
+	copy(other);
 }
 
 PrinterFiles::~PrinterFiles()
@@ -202,6 +221,12 @@ const Drive *PrinterFiles::getDrive(const string &drive) const
 	return getItem(drive, _drives);
 }
 
+//const Folder *PrinterFiles::getFolder(const string &path) const
+//{
+//	std::string drive = "//";
+
+//}
+
 const Folder *PrinterFiles::getFolder(const string &drive, const string &folder) const
 {
 	const Drive * d = getItem(drive, _drives);
@@ -218,6 +243,15 @@ const File *PrinterFiles::getFile(const string &drive, const string &folder, con
 		return f->getFile(filename);
 	}
 	return nullptr;
+}
+
+const File *PrinterFiles::getFile(const string &filepath) const
+{
+	string drive = "//";
+	string folder = "";
+	string filename = "";
+	splitFilepath(filepath, drive, folder, filename);
+	return getFile(drive, folder, filename);
 }
 
 bool PrinterFiles::driveExist(const string &drive) const
@@ -283,6 +317,13 @@ bool PrinterFiles::setFile(const string &drive, const string &folder, const stri
 		success = d->setFileData(folder, filename, data);
 	}
 	return success;
+}
+
+bool PrinterFiles::setFile(const string &filepath, const std::vector<uint8_t> &data)
+{
+	string drive = "", folder = "", filename = "";
+	splitFilepath(filepath, drive, folder, filename);
+	return setFile(drive, folder, filename, data);
 }
 
 bool PrinterFiles::clearDrive(const string &drive)
@@ -357,6 +398,41 @@ File *PrinterFiles::removeFile(const string &drive, const string &folder, const 
 	return f;
 }
 
+void PrinterFiles::splitFilepath(const string &pwd, string &drive, vector<string> &folders, string &file) const
+{
+	drive.clear();
+	folders.clear();
+	file.clear();
+	string path;
+
+	size_t slash = pwd.find(DRIVE_STRING_DELIMITER);
+	path = pwd;
+	if(slash != pwd.npos) {
+		drive = pwd.substr(0, slash + strlen(DRIVE_STRING_DELIMITER));
+		path = pwd.substr(slash + strlen(DRIVE_STRING_DELIMITER));
+	}
+
+	while ((slash = path.find_last_of(SLASH_CHAR)) != file.npos) {
+		folders.push_back(path.substr(0, slash));
+		path = path.substr(slash + 1);
+	}
+	file = path;
+}
+
+void PrinterFiles::splitFilepath(const string &pwd, string &drive, string &folder, string &file) const
+{
+	vector<string> folders;
+	splitFilepath(pwd, drive, folders, file);
+	folder = "";
+	for (uint i = 0; i < folders.size(); i++) {
+		if (i) {
+			folder += "/";
+		}
+		folder += folders.at(i);
+	}
+
+}
+
 bool PrinterFiles::equal(const FileSystemAbstract &other) const
 {
 	bool equal = false;
@@ -369,6 +445,19 @@ bool PrinterFiles::equal(const FileSystemAbstract &other) const
 	}
 
 	return equal;
+}
+
+void PrinterFiles::copy(const PrinterFiles &other)
+{
+	clear();
+	for (std::map<std::string, Drive*>::const_iterator drive = other._drives.begin(); drive != other._drives.end(); drive++)
+	{
+		if (drive->second){
+			Drive* d = new Drive(drive->first, this);
+			(*d) = (*(drive->second));
+			_drives.insert(pair<string, Drive*>(drive->first, d));
+		}
+	}
 }
 
 IFilesManager *PrinterFiles::filesManager() const
@@ -494,7 +583,7 @@ Drive::Drive(const string &name, const PrinterFiles *parent) :
 
 Drive::~Drive()
 {
-
+	clear();
 }
 
 std::string Drive::name() const
@@ -532,7 +621,12 @@ std::vector<const File *> Drive::getFiles() const
 
 const Folder *Drive::getFolder(const string &folder) const
 {
-	return getItem(folder, _folders);
+	if (_folders.size()){
+		return getItem(folder, _folders);
+	}
+	else {
+		return nullptr;
+	}
 }
 
 const File *Drive::getFile(const string &folder, const string &file) const
@@ -548,6 +642,7 @@ const File *Drive::getFile(const string &folder, const string &file) const
 
 bool Drive::clear()
 {
+
 	return FileSystemAbstract::clear(_folders);
 }
 
@@ -643,6 +738,19 @@ bool Drive::equal(const FileSystemAbstract &other) const
 	}
 
 	return equal;
+}
+
+void Drive::copy(const Drive &other)
+{
+	clear();
+	for (std::map<std::string, Folder*>::const_iterator folder = other._folders.begin(); folder != other._folders.end(); folder++)
+	{
+		if (folder->second){
+			Folder* f = new Folder(folder->first, this);
+			(*f) = (*(folder->second));
+			_folders.insert(pair<string, Folder*>(folder->first, f));
+		}
+	}
 }
 
 bool Drive::renameFile(const string &folder, const string &oldName, const string &newName)
@@ -848,6 +956,22 @@ bool Folder::equal(const FileSystemAbstract &other) const
 
 }
 
+void Folder::copy(const Folder &other)
+{
+	clear();
+	_name = other._name;
+	for (std::map<std::string, File*>::const_iterator file = other._files.begin(); file != other._files.end(); file++)
+	{
+		File* f = new File(file->first, this);
+		if (file->second){
+			(*f) = (*(file->second));
+		}
+		if (!addFile(f)) {
+			delete f;
+		}
+	}
+}
+
 //====== Files definitions ======//
 File::File(const string &filename, const Folder *parent) :
 	_parent(parent),
@@ -976,5 +1100,13 @@ bool File::equal(const File &other) const
 	}
 
 	return equal;
+}
+
+void File::copy(const File &other)
+{
+	_name = other.name();
+	if (other._data != nullptr){
+		setContent(*(other._data));
+	}
 }
 

@@ -2,7 +2,7 @@
 #define SERVER_MOCK_H
 
 #include <gmock/gmock.h>
-#include "network/abstractsocket.h"
+#include "abstractsocket.h"
 #include <condition_variable>
 #include <mutex>
 #include <thread>
@@ -11,12 +11,14 @@
 
 using namespace Macsa::Network;
 
+#define SERVER_MOCKABLE_ADDR "127.0.0.1"
+
 class ServerMockable
 {
 	public:
 		ServerMockable();
 		virtual ~ServerMockable();
-		virtual bool init(ISocket::SocketType_n type, uint16_t port, bool bcast = false);
+		virtual bool init(ISocket::nSocketType type, uint16_t port, bool bcast = false);
 		virtual void run(std::function<void (AbstractSocket*)> onNewConnection);
 		virtual void runTcpServer();
 		virtual void runUdpServer();

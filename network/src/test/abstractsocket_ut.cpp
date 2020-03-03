@@ -7,8 +7,8 @@
 #include <atomic>
 #include <tuple>
 
-#include "network/tcpsocket.h"
-#include "network/udpsocket.h"
+#include "tcpsocket.h"
+#include "udpsocket.h"
 #include "server_moc.h"
 
 #define TEST_PORT				8080
@@ -127,6 +127,42 @@ TEST_F(SocketUT, listenTcpServerSocket_returnListening)
 	_socket->close();
 }
 
+TEST_F(SocketUT, connectedSocket_returnExpectedAddress)
+{
+	_socket = new TcpSocket();
+	_socket->bind(TEST_PORT);
+	_socket->listen();
+
+	AbstractSocket* client = nullptr;
+	/* Accept connection is runned in another thread due to his blocking nature and
+	 * needs another socket connecting to it, in order to unblock the execution */
+	std::thread th = std::thread(&SocketUT::acceptNewConnection, this, &client);
+
+
+	/* sleeping this thread forces scheduler to start acceptNewConnection thread */
+	std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+	/* New we create the client socket that connect to the server socket to unblock
+	 * the accept execution */
+	AbstractSocket remote(ISocket::TCP_SOCKET);
+	remote.connect(LOOPBACK_ADDR, TEST_PORT);
+	{
+		std::unique_lock<std::mutex>lck(_mutex);
+		_cv.wait_for(lck, std::chrono::milliseconds(CONNECTION_TIMEOUT_MS));
+	}
+	EXPECT_TRUE(client != nullptr);
+
+	EXPECT_STREQ(remote.address().c_str(), LOOPBACK_ADDR);
+
+	th.join();
+
+	if (client != nullptr) {
+		delete client;
+	}
+	_socket->close();
+
+}
+
 TEST_F(SocketUT, acceptTcpServerSocket_returnNewClientSocket)
 {
 	_socket = new TcpSocket();
@@ -150,10 +186,8 @@ TEST_F(SocketUT, acceptTcpServerSocket_returnNewClientSocket)
 		std::unique_lock<std::mutex>lck(_mutex);
 		_cv.wait_for(lck, std::chrono::milliseconds(CONNECTION_TIMEOUT_MS));
 	}
-	bool hasClient = (client != nullptr);
+	EXPECT_TRUE(client != nullptr);
 	th.join();
-
-	EXPECT_EQ(hasClient, true);
 
 	if (client != nullptr) {
 		delete client;
@@ -206,9 +240,58 @@ TEST_F(SocketUT, receiveTcpServerSocket_returnEchoMessage)
 	}
 	_socket->close();
 
-	EXPECT_EQ(server_rx, ECHO_MSG);
-	EXPECT_EQ(remote_rx, ECHO_MSG);
+	EXPECT_STREQ(server_rx.c_str(), ECHO_MSG);
+	EXPECT_STREQ(remote_rx.c_str(), ECHO_MSG);
+}
 
+#include "loremipsum.h"
+
+TEST_F(SocketUT, receive5KMessageTcpServerSocket_returnEcho)
+{
+	_socket = new TcpSocket();
+	_socket->bind(TEST_PORT);
+	_socket->listen();
+
+	AbstractSocket* client = nullptr;
+	/* Accept connection is runned in another thread due to his blocking nature and
+	 * needs another socket connecting to it, in order to unblock the execution */
+	std::thread th = std::thread(&SocketUT::acceptNewConnection, this, &client);
+
+
+	/* sleeping this thread forces scheduler to start acceptNewConnection thread */
+	std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+	/* Creation of client's socket that connects to the server socket to unblocks
+	 * the accept execution */
+	AbstractSocket remote(ISocket::TCP_SOCKET);
+	std::string server_rx = "";
+	std::string remote_rx = "";
+	if(remote.connect(LOOPBACK_ADDR, TEST_PORT))
+	{
+		{/* Scoped wait */
+			std::unique_lock<std::mutex>lck(_mutex);
+			_cv.wait_for(lck, std::chrono::milliseconds(CONNECTION_TIMEOUT_MS));
+		}
+		bool hasClient = (client != nullptr);
+		th.join();
+
+		if(hasClient) {
+			remote.send(LOREM_IPSUM_5K);
+			ISocket::nSocketFrameStatus fStatus = client->receive(server_rx);
+			EXPECT_EQ(fStatus, ISocket::FRAME_SUCCESS);
+			if(fStatus == ISocket::FRAME_SUCCESS){
+				client->send(LOREM_IPSUM_10K);
+				remote.receive(remote_rx);
+			}
+		}
+	}
+	if (client != nullptr) {
+		delete client;
+	}
+	_socket->close();
+
+	EXPECT_STREQ(server_rx.c_str(), LOREM_IPSUM_5K);
+	EXPECT_STREQ(remote_rx.c_str(), LOREM_IPSUM_10K);
 }
 
 TEST_F(SocketUT, receiveTcpServerSocket_returnClientClosed)
@@ -302,7 +385,7 @@ TEST_F(SocketUT, tcpClientSocket_returnReceiveEcho)
 	EXPECT_EQ(_socket->send(ECHO_MSG), ISocket::FRAME_SUCCESS);
 	std::string msg = "";
 	EXPECT_EQ(_socket->receive(msg), ISocket::FRAME_SUCCESS);
-	EXPECT_EQ(msg, ECHO_MSG);
+	EXPECT_STREQ(msg.c_str(), ECHO_MSG);
 
 	_server.stop();
 	_socket->close();
@@ -364,3 +447,23 @@ TEST_F(SocketUT, udpClientSocket_returnEchoThroughBroadcast)
 	_socket->close();
 	_server.stop();
 }
+
+TEST_F(SocketUT, inetAddress_conversions)
+{
+	InetAddr addr("ADDR", "192.168.1.64");
+	InetAddr addr2("ADDR2", 3232235840);
+	EXPECT_EQ(addr.toIpv4(), addr2.toIpv4());
+	EXPECT_STREQ(addr.toString().c_str(), addr2.toString().c_str());
+}
+
+TEST_F(SocketUT, socket_localAddress)
+{
+	_socket = new TcpSocket(TEST_PORT);
+	std::vector<InetAddr> ips = _socket->localAddress();
+	EXPECT_TRUE(ips.size());
+	for (auto ip : ips) {
+		EXPECT_TRUE(ip.toIpv4() != 0);
+	}
+}
+
+
