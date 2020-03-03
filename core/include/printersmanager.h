@@ -7,7 +7,7 @@
 #define DEFAULT_DISCOVER_TIMEOUT	5
 
 namespace Macsa {
-	class PrintersManager : protected Network::MNetwork{
+	class PrintersManager : public Network::MNetwork{
 
 		public:
 			PrintersManager();
@@ -20,12 +20,15 @@ namespace Macsa {
 			bool connectPrinter(const std::string name);
 			bool disconnectPrinter(const std::string name);
 			void sendDiscover(int timeout = DEFAULT_DISCOVER_TIMEOUT);
+			void clear();
 
 			PrinterController* getPrinter(const std::string name);
 			PrinterController* getPrinter(const uint index);
 
 		private:
 			bool runDiscoverServer();
+			void sendDiscoverFrames(Network::ISocket *server, int timeout);
+			void receiveDiscoverFrames(std::atomic_bool& condition);
 	};
 }
 

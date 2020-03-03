@@ -183,7 +183,7 @@ ISocket::nSocketFrameStatus NetworkNode::receivePacket(std::string &rx, uint16_t
 	return status;
 }
 
-ISocket::nSocketFrameStatus NetworkNode::sendDatagram(const std::string tx, uint16_t port, int timeout)
+ISocket::nSocketFrameStatus NetworkNode::sendDatagram(const std::string& tx, uint16_t port, int timeout)
 {
 	ISocket::nSocketFrameStatus status = ISocket::FRAME_ERROR;
 	std::vector<ISocket*>::const_iterator it = connection(ISocket::UDP_SOCKET, port);
@@ -191,6 +191,20 @@ ISocket::nSocketFrameStatus NetworkNode::sendDatagram(const std::string tx, uint
 		UdpSocket* socket = dynamic_cast<UdpSocket*>(*it);
 		if (socket) {
 			status = socket->send(tx, _address, port, timeout);
+		}
+	}
+
+	return status;
+}
+
+ISocket::nSocketFrameStatus NetworkNode::sendDatagram(const std::string& destAddr, const std::string& tx, uint16_t port, int timeout)
+{
+	ISocket::nSocketFrameStatus status = ISocket::FRAME_ERROR;
+	std::vector<ISocket*>::const_iterator it = connection(ISocket::UDP_SOCKET, port);
+	if (it != _connections.end()) {
+		UdpSocket* socket = dynamic_cast<UdpSocket*>(*it);
+		if (socket) {
+			status = socket->send(tx, destAddr, port, timeout);
 		}
 	}
 
@@ -226,7 +240,7 @@ bool NetworkNode::initServer(ISocket::nSocketType type, uint16_t port)
                     success = server->listen();
                 }
                 else{
-                    success = true;
+					success = (server->status() == ISocket::BINDED);
                 }
             }
 

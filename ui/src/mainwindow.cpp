@@ -57,7 +57,7 @@ void MainWindow::onManageNetwork()
 {
 	NetworkDialog* dialog = new NetworkDialog(_manager, this);
 	if(dialog->exec()) {
-
+		refreshPrintersList();
 	}
 }
 
@@ -85,7 +85,6 @@ void MainWindow::onAddPrinter()
 		}
 		bool monitorize = true;
 		if (_manager.addTijPrinter(name.toStdString(), address.toStdString(), monitorize)) {
-			_manager.connectPrinter(name.toStdString());
 			refreshPrintersList();
 			if (_printersListModel->stringList().count() == 1) {
 				onPrinterSelected(_printersListModel->index(0));

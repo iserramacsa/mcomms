@@ -13,8 +13,8 @@ namespace Macsa {
 		public:
 			PrinterController(const std::string& id, const std::string& address, uint16_t port);
 			~PrinterController();
-			bool connect();
-			bool disconnect();
+			virtual bool connect();
+			virtual bool disconnect();
 
 			virtual Printers::Printer* printer() = 0;
 

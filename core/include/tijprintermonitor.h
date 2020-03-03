@@ -15,6 +15,9 @@ namespace Macsa {
 			TijPrinterMonitor(const std::string &id, const std::string &address);
 			virtual ~TijPrinterMonitor() override;
 
+			virtual bool connect() override;
+			virtual bool disconnect() override;
+
 		protected:
 			virtual void run();
 			virtual bool send(MProtocol::MCommand *cmd, Printers::ErrorCode& err) override;
@@ -27,6 +30,7 @@ namespace Macsa {
 			Printers::ErrorCode _lastError;
 			std::list<MProtocol::MCommand*> _commands;
 
+			void start();
 			void stop();
 	};
 }

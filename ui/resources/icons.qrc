@@ -16,5 +16,7 @@
         <file>icons/router.svg</file>
         <file>icons/warning.svg</file>
         <file>icons/network.svg</file>
+        <file>icons/toggle_on.svg</file>
+        <file>icons/toggle_off.svg</file>
     </qresource>
 </RCC>
