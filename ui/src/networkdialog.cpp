@@ -2,8 +2,8 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QLabel>
-
 #include <QDebug>
+
 
 using namespace Macsa::Network;
 // #####################   PrinterItem   ######################## //
@@ -23,27 +23,51 @@ PrinterItem::PrinterItem(Macsa::PrinterController *printer, Macsa::PrintersManag
 	layout->addWidget(name);
 	layout->addStretch();
 	layout->addWidget(_status);
-	nodeStatusChanged(printer->status());
+
+	_connect = new QPushButton(this);
+	_connect->setFlat(true);
+	_connect->setIconSize(QSize(32, 32));
+	_connect->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+	connect(_connect, SIGNAL(clicked(bool)), SLOT(connectPrinter()));
+	layout->addWidget(_connect);
+
+	PrinterItem::nodeStatusChanged(printer->status());
 }
 
 void PrinterItem::nodeStatusChanged(const NodeStatus &status)
 {
+	QIcon icon;
+
 	switch (status) {
 		case NodeStatus::CONNECTED:
 			_status->setText("CONNECTED");
+			icon = QIcon(":/icons/toggle_on.svg");
 			break;
 		case NodeStatus::CONNECTING:
-			_status->setText("DISCONNECTED");
+			_status->setText("CONNECTING");
+			icon = QIcon(":/icons/toggle_off.svg");
 			break;
 		case NodeStatus::DISCONNECTED:
 			_status->setText("DISCONNECTED");
+			icon = QIcon(":/icons/toggle_off.svg");
 			break;
 	}
+	_connect->setIcon(QIcon(icon));
 }
 
 void PrinterItem::nodeTimeout()
 {
 	qDebug() << __PRETTY_FUNCTION__;
+}
+
+void PrinterItem::connectPrinter()
+{
+	if (_printer->status() == NodeStatus::CONNECTED) {
+		_printer->disconnect();
+	}
+	else {
+		_printer->connect();
+	}
 }
 
 // #####################   NetworkDialog   ######################## //

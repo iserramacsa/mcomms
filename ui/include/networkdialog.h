@@ -21,9 +21,13 @@ class PrinterItem : public QFrame, public Macsa::Network::NodeObserver
 		Macsa::PrinterController* _printer;
 		Macsa::PrintersManager& _manager;
 		QLabel* _status;
+		QPushButton* _connect;
 
+	private slots:
 		virtual void nodeStatusChanged(const NodeStatus& status);
 		virtual void nodeTimeout();
+		void connectPrinter();
+
 };
 
 class NetworkDialog : public QDialog, public Macsa::Network::NetworkObserver

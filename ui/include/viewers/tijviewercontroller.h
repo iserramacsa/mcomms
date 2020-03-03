@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QDateTime>
-#include "viewers/printerviewercontroller.h"
 #include "tijprintercontroller.h"
 #include "tijobserver.h"
 

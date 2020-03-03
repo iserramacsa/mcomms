@@ -9,12 +9,30 @@ TijPrinterMonitor::TijPrinterMonitor(const std::string &id, const std::string &a
 	TijController(id, address)
 {
 	_deleteAfterSend = false;
-	_th = std::thread(&TijPrinterMonitor::run, this);
+	start();
 }
 
 TijPrinterMonitor::~TijPrinterMonitor()
 {
 	stop();
+}
+
+bool TijPrinterMonitor::connect()
+{
+	bool connected = PrinterController::connect();
+	if (connected) {
+		start();
+	}
+	return connected;
+}
+
+bool TijPrinterMonitor::disconnect()
+{
+	bool disconnected = PrinterController::disconnect();
+	if (NetworkNode::status() == DISCONNECTED) {
+		stop();
+	}
+	return disconnected;
 }
 
 void TijPrinterMonitor::run()
@@ -31,28 +49,6 @@ void TijPrinterMonitor::run()
 		while (_commands.size()) {
 			MProtocol::MCommand* cmd = (*_commands.begin());
 			if(TijController::send(cmd, _lastError)) {
-
-				// TODO: Add observers and callbacks
-//				if (cmd->commandName() == MSTATUS) {
-//					statusChanged.emit();
-//				}
-//				if (cmd->commandName() == MCONFIG_GET) {
-//					configChanged.emit();
-//				}
-//				if (cmd->commandName() == MFILES_GET) {
-//					MProtocol::MGetFilesList* files = dynamic_cast<MProtocol::MGetFilesList*>(cmd);
-//					if (files->filter().find(NISX_FILTER) != std::string::npos){
-//						filesChanged.emit();
-//					}
-//					if (files->filter().find(FONTS_FILTER) != std::string::npos){
-//						fontsChanged.emit();
-//					}
-//				}
-//				// TODO: Add user values changed
-////				uvChanged;
-//				if (cmd->commandName() == MERRORS_LOGS) {
-//					errorsListChanged.emit();
-//				}
 			}
 			delete cmd;
 			_commands.pop_front();
@@ -89,12 +85,21 @@ bool TijPrinterMonitor::send(MProtocol::MCommand *cmd, Printers::ErrorCode &)
 	return ((_commands.size() - numCommands) > 0);
 }
 
+void TijPrinterMonitor::start()
+{
+	if (_running.load() == false){
+		_th = std::thread(&TijPrinterMonitor::run, this);
+	}
+}
+
 void TijPrinterMonitor::stop()
 {
-	_running.store(false);
-	{
-		std::unique_lock<std::mutex> _lck(_mutex);
-		_cv.notify_all();
+	if (_running.load()){
+		_running.store(false);
+		{
+			std::unique_lock<std::mutex> _lck(_mutex);
+			_cv.notify_all();
+		}
+		_th.join();
 	}
-	_th.join();
 }
