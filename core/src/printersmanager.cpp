@@ -124,7 +124,14 @@ void PrintersManager::sendDiscoverFrames(ISocket* server, int timeout)
 				server->send(DISCOVER_MSG, addr.toString(), DISCOVER_PORT);
 			}
 		}
+#ifdef ARMSTONE_A9
+		std::mutex m;
+		std::unique_lock<std::mutex>lock(m);
+		std::condition_variable cv;
+		cv.wait_for(lock, std::chrono::seconds(1));
+#else
 		std::this_thread::sleep_for(seconds(1));
+#endif
 	}
 	removeConnection(ISocket::UDP_SOCKET, DISCOVER_PORT);
 	listenDiscover.store(false);
