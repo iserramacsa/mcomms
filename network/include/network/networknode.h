@@ -250,6 +250,10 @@ namespace Macsa {
 				/// \return const iterator in connections vector
 				///
 				inline std::vector<ISocket*>::const_iterator connection(ISocket::nSocketType type, uint16_t port) const {return find(_connections, type, port);}
+#ifdef ARMSTONE_A9
+				// Required by GCC 4.7.2 -> iterator erase (iterator position);
+				inline std::vector<ISocket*>::iterator connection(ISocket::nSocketType type, uint16_t port) {return find(_connections, type, port);}
+#endif
 				///
 				/// \brief accessPoint. Helper method to find in the accessPoints vector
 				/// \param type: Specified server type
@@ -257,6 +261,10 @@ namespace Macsa {
 				/// \return const iterator in accessPoints vector
 				///
 				std::vector<ISocket*>::const_iterator accessPoint(uint16_t port) const;
+#ifdef ARMSTONE_A9
+				// Required by GCC 4.7.2 -> iterator erase (iterator position);
+				std::vector<ISocket*>::iterator accessPoint(uint16_t port);
+#endif
 
 				///
 				/// \brief find. Generic find algorithm
@@ -266,6 +274,10 @@ namespace Macsa {
 				/// \return const iterator in the specified vector
 				///
 				std::vector<ISocket*>::const_iterator find(const std::vector<ISocket*>& list, ISocket::nSocketType type, uint16_t port) const;
+#ifdef ARMSTONE_A9
+				// Required by GCC 4.7.2 -> iterator erase (iterator position);
+				std::vector<ISocket*>::iterator find(std::vector<ISocket *> &list, ISocket::nSocketType type, uint16_t port);
+#endif
 
 				///
 				/// \brief statusChanged
