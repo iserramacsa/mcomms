@@ -183,6 +183,16 @@ Printers::ErrorCode TijController::updateFontsList()
 	return error;
 }
 
+Printers::ErrorCode TijController::updateUserValues()
+{
+	Printers::ErrorCode error;
+	MProtocol::MCommand* cmd = _factory.getFontsCommand();
+	if (cmd) {
+		send(cmd, error);
+	}
+	return error;
+}
+
 Printers::ErrorCode TijController::updateMessagesList()
 {
 	Printers::ErrorCode error;

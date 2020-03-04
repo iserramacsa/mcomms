@@ -225,7 +225,7 @@ ISocket::nSocketFrameStatus UnixSocket::receive(std::string &rx, std::string &ad
 				int len = ret;
 				while(len > 0) {
 					bool end = false;
-					if (waitForRead(_sock.fd, 100, end)){
+					if (waitForRead(_sock.fd, 500, end)){
 						memset(buff, 0, DEFAULT_BUFF_SIZE);
 						len = static_cast<int>(::recv(_sock.fd, buff, DEFAULT_BUFF_SIZE, 0));
 						if (len > 0) {
@@ -326,7 +326,7 @@ std::vector<InetAddr> UnixSocket::localAddress() const
 	struct ifaddrs *ifaddr = nullptr;
 	if (getifaddrs(&ifaddr) == 0) {
 		for (struct ifaddrs *ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next) {
-			if (ifa->ifa_addr->sa_family == AF_INET) {
+			if (ifa->ifa_addr != nullptr && ifa->ifa_addr->sa_family == AF_INET) {
 				char host[NI_MAXHOST];
 				if ( 0 == getnameinfo(ifa->ifa_addr, sizeof(struct sockaddr_in), host, NI_MAXHOST, nullptr, 0, NI_NUMERICHOST))
 				{
@@ -335,7 +335,6 @@ std::vector<InetAddr> UnixSocket::localAddress() const
 					}
 				}
 			}
-
 		}
 	}
 	if (ifaddr != nullptr) {
@@ -383,7 +382,7 @@ bool UnixSocket::createSocket(int &fd, nSocketType type)
 		fd = socket(AF_INET, sockType, protocol);
 #ifdef DEBUG
 		if (fd == -1) {
-			std::cout << __func__ << "(" << fd << ") => " << strerror(errno)<< std::endl;
+			std::cout << __func__ << "(" << fd << ") => " << strerror(errno) << std::endl;
 		}
 #endif
 	}
@@ -544,17 +543,15 @@ bool UnixSocket::waitForRead(int fd, int timeout, bool& expired)
 	if (FD_ISSET(fd, &rfds)){
 		ready = (ret > 0);
 	}
-#if 0
-	else {
-		std::cout << "Select returns from exception " << ret << std::endl;
+#if DEBUG
+	if (ret < 0) {
+		std::cout << "Erro at " << __FUNCTION__ << ": fd(" << fd << ") => " << strerror(errno) << std::endl;
+		std::cout << "Socket Status: " << strStatus() << std::endl;
+		setStatus(ISocket::ERROR);
 	}
 #endif
 
 	expired = (ret == 0);
-#if 0
-	std::cout << __func__ << " READY: " << (ready?"true":"false")
-			  << " EXPIRED: " << (expired?"true":"false")<< std::endl;
-#endif
 
 	return ready;
 }

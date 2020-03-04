@@ -9,7 +9,7 @@ TijPrinterMonitor::TijPrinterMonitor(const std::string &id, const std::string &a
 	TijController(id, address)
 {
 	_deleteAfterSend = false;
-	start();
+	_running.store(false);
 }
 
 TijPrinterMonitor::~TijPrinterMonitor()
@@ -35,6 +35,8 @@ bool TijPrinterMonitor::disconnect()
 	return disconnected;
 }
 
+#include <iostream>
+
 void TijPrinterMonitor::run()
 {
 	_running.store(true);
@@ -44,11 +46,14 @@ void TijPrinterMonitor::run()
 			std::unique_lock<std::mutex> _lck(_mutex);
 			if (_cv.wait_for(_lck, std::chrono::seconds(1)) == std::cv_status::timeout) {
 				_commands.push_back(_factory.getLiveCommand());
+			} else if (_running.load() == false){
+				break;
 			}
 		}
 		while (_commands.size()) {
 			MProtocol::MCommand* cmd = (*_commands.begin());
-			if(TijController::send(cmd, _lastError)) {
+			if(!TijController::send(cmd, _lastError)) {
+				std::cout << __FUNCTION__ << " Send command " << cmd->commandName() << " failed" << std::endl;
 			}
 			delete cmd;
 			_commands.pop_front();
@@ -66,7 +71,9 @@ void TijPrinterMonitor::run()
 		if (isFontsChanged())  {
 			TijController::updateFontsList();
 		}
-		//if  (userValuesChanged()){} //TODO
+		if  (isUserValuesChanged()){
+			TijController::updateUserValues();
+		}
 		if (isErrorsLogsChanged()) {
 			TijController::updateErrorsList();
 		}
@@ -87,9 +94,10 @@ bool TijPrinterMonitor::send(MProtocol::MCommand *cmd, Printers::ErrorCode &)
 
 void TijPrinterMonitor::start()
 {
-	if (_running.load() == false){
-		_th = std::thread(&TijPrinterMonitor::run, this);
+	if (_running.load()) {
+		stop();
 	}
+	_th = std::thread(&TijPrinterMonitor::run, this);
 }
 
 void TijPrinterMonitor::stop()

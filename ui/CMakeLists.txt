@@ -84,4 +84,12 @@ elseif(UNIX)
 	add_executable( ${PROJECT_NAME} ${SOURCES} ${MOC_SRCS} ${RES_SOURCES} ${UI_HEADERS} )
 endif()
 # build it (link libraries)
-target_link_libraries( ${PROJECT_NAME} ${QT_LIBRARIES} MComms MNetwork TijLibrary)
+if (${BUILD_STATIC_LIBS})
+	target_link_libraries( ${PROJECT_NAME} ${QT_LIBRARIES} ${EXTERNAL_LIBS}
+		${PROJECT_BINARY_DIR}/core/libMComms.a
+		${PROJECT_BINARY_DIR}/core/network/libMNetwork.a
+		${PROJECT_BINARY_DIR}/printers/tij/libTijLibrary.a
+		${LIB_PREFIX}/lib/libtinyxml2.a)
+else()
+	target_link_libraries( ${PROJECT_NAME} ${QT_LIBRARIES} MComms MNetwork TijLibrary)
+endif()

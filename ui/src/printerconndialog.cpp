@@ -88,6 +88,7 @@ void PrinterConnectionDialog::configure()
 	setWindowTitle("Printer connection");
 
 	ui.printerCB->addItems(getAvailablePrinters());
+	ui.printerCB->setCurrentIndex(1);
 	connect(ui.printerCB, SIGNAL(currentIndexChanged(const QString &)), SLOT(onChangeServerType(const QString &)));
 
 	ui.printerForm->setVisible(false);
@@ -104,21 +105,23 @@ void PrinterConnectionDialog::configure()
 
 QStringList PrinterConnectionDialog::getAvailablePrinters()
 {
-	QDir dir("./");
-	if (dir.cd("emulators")){
-		if (dir.cd("tij")){
-			_availableServers.insert("TIJEmulator", ServerType::TIJ_EMULATOR);
-			dir.cdUp();
-		}
-		dir.cdUp();
-	}
-	if (dir.cd("printers")){
-		if (dir.cd("tij")){
-			_availableServers.insert("TIJPrinter", ServerType::TIJ_PRINTER);
-			dir.cdUp();
-		}
-		dir.cdUp();
-	}
+	_availableServers.insert("TIJEmulator", ServerType::TIJ_EMULATOR);
+	_availableServers.insert("TIJPrinter", ServerType::TIJ_PRINTER);
+//	QDir dir("./");
+//	if (dir.cd("emulators")){
+//		if (dir.cd("tij")){
+//			_availableServers.insert("TIJEmulator", ServerType::TIJ_EMULATOR);
+//			dir.cdUp();
+//		}
+//		dir.cdUp();
+//	}
+//	if (dir.cd("printers")){
+//		if (dir.cd("tij")){
+//			_availableServers.insert("TIJPrinter", ServerType::TIJ_PRINTER);
+//			dir.cdUp();
+//		}
+//		dir.cdUp();
+//	}
 	return _availableServers.keys();
 }
 

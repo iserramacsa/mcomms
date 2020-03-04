@@ -75,10 +75,17 @@ if (${BUILD_SHARED_LIBS} OR ${BUILD_STATIC_LIBS})
 	message("lib" ${PROJECT_NAME} " creating targets")
 	set(SOVERSION ${MCOMMS_CORE_VERSION})
 
+	link_directories(
+		${PROJECT_BINARY_DIR}/network
+		${PROJECT_BINARY_DIR}/printers/tij
+	)
 	if (${BUILD_SHARED_LIBS})
 		add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
 		set_target_properties(${PROJECT_NAME}
 			PROPERTIES SOVERSION ${SOVERSION})
+		target_link_libraries(${PROJECT_NAME} ${EXTERNAL_LIBS})
+		install(TARGETS ${PROJECT_NAME}
+			LIBRARY DESTINATION ${LIB_PREFIX}/lib)
 	endif()
 
 
@@ -86,16 +93,13 @@ if (${BUILD_SHARED_LIBS} OR ${BUILD_STATIC_LIBS})
 		add_library(${PROJECT_NAME}-static STATIC ${SOURCES} ${HEADERS})
 		set_target_properties(${PROJECT_NAME}-static
 				PROPERTIES SOVERSION ${SOVERSION} OUTPUT_NAME ${PROJECT_NAME})
+		target_link_libraries(${PROJECT_NAME}-static  ${EXTERNAL_LIBS}
+			${PROJECT_BINARY_DIR}/network/libMNetwork.a
+			${PROJECT_BINARY_DIR}/../printers/tij/libTijLibrary.a)
+		install(TARGETS ${PROJECT_NAME}-static
+			LIBRARY DESTINATION ${LIB_PREFIX}/lib)
 	endif()
 
-	link_directories(
-		${PROJECT_BINARY_DIR}/network
-		${PROJECT_BINARY_DIR}/printers/tij
-	)
-
-	target_link_libraries(${PROJECT_NAME} ${EXTERNAL_LIBS})
-	install(TARGETS ${PROJECT_NAME}
-		LIBRARY DESTINATION ${LIB_PREFIX}/lib)
 
 	if (${ENABLE_TESTS} AND SRC_TEST)
 		set(PROJECT_TEST_NAME ${PROJECT_NAME}CoreTest)

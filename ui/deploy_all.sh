@@ -1,0 +1,13 @@
+#!/bin/bash
+
+TARGET_ADDR=$1
+BUILD_DIR=$2
+REMOTE_DIR=$3
+
+UI_BIN=$BUILD_DIR/MCommsUI
+CORE_LIB=$BUILD_DIR/core/libMComms.so*
+NETWORK_LIB=$BUILD_DIR/core/network/libMNetwork.so*
+TIJ_LIB=$BUILD_DIR/printers/tij/libTijLibrary.so*
+
+#scp $UI_BIN $CORE_LIB $NETWORK_LIB $TIJ_LIB root@$TARGET_ADDR:$REMOTE_DIR
+scp $UI_BIN root@$TARGET_ADDR:$REMOTE_DIR

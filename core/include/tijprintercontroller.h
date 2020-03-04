@@ -53,6 +53,7 @@ namespace Macsa {
 			Printers::ErrorCode updateMessagesList();
 			Printers::ErrorCode updateImagesList();
 			Printers::ErrorCode updateFile(const std::string& filepath, bool rawMode = false);
+			Printers::ErrorCode updateUserValues();
 
 			std::vector<std::string> getDrives();
 			std::vector<uint8_t> getFile(const std::string& filepath);

@@ -63,7 +63,7 @@ void MainWindow::onManageNetwork()
 
 void MainWindow::onAddPrinter()
 {
-	PrinterConnectionDialog * dialog = new PrinterConnectionDialog(this);
+	PrinterConnectionDialog * dialog = new PrinterConnectionDialog("TIJPrinter", "192.168.16.210", 9991, this);
 
 	if( dialog->exec()) {
 		QString name = dialog->name();

@@ -80,16 +80,17 @@ if (${BUILD_SHARED_LIBS} OR ${BUILD_STATIC_LIBS})
 		add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
 		set_target_properties(${PROJECT_NAME}
 			PROPERTIES SOVERSION ${SOVERSION})
+		target_link_libraries(${PROJECT_NAME} ${EXTERNAL_LIBS})
+		install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${LIB_PREFIX}/lib)
 	endif()
 
 	if (${BUILD_STATIC_LIBS})
 		add_library(${PROJECT_NAME}-static STATIC ${SOURCES} ${HEADERS})
 		set_target_properties(${PROJECT_NAME}-static
 				PROPERTIES SOVERSION ${SOVERSION} OUTPUT_NAME ${PROJECT_NAME})
+		target_link_libraries(${PROJECT_NAME}-static ${EXTERNAL_LIBS})
+		install(TARGETS ${PROJECT_NAME}-static	LIBRARY DESTINATION ${LIB_PREFIX}/lib)
 	endif()
-
-	target_link_libraries(${PROJECT_NAME} ${EXTERNAL_LIBS})
-	install(TARGETS ${PROJECT_NAME}	LIBRARY DESTINATION ${LIB_PREFIX}/lib)
 
 
 	if (${ENABLE_TESTS})

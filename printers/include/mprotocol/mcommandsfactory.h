@@ -24,6 +24,7 @@ namespace Macsa {
 				MCommand *getLiveCommand();
 				//Status
 				MCommand* getStatusCommand();
+				MCommand* getIOStatusCommand();
 				MCommand* getCurrentErrors();
 
 				//Config
@@ -37,6 +38,8 @@ namespace Macsa {
 				MCommand* getImagesCommand();
 				MCommand* getAllFilesCommand();
 				MCommand* getFileContent(const std::string &filePath, bool rawMode = false);
+				MCommand* getMsgUserValues(const std::string &filePath);
+				MCommand* getMsgDataSources(const std::string &filePath);
 
 
 				// Log
