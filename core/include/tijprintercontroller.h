@@ -73,6 +73,7 @@ namespace Macsa {
 			bool _deleteAfterSend;
 			MProtocol::MCommandsFactory _factory;
 			MProtocol::LiveFlags _liveFlags;
+			Network::ISocket::nSocketFrameStatus  _lastSentStatus;
 
 			virtual bool send(MProtocol::MCommand *cmd, Printers::ErrorCode& err) override;
 

@@ -21,6 +21,7 @@ namespace Macsa {
 		protected:
 			virtual void run();
 			virtual bool send(MProtocol::MCommand *cmd, Printers::ErrorCode& err) override;
+			virtual bool send(MProtocol::MCommand *cmd);
 
 		private:
 			std::atomic_bool _running;

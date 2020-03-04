@@ -254,12 +254,12 @@ bool TijController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &/*err*/)
 
 
 	std::string tx = cmd->getRequest(_factory.nextId());
-	ISocket::nSocketFrameStatus  status = Network::NetworkNode::sendPacket(tx, MPROTOCOL_PORT);
-	if (status == ISocket::FRAME_SUCCESS)
+	_lastSentStatus = Network::NetworkNode::sendPacket(tx, MPROTOCOL_PORT);
+	if (_lastSentStatus == ISocket::FRAME_SUCCESS)
 	{
 		std::string resp = "";
-		status = Network::NetworkNode::receivePacket(resp, MPROTOCOL_PORT);
-		if(status == ISocket::FRAME_SUCCESS)
+		_lastSentStatus = Network::NetworkNode::receivePacket(resp, MPROTOCOL_PORT);
+		if(_lastSentStatus == ISocket::FRAME_SUCCESS)
 		{
 			std::lock_guard<std::mutex> lock(_mutex);
 			success = _factory.parseResponse(resp, cmd);
@@ -273,7 +273,7 @@ bool TijController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &/*err*/)
 		}
 		else {
 			std::cout << __FILE__ << " Receive failed: ";
-			switch (status) {
+			switch (_lastSentStatus) {
 				case ISocket::FRAME_SUCCESS:     std::cerr << "SUCCESS" << std::endl; break;
 				case ISocket::FRAME_TIMEOUT:	 std::cerr << "TIMEOUT" << std::endl; break;
 				case ISocket::FRAME_INCOMPLETED: std::cerr << "INCOMPLETED" << std::endl; break;
@@ -283,7 +283,7 @@ bool TijController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &/*err*/)
 	}
 	else {
 		std::cout << __FILE__ << " Send Command failed: ";
-		switch (status) {
+		switch (_lastSentStatus) {
 			case ISocket::FRAME_SUCCESS:     std::cerr << "SUCCESS" << std::endl; break;
 			case ISocket::FRAME_TIMEOUT:	 std::cerr << "TIMEOUT" << std::endl; break;
 			case ISocket::FRAME_INCOMPLETED: std::cerr << "INCOMPLETED" << std::endl; break;
@@ -296,6 +296,7 @@ bool TijController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &/*err*/)
 
 	return success;
 }
+
 bool TijController::getBaseBoard(Printers::Board& board)
 {
 	bool valid = (_printer.board(0) != nullptr);

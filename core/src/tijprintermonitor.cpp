@@ -52,9 +52,7 @@ void TijPrinterMonitor::run()
 		}
 		while (_commands.size()) {
 			MProtocol::MCommand* cmd = (*_commands.begin());
-			if(!TijController::send(cmd, _lastError)) {
-				std::cout << __FUNCTION__ << " Send command " << cmd->commandName() << " failed" << std::endl;
-			}
+			send(cmd);
 			delete cmd;
 			_commands.pop_front();
 		}
@@ -90,6 +88,18 @@ bool TijPrinterMonitor::send(MProtocol::MCommand *cmd, Printers::ErrorCode &)
 		_cv.notify_one();
 	}
 	return ((_commands.size() - numCommands) > 0);
+}
+
+bool TijPrinterMonitor::send(MProtocol::MCommand *cmd)
+{
+	bool success = false;
+
+	success = TijController::send(cmd, _lastError);
+	if (!success) {
+		std::cout << __FUNCTION__ << " Send command " << cmd->commandName() << " failed" << std::endl;
+	}
+
+	return success;
 }
 
 void TijPrinterMonitor::start()
