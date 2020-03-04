@@ -120,8 +120,12 @@ namespace Macsa {
 				///
 				inline void detach(T* observer)
 				{
-					typename std::vector<T*>::const_iterator ob = find(observer);
-					if  (ob != _observers.end()) {
+#ifdef ARMSTONE_A9
+					typename std::vector<T*>::iterator ob  = find(observer);
+#else
+					typename std::vector<T*>::const_iterator ob  = find(observer);
+#endif
+					if (ob != _observers.end()) {
 						_observers.erase(ob);
 					}
 				}
@@ -184,6 +188,19 @@ namespace Macsa {
 					};
 					return  find_if(_observers.begin(), _observers.end(), predicate);
 				}
+#ifdef ARMSTONE_A9
+				//Normal iterator implementation required by GCC 4.7.2
+				inline typename std::vector<T*>::iterator find(const T * target) {
+					auto predicate = [&](T* observer) {
+						bool found = false;
+						if (target != nullptr && observer != nullptr) {
+							found = ((*target) == (*observer));
+						}
+						return found;
+					};
+					return  find_if(_observers.begin(), _observers.end(), predicate);
+				}
+#endif
 
 			private:
 				Notifier(const Notifier&){} //Hides the copy constructor

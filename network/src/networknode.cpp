@@ -106,7 +106,11 @@ bool NetworkNode::removeConnection(ISocket::nSocketType type, uint16_t port)
 {
 	bool removed = false;
 
+#ifdef ARMSTONE_A9
+	std::vector<ISocket*>::iterator it = connection(type, port);
+#else
 	std::vector<ISocket*>::const_iterator it = connection(type, port);
+#endif
 
 	if (it != _connections.end())
 	{
@@ -274,8 +278,11 @@ ISocket * NetworkNode::accept(uint16_t port)
 bool NetworkNode::stopServer(ISocket::nSocketType type, uint16_t port)
 {
     bool success = false;
-
-    std::vector<ISocket*>::const_iterator it = accessPoint(port);
+#ifdef ARMSTONE_A9
+	std::vector<ISocket*>::iterator it = accessPoint(port);
+#else
+	std::vector<ISocket*>::const_iterator it = accessPoint(port);
+#endif
     if (it != _accessPoints.end() && (*it)->type() == type) {
         AbstractSocket* svr = dynamic_cast<AbstractSocket*>(*it);
         if (svr != nullptr) {
@@ -332,9 +339,20 @@ std::vector<ISocket*>::const_iterator NetworkNode::accessPoint(uint16_t port) co
             break;
         }
     }
-    return it;
+	return it;
 }
-
+#ifdef ARMSTONE_A9
+std::vector<ISocket*>::iterator NetworkNode::accessPoint(uint16_t port)
+{
+	std::vector<ISocket*>::iterator it;
+	for (it = _accessPoints.begin(); it != _accessPoints.end(); it++) {
+		if ((*it)->port() == port) {
+			break;
+		}
+	}
+	return it;
+}
+#endif
 std::vector<ISocket*>::const_iterator NetworkNode::find(const std::vector<ISocket *>& list, ISocket::nSocketType type, uint16_t port) const
 {
 	std::vector<ISocket*>::const_iterator it;
@@ -345,7 +363,18 @@ std::vector<ISocket*>::const_iterator NetworkNode::find(const std::vector<ISocke
 	}
 	return it;
 }
-
+#ifdef ARMSTONE_A9
+std::vector<ISocket*>::iterator NetworkNode::find(std::vector<ISocket *> &list, ISocket::nSocketType type, uint16_t port)
+{
+	std::vector<ISocket*>::iterator it;
+	for (it = list.begin(); it != list.end(); it++) {
+		if ((*it)->type() == type && (*it)->port() == port) {
+			break;
+		}
+	}
+	return it;
+}
+#endif
 void NetworkNode::setStatus(const NodeStatus_n &status)
 {
 	NodeStatus_n current = _status;
