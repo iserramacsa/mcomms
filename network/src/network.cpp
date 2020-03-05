@@ -82,7 +82,7 @@ int MNetwork::getNodeIdx(NetworkNode *node) const
 	return idx;
 }
 
-NetworkNode::NodeStatus_n MNetwork::status() const
+NetworkNode::nNodeStatus MNetwork::status() const
 {
 	for (unsigned int i = 0; i < _nodes.size(); i++) {
 		if (_nodes.at(i)->status() == CONNECTED){

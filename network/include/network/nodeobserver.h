@@ -11,7 +11,7 @@ namespace Macsa {
 			public:
 				NodeObserver(NodeNotifier* subject);
 
-				virtual void nodeStatusChanged(const NetworkNode::NodeStatus_n& status);
+				virtual void nodeStatusChanged(const NetworkNode::nNodeStatus& status);
 				virtual void nodeTimeout();
 		};
 	}

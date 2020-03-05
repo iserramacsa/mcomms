@@ -11,6 +11,7 @@ namespace Macsa {
 			public:
 				NetworkNotifier();
 				void notifyNodeDiscovered(const std::string& name, const std::string& addr);
+				void notifyDatagramReceived(const std::string& addr, const std::string& datagram);
 		};
 	}
 }

@@ -17,9 +17,9 @@ NetworkNode::~NetworkNode()
 	close();
 }
 
-NetworkNode::NodeStatus_n NetworkNode::status(ISocket::nSocketType type, uint16_t port) const
+NetworkNode::nNodeStatus NetworkNode::status(ISocket::nSocketType type, uint16_t port) const
 {
-	NetworkNode::NodeStatus_n status = NetworkNode::DISCONNECTED;
+	NetworkNode::nNodeStatus status = NetworkNode::DISCONNECTED;
 	std::vector<ISocket*>::const_iterator it = connection(type, port);
 	if (it != _connections.end()) {
 		status = ((*it)->status() == ISocket::CONNECTED) ? NetworkNode::CONNECTED : NetworkNode::DISCONNECTED;
@@ -73,6 +73,14 @@ bool NetworkNode::disconnect(uint16_t port)
 	setStatus(DISCONNECTED);
 
 	return disconnected ;
+}
+
+bool NetworkNode::reconnect(ISocket::nSocketType type, uint16_t port)
+{
+	if (disconnect(port)){
+		return connect(type, port);
+	}
+	return false;
 }
 
 bool NetworkNode::addConnection(ISocket::nSocketType type, uint16_t port)
@@ -130,17 +138,6 @@ bool NetworkNode::removeConnection(ISocket *socket)
 {
 	return removeConnection(socket->type(), socket->port());
 }
-
-// TODO: Remove
-// ISocket *NetworkNode::socket(ISocket::nSocketType type, uint16_t port) const
-// {
-// 	std::vector<ISocket*>::const_iterator it = connection(type, port);
-// 	if (it != _connections.end()) {
-// 		return (*it);
-// 	}
-//
-// 	return nullptr;
-// }
 
 void NetworkNode::close()
 {
@@ -375,9 +372,9 @@ std::vector<ISocket*>::iterator NetworkNode::find(std::vector<ISocket *> &list, 
 	return it;
 }
 #endif
-void NetworkNode::setStatus(const NodeStatus_n &status)
+void NetworkNode::setStatus(const nNodeStatus &status)
 {
-	NodeStatus_n current = _status;
+	nNodeStatus current = _status;
 	if (checkStatus() == CONNECTED) {
 		_status = CONNECTED;
 	}
@@ -391,9 +388,9 @@ void NetworkNode::setStatus(const NodeStatus_n &status)
 
 }
 
-NetworkNode::NodeStatus_n NetworkNode::checkStatus() const
+NetworkNode::nNodeStatus NetworkNode::checkStatus() const
 {
-	NodeStatus_n status = DISCONNECTED;
+	nNodeStatus status = DISCONNECTED;
 
 	for (unsigned int i = 0; i < _connections.size(); i++) {
 		ISocket * s = _connections.at(i);

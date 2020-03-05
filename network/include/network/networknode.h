@@ -14,7 +14,7 @@ namespace Macsa {
 		///
 		class NetworkNode : public NodeNotifier {
 			public:
-				enum NodeStatus_n{
+				enum nNodeStatus{
 					DISCONNECTED = 0,
 					CONNECTING,
 					CONNECTED,
@@ -27,13 +27,6 @@ namespace Macsa {
 				/// \param address: Ip address of network node
 				///
 				explicit NetworkNode(const std::string& id, const std::string& address = "");
-
-				///
-				/// \brief NetworkNode constructor with a default connection
-				/// \param id: Node identifier
-				/// \param connection: Default connection
-				///
-				// explicit NetworkNode(const std::string& id, ISocket* connection);
 
 				///
 				/// \brief ~NetworkNode Destructor
@@ -57,7 +50,7 @@ namespace Macsa {
 				/// \return CONNECTED if at least one connection is connected, DISCONNECTED if all connections
 				///			are disconnected and CONNECTING if only have one connetion and is trying to connect
 				///
-				virtual NodeStatus_n status() const { return _status; }
+				virtual nNodeStatus status() const { return _status; }
 
 				///
 				/// \brief Simplified status of ISocket status.
@@ -67,7 +60,7 @@ namespace Macsa {
 				/// reconnect to remote device. If socket is not connected yet or if maximum reconnections
 				/// attempted socket status will return DISCONNECTED.
 				///
-				virtual NodeStatus_n status(ISocket::nSocketType type, uint16_t port) const;
+				virtual nNodeStatus status(ISocket::nSocketType type, uint16_t port) const;
 
 				///
 				/// \brief getter for connections
@@ -93,6 +86,14 @@ namespace Macsa {
 				/// \return true if connection exist and is disconnected
 				///
 				virtual bool disconnect(uint16_t port);
+
+				///
+				/// \brief Disconnect and connect wrapper
+				/// \param type: Socket type
+				/// \param port: port to connect
+				/// \return true if the socket returns connected, otherwise returns false
+				///
+				virtual bool reconnect(ISocket::nSocketType type, uint16_t port);
 
 				///
 				/// \brief Closes the node. Closes all the internal connections and access points
@@ -150,9 +151,6 @@ namespace Macsa {
 				/// \return number of active servers (Access point)
 				///
 				virtual inline int accessPoints() const { return static_cast<int>(_accessPoints.size()); }
-
-				//TODO
-				/* ¿¿ Needed ?? */ // ISocket* socket(ISocket::nSocketType type, uint16_t port) const;
 
 				//Connections list Methods
 				///
@@ -283,16 +281,16 @@ namespace Macsa {
 				/// \brief statusChanged
 				/// \param status
 				///
-				void setStatus(const NodeStatus_n& status);
+				void setStatus(const nNodeStatus& status);
 
 				///
 				/// \brief checkStatus. Helper method to loop over the connections and creates a simplified node status
 				/// \return CONNECTED if at least one connection is connected, otherwise returns DISCONNECTED
 				///
-				NodeStatus_n checkStatus() const;
+				nNodeStatus checkStatus() const;
 
 			private:
-				NodeStatus_n _status;
+				nNodeStatus _status;
 
 				// hidden constructors
 				NetworkNode(){}
