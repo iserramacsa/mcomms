@@ -1,4 +1,4 @@
-#include "tijprintercontroller.h"
+#include "tijcontroller.h"
 #include "mprotocol/mprotocol.h"
 #include "mprotocol/mcommandsfactory.h"
 #include "network/networknode.h"
@@ -9,6 +9,7 @@
 #define MPROTOCOL_PORT	9991
 
 using namespace Macsa;
+using namespace Macsa::MComms;
 using namespace Macsa::Network;
 using namespace Macsa::MProtocol;
 

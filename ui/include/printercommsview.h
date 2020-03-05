@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include "viewers/tijviewercontroller.h"
-#include "tijprintercontroller.h"
+#include "tijcontroller.h"
 #include <QLineEdit>
 #include <QPushButton>
 #include <QLabel>
@@ -34,7 +34,7 @@ class PrinterCommsView : public QWidget
 	public:
 		explicit PrinterCommsView(QWidget* parent = 0);
 		~PrinterCommsView();
-		void setController(Macsa::TijController& controller);
+		void setController(Macsa::MComms::TijController& controller);
 
 	public slots:
 		void refresh();

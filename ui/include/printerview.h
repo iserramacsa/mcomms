@@ -5,7 +5,7 @@
 #include <QtGui>
 #include "ui_printerview.h"
 #include "viewers/tijviewercontroller.h"
-#include "tijprintercontroller.h"
+#include "tijcontroller.h"
 #include "printerstatusview.h"
 #include "printerfilesview.h"
 #include "printerconfigview.h"
@@ -17,7 +17,7 @@ class PrinterView : public QWidget
 	public:
 		explicit PrinterView(QWidget* parent = 0);
 		~PrinterView();
-		void setController(Macsa::TijController& controller);
+		void setController(Macsa::MComms::TijController& controller);
 		void clear();
 
 	private:

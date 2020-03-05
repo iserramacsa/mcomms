@@ -21,7 +21,7 @@ PrinterCommsView::~PrinterCommsView()
 	}
 }
 
-void PrinterCommsView::setController(Macsa::TijController &controller)
+void PrinterCommsView::setController(Macsa::MComms::TijController &controller)
 {
 	if (_controller != nullptr) {
 		delete _controller;

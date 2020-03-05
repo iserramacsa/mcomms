@@ -97,7 +97,7 @@ void MainWindow::onDelPrinter()
 {
 	int row = ui.listPrinters->currentIndex().row();
 	if (row >= 0) {
-		Macsa::TijController * controller = dynamic_cast<Macsa::TijController*>(_manager.getPrinter(row));
+		Macsa::MComms::TijController * controller = dynamic_cast<Macsa::MComms::TijController*>(_manager.getPrinter(row));
 		if (controller != nullptr) {
 			controller->disconnect();
 			QString name = QString("%1: %2").arg(controller->id().c_str()).arg(controller->address().c_str());
@@ -112,7 +112,7 @@ void MainWindow::onPrinterSelected(const QModelIndex &index)
 {
 	int row = index.row();
 
-	Macsa::TijController * controller = dynamic_cast<Macsa::TijController*>(_manager.getPrinter(row));
+	Macsa::MComms::TijController * controller = dynamic_cast<Macsa::MComms::TijController*>(_manager.getPrinter(row));
 	if (controller){
 		qDebug() << __func__  << " Selected printer: " << controller->id().c_str();
 		_printerView->setController(*controller);
@@ -130,7 +130,7 @@ void MainWindow::refreshPrintersList()
 	_printersListModel->setStringList(QStringList());
 	QStringList list;
 	for (int p = 0; p < static_cast<int>(_manager.size()); p++) {
-		const Macsa::PrinterController* controller = _manager.getPrinter(p);
+		const Macsa::MComms::PrinterController* controller = _manager.getPrinter(p);
 		if (controller != nullptr){
 			list << QString("%1: %2").arg(controller->id().c_str()).arg(controller->address().c_str());
 		}

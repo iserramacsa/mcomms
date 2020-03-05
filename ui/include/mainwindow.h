@@ -34,7 +34,7 @@ class MainWindow : public QMainWindow
 		QVector<QProcess*> _emulators;
 		PrinterView *_printerView;
 		QStringListModel *_printersListModel;
-		Macsa::PrintersManager _manager;
+		Macsa::MComms::PrintersManager _manager;
 		Ui::MainWindow ui;
 
 		void refreshPrintersList();

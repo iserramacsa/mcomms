@@ -2,7 +2,7 @@
 #include "tijobserver.h"
 
 using namespace Macsa;
-
+using namespace Macsa::MComms;
 
 TijNotifier::TijNotifier()
 {}

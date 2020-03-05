@@ -2,6 +2,7 @@
 
 using namespace Macsa::Network;
 using namespace Macsa::MProtocol;
+using namespace Macsa::MComms;
 
 ClientHandler::ClientHandler(Printers::TijPrinter &printer, ISocket *socket, uint16_t port) :
 	_svrPort(port),

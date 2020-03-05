@@ -1,5 +1,5 @@
-#ifndef CLIENT_MANAGER_H
-#define CLIENT_MANAGER_H
+#ifndef MACSA_MCOMMS_CLIENT_MANAGER_H
+#define MACSA_MCOMMS_CLIENT_MANAGER_H
 
 #include <thread>
 #include <atomic>
@@ -10,31 +10,35 @@
 #include "clientHandler.h"
 #include "tij/tijprinter.h"
 
-using namespace Macsa;
-using namespace Macsa::Network;
 
-class ClientManager : protected Network::MNetwork
-{
-	public:
-		ClientManager(Printers::TijPrinter& printer);
-		~ClientManager();
-		bool initTcpServer(uint16_t port);
-		void run(bool detached = true);
-		void stop();
+namespace Macsa {
+	using namespace Network;
+	namespace MComms {
+		class ClientManager : protected Network::MNetwork
+		{
+			public:
+				ClientManager(Printers::TijPrinter& printer);
+				~ClientManager();
+				bool initTcpServer(uint16_t port);
+				void run(bool detached = true);
+				void stop();
 
-	private:
-		std::thread _svrLoop;
-		std::atomic_bool _running;
-		std::mutex _mtx;
-		std::condition_variable _cv;
-		uint16_t _svrPort;
+			private:
+				std::thread _svrLoop;
+				std::atomic_bool _running;
+				std::mutex _mtx;
+				std::condition_variable _cv;
+				uint16_t _svrPort;
 
-		Printers::TijPrinter& _printer;
-		std::vector<ClientHandler*> _handlers;
+				Printers::TijPrinter& _printer;
+				std::vector<ClientHandler*> _handlers;
 
-		void serverMainLoop();
-		ISocket *acceptConnection();
+				void serverMainLoop();
+				ISocket *acceptConnection();
 
-};
+		};
+	}
+}
 
-#endif //CLIENT_MANAGER_H
+
+#endif //MACSA_MCOMMS_CLIENT_MANAGER_H

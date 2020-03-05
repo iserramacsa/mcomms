@@ -41,7 +41,7 @@ PrinterView::~PrinterView()
 	}
 }
 
-void PrinterView::setController(Macsa::TijController &controller)
+void PrinterView::setController(Macsa::MComms::TijController &controller)
 {
 	if (_controller != nullptr) {
 		delete _controller;

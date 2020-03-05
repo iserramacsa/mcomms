@@ -25,7 +25,7 @@ PrinterStatusView::~PrinterStatusView()
 	}
 }
 
-void PrinterStatusView::setController(Macsa::TijController &controller)
+void PrinterStatusView::setController(Macsa::MComms::TijController &controller)
 {
 	if (_controller != nullptr) {
 		delete _controller;

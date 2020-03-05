@@ -1,7 +1,7 @@
 #include "printerslistmodel.h"
 #include <QDebug>
 
-PrintersListModel::PrintersListModel(Macsa::PrintersManager &manager, QObject *parent) :
+PrintersListModel::PrintersListModel(Macsa::MComms::PrintersManager &manager, QObject *parent) :
 	QStringListModel(parent),
 	_manager(manager)
 {
@@ -23,7 +23,7 @@ QVariant PrintersListModel::data(const QModelIndex &index, int role) const
 		case Qt::DisplayRole:
 		case Qt::UserRole:
 			if (index.row() >= 0){
-				Macsa::PrinterController * tij = _manager.getPrinter(index.row());
+				Macsa::MComms::PrinterController * tij = _manager.getPrinter(index.row());
 				if (tij !=  nullptr){
 					qDebug() << __func__ << " printer: " << tij->id().c_str();
 					return QString(tij->id().c_str());
@@ -50,7 +50,7 @@ QVariant PrintersListModel::data(const QModelIndex &index, int role) const
 //	return index;
 //}
 
-//Macsa::PrintersManager::AddedPrinterCallback PrintersListModel::onPrinterAdded(const std::string &printer)
+//Macsa::MComms::PrintersManager::AddedPrinterCallback PrintersListModel::onPrinterAdded(const std::string &printer)
 //{
 //	qDebug() << __func__ << " printers count: " << _manager.size();
 //	emit dataChanged(QModelIndex(), QModelIndex());

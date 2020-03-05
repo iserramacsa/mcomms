@@ -13,13 +13,15 @@ if (${ENABLE_TESTS})
 endif()
 
 set(SOURCES ${SOURCES}
-    ${CMAKE_CURRENT_SOURCE_DIR}/printersmanager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/printermonitor.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/printersmanager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/printercontroller.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tijprintermonitor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tijprintercontroller.cpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/tijcontroller.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tijmonitor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tijviewer.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/tijobserver.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/tijnotifier.cpp
+
 	${CMAKE_CURRENT_SOURCE_DIR}/clientmanager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/clientHandler.cpp
     PARENT_SCOPE

@@ -5,7 +5,7 @@
 #include <QtGui>
 #include <QTimer>
 #include "viewers/tijviewercontroller.h"
-#include "tijprintercontroller.h"
+#include "tijcontroller.h"
 #include <QCheckBox>
 #include <QLabel>
 #include <QMap>
@@ -17,7 +17,7 @@ class PrinterStatusView : public QWidget
 	public:
 		explicit PrinterStatusView(QWidget* parent = 0);
 		~PrinterStatusView();
-		void setController(Macsa::TijController& controller);
+		void setController(Macsa::MComms::TijController& controller);
 
 	public slots:
 		void refresh();

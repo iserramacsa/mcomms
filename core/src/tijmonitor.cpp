@@ -1,8 +1,9 @@
-#include "tijprintermonitor.h"
+#include "tijmonitor.h"
 #include "mprotocol/mprotocol.h"
 #include "mprotocol/mfiles.h"
 
 using namespace Macsa;
+using namespace Macsa::MComms;
 using namespace Macsa::Network;
 
 TijMonitor::TijMonitor(const std::string &id, const std::string &address) :

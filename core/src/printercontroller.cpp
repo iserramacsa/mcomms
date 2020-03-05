@@ -1,7 +1,8 @@
-#include "tijprintercontroller.h"
+#include "tijcontroller.h"
 #include "mprotocol/mcommandsfactory.h"
 
 using namespace Macsa;
+using namespace Macsa::MComms;
 using namespace Macsa::Network;
 
 PrinterController::PrinterController(const std::string &id, const std::string &address, uint16_t port) :

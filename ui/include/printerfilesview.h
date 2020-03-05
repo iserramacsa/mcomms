@@ -5,7 +5,7 @@
 #include <QtGui>
 #include "ui_printerfiles.h"
 #include "viewers/tijviewercontroller.h"
-#include "tijprintercontroller.h"
+#include "tijcontroller.h"
 
 class PrinterFilesView : public QWidget
 {
@@ -13,7 +13,7 @@ class PrinterFilesView : public QWidget
 	public:
 		explicit PrinterFilesView(QWidget* parent = 0);
 		~PrinterFilesView();
-		void setController(Macsa::TijController& controller);
+		void setController(Macsa::MComms::TijController& controller);
 		void clear();
 
 	public slots:

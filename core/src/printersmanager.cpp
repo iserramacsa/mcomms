@@ -1,6 +1,6 @@
 #include "printersmanager.h"
-#include "tijprintercontroller.h"
-#include "tijprintermonitor.h"
+#include "tijcontroller.h"
+#include "tijmonitor.h"
 
 #include <cstdint>
 
@@ -8,6 +8,7 @@
 #define DISCOVER_MSG "WHO ARE YOU?"
 
 using namespace Macsa;
+using namespace Macsa::MComms;
 using namespace Macsa::Network;
 using namespace std::chrono;
 

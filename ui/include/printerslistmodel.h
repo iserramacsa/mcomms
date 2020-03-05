@@ -9,7 +9,7 @@ class PrintersListModel : public QStringListModel
 {
 		Q_OBJECT
 	public:
-		explicit PrintersListModel(Macsa::PrintersManager& manager, QObject *parent = nullptr);
+		explicit PrintersListModel(Macsa::MComms::PrintersManager& manager, QObject *parent = nullptr);
 		virtual ~PrintersListModel();
 
 		//Pure virtuals methods
@@ -17,9 +17,9 @@ class PrintersListModel : public QStringListModel
 		virtual QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
 //		virtual QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const;
 
-//		Macsa::PrintersManager::AddedPrinterCallback onPrinterAdded(const std::string& printer);
+//		Macsa::MComms::PrintersManager::AddedPrinterCallback onPrinterAdded(const std::string& printer);
 	private:
-		Macsa::PrintersManager& _manager;
+		Macsa::MComms::PrintersManager& _manager;
 };
 
 #endif

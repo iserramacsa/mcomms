@@ -2,7 +2,7 @@
 #include "tijnotifier.h"
 #include <iostream>
 
-using namespace Macsa;
+using namespace Macsa::MComms;
 
 TijObserver::TijObserver(TijNotifier *controller) :
 	Utils::Observer<TijObserver>(controller)

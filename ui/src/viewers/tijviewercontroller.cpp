@@ -1,10 +1,11 @@
 #include "viewers/tijviewercontroller.h"
-#include "tijprintermonitor.h"
+#include "tijmonitor.h"
 #include <QDateTime>
 #include <QVector>
 #include "printer/board.h"
 
 using namespace Macsa;
+using namespace Macsa::MComms;
 using namespace Macsa::Printers;
 
 TIJViewerController::TIJViewerController(TijController &controller, QObject *parent) :

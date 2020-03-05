@@ -7,7 +7,7 @@
 
 using namespace Macsa::Network;
 // #####################   PrinterItem   ######################## //
-PrinterItem::PrinterItem(Macsa::PrinterController *printer, Macsa::PrintersManager &manager, QWidget *parent) :
+PrinterItem::PrinterItem(Macsa::MComms::PrinterController *printer, Macsa::MComms::PrintersManager &manager, QWidget *parent) :
 	QFrame(parent),
 	Macsa::Network::NodeObserver(printer),
 	_printer(printer),
@@ -71,7 +71,7 @@ void PrinterItem::connectPrinter()
 }
 
 // #####################   NetworkDialog   ######################## //
-NetworkDialog::NetworkDialog(Macsa::PrintersManager& manager, QWidget *parent) :
+NetworkDialog::NetworkDialog(Macsa::MComms::PrintersManager& manager, QWidget *parent) :
 	QDialog(parent),
 	Macsa::Network::NetworkObserver(&manager),
 	_manager(manager)
@@ -120,7 +120,7 @@ void NetworkDialog::refreshPrintersList()
 {
 	clearItems();
 	for (unsigned i = 0; i < _manager.size(); i++) {
-		Macsa::PrinterController* controller = _manager.getPrinter(i);
+		Macsa::MComms::PrinterController* controller = _manager.getPrinter(i);
 		if (controller != nullptr) {
 			PrinterItem* item = new PrinterItem(controller, _manager, this);
 			_printersList->addWidget(item);

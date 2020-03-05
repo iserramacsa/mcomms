@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include "viewers/tijviewercontroller.h"
-#include "tijprintercontroller.h"
+#include "tijcontroller.h"
 #include <QCheckBox>
 #include <QComboBox>
 #include <QPushButton>
@@ -19,7 +19,7 @@ class PrinterConfigView : public QWidget
 	public:
 		explicit PrinterConfigView(QWidget* parent = 0);
 		~PrinterConfigView();
-		void setController(Macsa::TijController& controller);
+		void setController(Macsa::MComms::TijController& controller);
 
 	signals:
 		void configChangeRequested();

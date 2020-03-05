@@ -3,18 +3,18 @@
 
 #include <QObject>
 #include <QDateTime>
-#include "tijprintercontroller.h"
+#include "tijcontroller.h"
 #include "tijobserver.h"
 
 #include <QThread>
 #include <QDebug>
 
-class TIJViewerController : public QObject, public Macsa::TijObserver
+class TIJViewerController : public QObject, public Macsa::MComms::TijObserver
 {
 		Q_OBJECT
 
 	public:
-		typedef Macsa::TijController::TijPrinterStatus TijStatus;
+		typedef Macsa::MComms::TijController::TijPrinterStatus TijStatus;
 		enum class TIJConfigProperties
 		{
 			HEADER_TYPE = 0,
@@ -79,21 +79,21 @@ class TIJViewerController : public QObject, public Macsa::TijObserver
 		void printerFileChanged(const QString& unit, const QString& filepath);
 
 	public:
-		TIJViewerController(Macsa::TijController &controller, QObject* parent = nullptr);
+		TIJViewerController(Macsa::MComms::TijController &controller, QObject* parent = nullptr);
 		virtual ~TIJViewerController() override {}
-		virtual Macsa::TijController& controller(){ return _controller;}
+		virtual Macsa::MComms::TijController& controller(){ return _controller;}
 		//Status
 		QString id() const {return _(_controller.id());}
 		QString address() const {return _(_controller.address());}
 
-		virtual void statusChanged()	 override { qDebug() << " Observer: " << Macsa::TijObserver::id() << "Th: " << QThread::currentThreadId() << " " << __func__; emit printerStatusChanged();	  }
-		virtual void configChanged()	 override { qDebug() << " Observer: " << Macsa::TijObserver::id() << "Th: " << QThread::currentThreadId() << " " << __func__; emit printerConfigChanged();	  }
-		virtual void filesListChanged()  override { qDebug() << " Observer: " << Macsa::TijObserver::id() << "Th: " << QThread::currentThreadId() << " " << __func__; emit printerFilesListChanged();  }
-		virtual void fontsChanged()		 override { qDebug() << " Observer: " << Macsa::TijObserver::id() << "Th: " << QThread::currentThreadId() << " " << __func__; emit printerFontsChanged();      }
-		virtual void userValuesChanged() override { qDebug() << " Observer: " << Macsa::TijObserver::id() << "Th: " << QThread::currentThreadId() << " " << __func__; emit printerUserValuesChanged(); }
-		virtual void errorsLogsChanged() override { qDebug() << " Observer: " << Macsa::TijObserver::id() << "Th: " << QThread::currentThreadId() << " " << __func__; emit printerErrorsLogsChanged(); }
+		virtual void statusChanged()	 override { qDebug() << " Observer: " << Macsa::MComms::TijObserver::id() << "Th: " << QThread::currentThreadId() << " " << __func__; emit printerStatusChanged();	  }
+		virtual void configChanged()	 override { qDebug() << " Observer: " << Macsa::MComms::TijObserver::id() << "Th: " << QThread::currentThreadId() << " " << __func__; emit printerConfigChanged();	  }
+		virtual void filesListChanged()  override { qDebug() << " Observer: " << Macsa::MComms::TijObserver::id() << "Th: " << QThread::currentThreadId() << " " << __func__; emit printerFilesListChanged();  }
+		virtual void fontsChanged()		 override { qDebug() << " Observer: " << Macsa::MComms::TijObserver::id() << "Th: " << QThread::currentThreadId() << " " << __func__; emit printerFontsChanged();      }
+		virtual void userValuesChanged() override { qDebug() << " Observer: " << Macsa::MComms::TijObserver::id() << "Th: " << QThread::currentThreadId() << " " << __func__; emit printerUserValuesChanged(); }
+		virtual void errorsLogsChanged() override { qDebug() << " Observer: " << Macsa::MComms::TijObserver::id() << "Th: " << QThread::currentThreadId() << " " << __func__; emit printerErrorsLogsChanged(); }
 		virtual void fileChanged(const std::string& unit, const std::string& filepath) override {
-			qDebug() << "Observer: " << Macsa::TijObserver::id() << " " << __func__ << " Unit: " << _(unit) << " File: " << _(filepath);
+			qDebug() << "Observer: " << Macsa::MComms::TijObserver::id() << " " << __func__ << " Unit: " << _(unit) << " File: " << _(filepath);
 			emit printerFileChanged(_(unit), _(filepath));
 		}
 
@@ -239,7 +239,7 @@ class TIJViewerController : public QObject, public Macsa::TijObserver
 //		void setDateCodes(const Macsa::Printers::DateCodes &dateCodes);
 
 	protected:
-		Macsa::TijController& _controller;
+		Macsa::MComms::TijController& _controller;
 		Macsa::Printers::TijPrinter* tijPrinter() const;
 		const Macsa::Printers::Board* tijPrinterBoard() const;
 		PrinterInput printerInputToView(Macsa::Printers::Input in) const;
