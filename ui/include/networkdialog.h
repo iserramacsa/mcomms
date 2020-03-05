@@ -9,7 +9,7 @@
 #include "network/networkobserver.h"
 #include "network/nodeobserver.h"
 
-typedef Macsa::Network::NetworkNode::NodeStatus_n NodeStatus;
+typedef Macsa::Network::NetworkNode::nNodeStatus NodeStatus;
 
 class PrinterItem : public QFrame, public Macsa::Network::NodeObserver
 {
