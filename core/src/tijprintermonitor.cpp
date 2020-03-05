@@ -5,19 +5,20 @@
 using namespace Macsa;
 using namespace Macsa::Network;
 
-TijPrinterMonitor::TijPrinterMonitor(const std::string &id, const std::string &address) :
+TijMonitor::TijMonitor(const std::string &id, const std::string &address) :
 	TijController(id, address)
 {
-	_deleteAfterSend = false;
 	_running.store(false);
+	_maxReconnections = 30;
+	_reconnections = 0;
 }
 
-TijPrinterMonitor::~TijPrinterMonitor()
+TijMonitor::~TijMonitor()
 {
 	stop();
 }
 
-bool TijPrinterMonitor::connect()
+bool TijMonitor::connect()
 {
 	bool connected = PrinterController::connect();
 	if (connected) {
@@ -26,7 +27,7 @@ bool TijPrinterMonitor::connect()
 	return connected;
 }
 
-bool TijPrinterMonitor::disconnect()
+bool TijMonitor::disconnect()
 {
 	bool disconnected = PrinterController::disconnect();
 	if (NetworkNode::status() == DISCONNECTED) {
@@ -37,24 +38,33 @@ bool TijPrinterMonitor::disconnect()
 
 #include <iostream>
 
-void TijPrinterMonitor::run()
+void TijMonitor::run()
 {
 	_running.store(true);
 
-	while (_running.load()) {
+	while (_running.load() && _reconnections < _maxReconnections) {
 		{
-			std::unique_lock<std::mutex> _lck(_mutex);
+			std::unique_lock<std::mutex> _lck(_mLoop);
 			if (_cv.wait_for(_lck, std::chrono::seconds(1)) == std::cv_status::timeout) {
+				const std::lock_guard<std::mutex>lock(_mCommands);
 				_commands.push_back(_factory.getLiveCommand());
 			} else if (_running.load() == false){
 				break;
 			}
 		}
 		while (_commands.size()) {
-			MProtocol::MCommand* cmd = (*_commands.begin());
-			send(cmd);
-			delete cmd;
-			_commands.pop_front();
+			MProtocol::MCommand* cmd = nullptr;
+			{
+				const std::lock_guard<std::mutex>lock(_mCommands);
+				cmd = (*_commands.begin());
+			}
+			if (cmd){
+				sendCmd(cmd);
+			}
+			{
+				const std::lock_guard<std::mutex>lock(_mCommands);
+				_commands.pop_front();
+			}
 		}
 
 		if (isStatusChanged()) {
@@ -76,46 +86,71 @@ void TijPrinterMonitor::run()
 			TijController::updateErrorsList();
 		}
 	}
+	_reconnections = 0;
 
 }
 
-bool TijPrinterMonitor::send(MProtocol::MCommand *cmd, Printers::ErrorCode &)
+bool TijMonitor::send(MProtocol::MCommand *cmd)
 {
 	ulong numCommands = _commands.size();
-	_commands.push_back(cmd);
 	{
-		std::unique_lock<std::mutex> _lck(_mutex);
+		const std::lock_guard<std::mutex>lock(_mCommands);
+		_commands.push_back(cmd);
+	}
+	{
+		std::unique_lock<std::mutex> _lck(_mLoop);
 		_cv.notify_one();
 	}
 	return ((_commands.size() - numCommands) > 0);
 }
 
-bool TijPrinterMonitor::send(MProtocol::MCommand *cmd)
+bool TijMonitor::sendCmd(MProtocol::MCommand *cmd)
 {
 	bool success = false;
 
-	success = TijController::send(cmd, _lastError);
+	success = TijController::send(cmd);
 	if (!success) {
 		std::cout << __FUNCTION__ << " Send command " << cmd->commandName() << " failed" << std::endl;
+		std::cout << "        reason: " << std::flush;
+		switch (_lastSentStatus) {
+			case nFrameStatus::FRAME_TIMEOUT: std::cout <<		"FRAME_TIMEOUT" 	 << std::endl; _reconnections++; break;
+			case nFrameStatus::FRAME_INCOMPLETED: std::cout <<	"FRAME_INCOMPLETED"	 << std::endl; break;
+			case nFrameStatus::FRAME_ERROR: std::cout	<<		"FRAME_ERROR"		 << std::endl; _reconnections++; break;
+			default: break;
+		}
+		PrinterController::reconnect();
+	}
+	else {
+		_reconnections = 0;
 	}
 
 	return success;
 }
 
-void TijPrinterMonitor::start()
+int TijMonitor::maxReconnections() const
+{
+	return _maxReconnections;
+}
+
+void TijMonitor::setMaxReconnections(int maxReconnections)
+{
+	_maxReconnections = maxReconnections;
+}
+
+void TijMonitor::start()
 {
 	if (_running.load()) {
 		stop();
 	}
-	_th = std::thread(&TijPrinterMonitor::run, this);
+	_th = std::thread(&TijMonitor::run, this);
 }
 
-void TijPrinterMonitor::stop()
+void TijMonitor::stop()
 {
 	if (_running.load()){
 		_running.store(false);
 		{
-			std::unique_lock<std::mutex> _lck(_mutex);
+			std::unique_lock<std::mutex> _lck(_mLoop);
 			_cv.notify_all();
 		}
 		_th.join();

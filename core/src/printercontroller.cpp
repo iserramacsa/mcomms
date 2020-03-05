@@ -23,3 +23,8 @@ bool PrinterController::disconnect()
 {
 	return NetworkNode::disconnect(_printerPort);
 }
+
+bool PrinterController::reconnect()
+{
+	return NetworkNode::reconnect(ISocket::TCP_SOCKET, _printerPort);
+}

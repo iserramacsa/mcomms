@@ -10,53 +10,30 @@
 
 using namespace Macsa;
 using namespace Macsa::Network;
+using namespace Macsa::MProtocol;
 
 TijController::TijController(const std::string &id, const std::string &address) :
 	PrinterController(id, address, MPROTOCOL_PORT),
-	_deleteAfterSend(true),
 	_factory(_printer, _liveFlags)
 {}
 
-Printers::ErrorCode TijController::getLive()
+void TijController::getLive()
 {
-	Printers::ErrorCode error;
-	MProtocol::MCommand* cmd = _factory.getLiveCommand();
-	if (cmd) {
-		if (send(cmd, error) && error == Printers::ErrorCode_n::SUCCESS) {
-			if (_liveFlags.statusChanged)
-				std::cout << "statusChanged" << std::endl;
-			if (_liveFlags.configChanged)
-				std::cout << "configChanged" << std::endl;
-			if (_liveFlags.filesChanged)
-				std::cout << "filesChanged" << std::endl;
-			if (_liveFlags.fontsChanged)
-				std::cout << "fontsChanged" << std::endl;
-			if (_liveFlags.errorsLogChanged)
-				std::cout << "errorsLogChanged" << std::endl;
-			if (_liveFlags.userValueChanged)
-				std::cout << "userValueChanged" << std::endl;
-			if (_liveFlags.isInError)
-				std::cout << "isInError" << std::endl;
-		}
-	}
-	return error;
+	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getLiveCommand;
+	requestCommand(command);
 }
 
-Printers::ErrorCode TijController::updateStatus()
+bool TijController::updateStatus()
 {
-	Printers::ErrorCode error;
-	MProtocol::MCommand* cmd = _factory.getStatusCommand();
-	if (cmd) {
-		send(cmd, error);
-	}
-	return error;
+	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getStatusCommand;
+	return  requestCommand(command);
 }
 
 TijController::TijPrinterStatus TijController::printerStatus()
 {
 	TijPrinterStatus status = TijPrinterStatus::DISCONNECTED;
 
-	if (NetworkNode::status() == NetworkNode::NodeStatus_n::CONNECTED) {
+	if (NetworkNode::status() == NetworkNode::nNodeStatus::CONNECTED) {
 		const Macsa::Printers::Board * board = _printer.board(0);
 		if (board == nullptr) {
 			board = _printer.board(0);
@@ -83,144 +60,109 @@ TijController::TijPrinterStatus TijController::printerStatus()
 	return status;
 }
 
-Printers::ErrorCode TijController::updateErrorsList()
+bool TijController::updateErrorsList()
 {
-	Printers::ErrorCode error;
-	MProtocol::MCommand* cmd = _factory.getErrorsList();
-	if (cmd) {
-		send(cmd, error);
-	}
-	return error;
+	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getErrorsList;
+	return  requestCommand(command);
 }
 
-Printers::ErrorCode TijController::updateConfig()
+bool TijController::updateConfig()
 {
-	Printers::ErrorCode error;
-	MProtocol::MCommand* cmd = _factory.getConfigCommand();
-	if (cmd) {
-		send(cmd, error);
-	}
-	return error;
+	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getConfigCommand;
+	return  requestCommand(command);
 }
 
-Printers::ErrorCode TijController::setDateTime(const time_t &dt)
+bool TijController::setDateTime(const time_t &dt)
 {
-	Printers::ErrorCode error;
-	MProtocol::MCommand* cmd = _factory.setDateTimeCommand(dt);
-	if (cmd) {
-		send(cmd, error);
-	}
-	return error;
+	std::function<MCommand*(MCommandsFactory*, const time_t &)> command = &MCommandsFactory::setDateTimeCommand;
+	return  requestCommand(command, dt);
 }
 
-Printers::ErrorCode TijController::setEnabled(bool enabled)
+bool TijController::setEnabled(bool enabled)
 {
 	Printers::Board board(0, &_printer);
 	if (getBaseBoard(board)){
 		board.setEnabled(enabled);
 		return changeBoardConfig(board);
 	}
-	return Printers::ErrorCode(Printers::PARAM_BOARD_ID_NOT_FOUND);
+	return false;
 }
 
-Printers::ErrorCode TijController::setAutoStart(bool enabled)
-{
+bool TijController::setAutoStart(bool enabled)
+{	
 	Printers::Board board(0, &_printer);
 	if (getBaseBoard(board)){
 		board.setAutoStart(enabled);
 		return changeBoardConfig(board);
 	}
-	return Printers::ErrorCode(Printers::PARAM_BOARD_ID_NOT_FOUND);
+	return false;
 }
 
-Printers::ErrorCode TijController::setLowLevelOutput(bool enabled)
+bool TijController::setLowLevelOutput(bool enabled)
 {
 	Printers::Board board(0, &_printer);
 	if (getBaseBoard(board)){
 		board.setLowLevelOutput(enabled);
 		return changeBoardConfig(board);
 	}
-	return Printers::ErrorCode(Printers::PARAM_BOARD_ID_NOT_FOUND);
+	return false;
 }
 
-Printers::ErrorCode TijController::setCartridgeBlocked(bool blocked)
+bool TijController::setCartridgeBlocked(bool blocked)
 {
 	Printers::Board board(0, &_printer);
 	if (getBaseBoard(board)){
 		board.setBlocked(blocked);
 		return changeBoardConfig(board);
 	}
-	return Printers::ErrorCode(Printers::PARAM_BOARD_ID_NOT_FOUND);
+	return false;
 }
 
-Printers::ErrorCode TijController::setPrintRotated(bool rotated)
+bool TijController::setPrintRotated(bool rotated)
 {
 	Printers::Board board(0, &_printer);
 	if (getBaseBoard(board)){
 		board.setPrintRotated(rotated);
 		return changeBoardConfig(board);
 	}
-	return Printers::ErrorCode(Printers::PARAM_BOARD_ID_NOT_FOUND);
+	return false;
 }
 
-Printers::ErrorCode TijController::updateFilesList()
+bool TijController::updateFilesList()
 {
-	Printers::ErrorCode error;
-	MProtocol::MCommand* cmd = _factory.getAllFilesCommand();
-	if (cmd) {
-		send(cmd, error);
-	}
-	return error;
+	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getAllFilesCommand;
+	return  requestCommand(command);
 }
 
-Printers::ErrorCode TijController::updateFontsList()
+bool TijController::updateFontsList()
 {
-	Printers::ErrorCode error;
-	MProtocol::MCommand* cmd = _factory.getFontsCommand();
-	if (cmd) {
-		send(cmd, error);
-	}
-	return error;
+	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getFontsCommand;
+	return  requestCommand(command);
 }
 
-Printers::ErrorCode TijController::updateUserValues()
+bool TijController::updateUserValues()
 {
-	Printers::ErrorCode error;
-	MProtocol::MCommand* cmd = _factory.getFontsCommand();
-	if (cmd) {
-		send(cmd, error);
-	}
-	return error;
+//	std::function<MCommand*()> command = std::bind(&MCommandsFactory::getFontsCommand, &_factory);
+//	return  requestCommand(command);
+	return false;
 }
 
-Printers::ErrorCode TijController::updateMessagesList()
+bool TijController::updateMessagesList()
 {
-	Printers::ErrorCode error;
-	MProtocol::MCommand* cmd = _factory.getMessagesCommand();
-	if (cmd) {
-		send(cmd, error);
-	}
-	return error;
+	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getMessagesCommand;
+	return  requestCommand(command);
 }
 
-Printers::ErrorCode TijController::updateImagesList()
+bool TijController::updateImagesList()
 {
-	Printers::ErrorCode error;
-	MProtocol::MCommand* cmd = _factory.getImagesCommand();
-	if (cmd) {
-		send(cmd, error);
-	}
-	return error;
+	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getImagesCommand;
+	return  requestCommand(command);
 }
 
-Printers::ErrorCode TijController::updateFile(const std::string &filepath, bool rawMode)
+bool TijController::updateFile(const std::string &filepath, bool rawMode)
 {
-	Printers::ErrorCode error;
-	MProtocol::MCommand* cmd = _factory.getFileContent(filepath, rawMode);
-	if (cmd) {
-		send(cmd, error);
-	}
-	return error;
+	std::function<MCommand*(MCommandsFactory*, const std::string &, const bool&)> command = &MCommandsFactory::getFileContent;
+	return  requestCommand(command, filepath, rawMode);
 }
 
 std::vector<std::string> TijController::getDrives()
@@ -248,10 +190,9 @@ std::vector<uint8_t> TijController::getFile(const std::string &filepath)
 	return content;
 }
 
-bool TijController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &/*err*/)
+bool TijController::send(MCommand* cmd)
 {
 	bool success = false;
-
 
 	std::string tx = cmd->getRequest(_factory.nextId());
 	_lastSentStatus = Network::NetworkNode::sendPacket(tx, MPROTOCOL_PORT);
@@ -266,34 +207,9 @@ bool TijController::send(MProtocol::MCommand* cmd, Printers::ErrorCode &/*err*/)
 			if (success && cmd->getError() == Printers::ErrorCode_n::SUCCESS) {
 				checkCommand(cmd->commandName(), cmd->attributes());
 			}
-			if (!success) {
-				std::cout << __FILE__ << " " << cmd->commandName() << " failed on parse response:" << std::endl;
-				std::cout << resp << std::endl;
-			}
-		}
-		else {
-			std::cout << __FILE__ << " Receive failed: ";
-			switch (_lastSentStatus) {
-				case ISocket::FRAME_SUCCESS:     std::cerr << "SUCCESS" << std::endl; break;
-				case ISocket::FRAME_TIMEOUT:	 std::cerr << "TIMEOUT" << std::endl; break;
-				case ISocket::FRAME_INCOMPLETED: std::cerr << "INCOMPLETED" << std::endl; break;
-				case ISocket::FRAME_ERROR:		 std::cerr << "ERROR" << std::endl; break;
-			}
 		}
 	}
-	else {
-		std::cout << __FILE__ << " Send Command failed: ";
-		switch (_lastSentStatus) {
-			case ISocket::FRAME_SUCCESS:     std::cerr << "SUCCESS" << std::endl; break;
-			case ISocket::FRAME_TIMEOUT:	 std::cerr << "TIMEOUT" << std::endl; break;
-			case ISocket::FRAME_INCOMPLETED: std::cerr << "INCOMPLETED" << std::endl; break;
-			case ISocket::FRAME_ERROR:		 std::cerr << "ERROR" << std::endl; break;
-		}
-	}
-	if(_deleteAfterSend) {
-		delete cmd;
-	}
-
+	delete cmd;
 	return success;
 }
 
@@ -306,14 +222,10 @@ bool TijController::getBaseBoard(Printers::Board& board)
 	return valid;
 }
 
-Printers::ErrorCode TijController::changeBoardConfig(const Printers::Board &board)
+bool TijController::changeBoardConfig(const Printers::Board &board)
 {
-	Printers::ErrorCode error(Printers::ErrorCode_n::PARAM_BOARD_ID_NOT_FOUND);
-	MProtocol::MCommand* cmd = _factory.setConfigBoard(board);
-	if (cmd) {
-		send(cmd, error);
-	}
-	return error;
+	std::function<MCommand*(MCommandsFactory*, const Printers::Board&)> command = &MCommandsFactory::setConfigBoard;
+	return  requestCommand(command, board);
 }
 
 void TijController::checkCommand(const std::string &cmd, const std::map<std::string,std::string>& attributes)
@@ -375,3 +287,15 @@ std::vector<std::string> TijController::getFiles(const std::string &drive, const
 	return drives;
 }
 
+
+template<typename ... Args>
+bool TijController::requestCommand(std::function<MCommand*(MCommandsFactory*, const Args& ...)>& command, const Args& ...args)
+{
+	bool success = false;
+	std::function<MCommand*(const Args& ...)> function = std::bind(command, &_factory, args...);
+	MCommand* cmd = function(args...);
+	if (cmd) {
+		success = send(cmd);
+	}
+	return success;
+}

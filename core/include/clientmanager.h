@@ -1,18 +1,18 @@
 #ifndef CLIENT_MANAGER_H
 #define CLIENT_MANAGER_H
 
-#include "network/network.h"
 #include <thread>
 #include <atomic>
-#include <condition_variable>
 #include <mutex>
+
+#include <condition_variable>
+#include "network/network.h"
 #include "clientHandler.h"
 #include "tij/tijprinter.h"
 
 using namespace Macsa;
 using namespace Macsa::Network;
 
-class AbstractSocket;
 class ClientManager : protected Network::MNetwork
 {
 	public:
