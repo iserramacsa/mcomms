@@ -11,6 +11,8 @@
 using namespace tinyxml2;
 using namespace Macsa::MProtocol;
 
+#define CLOSE_WIND "</" MWIND ">"
+
 MCommandsFactory::MCommandsFactory(Printers::TijPrinter &printer, LiveFlags &liveFlags) :
 	_printer(printer),
 	_liveFlags(liveFlags)
@@ -24,7 +26,7 @@ MCommandsFactory::~MCommandsFactory()
 	_doc.Clear();
 }
 
-bool MCommandsFactory::parseResponse(const std::string &frame, MCommand * cmd)
+bool MCommandsFactory::parseResponse(const std::string &rx, MCommand * cmd)
 {
 	bool valid = false;
 
@@ -32,8 +34,14 @@ bool MCommandsFactory::parseResponse(const std::string &frame, MCommand * cmd)
 		_doc.Clear();
 	}
 
-	if (frame.length())
+	if (rx.length())
 	{
+		size_t close = rx.find(CLOSE_WIND);
+		if (close != rx.npos) {
+			close += sizeof (CLOSE_WIND);
+		}
+		std::string frame = rx.substr(0, close);
+
 		_doc.Parse(frame.c_str());
 		XMLElement* wind = _doc.FirstChildElement();
 		if(isWindValid(wind))
@@ -105,7 +113,7 @@ MCommand *MCommandsFactory::getConfigCommand()
 	return new MGetConfig(_printer);
 }
 
-MCommand *MCommandsFactory::setDateTimeCommand(time_t dateTime)
+MCommand *MCommandsFactory::setDateTimeCommand(const time_t & dateTime)
 {
 	Macsa::Printers::TijPrinter printer = _printer;
 	printer.setDateTime(dateTime);

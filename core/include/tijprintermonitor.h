@@ -10,21 +10,29 @@
 #include <thread>
 
 namespace Macsa {
-	class TijPrinterMonitor : public TijController{
+
+	class TijMonitor : public TijController{
 		public:
-			TijPrinterMonitor(const std::string &id, const std::string &address);
-			virtual ~TijPrinterMonitor() override;
+			TijMonitor(const std::string &id, const std::string &address);
+			virtual ~TijMonitor() override;
 
 			virtual bool connect() override;
 			virtual bool disconnect() override;
 
+			int maxReconnections() const;
+			void setMaxReconnections(int maxReconnections);
+
 		protected:
 			virtual void run();
-			virtual bool send(MProtocol::MCommand *cmd, Printers::ErrorCode& err) override;
+			virtual bool send(MProtocol::MCommand *cmd) override;
+			virtual bool sendCmd(MProtocol::MCommand *cmd);
 
 		private:
+			int _reconnections;
+			int _maxReconnections;
 			std::atomic_bool _running;
-			std::mutex _mutex;
+			std::mutex _mLoop;
+			std::mutex _mCommands;
 			std::condition_variable _cv;
 			std::thread _th;
 			Printers::ErrorCode _lastError;

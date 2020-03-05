@@ -26,8 +26,8 @@ namespace Macsa {
 				NetworkNode* getNode(unsigned int index) const;
 				int getNodeIdx(NetworkNode* node) const;
 
-				virtual NodeStatus_n status() const;
-				virtual unsigned int size() const {return static_cast<unsigned int>(_nodes.size());}
+				virtual nNodeStatus status() const;
+				virtual inline unsigned int size() const {return static_cast<unsigned int>(_nodes.size());}
 
 			protected:
 				bool exist(NetworkNode* node);

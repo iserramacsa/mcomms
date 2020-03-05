@@ -24,7 +24,7 @@ namespace Macsa {
 			virtual Printers::Printer* printer() override {return &_printer;}
 
 			//Live
-			Printers::ErrorCode getLive();
+			void getLive();
 			bool isStatusChanged() const {return _liveFlags.statusChanged;}
 			bool isConfigChanged() const {return _liveFlags.configChanged;}
 			bool isFilesChanged() const {return _liveFlags.filesChanged;}
@@ -34,26 +34,26 @@ namespace Macsa {
 			bool isInError() const {return _liveFlags.isInError;}
 
 			//Status
-			Printers::ErrorCode updateStatus();
+			bool updateStatus();
 			TijPrinterStatus printerStatus();
 
-			Printers::ErrorCode updateErrorsList();
+			bool updateErrorsList();
 			//Config
-			Printers::ErrorCode updateConfig();
-			Printers::ErrorCode setDateTime(const std::time_t& dt);
-			Printers::ErrorCode setEnabled(bool enabled);
-			Printers::ErrorCode setAutoStart(bool enabled);
-			Printers::ErrorCode setLowLevelOutput(bool enabled);
-			Printers::ErrorCode setCartridgeBlocked(bool blocked);
-			Printers::ErrorCode setPrintRotated(bool rotated);
+			bool updateConfig();
+			bool setDateTime(const std::time_t& dt);
+			bool setEnabled(bool enabled);
+			bool setAutoStart(bool enabled);
+			bool setLowLevelOutput(bool enabled);
+			bool setCartridgeBlocked(bool blocked);
+			bool setPrintRotated(bool rotated);
 
 			//Files
-			Printers::ErrorCode updateFilesList();
-			Printers::ErrorCode updateFontsList();
-			Printers::ErrorCode updateMessagesList();
-			Printers::ErrorCode updateImagesList();
-			Printers::ErrorCode updateFile(const std::string& filepath, bool rawMode = false);
-			Printers::ErrorCode updateUserValues();
+			bool updateFilesList();
+			bool updateFontsList();
+			bool updateMessagesList();
+			bool updateImagesList();
+			bool updateFile(const std::string& filepath, bool rawMode = false);
+			bool updateUserValues();
 
 			std::vector<std::string> getDrives();
 			std::vector<uint8_t> getFile(const std::string& filepath);
@@ -70,24 +70,29 @@ namespace Macsa {
 			inline std::vector<std::string> getAllFiles() { return getFiles(ALL_FILES_FILTER); }
 
 		protected:
-			bool _deleteAfterSend;
+			using nFrameStatus=Network::ISocket::nSocketFrameStatus;
 			MProtocol::MCommandsFactory _factory;
 			MProtocol::LiveFlags _liveFlags;
+			nFrameStatus _lastSentStatus;
 
-			virtual bool send(MProtocol::MCommand *cmd, Printers::ErrorCode& err) override;
+			virtual bool send(MProtocol::MCommand *cmd) override;
 
 		private:
 			std::mutex _mutex;
 			Printers::TijPrinter _printer;
 
 			bool getBaseBoard(Printers::Board& board);
-			Printers::ErrorCode changeBoardConfig(const Printers::Board& board);
+			bool changeBoardConfig(const Printers::Board& board);
 
 			void checkCommand(const std::string& cmd, const std::map<std::string, std::string> &attributes);
 
 //			void checkConnection(); // TODO
 			std::vector<std::string> getFiles(const std::string &extension);
 			std::vector<std::string> getFiles(const std::string &drive,const std::string &folder);
+
+			template<typename... Args>
+//			bool requestCommand(std::function<MProtocol::MCommand*(const Args& ...)>& command, const Args& ...args);
+			bool requestCommand(std::function<MProtocol::MCommand*(MProtocol::MCommandsFactory*, const Args& ...)>& command, const Args& ...args);
 			
 	};
 }

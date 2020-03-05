@@ -25,7 +25,6 @@ namespace Macsa{
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml) = 0;
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml) = 0;
 
-
 				inline std::string commandName() const{ return _commandName;}
 				inline uint32_t id() const{ return _id;}
 				inline Printers::ErrorCode getError() const{ return _error;}

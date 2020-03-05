@@ -15,11 +15,12 @@ namespace Macsa {
 			~PrinterController();
 			virtual bool connect();
 			virtual bool disconnect();
+			virtual bool reconnect();
 
 			virtual Printers::Printer* printer() = 0;
 
 		protected:
-			virtual bool send(MProtocol::MCommand *cmd, Printers::ErrorCode& err) = 0;
+			virtual bool send(MProtocol::MCommand *cmd) = 0;
 
 		private:
 			uint16_t _printerPort;

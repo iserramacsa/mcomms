@@ -27,7 +27,7 @@ bool PrintersManager::addTijPrinter(const std::string name, const std::string &a
 	bool added;
 	TijController* controller = nullptr;
 	if (monitorize){
-		controller = new TijPrinterMonitor(name, address);
+		controller = new TijMonitor(name, address);
 	}
 	else {
 		controller = new TijController(name, address);

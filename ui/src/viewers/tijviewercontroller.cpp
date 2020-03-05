@@ -16,74 +16,73 @@ TIJViewerController::TIJViewerController(TijController &controller, QObject *par
 #include <iostream>
 void TIJViewerController::updatePrinterData()
 {
-	if (_controller.getLive() == ErrorCode_n::SUCCESS) {
-		if (_controller.isStatusChanged())
-			_controller.updateStatus();
+	_controller.getLive();
+	if (_controller.isStatusChanged())
+		_controller.updateStatus();
 
-		if (_controller.isConfigChanged())
-			_controller.updateConfig();
+	if (_controller.isConfigChanged())
+		_controller.updateConfig();
 
-		if (_controller.isFilesChanged())
-			_controller.updateFilesList();
+	if (_controller.isFilesChanged())
+		_controller.updateFilesList();
 
-		if (_controller.isFontsChanged())
-			_controller.updateFontsList();
+	if (_controller.isFontsChanged())
+		_controller.updateFontsList();
 
-		if (_controller.isUserValuesChanged())
-			std::cout << "Printer user values changed!" << std::endl;
+	if (_controller.isUserValuesChanged())
+		std::cout << "Printer user values changed!" << std::endl;
 //			_controller.updateUserValues();
 
-		if (_controller.isErrorsLogsChanged())
-			_controller.updateErrorsList();
+	if (_controller.isErrorsLogsChanged())
+		_controller.updateErrorsList();
 
-		if (_controller.isInError())
-			std::cout << "Printer is in error!" << std::endl;
-	}
+	if (_controller.isInError())
+		std::cout << "Printer is in error!" << std::endl;
 }
 
-bool TIJViewerController::requestLive()
-{
-	return _controller.getLive() == ErrorCode_n::SUCCESS;
+bool TIJViewerController::requestLive() {
+	_controller.getLive();
+	return true;
 }
 
 bool TIJViewerController::requestStatus()
 {
-	return _controller.updateStatus() == ErrorCode_n::SUCCESS;
+	return _controller.updateStatus();
 }
 
 bool TIJViewerController::requestConfig()
 {
-	return _controller.updateConfig() == ErrorCode_n::SUCCESS;
+	return _controller.updateConfig();
 }
 
 bool TIJViewerController::requestErrorsList()
 {
-	return _controller.updateErrorsList() == ErrorCode_n::SUCCESS;
+	return _controller.updateErrorsList();
 }
 
 bool TIJViewerController::requestAllFiles()
 {
-	return _controller.updateFilesList() == ErrorCode_n::SUCCESS;
+	return _controller.updateFilesList();
 }
 
 bool TIJViewerController::requestFontFiles()
 {
-	return _controller.updateFontsList() == ErrorCode_n::SUCCESS;
+	return _controller.updateFontsList();
 }
 
 bool TIJViewerController::requestMessagesFiles()
 {
-	return _controller.updateMessagesList() == ErrorCode_n::SUCCESS;
+	return _controller.updateMessagesList();
 }
 
 bool TIJViewerController::requestImagesFiles()
 {
-	return _controller.updateImagesList() == ErrorCode_n::SUCCESS;
+	return _controller.updateImagesList();
 }
 
 bool TIJViewerController::requestFileContent(const std::string &filepath, bool rawMode)
 {
-	return (_controller.updateFile(filepath, rawMode) == ErrorCode_n::SUCCESS);
+	return (_controller.updateFile(filepath, rawMode));
 }
 
 std::vector<uint8_t> TIJViewerController::getFileContent(const std::string &filepath)
