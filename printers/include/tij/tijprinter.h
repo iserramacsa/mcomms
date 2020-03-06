@@ -11,10 +11,10 @@ namespace Macsa {
 		class TijPrinter : public Printer {
 
 			public:
-				static int versionMajor();
-				static int versionMinor();
-				static int versionRevision();
-				static std::string version();
+				static int libraryVersionMajor();
+				static int libraryVersionMinor();
+				static int libraryVersionRevision();
+				static std::string libraryVersion();
 
 			public:
 				TijPrinter();

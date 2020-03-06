@@ -221,12 +221,6 @@ const Drive *PrinterFiles::getDrive(const string &drive) const
 	return getItem(drive, _drives);
 }
 
-//const Folder *PrinterFiles::getFolder(const string &path) const
-//{
-//	std::string drive = "//";
-
-//}
-
 const Folder *PrinterFiles::getFolder(const string &drive, const string &folder) const
 {
 	const Drive * d = getItem(drive, _drives);

@@ -84,35 +84,35 @@ namespace Macsa {
 				const File* getFile(const std::string& drive, const std::string& folder, const std::string& filename) const;
 				const File* getFile(const std::string& filepath) const;
 
-				bool driveExist(const std::string& drive) const;
-				bool folderExist(const std::string& drive, const std::string& folder) const;
-				bool fileExist(const std::string& drive, const std::string& folder, const std::string& filename) const;
+				virtual bool driveExist(const std::string& drive) const;
+				virtual bool folderExist(const std::string& drive, const std::string& folder) const;
+				virtual bool fileExist(const std::string& drive, const std::string& folder, const std::string& filename) const;
 
-				bool clear();
-				bool addNewDrive(const std::string& drive);
-				bool addNewFolder(const std::string& drive, const std::string& folder);
-				bool addNewFile(const std::string& drive, const std::string& folder, const std::string& filename);
-				bool addFile(const std::string& drive, const std::string& folder, const std::string& filename, const std::vector<uint8_t>& data);
-				bool setFile(const std::string& drive, const std::string& folder, const std::string& filename, const std::vector<uint8_t>& data);
-				bool setFile(const std::string& filepath, const std::vector<uint8_t>& data);
-				bool clearDrive(const std::string& drive);
-				bool clearFolder(const std::string& drive, const std::string& folder);
-				bool deleteDrive(const std::string& drive);
-				bool deleteFolder(const std::string& drive, const std::string& folder);
-				bool deleteFile(const std::string& drive, const std::string& folder, const std::string& filename);
-				bool renameFolder(const std::string& drive, const std::string& oldfolder, const std::string& newFolder);
-				bool renameFile(const std::string& drive, const std::string& folder, const std::string& oldName, const std::string& newName);
-				bool moveFile(const std::string &oldDrive, const std::string& oldFolder, const std::string& oldName,
+				virtual bool clear();
+				virtual bool addNewDrive(const std::string& drive);
+				virtual bool addNewFolder(const std::string& drive, const std::string& folder);
+				virtual bool addNewFile(const std::string& drive, const std::string& folder, const std::string& filename);
+				virtual bool addFile(const std::string& drive, const std::string& folder, const std::string& filename, const std::vector<uint8_t>& data);
+				virtual bool setFile(const std::string& drive, const std::string& folder, const std::string& filename, const std::vector<uint8_t>& data);
+				virtual bool setFile(const std::string& filepath, const std::vector<uint8_t>& data);
+				virtual bool clearDrive(const std::string& drive);
+				virtual bool clearFolder(const std::string& drive, const std::string& folder);
+				virtual bool deleteDrive(const std::string& drive);
+				virtual bool deleteFolder(const std::string& drive, const std::string& folder);
+				virtual bool deleteFile(const std::string& drive, const std::string& folder, const std::string& filename);
+				virtual bool renameFolder(const std::string& drive, const std::string& oldfolder, const std::string& newFolder);
+				virtual bool renameFile(const std::string& drive, const std::string& folder, const std::string& oldName, const std::string& newName);
+				virtual bool moveFile(const std::string &oldDrive, const std::string& oldFolder, const std::string& oldName,
 							  const std::string &newDrive, const std::string& newFolder, const std::string& newName);
 
-				void updateDrives(const std::vector<std::string> drives);
-				void clearFilesOfType(const std::string& drive, const std::string& extension);
-				void clearFilesOfType(const std::string& drive, const std::vector<std::string>& extensions);
+				virtual void updateDrives(const std::vector<std::string> drives);
+				virtual void clearFilesOfType(const std::string& drive, const std::string& extension);
+				virtual void clearFilesOfType(const std::string& drive, const std::vector<std::string>& extensions);
 
 				 /* Full transfer methods*/
-				Drive*	removeDrive(const std::string& drive);
-				Folder* removeFolder(const std::string &drive, const std::string &folder);/*Full transfer*/
-				File*	removeFile(const std::string &drive, const std::string& folder, const std::string& filename);/*Full transfer*/
+				virtual Drive*	removeDrive(const std::string& drive);
+				virtual Folder* removeFolder(const std::string &drive, const std::string &folder);/*Full transfer*/
+				virtual File*	removeFile(const std::string &drive, const std::string& folder, const std::string& filename);/*Full transfer*/
 
 
 				void splitFilepath(const std::string &pwd, std::string &drive, std::vector<std::string> &folders, std::string &file) const;
