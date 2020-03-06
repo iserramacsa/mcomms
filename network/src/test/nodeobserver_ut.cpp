@@ -18,13 +18,13 @@ using namespace Macsa::Network;
 class MyObserver : public NodeObserver
 {
 	public:
-		MyObserver(NetworkNode* node, std::function<void(const NetworkNode::NodeStatus_n&)>* onStatusChanged, std::function<void()>* onMessageTimedOut) :
+		MyObserver(NetworkNode* node, std::function<void(const NetworkNode::nNodeStatus&)>* onStatusChanged, std::function<void()>* onMessageTimedOut) :
 			NodeObserver(node),
 			_onStatusChanged(onStatusChanged),
 			_onMessageTimedOut(onMessageTimedOut)
 		{}
 
-		virtual void nodeStatusChanged(const NetworkNode::NodeStatus_n& status) override
+		virtual void nodeStatusChanged(const NetworkNode::nNodeStatus& status) override
 		{
 			if (_onStatusChanged != nullptr) {
 				(*_onStatusChanged)(status);
@@ -38,7 +38,7 @@ class MyObserver : public NodeObserver
 		}
 
 	  private:
-		const std::function<void(const NetworkNode::NodeStatus_n&)>* _onStatusChanged;
+		const std::function<void(const NetworkNode::nNodeStatus&)>* _onStatusChanged;
 		const std::function<void()>* _onMessageTimedOut;
 };
 
@@ -133,7 +133,7 @@ TEST_F(MNodeObserverUT, nodeStatusChanged_returnConnected)
 	std::mutex mutex;
 	std::condition_variable cv;
 	bool connected = false;
-	std::function<void(const NetworkNode::NodeStatus_n&)> onConnected = [&](const int& status) {
+	std::function<void(const NetworkNode::nNodeStatus&)> onConnected = [&](const int& status) {
 		if(status == NetworkNode::CONNECTED) {
 			std::unique_lock<std::mutex>lock(mutex);
 			connected = true;
@@ -160,7 +160,7 @@ TEST_F(MNodeObserverUT, nodeStatusChanged_returnConnecting)
 	std::mutex mutex;
 	std::condition_variable cv;
 	bool connecting = false;
-	std::function<void(const NetworkNode::NodeStatus_n&)> onConnected = [&](const int& status) {
+	std::function<void(const NetworkNode::nNodeStatus&)> onConnected = [&](const int& status) {
 		if (status == NetworkNode::CONNECTING) {
 			std::unique_lock<std::mutex>lock(mutex);
 			connecting = true;
@@ -187,7 +187,7 @@ TEST_F(MNodeObserverUT, nodeStatusChanged_returnDisconnected)
 	std::mutex mutex;
 	std::condition_variable cv;
 	bool disconnected = false;
-	std::function<void(const NetworkNode::NodeStatus_n&)> onConnected = [&](const int& status) {
+	std::function<void(const NetworkNode::nNodeStatus&)> onConnected = [&](const int& status) {
 		std::unique_lock<std::mutex>lock(mutex);
 		disconnected = (status == NetworkNode::DISCONNECTED);
 		cv.notify_all();

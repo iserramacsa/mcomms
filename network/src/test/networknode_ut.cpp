@@ -356,7 +356,7 @@ TEST_F(MNetworkNodeUT, receivePacketWithConnectedStoredConnection_returnEcho)
 /**
  * @brief TEST_F Receive packet with disconnected connection.
  */
-TEST_F(MNetworkNodeUT, receivePacketWithDisconnectedConnection_returnTimeout)
+TEST_F(MNetworkNodeUT, receivePacketWithDisconnectedConnection_returnError)
 {
 	_node = new NetworkNode(LOCAL_ID, SERVER_MOCKABLE_ADDR);
 	_node->addConnection(ISocket::TCP_SOCKET, TEST_PORT);
@@ -364,7 +364,7 @@ TEST_F(MNetworkNodeUT, receivePacketWithDisconnectedConnection_returnTimeout)
 	EXPECT_EQ(_node->connections(), 1);
 	EXPECT_EQ(_node->status(), NetworkNode::DISCONNECTED);
 	std::string rx = "";
-	EXPECT_EQ(_node->receivePacket(rx, TEST_PORT, TEST_TIMEOUT_MS), ISocket::FRAME_TIMEOUT);
+	EXPECT_EQ(_node->receivePacket(rx, TEST_PORT, TEST_TIMEOUT_MS), ISocket::FRAME_ERROR);
 }
 
 /**

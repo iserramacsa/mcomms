@@ -225,7 +225,7 @@ ISocket::nSocketFrameStatus UnixSocket::receive(std::string &rx, std::string &ad
 				int len = ret;
 				while(len > 0) {
 					bool end = false;
-					if (waitForRead(_sock.fd, 500, end)){
+					if (waitForRead(_sock.fd, 200, end)){
 						memset(buff, 0, DEFAULT_BUFF_SIZE);
 						len = static_cast<int>(::recv(_sock.fd, buff, DEFAULT_BUFF_SIZE, 0));
 						if (len > 0) {
