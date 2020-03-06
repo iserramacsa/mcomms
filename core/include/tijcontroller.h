@@ -87,12 +87,11 @@ namespace Macsa {
 
 				void checkCommand(const std::string& cmd, const std::map<std::string, std::string> &attributes);
 
-				//			void checkConnection(); // TODO
+				// void checkConnection(); // TODO
 				std::vector<std::string> getFiles(const std::string &extension);
 				std::vector<std::string> getFiles(const std::string &drive,const std::string &folder);
 
 				template<typename... Args>
-				//			bool requestCommand(std::function<MProtocol::MCommand*(const Args& ...)>& command, const Args& ...args);
 				bool requestCommand(std::function<MProtocol::MCommand*(MProtocol::MCommandsFactory*, const Args& ...)>& command, const Args& ...args);
 
 		};
