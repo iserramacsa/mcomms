@@ -10,11 +10,10 @@ namespace Macsa {
 		{
 			public:
 				Input(uint32_t id);
-				virtual ~Input();
 
 				InputMode mode() const;
 				void setMode(const InputMode& mode);
-				void setMode(InputMode_n mode);
+				void setMode(nInputMode mode);
 				void setMode(const std::string& mode);
 
 				bool inverted() const;

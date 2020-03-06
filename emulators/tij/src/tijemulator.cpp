@@ -14,15 +14,14 @@ TIJEmulator::TIJEmulator()
 }
 
 TIJEmulator::~TIJEmulator()
-{
-
-}
+{}
 
 void TIJEmulator::init()
 {
 	Board board(0, dynamic_cast<TijPrinter*>(this));
 	initBoard(board);
-	_boards.insert(_boards.begin(), board);
+	_boards.clear();
+	_boards.push_back(board);
 }
 
 void TIJEmulator::initBoard(Board &board)
@@ -32,5 +31,5 @@ void TIJEmulator::initBoard(Board &board)
 	board.setBlocked(true);
 	board.setEnabled(false);
 	board.setPrinting(false);
-	board.setBcdMode(Printers::BCDMode_n::USER_MODE);
+	board.setBcdMode(Printers::nBCDMode::USER_MODE);
 }

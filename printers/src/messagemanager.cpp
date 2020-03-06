@@ -20,7 +20,7 @@ void MessageManager::setMode(const BCDMode &mode)
 	_mode = mode;
 }
 
-void MessageManager::setMode(const BCDMode_n &mode)
+void MessageManager::setMode(const nBCDMode &mode)
 {
 	_mode = mode;
 }
@@ -86,7 +86,7 @@ void MessageManager::setCurrentBcdCode(const uint8_t &currentBcdCode)
 std::string MessageManager::currentMessage() const
 {
 	std::string msg = "";
-	if (_mode == Printers::BCDMode_n::USER_MODE) {
+	if (_mode == Printers::nBCDMode::USER_MODE) {
 		msg = _userMessage;
 	}
 	else {

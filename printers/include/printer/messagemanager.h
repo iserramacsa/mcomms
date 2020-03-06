@@ -23,7 +23,7 @@ namespace Macsa {
 
 				BCDMode mode() const;
 				void setMode(const BCDMode &mode);
-				void setMode(const BCDMode_n &mode);
+				void setMode(const nBCDMode &mode);
 				void setMode(const std::string &mode);
 
 				std::string userMessage() const;

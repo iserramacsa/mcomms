@@ -156,7 +156,7 @@ void Board::setBcdMode(const BCDMode &mode)
 	_messageManager.setMode(mode);
 }
 
-void Board::setBcdMode(const BCDMode_n &mode)
+void Board::setBcdMode(const nBCDMode &mode)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	_messageManager.setMode(mode);
@@ -186,7 +186,7 @@ void Board::setPrinterDirection(const PrinterDir &printerDirection)
 	_printerDirection = printerDirection;
 }
 
-void Board::setPrinterDirection(const PrinterDir_n &printerDirection)
+void Board::setPrinterDirection(const nPrinterDir &printerDirection)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	_printerDirection = printerDirection;
@@ -222,7 +222,7 @@ void Board::setNozzlesCol(const NozzlesCol &nozzlesCol)
 	_nozzlesCol = nozzlesCol;
 }
 
-void Board::setNozzlesCol(const NozzlesCol_n &nozzlesCol)
+void Board::setNozzlesCol(const nNozzlesCol &nozzlesCol)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	_nozzlesCol = nozzlesCol;
@@ -270,7 +270,7 @@ void Board::setPhotocell(const Photocell& photocell)
 	_photocell = photocell;
 }
 
-void Board::setPhotocell(const Photocell_n& photocell)
+void Board::setPhotocell(const nPhotocell& photocell)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	_photocell = photocell;
@@ -496,12 +496,12 @@ void Board::clear()
 	_enabled = false;
 	_blocked = true;
 	_messageManager.clear();
-	_printerDirection = PrinterDir_n::R2L;
+	_printerDirection = nPrinterDir::R2L;
 	_printRotated = false;
-	_nozzlesCol = NozzlesCol_n::COL_A;
+	_nozzlesCol = nNozzlesCol::COL_A;
 	_shotMode.clear();
 	_encoder.clear();
-	_photocell = Photocell_n::PHCELL_A;
+	_photocell = nPhotocell::PHCELL_A;
 	_cartridge.clear();
 	_configProperties.clear();
 	_statusProperties.clear();

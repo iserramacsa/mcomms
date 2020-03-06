@@ -21,7 +21,7 @@ void MLive::buildResponse()
 	XMLElement* live = newCommandNode();
 	live->SetAttribute(MLIVE_DT_ATTR, _printer.formatedDateTime ().c_str());
 
-	_error = Printers::ErrorCode_n::SUCCESS;
+	_error = Printers::nErrorCode::SUCCESS;
 
 	live->SetAttribute(MLIVE_STATUS_ATTR, MTools::toCString(_liveFlags.statusChanged));
 	live->SetAttribute(MLIVE_CONFIG_ATTR, MTools::toCString(_liveFlags.configChanged));
@@ -44,7 +44,7 @@ void MLive::buildResponse()
 				//<COUNTERS total="[value]" user="[value]"/>
 				XMLElement* eCounters = createChildNode(MPRINTER_BOARD_COUNTERS_LIST, &eBoard);
 				std::stringstream counterName;
-				if (board.bcdMode() == Printers::BCDMode_n::USER_MODE) {
+				if (board.bcdMode() == Printers::nBCDMode::USER_MODE) {
 					counterName << key_counter_system_user;
 				}
 				else {
@@ -113,7 +113,7 @@ bool MLive::parseResponse(const XMLElement *xml)
 								int partial = eCounters->IntAttribute(MPRINTER_BOARD_COUNT_USER);
 								pBoard->setCounter(key_counter_system_total, total);
 								std::string counterName = key_counter_system_user;
-								if (pBoard->bcdMode() != Printers::BCDMode_n::USER_MODE) {
+								if (pBoard->bcdMode() != Printers::nBCDMode::USER_MODE) {
 									counterName = key_counter_system_bcd;
 									counterName.append(std::to_string(pBoard->currentBcdCode()));
 								}

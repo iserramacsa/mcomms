@@ -406,7 +406,7 @@ void MConfigCommand::shotModeFromXml(const XMLElement *xBoard, Macsa::Printers::
 		const XMLElement* xShotMode = xBoard->FirstChildElement(MPRINTER_BOARD_SHOT_MODE);
 		if (xShotMode != nullptr) {
 			Printers::ShootingMode mode;
-			mode = static_cast<Printers::ShootingMode_n>(xShotMode->UnsignedAttribute(MPRINTER_BOARD_SHOT_MODE_MODE_ATTR, static_cast<uint>(mode())));
+			mode = static_cast<Printers::nShootingMode>(xShotMode->UnsignedAttribute(MPRINTER_BOARD_SHOT_MODE_MODE_ATTR, static_cast<uint>(mode())));
 			uint numPrints = xShotMode->UnsignedAttribute(ATTRIBUTE_VALUE, 1);
 			uint numDelays = xShotMode->UnsignedAttribute(MPRINTER_BOARD_SHOT_MODE_DELAY_ATTR, 1);
 			bool repeat = getBoolAttribute (xShotMode, MPRINTER_BOARD_SHOT_MODE_REPEAT_ATTR, false);

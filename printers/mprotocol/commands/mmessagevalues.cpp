@@ -213,7 +213,7 @@ bool MGetMessageValues::parseResponse(const XMLElement *xml)
 	if  (valid) {
 		_error = getCommandError(xml);
 		_filename = getTextAttribute(cmd, ATTRIBUTE_FILEPATH);
-		if (_error == Printers::ErrorCode_n::SUCCESS) {
+		if (_error == Printers::nErrorCode::SUCCESS) {
 			_userFieldsMap.clear();
 			userFieldsFromXml(cmd, _userFieldsMap);
 		}
@@ -335,7 +335,7 @@ bool MGetMessageDataSource::parseResponse(const XMLElement *xml)
 		_error = getCommandError(xml);
 		_filename  = getTextAttribute(cmd, ATTRIBUTE_FILEPATH);
 		_fieldType = getTextAttribute(cmd, MMESSAGE_DATA_SOURCE_FIELD_TYPE_ATTR, DATA_SOURCE_ALL_FIELDS);
-		if (_error == Printers::ErrorCode_n::SUCCESS) {
+		if (_error == Printers::nErrorCode::SUCCESS) {
 			_userFieldsMap.clear();
 			if (_fieldType.empty() || _fieldType.compare(DATA_SOURCE_USER_FIELDS) == 0) {
 				userFieldsFromXml(cmd, _userFieldsMap);

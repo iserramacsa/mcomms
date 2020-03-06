@@ -11,16 +11,6 @@ namespace Macsa {
 		class TijController : public PrinterController, public TijNotifier
 		{
 			public:
-				enum class TijPrinterStatus
-				{
-					DISCONNECTED = -1,
-					STOPPED,
-					WARNING,
-					RUNNING,
-					PRINTING,
-				};
-
-			public:
 				TijController(const std::string& id, const std::string& address);
 				virtual Printers::Printer* printer() override {return &_printer;}
 
@@ -36,9 +26,8 @@ namespace Macsa {
 
 				//Status
 				bool updateStatus();
-				TijPrinterStatus printerStatus();
-
 				bool updateErrorsList();
+
 				//Config
 				bool updateConfig();
 				bool setDateTime(const std::time_t& dt);

@@ -81,8 +81,8 @@ void Error::setPriority(unsigned int priority)
 void Error::clear()
 {
 	_timestamp = time(nullptr);
-	_type = ErrorType_n::INVALID;
-	_code = ErrorCode_n::UNKOWN_ERROR;
+	_type = nErrorType::INVALID;
+	_code = nErrorCode::UNKOWN_ERROR;
 	_priority = 0;
 }
 

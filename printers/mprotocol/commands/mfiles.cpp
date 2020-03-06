@@ -30,7 +30,7 @@ void MGetFilesList::buildRequest()
 void MGetFilesList::buildResponse()
 {
 	XMLElement* cmd = newCommandNode();
-	_error = Printers::ErrorCode_n::SUCCESS;
+	_error = Printers::nErrorCode::SUCCESS;
 
 	cmd->SetAttribute(MFILES_GET_LIST_TYPE_ATTR, _filter.c_str());
 
@@ -178,7 +178,7 @@ bool MCopyFile::parseRequest(const XMLElement *xml)
 void MCopyFile::buildResponse()
 {
 	newCommandNode();
-	_error = Printers::ErrorCode_n::FILE_NOT_FOUND;
+	_error = Printers::nErrorCode::FILE_NOT_FOUND;
 	Printers::IFilesManager * filesManager = _printer.files()->filesManager();
 	if (filesManager != nullptr){
 		//TODO: move out from command class ??
@@ -240,7 +240,7 @@ bool MMoveFile::parseRequest(const XMLElement *xml)
 void MMoveFile::buildResponse()
 {
 	newCommandNode();
-	_error = Printers::ErrorCode_n::FILE_NOT_FOUND;
+	_error = Printers::nErrorCode::FILE_NOT_FOUND;
 	Printers::IFilesManager * filesManager = _printer.files()->filesManager();
 	if (filesManager != nullptr){
 		//TODO: move out from command class ??
@@ -298,7 +298,7 @@ bool MDeleteFile::parseRequest(const XMLElement *xml)
 void MDeleteFile::buildResponse()
 {
 	newCommandNode();
-	_error = Printers::ErrorCode_n::FILE_NOT_FOUND;
+	_error = Printers::nErrorCode::FILE_NOT_FOUND;
 	Printers::IFilesManager * filesManager = _printer.files()->filesManager();
 	if (filesManager != nullptr){
 		//TODO: move out from command class ??
@@ -434,7 +434,7 @@ bool MGetFile::parseRequest(const XMLElement *xml)
 void MGetFile::buildResponse()
 {
 	XMLElement * cmd = newCommandNode();
-	_error = Printers::ErrorCode_n::FILE_NOT_FOUND;
+	_error = Printers::nErrorCode::FILE_NOT_FOUND;
 	Printers::IFilesManager * filesManager = _printer.files()->filesManager();
 	if (filesManager != nullptr){
 		//TODO: move out from command class ??
@@ -459,7 +459,7 @@ bool MGetFile::parseResponse(const XMLElement *xml)
 	if (valid)
 	{
 		_error = getCommandError(xml);
-		if (_error == Printers::ErrorCode_n::SUCCESS)
+		if (_error == Printers::nErrorCode::SUCCESS)
 		{
 			_content.clear();
 			std::string pwd = getTextAttribute(cmd, ATTRIBUTE_FILEPATH, "");
@@ -517,7 +517,7 @@ bool MSetFile::parseRequest(const XMLElement *xml)
 void MSetFile::buildResponse()
 {
 	XMLElement * cmd = newCommandNode();
-	_error = Printers::ErrorCode_n::FILE_NOT_FOUND;
+	_error = Printers::nErrorCode::FILE_NOT_FOUND;
 	Printers::IFilesManager * filesManager = _printer.files()->filesManager();
 	if (filesManager != nullptr){
 		//TODO: move out from command class ??

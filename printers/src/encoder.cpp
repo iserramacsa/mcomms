@@ -9,7 +9,7 @@ Encoder::Encoder()
 
 Encoder::Encoder(double fixedspeed)
 {
-	_mode = EncoderMode_n::INTERNAL_ENCODER;
+	_mode = nEncoderMode::INTERNAL_ENCODER;
 	_fixedSpeed = fixedspeed;
 	_resolution = 0.0;
 	_diameter	= 0.0;
@@ -17,7 +17,7 @@ Encoder::Encoder(double fixedspeed)
 
 Encoder::Encoder(double resolution, double diameter)
 {
-	_mode = EncoderMode_n::INTERNAL_ENCODER;
+	_mode = nEncoderMode::INTERNAL_ENCODER;
 	_fixedSpeed = 0.0;
 	_resolution = resolution;
 	_diameter	= diameter;
@@ -73,7 +73,7 @@ void Encoder::setDiameter(double value)
 
 void Encoder::clear()
 {
-	_mode = EncoderMode_n::INTERNAL_ENCODER;
+	_mode = nEncoderMode::INTERNAL_ENCODER;
 	_fixedSpeed = 0.0;
 	_resolution = 0.0;
 	_diameter	= 0.0;

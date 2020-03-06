@@ -52,7 +52,7 @@ class PrinterStatusView : public QWidget
 
 		void printerDisconnected();
 
-		void updateErrors(const QVector<TIJViewerController::PrinterError> &errors);
+		void updateErrors(const std::vector<Macsa::Printers::Error> &errors);
 		void updateInputs(const QVector<TIJViewerController::PrinterInput> &inputs);
 		void updateOutputs(const QVector<TIJViewerController::PrinterOutput> &outputs);
 		void updateProperties(const QMap<QString, QString> &prop);

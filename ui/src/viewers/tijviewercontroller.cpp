@@ -10,7 +10,7 @@ using namespace Macsa::Printers;
 
 TIJViewerController::TIJViewerController(TijController &controller, QObject *parent) :
 	QObject(parent),
-	TijObserver(&controller),
+	TijViewer(controller),
 	_controller(controller)
 {}
 
@@ -211,19 +211,9 @@ bool TIJViewerController::loggerEnabled() const
 	return value;
 }
 
-TIJViewerController::TijStatus TIJViewerController::printerStatus() const
-{
-	return _controller.printerStatus();
-}
-
 QString TIJViewerController::boardType() const
 {
-	std::string value = "---";
-	const Board* board = tijPrinterBoard();
-	if (board) {
-		value = board->type();
-	}
-
+	std::string value = (printerType().length() ? printerType() : "---");
 	return _(value);
 }
 
@@ -438,7 +428,7 @@ QString TIJViewerController::nozzlesColStr() const
 NozzlesCol TIJViewerController::nozzlesCol() const
 {
 	NozzlesCol value;
-	value = NozzlesCol_n::COL_A;
+	value = nNozzlesCol::COL_A;
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		value = board->nozzlesCol();
@@ -449,7 +439,7 @@ NozzlesCol TIJViewerController::nozzlesCol() const
 ShootingMode TIJViewerController::shotMode() const
 {
 	ShootingMode value;
-	value = ShootingMode_n::SINGLE_SHOT;
+	value = nShootingMode::SINGLE_SHOT;
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		value = board->shotMode().mode();
@@ -514,7 +504,7 @@ QString TIJViewerController::encoderModeStr() const
 EncoderMode TIJViewerController::encoderMode() const
 {
 	EncoderMode value;
-	value = EncoderMode_n::FIXED_SPEED;
+	value = nEncoderMode::FIXED_SPEED;
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		value = board->encoder().mode();
@@ -566,7 +556,7 @@ QString TIJViewerController::photocellStr() const
 Photocell TIJViewerController::photocell() const
 {
 	Macsa::Printers::Photocell value;
-	value = Macsa::Printers::Photocell_n::PHCELL_A;
+	value = Macsa::Printers::nPhotocell::PHCELL_A;
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		value = board->photocell();
@@ -771,38 +761,6 @@ TIJViewerController::PrinterOutput TIJViewerController::output(unsigned int idx)
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		value = printerOutputToView(board->output(idx));
-	}
-	return value;
-}
-
-QVector<TIJViewerController::PrinterError> TIJViewerController::errors() const
-{
-	QVector<PrinterError> values;
-	const Board* board = tijPrinterBoard();
-	if (board) {
-		std::vector<Error> errors = board->errors();
-		for (std::vector<Error>::const_iterator it = errors.begin(); it != errors.end(); it++) {
-			PrinterError err;
-			err.timestamp = QDateTime::fromTime_t(static_cast<uint>((*it).timestamp()));
-			err.code = _((*it).code().toString());
-			err.type = _((*it).type().toString());
-			err.priority = (*it).priority();
-			values.push_back(err);
-		}
-	}
-	return values;
-}
-
-TIJViewerController::PrinterError TIJViewerController::error(unsigned int idx) const
-{
-	PrinterError value;
-	const Board* board = tijPrinterBoard();
-	if (board) {
-		Error perror = board->error(idx);
-		value.timestamp = QDateTime::fromTime_t(static_cast<uint>(perror.timestamp()));
-		value.code = _(perror.code().toString());
-		value.type = _(perror.type().toString());
-		value.priority = perror.priority();
 	}
 	return value;
 }

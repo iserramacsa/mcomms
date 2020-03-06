@@ -45,7 +45,7 @@ void PrinterStatusView::refresh()
 		_printerBcdMode->setText(_controller->bcdMode().toString().c_str());
 		_printerBcdStatus->setText(QString("%1").arg(_controller->currentBcdCode()));
 
-		updateErrors(_controller->errors());
+		updateErrors(_controller->printerErrors());
 		QMap<QString, int> counters = _controller->counters();
 		for (QMap<QString, int>::const_iterator cit = counters.begin(); cit != counters.end(); cit++) {
 			_counters[cit.key()]->setText(QString("%1").arg(cit.value()));
@@ -164,7 +164,7 @@ void PrinterStatusView::printerDisconnected()
 	updateInputs(QVector<TIJViewerController::PrinterInput>());
 	updateOutputs(QVector<TIJViewerController::PrinterOutput>());
 	updateProperties(QMap<QString, QString>());
-	updateErrors(QVector<TIJViewerController::PrinterError>());
+	updateErrors(std::vector<Macsa::Printers::Error>());
 }
 
 void PrinterStatusView::resizeEvent(QResizeEvent * event)
@@ -288,41 +288,40 @@ void PrinterStatusView::updateProperties(const QMap<QString, QString> &props)
 
 }
 
-void PrinterStatusView::updateErrors(const QVector<TIJViewerController::PrinterError>& errors)
+void PrinterStatusView::updateErrors(const std::vector<Macsa::Printers::Error>& errors)
 {
 	_errors->clear();
 	QStringList header;
 	header << "Timestamp" << "Type" << "Priority" << "code";
 	_errors->setColumnCount(header.count());
-	_errors->setRowCount(errors.size());
+	_errors->setRowCount(static_cast<int>(errors.size()));
 	_errors->setHorizontalHeaderLabels(header);
 
-	for (int i = 0; i < errors.size(); i++) {
-		QTableWidgetItem* itTStamp = new QTableWidgetItem(QString("%1").arg(errors.at(i).timestamp.toString(Qt::SystemLocaleShortDate)));
-		QTableWidgetItem* itType = new QTableWidgetItem(errors.at(i).type);
-		Macsa::Printers::ErrorType type;
-		type  = errors.at(i).type.toStdString();
-		switch (type()) {
-			case Macsa::Printers::ErrorType_n::ERROR:
+	for (uint32_t i = 0; i < errors.size(); i++) {
+		QDateTime dt = QDateTime::fromTime_t(static_cast<uint>(errors.at(i).timestamp()));
+		QTableWidgetItem* itTStamp = new QTableWidgetItem(QString("%1").arg(dt.toString(Qt::SystemLocaleShortDate)));
+		QTableWidgetItem* itType = new QTableWidgetItem(errors.at(i).type().toString().c_str());
+		switch (errors.at(i).type()()) {
+			case Macsa::Printers::nErrorType::ERROR:
 				itType->setIcon(QIcon(ERROR_ICON));
 				break;
-			case Macsa::Printers::ErrorType_n::WARNING:
+			case Macsa::Printers::nErrorType::WARNING:
 				itType->setIcon(QIcon(WARN_ICON));
 				break;
-			case Macsa::Printers::ErrorType_n::INFORMATION:
+			case Macsa::Printers::nErrorType::INFORMATION:
 				itType->setIcon(QIcon(INFO_ICON));
 				break;
 			default:
 				break;
 		}
-		QTableWidgetItem* itPriority = new QTableWidgetItem(QString("%1").arg(errors.at(i).priority));
+		QTableWidgetItem* itPriority = new QTableWidgetItem(QString("%1").arg(errors.at(i).priority()));
 		itPriority->setTextAlignment(Qt::AlignCenter);
-		QTableWidgetItem* itCode = new QTableWidgetItem(errors.at(i).code);
+		QTableWidgetItem* itCode = new QTableWidgetItem(errors.at(i).code().toString().c_str());
 
-		_errors->setItem(i, 0, itTStamp);
-		_errors->setItem(i, 1, itType);
-		_errors->setItem(i, 2, itPriority);
-		_errors->setItem(i, 3, itCode);
+		_errors->setItem(static_cast<int>(i), 0, itTStamp);
+		_errors->setItem(static_cast<int>(i), 1, itType);
+		_errors->setItem(static_cast<int>(i), 2, itPriority);
+		_errors->setItem(static_cast<int>(i), 3, itCode);
 	}
 
 }

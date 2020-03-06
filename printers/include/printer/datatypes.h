@@ -53,43 +53,43 @@
 #define ERROR_TYPE_INVALID	"Invalid"
 
 #define ERROR_CODE_SUCCCESS							"SUCCESS"
-#define ERROR_CODE_FILE_NOT_FOUND					"FILE.NOT_FOUND"
+#define ERROR_CODE_FILEOT_FOUND					"FILE.NOT_FOUND"
 #define ERROR_CODE_FILE_ALREADY_EXIST				"FILE.ALREADY_EXIST"
 #define ERROR_CODE_FILE_COPY_FAIL					"FILE.COPY_FAIL"
 #define ERROR_CODE_FILE_DELETE_FAIL					"FILE.DELETE_FAIL"
 #define ERROR_CODE_FILE_MOVE_FAIL					"FILE.MOVE_FAIL"
 #define ERROR_CODE_FILE_MOVE_INCOMPLETED			"FILE.MOVE_INCOMPLETE"
-#define ERROR_CODE_FILE_READ_FAIL					"FILE.READ_CAN_NOT"
-#define ERROR_CODE_FILE_WRITE_FAIL					"FILE.WRITE_CAN_NOT"
+#define ERROR_CODE_FILE_READ_FAIL					"FILE.READ_CANOT"
+#define ERROR_CODE_FILE_WRITE_FAIL					"FILE.WRITE_CANOT"
 #define ERROR_CODE_FILE_WRITE_INCOMPLETED			"FILE.WRITE_INCOMPLETE"
-#define ERROR_CODE_FILE_USER_DATA_NOT_FOUND			"FILE.USER_DATA_NOT_FOUND"
+#define ERROR_CODE_FILE_USER_DATAOT_FOUND			"FILE.USER_DATAOT_FOUND"
 #define ERROR_CODE_FILE_IN_USE						"FILE.IN_USE"
-#define ERROR_CODE_PARAM_BOARD_ID_NOT_FOUND			"PARAM.BOARD_ID_NOT_FOUND"
-#define ERROR_CODE_PARAM_COUNTER_ID_NOT_FOUND		"PARAM.COUNTER_ID_NOT_FOUND"
+#define ERROR_CODE_PARAM_BOARD_IDOT_FOUND			"PARAM.BOARD_IDOT_FOUND"
+#define ERROR_CODE_PARAM_COUNTER_IDOT_FOUND		"PARAM.COUNTER_IDOT_FOUND"
 #define ERROR_CODE_PARAM_COUNTER_VALUE_REJECTED		"PARAM.COUNTER_VALUE_REJECTED"
-#define ERROR_CODE_PARAM_OUTPUT_ID_NOT_FOUND		"PARAM.OUTPUT_ID_NOT_FOUND"
+#define ERROR_CODE_PARAM_OUTPUT_IDOT_FOUND		"PARAM.OUTPUT_IDOT_FOUND"
 #define ERROR_CODE_PARAM_BCD_INVALID_MODE			"PARAM.CANT_SET_MSG_IN_BCD_MODE"
 #define ERROR_CODE_PARAM_BOARD_IS_ENABLED			"PARAM.BOARD_IS_ENABLED"
-#define ERROR_CODE_PARAM_BOARD_IS_DISABLED			"PARAM.BOARD_IS_NOT_ENABLED"
+#define ERROR_CODE_PARAM_BOARD_IS_DISABLED			"PARAM.BOARD_ISOT_ENABLED"
 #define ERROR_CODE_PARAM_CHANGE_ADAPTER_FAILS		"PARAM.CANNOT_CHANGE_ADAPTER"
 #define ERROR_CODE_PARAM_INVALID_IP_ADDRESS			"PARAM.INVALID_IP_ADDRESS"
 #define ERROR_CODE_PARAM_INVALID_MASK_ADDRESS		"PARAM.INVALID_MASK_ADDRESS"
 #define ERROR_CODE_PARAM_INVALID_GATEWAY_ADDRESS	"PARAM.INVALID_GATEWAY_ADDRESS"
 #define ERROR_CODE_PARAM_INVALID_PROP_COUNT			"PARAM.INVALID_PROP_COUNT"
 #define ERROR_CODE_GENERIC_UNEXPECTED_TAG			"GEN.UNEXPECTED_TAG"
-#define ERROR_CODE_GENERIC_NOT_IMPLEMENTED			"GEN.NOT_IMPLEMENTED"
+#define ERROR_CODE_GENERICOT_IMPLEMENTED			"GEN.NOT_IMPLEMENTED"
 #define ERROR_CODE_GENERIC_LOCK_TIMEOUT				"GEN.LOCK_TIMEOUT"
-#define ERROR_CODE_PH_PCA_NOT_DETECTED				"PCA.NOTDETECTED"
+#define ERROR_CODE_PH_PCAOT_DETECTED				"PCA.NOTDETECTED"
 #define ERROR_CODE_PH_OVERTEMP						"PH.OVERTEMP"
 #define ERROR_CODE_PH_OVERSPEED						"GEN.OVERSPEED"
 #define ERROR_CODE_MSG_FORMAT_ERROR					"MSG.FORMATERROR"
-#define ERROR_CODE_MSG_NOEXIST						"MSG.NOEXIST"
-#define ERROR_CODE_PH_NO_CARTRIDGE					"PH.NOCARTRIDGE"
+#define ERROR_CODE_MSGOEXIST						"MSG.NOEXIST"
+#define ERROR_CODE_PHO_CARTRIDGE					"PH.NOCARTRIDGE"
 #define ERROR_CODE_PH_SC_INVALID					"SMC.INVALID"
 #define ERROR_CODE_PH_GENERIC_FAULT					"PH.GENFAULT"
 #define ERROR_CODE_PH_SC_CARTRIDGE_EMPTY			"SMC.CARTRIDGE_EMPTY"
 #define ERROR_CODE_PH_SC_CARTRIDGE_OUT_OF_DATE		"SMC.CARTRIDGE_OUTOFDATE"
-#define ERROR_CODE_PH_SC_CARTRIDGE_NEAR_END			"SMC.CARTRIDGE_NEAREND"
+#define ERROR_CODE_PH_SC_CARTRIDGEEAR_END			"SMC.CARTRIDGEEAREND"
 #define ERROR_CODE_PH_SC_UNRECOGNIZED_DATA			"SMC.UNRECOGNIZED_DATA"
 #define ERROR_CODE_PH_SC_INITIALIZING				"PH.INITIALIZING_CARTRIDGE"
 #define ERROR_CODE_PH_SC_HOST_SMARTCARD_FAIL		"SMC.HOST_SMARTCARD"
@@ -139,15 +139,15 @@ namespace Macsa {
 		inline const SmartEnum<N>& operator << (SmartEnum<N>& se, const std::string& str) {se = str; return se;}
 
 
-		enum BCDMode_n{
+		enum nBCDMode{
 			USER_MODE = 0,
 			BCD_MODE_1,
 			BCD_MODE_2
 		};
-		class BCDMode : public SmartEnum<BCDMode_n>
+		class BCDMode : public SmartEnum<nBCDMode>
 		{
 			public:
-				virtual void operator = (const enum BCDMode_n& v){_val = v;}
+				virtual void operator = (const enum nBCDMode& v){_val = v;}
 				virtual void operator = (const std::string& val){
 					if (val.compare(BCD_MODE_USER) == 0)
 						_val = USER_MODE;
@@ -176,15 +176,15 @@ namespace Macsa {
 				}
 		};
 
-		enum PrinterDir_n{
+		enum nPrinterDir{
 			R2L = 0,    //Right to Left
 			L2R,        //Left to Right
 			AUTO        //Input depends
 		};
-		class PrinterDir : public SmartEnum<PrinterDir_n>
+		class PrinterDir : public SmartEnum<nPrinterDir>
 		{
 			public:
-				virtual void operator = (const enum PrinterDir_n& v){_val = v;}
+				virtual void operator = (const enum nPrinterDir& v){_val = v;}
 				virtual void operator = (const std::string& val){
 					if (val.compare(DIR_RIGHT_TO_LEFT) == 0)
 						_val = R2L;
@@ -212,16 +212,16 @@ namespace Macsa {
 				}
 		};
 
-		enum ShootingMode_n{
+		enum nShootingMode{
 			SINGLE_SHOT = 0, // for single shot.
 			MULTI_SHOT_REL,  // for multishot with relative delay.
 			MULTI_SHOT_ABS   // for multishot with absolute delay.
 		};
-		class ShootingMode : public SmartEnum<ShootingMode_n>
+		class ShootingMode : public SmartEnum<nShootingMode>
 		{
 			public:
 				ShootingMode() : SmartEnum() {_val = SINGLE_SHOT;}
-				virtual void operator = (const enum ShootingMode_n& v){_val = v;}
+				virtual void operator = (const enum nShootingMode& v){_val = v;}
 				virtual void operator = (const std::string& val){
 					if (val.compare(SHOOTING_MODE_ONCE) == 0)
 						_val = SINGLE_SHOT;
@@ -249,16 +249,16 @@ namespace Macsa {
 				}
 		};
 
-		enum NozzlesCol_n{
+		enum nNozzlesCol{
 			COL_A = 0,  //Column A
 			COL_B,      //Column B
 			COL_BOTH    //Both
 		};
-		class NozzlesCol : public SmartEnum<NozzlesCol_n>
+		class NozzlesCol : public SmartEnum<nNozzlesCol>
 		{
 			public:
 				NozzlesCol() {_val = COL_A;}
-				virtual void operator = (const enum NozzlesCol_n& v){_val = v;}
+				virtual void operator = (const enum nNozzlesCol& v){_val = v;}
 				virtual void operator = (const std::string& val){
 					if (val.compare(NOZZLES_COL_A) == 0)
 						_val = COL_A;
@@ -286,15 +286,15 @@ namespace Macsa {
 				}
 		};
 
-		enum DelayUnits_n {
+		enum nDelayUnits {
 			UNITS_MM = 0,
 			UNITS_DOTS,
 		};
-		class DelayUnits : public SmartEnum<DelayUnits_n>
+		class DelayUnits : public SmartEnum<nDelayUnits>
 		{
 			public:
 				DelayUnits() {_val = UNITS_DOTS;}
-				virtual void operator = (const enum DelayUnits_n& v){_val = v;}
+				virtual void operator = (const enum nDelayUnits& v){_val = v;}
 				virtual void operator = (const std::string& v) {
 					if (v.compare(DELAY_UNIT_MM) == 0)
 						_val = UNITS_MM;
@@ -318,18 +318,18 @@ namespace Macsa {
 				}
 		};
 
-		enum EncoderMode_n{
+		enum nEncoderMode{
 			FIXED_SPEED = 0,
 			INTERNAL_ENCODER,
 			EXTERNAL_ENCODER
 		};
-		class EncoderMode : public SmartEnum<EncoderMode_n>
+		class EncoderMode : public SmartEnum<nEncoderMode>
 		{
 			public:
 				EncoderMode() { _val = FIXED_SPEED; }
 				EncoderMode(const std::string& val){*this = val;}
-				EncoderMode(const EncoderMode_n& val){*this = val;}
-				virtual void operator = (const enum EncoderMode_n& v){_val = v;}
+				EncoderMode(const EncoderMode& val){*this = val;}
+				virtual void operator = (const enum nEncoderMode& v){_val = v;}
 				virtual void operator = (const std::string& val){
 					if (val.compare(ENCODER_MODE_FIXED) == 0)
 						_val = FIXED_SPEED;
@@ -357,16 +357,16 @@ namespace Macsa {
 				}
 		};
 
-		enum Photocell_n{
+		enum nPhotocell{
 			PHCELL_A = 0,	//Photocell of column A
 			PHCELL_B,		//Photocell of column B
 			PHCELL_EXT,		//External photocell
 		};
-		class Photocell : public SmartEnum<Photocell_n>
+		class Photocell : public SmartEnum<nPhotocell>
 		{
 			public:
 				Photocell() {_val = PHCELL_A;}
-				virtual void operator = (const enum Photocell_n& v){_val = v;}
+				virtual void operator = (const enum nPhotocell& v){_val = v;}
 				virtual void operator = (const std::string& val){
 					if (val.compare(PHOTOCELL_A) == 0)
 						_val = PHCELL_A;
@@ -394,15 +394,15 @@ namespace Macsa {
 				}
 		};
 
-		enum InputMode_n {
+		enum nInputMode {
 			INPUT_EDGE = 0,
 			INPUT_STATUS
 		};
-		class InputMode : public SmartEnum<InputMode_n>
+		class InputMode : public SmartEnum<nInputMode>
 		{
 			public:
 				InputMode() {_val = INPUT_EDGE;}
-				virtual void operator = (const enum InputMode_n& v){_val = v;}
+				virtual void operator = (const enum nInputMode& v){_val = v;}
 				virtual void operator = (const std::string& val){
 					if (val.compare(INPUT_MODE_EDGE) == 0)
 						_val = INPUT_EDGE;
@@ -427,7 +427,7 @@ namespace Macsa {
 		};
 
 
-		enum OutputType_n {
+		enum nOutputType {
 			OUTPUT_STATE = 0,	// Set the output state. The output remain in this state until the state would be changed.
 								//		The TIME configuration is not taken into consideration.
 			OUTPUT_ONPULSE,		// The output change the state to ON, waits the time specified and return to OFF.
@@ -439,11 +439,11 @@ namespace Macsa {
 								//		except the electronics takes the time as maximum to mantain the output in OFF state
 								//		afterwards the output returns to ON.
 		};
-		class OutputType : public SmartEnum<OutputType_n>
+		class OutputType : public SmartEnum<nOutputType>
 		{
 			public:
 				OutputType(){_val = OUTPUT_ONPULSE;}
-				virtual void operator = (const enum OutputType_n& v){_val = v;}
+				virtual void operator = (const enum nOutputType& v){_val = v;}
 				virtual void operator = (const std::string& val){
 					if (val.compare(OUTPUT_TYPE_STATE   ) == 0)
 						_val = OUTPUT_STATE;
@@ -479,16 +479,16 @@ namespace Macsa {
 				}
 		};
 
-		enum ErrorType_n {
+		enum nErrorType {
 			INVALID = -1,
 			INFORMATION = 0,
 			WARNING,
 			ERROR
 		};
-		class ErrorType : public SmartEnum<ErrorType_n>
+		class ErrorType : public SmartEnum<nErrorType>
 		{
 			public:
-				virtual void operator = (const enum ErrorType_n& v){_val = v;}
+				virtual void operator = (const enum nErrorType& v){_val = v;}
 				virtual void operator = (const std::string& val){
 					if (val.compare(ERROR_TYPE_INFO) == 0)
 						_val = INFORMATION;
@@ -520,7 +520,7 @@ namespace Macsa {
 				}
 		};
 
-		enum ErrorCode_n {
+		enum nErrorCode {
 			SUCCESS	= 0					, // No error
 			// FILES ERRORS
 			FILE_NOT_FOUND				, // the specified file not exist
@@ -532,14 +532,14 @@ namespace Macsa {
 			FILE_READ_ERROR				, // can't read the file
 			FILE_WRITE_ERROR			, // can't write the file
 			FILE_WRITE_INCOMPLETED		, // the write on the file is not complete
-			FILE_USER_DATA_NOT_FOUND	, // the name of a user-name-value is not found
+			FILE_USER_DATAOT_FOUND	, // the name of a user-name-value is not found
 			FILE_IN_USE					, // the file is currenty in use
 
 			// PARAMS ERRORS
-			PARAM_BOARD_ID_NOT_FOUND	 , // The BoardId specified by the command was not found
-			PARAM_COUNTER_ID_NOT_FOUND	 , // The CounterId specified by the command was not found
+			PARAM_BOARD_IDOT_FOUND	 , // The BoardId specified by the command was not found
+			PARAM_COUNTER_IDOT_FOUND	 , // The CounterId specified by the command was not found
 			PARAM_COUNTER_VALUE_REJECTED , // The device has rejected the counter modification
-			PARAM_OUTPUT_ID_NOT_FOUND	 , // The output id specified by the command was not found
+			PARAM_OUTPUT_IDOT_FOUND	 , // The output id specified by the command was not found
 			PARAM_INVALID_BCD_MODE		 , // Is not posible set a manual current message if the board is in Bcd mode
 			PARAM_BOARD_IS_ENABLED		 , // the command requires a enabled board
 			PARAM_BOARD_IS_DISABLED		 , // the command requires a disabled board
@@ -551,38 +551,38 @@ namespace Macsa {
 
 			// OTHER GENERIC ERRORS
 			GEN_UNEXPECTED_TAG			, // generic xml error
-			GEN_NOT_IMPLEMENTED			, // informs that operation is not implemented on the server
+			GENOT_IMPLEMENTED			, // informs that operation is not implemented on the server
 			GEN_LOCK_TIMEOUT			, // Lock data fail
 
 			// NEOTIJ ERRORS
-			PCA_NOT_DETECTED			, // "PCA.NOTDETECTED"				"No connection with PCA"
+			PCAOT_DETECTED			, // "PCA.NOTDETECTED"				"No connection with PCA"
 			PH_OVERTEMP					, // "PH.OVERTEMP"					"Printhead over temperature"
 			GEN_OVERSPEED				, // "GEN.OVERSPEED"				"Overspeed"
 			MSG_FORMAT_ERROR			, // "MSG.FORMATERROR"				"NISX format error"
-			MSG_NO_EXIST				, // "MSG.NOEXIST"					"Message doesn't exist"
-			PH_NO_CARTRIDGE				, // "PH.NOCARTRIDGE"				"No cartridge loaded"
+			MSGO_EXIST				, // "MSG.NOEXIST"					"Message doesn't exist"
+			PHO_CARTRIDGE				, // "PH.NOCARTRIDGE"				"No cartridge loaded"
 			SMC_INVALID					, // "SMC.INVALID"					"No valid smartcard on cartridge"
 			PH_GEN_FAULT				, // "PH.GENFAULT"					"Cartridge fault - not valid"
 			SMC_CARTRIDGE_EMPTY			, // "SMC.CARTRIDGE_EMPTY"			"Cartridge empty"
 			SMC_CARTRIDGE_OUT_OF_DATE	, // "SMC.CARTRIDGE_OUTOFDATE"		"Cartridge out of expiration date"
-			SMC_CARTRIDGE_NEAR_END		, // "SMC.CARTRIDGE_NEAREND"		"Cartridge near empty"
+			SMC_CARTRIDGEEAR_END		, // "SMC.CARTRIDGEEAREND"		"Cartridge near empty"
 			SMC_CARTRIDGE_INVALID		, // "SMC.UNRECOGNIZED_DATA"		"Cartridge invalid Data"
 			SMC_INITIALIZING_CARTRIDGE	, // "PH.INITIALIZING_CARTRIDGE"	"Initializing cartridge "
 			SMC_HOST_INVALID			, // "SMC.HOST_SMARTCARD"			"Invalid Host Smart Card"
 
 			UNKOWN_ERROR				//Last error for unknown code
 		};
-		class ErrorCode : public SmartEnum<ErrorCode_n>
+		class ErrorCode : public SmartEnum<nErrorCode>
 		{
 			public:
 				ErrorCode() : SmartEnum() {_val = UNKOWN_ERROR;}
-				ErrorCode(ErrorCode_n n) : SmartEnum() {_val = n;}
+				ErrorCode(nErrorCode n) : SmartEnum() {_val = n;}
 				virtual ~ErrorCode(){}
-				virtual void operator = (const enum ErrorCode_n& v){_val = v;}
+				virtual void operator = (const enum nErrorCode& v){_val = v;}
 				virtual void operator = (const std::string& val){
 					if (val.compare(ERROR_CODE_SUCCCESS) == 0)
 						_val = SUCCESS;
-					else if (val.compare(ERROR_CODE_FILE_NOT_FOUND) == 0)
+					else if (val.compare(ERROR_CODE_FILEOT_FOUND) == 0)
 						_val = FILE_NOT_FOUND;
 					else if (val.compare(ERROR_CODE_FILE_ALREADY_EXIST) == 0)
 						_val = FILE_ALREADY_EXIST;
@@ -600,18 +600,18 @@ namespace Macsa {
 						_val = FILE_WRITE_ERROR;
 					else if (val.compare(ERROR_CODE_FILE_WRITE_INCOMPLETED) == 0)
 						_val = FILE_WRITE_INCOMPLETED;
-					else if (val.compare(ERROR_CODE_FILE_USER_DATA_NOT_FOUND) == 0)
-						_val = FILE_USER_DATA_NOT_FOUND;
+					else if (val.compare(ERROR_CODE_FILE_USER_DATAOT_FOUND) == 0)
+						_val = FILE_USER_DATAOT_FOUND;
 					else if (val.compare(ERROR_CODE_FILE_IN_USE) == 0)
 						_val = FILE_IN_USE;
-					else if (val.compare(ERROR_CODE_PARAM_BOARD_ID_NOT_FOUND) == 0)
-						_val = PARAM_BOARD_ID_NOT_FOUND;
-					else if (val.compare(ERROR_CODE_PARAM_COUNTER_ID_NOT_FOUND) == 0)
-						_val = PARAM_COUNTER_ID_NOT_FOUND;
+					else if (val.compare(ERROR_CODE_PARAM_BOARD_IDOT_FOUND) == 0)
+						_val = PARAM_BOARD_IDOT_FOUND;
+					else if (val.compare(ERROR_CODE_PARAM_COUNTER_IDOT_FOUND) == 0)
+						_val = PARAM_COUNTER_IDOT_FOUND;
 					else if (val.compare(ERROR_CODE_PARAM_COUNTER_VALUE_REJECTED) == 0)
 						_val = PARAM_COUNTER_VALUE_REJECTED;
-					else if (val.compare(ERROR_CODE_PARAM_OUTPUT_ID_NOT_FOUND) == 0)
-						_val = PARAM_OUTPUT_ID_NOT_FOUND;
+					else if (val.compare(ERROR_CODE_PARAM_OUTPUT_IDOT_FOUND) == 0)
+						_val = PARAM_OUTPUT_IDOT_FOUND;
 					else if (val.compare(ERROR_CODE_PARAM_BCD_INVALID_MODE) == 0)
 						_val = PARAM_INVALID_BCD_MODE;
 					else if (val.compare(ERROR_CODE_PARAM_BOARD_IS_ENABLED) == 0)
@@ -630,22 +630,22 @@ namespace Macsa {
 						_val = PARAM_INVALID_PROP_COUNT;
 					else if (val.compare(ERROR_CODE_GENERIC_UNEXPECTED_TAG) == 0)
 						_val = GEN_UNEXPECTED_TAG;
-					else if (val.compare(ERROR_CODE_GENERIC_NOT_IMPLEMENTED) == 0)
-						_val = GEN_NOT_IMPLEMENTED;
+					else if (val.compare(ERROR_CODE_GENERICOT_IMPLEMENTED) == 0)
+						_val = GENOT_IMPLEMENTED;
 					else if (val.compare(ERROR_CODE_GENERIC_LOCK_TIMEOUT) == 0)
 						_val = GEN_LOCK_TIMEOUT;
-					else if (val.compare(ERROR_CODE_PH_PCA_NOT_DETECTED) == 0)
-						_val = PCA_NOT_DETECTED;
+					else if (val.compare(ERROR_CODE_PH_PCAOT_DETECTED) == 0)
+						_val = PCAOT_DETECTED;
 					else if (val.compare(ERROR_CODE_PH_OVERTEMP) == 0)
 						_val = PH_OVERTEMP;
 					else if (val.compare(ERROR_CODE_PH_OVERSPEED) == 0)
 						_val = GEN_OVERSPEED;
 					else if (val.compare(ERROR_CODE_MSG_FORMAT_ERROR) == 0)
 						_val = MSG_FORMAT_ERROR;
-					else if (val.compare(ERROR_CODE_MSG_NOEXIST) == 0)
-						_val = MSG_NO_EXIST;
-					else if (val.compare(ERROR_CODE_PH_NO_CARTRIDGE) == 0)
-						_val = PH_NO_CARTRIDGE;
+					else if (val.compare(ERROR_CODE_MSGOEXIST) == 0)
+						_val = MSGO_EXIST;
+					else if (val.compare(ERROR_CODE_PHO_CARTRIDGE) == 0)
+						_val = PHO_CARTRIDGE;
 					else if (val.compare(ERROR_CODE_PH_SC_INVALID) == 0)
 						_val = SMC_INVALID;
 					else if (val.compare(ERROR_CODE_PH_GENERIC_FAULT) == 0)
@@ -654,8 +654,8 @@ namespace Macsa {
 						_val = SMC_CARTRIDGE_EMPTY;
 					else if (val.compare(ERROR_CODE_PH_SC_CARTRIDGE_OUT_OF_DATE) == 0)
 						_val = SMC_CARTRIDGE_OUT_OF_DATE;
-					else if (val.compare(ERROR_CODE_PH_SC_CARTRIDGE_NEAR_END) == 0)
-						_val = SMC_CARTRIDGE_NEAR_END;
+					else if (val.compare(ERROR_CODE_PH_SC_CARTRIDGEEAR_END) == 0)
+						_val = SMC_CARTRIDGEEAR_END;
 					else if (val.compare(ERROR_CODE_PH_SC_UNRECOGNIZED_DATA) == 0)
 						_val = SMC_CARTRIDGE_INVALID;
 					else if (val.compare(ERROR_CODE_PH_SC_INITIALIZING) == 0)
@@ -669,7 +669,7 @@ namespace Macsa {
 					switch (_val) {
 						case SUCCESS:						return ERROR_CODE_SUCCCESS;
 							// FILES ERRORS
-						case FILE_NOT_FOUND:				return ERROR_CODE_FILE_NOT_FOUND;
+						case FILE_NOT_FOUND:				return ERROR_CODE_FILEOT_FOUND;
 						case FILE_ALREADY_EXIST:			return ERROR_CODE_FILE_ALREADY_EXIST;
 						case FILE_COPY_FAIL:				return ERROR_CODE_FILE_COPY_FAIL;
 						case FILE_DELETE_FAIL:				return ERROR_CODE_FILE_DELETE_FAIL;
@@ -678,13 +678,13 @@ namespace Macsa {
 						case FILE_READ_ERROR:				return ERROR_CODE_FILE_READ_FAIL;
 						case FILE_WRITE_ERROR:				return ERROR_CODE_FILE_WRITE_FAIL;
 						case FILE_WRITE_INCOMPLETED:		return ERROR_CODE_FILE_WRITE_INCOMPLETED;
-						case FILE_USER_DATA_NOT_FOUND:		return ERROR_CODE_FILE_USER_DATA_NOT_FOUND;
+						case FILE_USER_DATAOT_FOUND:		return ERROR_CODE_FILE_USER_DATAOT_FOUND;
 						case FILE_IN_USE:					return ERROR_CODE_FILE_IN_USE;
 							// PARAMS ERRORS
-						case PARAM_BOARD_ID_NOT_FOUND:		return ERROR_CODE_PARAM_BOARD_ID_NOT_FOUND;
-						case PARAM_COUNTER_ID_NOT_FOUND:	return ERROR_CODE_PARAM_COUNTER_ID_NOT_FOUND;
+						case PARAM_BOARD_IDOT_FOUND:		return ERROR_CODE_PARAM_BOARD_IDOT_FOUND;
+						case PARAM_COUNTER_IDOT_FOUND:	return ERROR_CODE_PARAM_COUNTER_IDOT_FOUND;
 						case PARAM_COUNTER_VALUE_REJECTED:	return ERROR_CODE_PARAM_COUNTER_VALUE_REJECTED;
-						case PARAM_OUTPUT_ID_NOT_FOUND:		return ERROR_CODE_PARAM_OUTPUT_ID_NOT_FOUND;
+						case PARAM_OUTPUT_IDOT_FOUND:		return ERROR_CODE_PARAM_OUTPUT_IDOT_FOUND;
 						case PARAM_INVALID_BCD_MODE:		return ERROR_CODE_PARAM_BCD_INVALID_MODE;
 						case PARAM_BOARD_IS_ENABLED:		return ERROR_CODE_PARAM_BOARD_IS_ENABLED;
 						case PARAM_BOARD_IS_DISABLED:		return ERROR_CODE_PARAM_BOARD_IS_DISABLED;
@@ -695,20 +695,20 @@ namespace Macsa {
 						case PARAM_INVALID_PROP_COUNT:		return ERROR_CODE_PARAM_INVALID_PROP_COUNT;
 							// OTHER GENERIC ERRORS
 						case GEN_UNEXPECTED_TAG:			return ERROR_CODE_GENERIC_UNEXPECTED_TAG;
-						case GEN_NOT_IMPLEMENTED:			return ERROR_CODE_GENERIC_NOT_IMPLEMENTED;
+						case GENOT_IMPLEMENTED:			return ERROR_CODE_GENERICOT_IMPLEMENTED;
 						case GEN_LOCK_TIMEOUT:				return ERROR_CODE_GENERIC_LOCK_TIMEOUT;
 							// NEOTIJ ERRORS
-						case PCA_NOT_DETECTED:				return ERROR_CODE_PH_PCA_NOT_DETECTED;
+						case PCAOT_DETECTED:				return ERROR_CODE_PH_PCAOT_DETECTED;
 						case PH_OVERTEMP:					return ERROR_CODE_PH_OVERTEMP;
 						case GEN_OVERSPEED:					return ERROR_CODE_PH_OVERSPEED;
 						case MSG_FORMAT_ERROR:				return ERROR_CODE_MSG_FORMAT_ERROR;
-						case MSG_NO_EXIST:					return ERROR_CODE_MSG_NOEXIST;
-						case PH_NO_CARTRIDGE:				return ERROR_CODE_PH_NO_CARTRIDGE;
+						case MSGO_EXIST:					return ERROR_CODE_MSGOEXIST;
+						case PHO_CARTRIDGE:				return ERROR_CODE_PHO_CARTRIDGE;
 						case SMC_INVALID:					return ERROR_CODE_PH_SC_INVALID;
 						case PH_GEN_FAULT:					return ERROR_CODE_PH_GENERIC_FAULT;
 						case SMC_CARTRIDGE_EMPTY:			return ERROR_CODE_PH_SC_CARTRIDGE_EMPTY;
 						case SMC_CARTRIDGE_OUT_OF_DATE:		return ERROR_CODE_PH_SC_CARTRIDGE_OUT_OF_DATE;
-						case SMC_CARTRIDGE_NEAR_END:		return ERROR_CODE_PH_SC_CARTRIDGE_NEAR_END;
+						case SMC_CARTRIDGEEAR_END:		return ERROR_CODE_PH_SC_CARTRIDGEEAR_END;
 						case SMC_CARTRIDGE_INVALID:			return ERROR_CODE_PH_SC_UNRECOGNIZED_DATA;
 						case SMC_INITIALIZING_CARTRIDGE:	return ERROR_CODE_PH_SC_INITIALIZING;
 						case SMC_HOST_INVALID:				return ERROR_CODE_PH_SC_HOST_SMARTCARD_FAIL;
@@ -722,7 +722,7 @@ namespace Macsa {
 				{
 					std::vector<std::string> list;
 					list.push_back(ERROR_CODE_SUCCCESS);
-					list.push_back(ERROR_CODE_FILE_NOT_FOUND);
+					list.push_back(ERROR_CODE_FILEOT_FOUND);
 					list.push_back(ERROR_CODE_FILE_ALREADY_EXIST);
 					list.push_back(ERROR_CODE_FILE_COPY_FAIL);
 					list.push_back(ERROR_CODE_FILE_DELETE_FAIL);
@@ -731,12 +731,12 @@ namespace Macsa {
 					list.push_back(ERROR_CODE_FILE_READ_FAIL);
 					list.push_back(ERROR_CODE_FILE_WRITE_FAIL);
 					list.push_back(ERROR_CODE_FILE_WRITE_INCOMPLETED);
-					list.push_back(ERROR_CODE_FILE_USER_DATA_NOT_FOUND);
+					list.push_back(ERROR_CODE_FILE_USER_DATAOT_FOUND);
 					list.push_back(ERROR_CODE_FILE_IN_USE);
-					list.push_back(ERROR_CODE_PARAM_BOARD_ID_NOT_FOUND);
-					list.push_back(ERROR_CODE_PARAM_COUNTER_ID_NOT_FOUND);
+					list.push_back(ERROR_CODE_PARAM_BOARD_IDOT_FOUND);
+					list.push_back(ERROR_CODE_PARAM_COUNTER_IDOT_FOUND);
 					list.push_back(ERROR_CODE_PARAM_COUNTER_VALUE_REJECTED);
-					list.push_back(ERROR_CODE_PARAM_OUTPUT_ID_NOT_FOUND);
+					list.push_back(ERROR_CODE_PARAM_OUTPUT_IDOT_FOUND);
 					list.push_back(ERROR_CODE_PARAM_BCD_INVALID_MODE);
 					list.push_back(ERROR_CODE_PARAM_BOARD_IS_ENABLED);
 					list.push_back(ERROR_CODE_PARAM_BOARD_IS_DISABLED);
@@ -746,19 +746,19 @@ namespace Macsa {
 					list.push_back(ERROR_CODE_PARAM_INVALID_GATEWAY_ADDRESS);
 					list.push_back(ERROR_CODE_PARAM_INVALID_PROP_COUNT);
 					list.push_back(ERROR_CODE_GENERIC_UNEXPECTED_TAG);
-					list.push_back(ERROR_CODE_GENERIC_NOT_IMPLEMENTED);
+					list.push_back(ERROR_CODE_GENERICOT_IMPLEMENTED);
 					list.push_back(ERROR_CODE_GENERIC_LOCK_TIMEOUT);
-					list.push_back(ERROR_CODE_PH_PCA_NOT_DETECTED);
+					list.push_back(ERROR_CODE_PH_PCAOT_DETECTED);
 					list.push_back(ERROR_CODE_PH_OVERTEMP);
 					list.push_back(ERROR_CODE_PH_OVERSPEED);
 					list.push_back(ERROR_CODE_MSG_FORMAT_ERROR);
-					list.push_back(ERROR_CODE_MSG_NOEXIST);
-					list.push_back(ERROR_CODE_PH_NO_CARTRIDGE);
+					list.push_back(ERROR_CODE_MSGOEXIST);
+					list.push_back(ERROR_CODE_PHO_CARTRIDGE);
 					list.push_back(ERROR_CODE_PH_SC_INVALID);
 					list.push_back(ERROR_CODE_PH_GENERIC_FAULT);
 					list.push_back(ERROR_CODE_PH_SC_CARTRIDGE_EMPTY);
 					list.push_back(ERROR_CODE_PH_SC_CARTRIDGE_OUT_OF_DATE);
-					list.push_back(ERROR_CODE_PH_SC_CARTRIDGE_NEAR_END);
+					list.push_back(ERROR_CODE_PH_SC_CARTRIDGEEAR_END);
 					list.push_back(ERROR_CODE_PH_SC_UNRECOGNIZED_DATA);
 					list.push_back(ERROR_CODE_PH_SC_INITIALIZING);
 					list.push_back(ERROR_CODE_PH_SC_HOST_SMARTCARD_FAIL);
@@ -767,18 +767,18 @@ namespace Macsa {
 				}
 		};
 
-		enum LoggerLevel_n {
+		enum nLoggerLevel {
 			LOG_ERROR=0,
 			LOG_WARNING,
 			LOG_INFO,
 			LOG_DEBUG,
 			LOG_DISABLED
 		};
-		class LoggerLevel : public SmartEnum<LoggerLevel_n>
+		class LoggerLevel : public SmartEnum<nLoggerLevel>
 		{
 			public:
 				LoggerLevel(){_val = LOG_DISABLED;}
-				void operator = (const enum LoggerLevel_n& v){_val = v;}
+				void operator = (const enum nLoggerLevel& v){_val = v;}
 				void operator = (const std::string& val){
 					if (val.compare(LOG_LEVEL_ERROR) == 0)
 						_val = LOG_ERROR;

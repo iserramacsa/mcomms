@@ -371,7 +371,7 @@ void PrinterConfigView::updateGeneralSettings()
 	_lowLevelOutput->setChecked(_controller->lowLevelOutput());
 	_blockCartridge->setChecked(_controller->blocked());
 
-	_butMessage->setEnabled(_controller->bcdMode() == Macsa::Printers::BCDMode_n::USER_MODE);
+	_butMessage->setEnabled(_controller->bcdMode() == Macsa::Printers::nBCDMode::USER_MODE);
 	_userMessage->setText(QString("\"%1\"").arg(_controller->userMessage()));
 }
 
@@ -380,7 +380,7 @@ void PrinterConfigView::updatePrintSetup()
 	_printRotated->setChecked(_controller->printRotated());
 	_nozzlesCols->setCurrentIndex(_controller->nozzlesCol()());
 
-	_nozzlesCols->setDisabled((_controller->nozzlesCol() == Macsa::Printers::NozzlesCol_n::COL_BOTH));
+	_nozzlesCols->setDisabled((_controller->nozzlesCol() == Macsa::Printers::nNozzlesCol::COL_BOTH));
 
 	QString hres = _controller->configProperty(TIJViewerController::TIJConfigProperties::HRES);
 	if (hres != "---"){
@@ -396,7 +396,7 @@ void PrinterConfigView::updatePrintSetup()
 				_printResolution->setCurrentIndex(2);
 				break;
 			case 300:
-				if (_controller->nozzlesCol() != Macsa::Printers::NozzlesCol_n::COL_BOTH) {
+				if (_controller->nozzlesCol() != Macsa::Printers::nNozzlesCol::COL_BOTH) {
 					_printResolution->setCurrentIndex(3);
 				}
 				else {

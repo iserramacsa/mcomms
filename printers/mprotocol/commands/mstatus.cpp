@@ -251,7 +251,7 @@ bool MGetStatus::parseResponse(const XMLElement *xml)
 	bool valid = (cmd != nullptr);
 	if  (valid) {
 		_error = getCommandError(xml);
-		if (_error == Printers::ErrorCode_n::SUCCESS) {
+		if (_error == Printers::nErrorCode::SUCCESS) {
 			_printer.setDateTime(getTextFromChildNode(cmd, MSTATUS_DT, _printer.formatedDateTime()));
 			const XMLElement* xVersion = cmd->FirstChildElement(MSTATUS_VERSION);
 			if (xVersion != nullptr){
@@ -345,7 +345,7 @@ bool MGetIOStatus::parseResponse(const XMLElement *xml)
 	bool valid = (cmd != nullptr);
 	if  (valid) {
 		_error = getCommandError(xml);
-		if (_error == Printers::ErrorCode_n::SUCCESS) {
+		if (_error == Printers::nErrorCode::SUCCESS) {
 			const XMLElement * xBoardsList = cmd->FirstChildElement(MPRINTER_BOARDS_LIST);
 			if (xBoardsList != nullptr) {
 				const XMLElement * xBoard = xBoardsList->FirstChildElement(MPRINTER_BOARD);
@@ -415,7 +415,7 @@ bool MGetErrors::parseResponse(const XMLElement *xml)
 	bool valid = (cmd != nullptr);
 	if  (valid) {
 		_error = getCommandError(xml);
-		if (_error == Printers::ErrorCode_n::SUCCESS) {
+		if (_error == Printers::nErrorCode::SUCCESS) {
 			const XMLElement * xBoardsList = cmd->FirstChildElement(MPRINTER_BOARDS_LIST);
 			if (xBoardsList != nullptr) {
 				const XMLElement * xBoard = xBoardsList->FirstChildElement(MPRINTER_BOARD);

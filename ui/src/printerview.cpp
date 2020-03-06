@@ -96,13 +96,13 @@ void PrinterView::updateLogs()
 				Macsa::Printers::ErrorType type;
 				type  = log.at(i).type.toStdString();
 				switch (type()) {
-					case Macsa::Printers::ErrorType_n::ERROR:
+					case Macsa::Printers::nErrorType::ERROR:
 						itType->setIcon(QIcon(ERROR_ICON));
 						break;
-					case Macsa::Printers::ErrorType_n::WARNING:
+					case Macsa::Printers::nErrorType::WARNING:
 						itType->setIcon(QIcon(WARN_ICON));
 						break;
-					case Macsa::Printers::ErrorType_n::INFORMATION:
+					case Macsa::Printers::nErrorType::INFORMATION:
 						itType->setIcon(QIcon(INFO_ICON));
 						break;
 					default:
@@ -133,6 +133,10 @@ void PrinterView::setPrinterStatus(TIJViewerController::TijStatus status)
 		case TIJViewerController::TijStatus::DISCONNECTED:
 			ui.lblPrinterStatus->setText("Disconnected");
 			ui.lblPrinterStatus->setStyleSheet("color:#333;");
+			break;
+		case TIJViewerController::TijStatus::CONNECTING:
+			ui.lblPrinterStatus->setText("Connectiong");
+			ui.lblPrinterStatus->setStyleSheet("color:#F80;");
 			break;
 		case TIJViewerController::TijStatus::STOPPED:
 			connected = true;

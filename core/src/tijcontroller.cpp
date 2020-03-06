@@ -30,37 +30,6 @@ bool TijController::updateStatus()
 	return  requestCommand(command);
 }
 
-TijController::TijPrinterStatus TijController::printerStatus()
-{
-	TijPrinterStatus status = TijPrinterStatus::DISCONNECTED;
-
-	if (NetworkNode::status() == NetworkNode::nNodeStatus::CONNECTED) {
-		const Macsa::Printers::Board * board = _printer.board(0);
-		if (board == nullptr) {
-			board = _printer.board(0);
-		}
-		board = _printer.board(0);
-		if (board != nullptr) {
-			if (board->enabled()) {
-				if (board->errors().size()) {
-					status = TijPrinterStatus::WARNING; // TODO: review
-				}
-				else {
-					status = TijPrinterStatus::RUNNING;
-					if (board->printing()){
-						status = TijPrinterStatus::PRINTING;
-					}
-				}
-			}
-			else {
-				status = TijPrinterStatus::STOPPED;
-			}
-		}
-	}
-
-	return status;
-}
-
 bool TijController::updateErrorsList()
 {
 	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getErrorsList;
@@ -205,7 +174,7 @@ bool TijController::send(MCommand* cmd)
 		{
 			std::lock_guard<std::mutex> lock(_mutex);
 			success = _factory.parseResponse(resp, cmd);
-			if (success && cmd->getError() == Printers::ErrorCode_n::SUCCESS) {
+			if (success && cmd->getError() == Printers::nErrorCode::SUCCESS) {
 				checkCommand(cmd->commandName(), cmd->attributes());
 			}
 		}

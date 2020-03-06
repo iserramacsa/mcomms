@@ -3,18 +3,17 @@
 
 #include <QObject>
 #include <QDateTime>
-#include "tijcontroller.h"
-#include "tijobserver.h"
+#include "tijviewer.h"
 
 #include <QThread>
 #include <QDebug>
 
-class TIJViewerController : public QObject, public Macsa::MComms::TijObserver
+class TIJViewerController : public QObject, public Macsa::MComms::TijViewer
 {
 		Q_OBJECT
 
 	public:
-		typedef Macsa::MComms::TijController::TijPrinterStatus TijStatus;
+		typedef Macsa::MComms::TijViewer::TijPrinterStatus TijStatus;
 		enum class TIJConfigProperties
 		{
 			HEADER_TYPE = 0,
@@ -117,8 +116,6 @@ class TIJViewerController : public QObject, public Macsa::MComms::TijObserver
 		QString printerDateTime(const QString &format = "");
 		QVector<PrinterError> errorsLog() const;
 		bool printing() const;
-
-		TijStatus printerStatus() const;
 
 		QString boardType() const;
 		QString boardControllerVersion() const;
@@ -230,8 +227,8 @@ class TIJViewerController : public QObject, public Macsa::MComms::TijObserver
 		//		void setOutputs(const std::vector<Output>& outputs);
 		//		void setOutput(unsigned int idx, const Output& output);
 
-		QVector<PrinterError> errors() const;
-		PrinterError error(unsigned int idx) const;
+// Deprecated // std::vector<Macsa::Printers::Error> errors() const;
+// Deprecated // Macsa::Printers::Error error(unsigned int idx) const;
 		//		void setErrors(const std::vector<Error>& errors);
 		//		void setError(unsigned int idx, const Error& error);
 

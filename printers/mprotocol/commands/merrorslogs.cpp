@@ -47,7 +47,7 @@ void MErrorsLogs::buildRequest()
 void MErrorsLogs::buildResponse()
 {
 	XMLElement* cmd = newCommandNode();
-	_error = Printers::ErrorCode_n::SUCCESS;
+	_error = Printers::nErrorCode::SUCCESS;
 	std::vector<Printers::Error> list = _printer.errorsLog();
 	for (std::vector<Printers::Error>::const_iterator err = list.begin(); err != list.end(); err++) {
 		addNewItem(*err, &cmd);
@@ -113,5 +113,5 @@ bool MErrorsLogs::parseItem(const XMLElement *item, Printers::Error &error)
 		error.setCode(getTextAttribute(item, MERRORS_LOGS_CODE_ATTR, error.code().toString()));
 	}
 
-	return (error.type() != Printers::ErrorType_n::INVALID);
+	return (error.type() != Printers::nErrorType::INVALID);
 }

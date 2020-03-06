@@ -26,7 +26,7 @@ namespace Macsa {
 		class Delay
 		{
 			public:
-				Delay(unsigned int	delay = 0, DelayUnits_n units = DelayUnits_n::UNITS_DOTS) {
+				Delay(unsigned int	delay = 0, nDelayUnits units = nDelayUnits::UNITS_DOTS) {
 					_delay = delay;
 					_units = units;
 				}
@@ -47,7 +47,7 @@ namespace Macsa {
 			public:
 				ShotMode();
 				ShotMode(ShootingMode mode, unsigned int numPrints, const std::vector<Delay>& delays, bool repeat);
-				ShotMode(ShootingMode_n mode, unsigned int numPrints, const std::vector<Delay>& delays, bool repeat);
+				ShotMode(nShootingMode mode, unsigned int numPrints, const std::vector<Delay>& delays, bool repeat);
 
 				ShootingMode mode() const;
 				uint16_t numPrints() const;
@@ -73,7 +73,7 @@ namespace Macsa {
 				std::vector<Delay> _delays;
 				bool _repeat;
 
-				inline void initByMode(ShootingMode_n mode, unsigned int numPrints, const std::vector<Delay>& delays, bool repeat);
+				inline void initByMode(nShootingMode mode, unsigned int numPrints, const std::vector<Delay>& delays, bool repeat);
 				bool equal( const ShotMode& other_ ) const;
 		};
 	}

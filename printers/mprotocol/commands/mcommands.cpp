@@ -105,7 +105,7 @@ const XMLElement *MCommand::getCommand(const XMLElement *wind, unsigned int& win
 Printers::ErrorCode MCommand::getCommandError(const XMLElement *wind) const
 {
 	Printers::ErrorCode err;
-	err = Printers::ErrorCode_n::UNKOWN_ERROR;
+	err = Printers::nErrorCode::UNKOWN_ERROR;
 	if (wind != nullptr){
 		const XMLElement* error = wind->FirstChildElement(MERROR);
 		if (error != nullptr) {
