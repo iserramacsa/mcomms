@@ -52,7 +52,6 @@ void PrinterView::setController(Macsa::MComms::TijController &controller)
 	_printerConfigView->setController(controller);
 	_printerCommsView->setController(controller);
 	_printerFilesView->setController(controller);
-	_controller->updatePrinterData();
 	refresh();
 	if (!_dtTimer.isActive()) {
 		_dtTimer.start();
@@ -350,7 +349,7 @@ void PrinterView::onConnectClicked()
 void PrinterView::onRequestedChanges()
 {
 	if (_controller != nullptr) {
-		_controller->updatePrinterData();
+//		_controller->updatePrinterData(); //Deprecated
 		refresh();
 	}
 }

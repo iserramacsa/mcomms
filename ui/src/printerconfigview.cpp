@@ -2,6 +2,7 @@
 #include "QFormLayout"
 #include <QTimer>
 #include "printer/datatypes.h"
+#include "messageselector.h"
 
 #include <QDebug>
 
@@ -764,7 +765,6 @@ void PrinterConfigView::onToggleRotated()
 {
 	if (_controller) {
 		if (_controller->setPrintRotated(!_controller->enabled())) {
-			QTimer::singleShot(1000, this, SLOT(onRequestChanges()));
 		}
 	}
 }
@@ -795,7 +795,15 @@ void PrinterConfigView::onChangeNozzlesCols(int idx)
 
 void PrinterConfigView::onSelectUserMessage()
 {
-	//TODO
+	if (_controller){
+		MessageSelectorDialog selector(_controller->controller(), this);
+		if (selector.exec()){
+			QString msg = selector.selectedMessage();
+			if (msg.length()){
+				_controller->controller().setUserMessage(msg.toStdString());
+			}
+		}
+	}
 }
 
 template<typename N>

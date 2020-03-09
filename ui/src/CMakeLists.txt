@@ -13,6 +13,7 @@ set(SOURCES ${SOURCES}
 	${CMAKE_CURRENT_SOURCE_DIR}/printerconfigview.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/printercommsview.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/printerfilesview.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/messageselector.cpp
 	#	${CMAKE_CURRENT_SOURCE_DIR}/
 	)
 

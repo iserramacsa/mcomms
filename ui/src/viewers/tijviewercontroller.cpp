@@ -15,31 +15,6 @@ TIJViewerController::TIJViewerController(TijController &controller, QObject *par
 {}
 
 #include <iostream>
-void TIJViewerController::updatePrinterData()
-{
-	_controller.getLive();
-	if (_controller.isStatusChanged())
-		_controller.updateStatus();
-
-	if (_controller.isConfigChanged())
-		_controller.updateConfig();
-
-	if (_controller.isFilesChanged())
-		_controller.updateFilesList();
-
-	if (_controller.isFontsChanged())
-		_controller.updateFontsList();
-
-	if (_controller.isUserValuesChanged())
-		std::cout << "Printer user values changed!" << std::endl;
-//			_controller.updateUserValues();
-
-	if (_controller.isErrorsLogsChanged())
-		_controller.updateErrorsList();
-
-	if (_controller.isInError())
-		std::cout << "Printer is in error!" << std::endl;
-}
 
 bool TIJViewerController::requestLive() {
 	_controller.getLive();

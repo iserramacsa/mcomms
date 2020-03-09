@@ -16,6 +16,7 @@ set(MOC_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/printerconfigview.h
 	${CMAKE_CURRENT_SOURCE_DIR}/printercommsview.h
 	${CMAKE_CURRENT_SOURCE_DIR}/printerfilesview.h
+	${CMAKE_CURRENT_SOURCE_DIR}/messageselector.h
 	)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/viewers)
