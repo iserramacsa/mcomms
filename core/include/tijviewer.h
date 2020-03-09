@@ -29,6 +29,16 @@ namespace Macsa {
 				TijViewer(TijController& controller);
 				virtual ~TijViewer()override;
 
+				std::vector<std::string> printerDrives() const;
+				std::vector<std::string> printerFolders(const std::string& drive) const;
+				std::vector<std::string> printerFiles(const std::string& drive, const std::string& folder) const;
+				std::vector<std::string> printerFiles(const std::string& filter) const;
+
+				const Drive* getPrinterDrive(const std::string& drive) const;
+				const Folder* getPrinterFolder(const std::string& drive, const std::string& folder) const;
+				const File* getPrinterFile(const std::string& drive, const std::string& folder, const std::string& filename) const;
+				const File* getPrinterFile(const std::string& filepath) const;
+
 				//Printer base getters
 				std::time_t printerDateTime() const;
 				std::string printerType() const;

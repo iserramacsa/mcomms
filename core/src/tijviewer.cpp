@@ -14,6 +14,75 @@ TijViewer::TijViewer(TijController &controller) :
 TijViewer::~TijViewer()
 {}
 
+std::vector<std::string> TijViewer::printerDrives() const
+{
+	std::vector<std::string> drives;
+	if (tijprinter().files()) {
+		drives = tijprinter().files()->getDrives();
+	}
+	return drives;
+}
+
+std::vector<std::string> TijViewer::printerFolders(const std::string& drive) const
+{
+	std::vector<std::string> folders;
+	if (tijprinter().files()) {
+		folders = tijprinter().files()->getFolders(drive);
+	}
+	return folders;
+}
+
+std::vector<std::string> TijViewer::printerFiles(const std::string& drive, const std::string& folder) const
+{
+	std::vector<std::string> files;
+	if (tijprinter().files()) {
+		files = tijprinter().files()->getFiles(drive, folder);
+	}
+	return files;
+}
+
+std::vector<std::string> TijViewer::printerFiles(const std::string& filter) const
+{
+	std::vector<std::string> files;
+	if (tijprinter().files()) {
+		files = tijprinter().files()->getAllFiles(filter);
+	}
+	return files;
+}
+
+const Drive* TijViewer::getPrinterDrive(const std::string& drive) const
+{
+	if (tijprinter().files()) {
+		return tijprinter().files()->getDrive(drive);
+	}
+	return nullptr;
+}
+
+const Folder* TijViewer::getPrinterFolder(const std::string& drive, const std::string& folder) const
+{
+	if (tijprinter().files()) {
+		return tijprinter().files()->getFolder(drive, folder);
+	}
+	return nullptr;
+}
+
+const File* TijViewer::getPrinterFile(const std::string& drive, const std::string& folder, const std::string& filename) const
+{
+	if (tijprinter().files()) {
+		return tijprinter().files()->getFile(drive, folder, filename);
+	}
+	return nullptr;
+}
+
+const File* TijViewer::getPrinterFile(const std::string& filepath) const
+{
+	if (tijprinter().files()) {
+		return tijprinter().files()->getFile(filepath);
+	}
+	return nullptr;
+}
+
+
 time_t TijViewer::printerDateTime() const
 {
 	return tijprinter().dateTime();
