@@ -12,11 +12,12 @@ set(PROTOCOL_SOURCES ${PROTOCOL_SOURCES}
 	${CMAKE_CURRENT_SOURCE_DIR}/mconfig.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/mfiles.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/mlive.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/merrorslogs.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/mstatus.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/mmessagevalues.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/mcurrentmessage.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/merrorslogs.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/mupdate.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/mtools.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/mmessagevalues.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/base64.c
 	PARENT_SCOPE
 )

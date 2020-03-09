@@ -529,7 +529,7 @@ bool Board::equal(const Board &other) const
 		return false;
 	else if (_blocked != other._blocked)
 		return false;
-	else if (_messageManager == other._messageManager)
+	else if (_messageManager != other._messageManager)
 		return false;
 	else if (_printerDirection != other._printerDirection)
 		return false;

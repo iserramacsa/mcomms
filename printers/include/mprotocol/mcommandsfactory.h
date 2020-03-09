@@ -31,6 +31,7 @@ namespace Macsa {
 				MCommand* getConfigCommand();
 				MCommand* setDateTimeCommand(const time_t &dateTime);
 				MCommand* setConfigBoard(const Printers::Board& board);
+				MCommand* setCurrentMessage(const std::string& filepath);
 
 				//Files
 				MCommand* getFontsCommand();

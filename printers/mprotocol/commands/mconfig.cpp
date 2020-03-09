@@ -177,7 +177,7 @@ MUpdateConfig::MUpdateConfig(Macsa::Printers::TijPrinter &baseConfig, Macsa::Pri
 void MUpdateConfig::buildRequest()
 {
 	XMLElement* cmd = newCommandNode();
-	updateGeneralConfig(&cmd);
+	//updateGeneralConfig(&cmd);
 	//updateCommsConfig(&cmd);
 	updateBoards(&cmd);
 }

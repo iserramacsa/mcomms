@@ -6,6 +6,7 @@
 #include "mprotocol/mstatus.h"
 #include "mprotocol/merrorslogs.h"
 #include "mprotocol/mmessagevalues.h"
+#include "mprotocol/mcurrentmessage.h"
 #include "mprotocol/mupdate.h"
 
 using namespace tinyxml2;
@@ -132,6 +133,11 @@ MCommand *MCommandsFactory::setConfigBoard(const Macsa::Printers::Board &board)
 	return nullptr;
 }
 
+MCommand *MCommandsFactory::setCurrentMessage(const std::string &filepath)
+{
+	return new MSetCurrentMessage(_printer, filepath);
+}
+
 // =============  FILES Commands  ============= //
 MCommand *MCommandsFactory::getFontsCommand()
 {
@@ -202,6 +208,9 @@ MCommand *MCommandsFactory::getCommand(XMLElement *eCmd)
 		}
 		else if (cmdName == MCONFIG_SET) {
 			cmd = new MSetConfig(_printer);
+		}
+		else if (cmdName == MSET_CURRENT_MESSAGE) {
+			cmd = new MSetCurrentMessage(_printer);
 		}
 		// =============  FILES Commands  ============= //
 		else if (cmdName == MFILES_GET_LIST) {
