@@ -6,9 +6,6 @@
 using namespace Macsa;
 using namespace Macsa::Network;
 
-NodeNotifier::NodeNotifier()
-{}
-
 void NodeNotifier::notifyStatusChanged(const int &status)
 {
 	const NetworkNode::nNodeStatus nodeStatus = static_cast<const NetworkNode::nNodeStatus>(status);
