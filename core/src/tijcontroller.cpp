@@ -6,6 +6,9 @@
 
 #include <iostream>
 
+#define TRACE_TX 0
+#define TRACE_RX 0
+
 #define MPROTOCOL_PORT	9991
 
 using namespace Macsa;
@@ -21,31 +24,31 @@ TijController::TijController(const std::string &id, const std::string &address) 
 void TijController::getLive()
 {
 	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getLiveCommand;
-	requestCommand(command);
+	sendCommand(command);
 }
 
 bool TijController::updateStatus()
 {
 	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getStatusCommand;
-	return  requestCommand(command);
+	return  sendCommand(command);
 }
 
 bool TijController::updateErrorsList()
 {
 	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getErrorsList;
-	return  requestCommand(command);
+	return  sendCommand(command);
 }
 
 bool TijController::updateConfig()
 {
 	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getConfigCommand;
-	return  requestCommand(command);
+	return  sendCommand(command);
 }
 
 bool TijController::setDateTime(const time_t &dt)
 {
 	std::function<MCommand*(MCommandsFactory*, const time_t &)> command = &MCommandsFactory::setDateTimeCommand;
-	return  requestCommand(command, dt);
+	return  sendCommand(command, dt);
 }
 
 bool TijController::setEnabled(bool enabled)
@@ -98,16 +101,22 @@ bool TijController::setPrintRotated(bool rotated)
 	return false;
 }
 
+bool TijController::setUserMessage(const std::string &filepath)
+{
+	std::function<MCommand*(MCommandsFactory*, const std::string &)> command = &MCommandsFactory::setCurrentMessage;
+	return  sendCommand(command, filepath);
+}
+
 bool TijController::updateFilesList()
 {
 	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getAllFilesCommand;
-	return  requestCommand(command);
+	return  sendCommand(command);
 }
 
 bool TijController::updateFontsList()
 {
 	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getFontsCommand;
-	return  requestCommand(command);
+	return  sendCommand(command);
 }
 
 bool TijController::updateUserValues()
@@ -120,19 +129,19 @@ bool TijController::updateUserValues()
 bool TijController::updateMessagesList()
 {
 	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getMessagesCommand;
-	return  requestCommand(command);
+	return  sendCommand(command);
 }
 
 bool TijController::updateImagesList()
 {
 	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getImagesCommand;
-	return  requestCommand(command);
+	return  sendCommand(command);
 }
 
 bool TijController::updateFile(const std::string &filepath, bool rawMode)
 {
 	std::function<MCommand*(MCommandsFactory*, const std::string &, const bool&)> command = &MCommandsFactory::getFileContent;
-	return  requestCommand(command, filepath, rawMode);
+	return  sendCommand(command, filepath, rawMode);
 }
 
 std::vector<std::string> TijController::getDrives()
@@ -165,6 +174,10 @@ bool TijController::send(MCommand* cmd)
 	bool success = false;
 
 	std::string tx = cmd->getRequest(_factory.nextId());
+#if TRACE_TX
+	std::cout << __func__ << " TX: " << tx << std::endl;
+#endif
+
 	_lastSentStatus = Network::NetworkNode::sendPacket(tx, MPROTOCOL_PORT);
 	if (_lastSentStatus == ISocket::FRAME_SUCCESS)
 	{
@@ -178,6 +191,9 @@ bool TijController::send(MCommand* cmd)
 				checkCommand(cmd->commandName(), cmd->attributes());
 			}
 		}
+#if TRACE_RX
+		std::cout << __func__ << " RX: " << resp << std::endl;
+#endif
 	}
 	delete cmd;
 	return success;
@@ -195,7 +211,7 @@ bool TijController::getBaseBoard(Printers::Board& board)
 bool TijController::changeBoardConfig(const Printers::Board &board)
 {
 	std::function<MCommand*(MCommandsFactory*, const Printers::Board&)> command = &MCommandsFactory::setConfigBoard;
-	return  requestCommand(command, board);
+	return  sendCommand(command, board);
 }
 
 void TijController::checkCommand(const std::string &cmd, const std::map<std::string,std::string>& attributes)
@@ -259,7 +275,7 @@ std::vector<std::string> TijController::getFiles(const std::string &drive, const
 
 
 template<typename ... Args>
-bool TijController::requestCommand(std::function<MCommand*(MCommandsFactory*, const Args& ...)>& command, const Args& ...args)
+bool TijController::sendCommand(std::function<MCommand*(MCommandsFactory*, const Args& ...)>& command, const Args& ...args)
 {
 	bool success = false;
 	std::function<MCommand*(const Args& ...)> function = std::bind(command, &_factory, args...);

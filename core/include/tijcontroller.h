@@ -36,6 +36,7 @@ namespace Macsa {
 				bool setLowLevelOutput(bool enabled);
 				bool setCartridgeBlocked(bool blocked);
 				bool setPrintRotated(bool rotated);
+				bool setUserMessage(const std::string& filepath);
 
 				//Files
 				bool updateFilesList();
@@ -81,7 +82,7 @@ namespace Macsa {
 				std::vector<std::string> getFiles(const std::string &drive,const std::string &folder);
 
 				template<typename... Args>
-				bool requestCommand(std::function<MProtocol::MCommand*(MProtocol::MCommandsFactory*, const Args& ...)>& command, const Args& ...args);
+				bool sendCommand(std::function<MProtocol::MCommand*(MProtocol::MCommandsFactory*, const Args& ...)>& command, const Args& ...args);
 
 		};
 	}
