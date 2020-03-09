@@ -156,7 +156,7 @@ namespace Macsa {
 				}
 
 				///
-				/// \brief notifyDestruction. Notifies to the attached observer that this notifies will be destroyed
+				/// \brief notifyDestruction. Notifies to the attached observer that this object will be destroyed
 				///
 				inline void notifyDestruction()
 				{
