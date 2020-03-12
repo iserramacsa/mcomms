@@ -11,8 +11,8 @@ INIFile::INIFile(const std::string filename) :
 
 bool INIFile::parse()
 {
-	std::ifstream file;
-	file.open (_filename);
+	FILE* f = fopen(_filename, "r");
+
 	return false;
 }
 

@@ -64,7 +64,7 @@ namespace Macsa {
 				INIFile(const std::string filename);
 
 				bool parse();
-				bool save(const std::string& filepath);
+				bool save();
 
 				std::vector<std::string> sections();
 				Section& operator [](const std::string& section);
