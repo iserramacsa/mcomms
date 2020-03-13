@@ -7,22 +7,11 @@ if (INCLUDE_TESTS)
 endif()
 
 set(PROTOCOL_SOURCES ${PROTOCOL_SOURCES}
-	${CMAKE_CURRENT_SOURCE_DIR}/jetcommandsfactory.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/jetprotocol.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/xmlcommands.cpp
+	PARENT_SCOPE
 )
 
 set(PROTOCOL_HEADERS ${PROTOCOL_HEADERS}
-)
-
-include_directories(commands)
-add_subdirectory(commands)
-
-
-set(JET_PROTOCOL_SOURCES ${JET_PROTOCOL_SOURCES}
-	PARENT_SCOPE
-	)
-
-set(JET_PROTOCOL_HEADERS ${JET_PROTOCOL_HEADERS}
 	PARENT_SCOPE
 	)
 

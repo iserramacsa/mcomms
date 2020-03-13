@@ -1,8 +1,12 @@
-##########################
-#   MPrinter Includes   #
-##########################
+##############################
+#   Macsa Printer Includes   #
+##############################
 
-set(HEADERS_LIB
+set(SOURCES ${SOURCES}
+	PARENT_SCOPE
+	)
+
+set(HEADERS ${HEADERS}
 	${CMAKE_CURRENT_SOURCE_DIR}/board.h
 	${CMAKE_CURRENT_SOURCE_DIR}/cartridge.h
 	${CMAKE_CURRENT_SOURCE_DIR}/comms.h
@@ -20,13 +24,5 @@ set(HEADERS_LIB
 	${CMAKE_CURRENT_SOURCE_DIR}/printer.h
 	${CMAKE_CURRENT_SOURCE_DIR}/shotmode.h
 	${CMAKE_CURRENT_SOURCE_DIR}/status.h
-	)
-
-set(SOURCES ${SOURCES}
-	PARENT_SCOPE
-	)
-
-set(_HDRS ${HDRS}
-	${HEADERS_LIB}
 	PARENT_SCOPE
 	)

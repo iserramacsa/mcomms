@@ -3,15 +3,17 @@
 ##########################
 
 add_subdirectory(printer)
+add_subdirectory(xmlprotocol)
 add_subdirectory(tij)
+add_subdirectory(jet)
 add_subdirectory(mprotocol)
+add_subdirectory(jetprotocol)
 add_subdirectory(nisx)
 
 set(SOURCES ${SOURCES}
 	PARENT_SCOPE
 	)
 
-set(_HDRS ${HDRS}
-	${HEADERS_LIB}
+set(HEADERS ${HEADERS}
 	PARENT_SCOPE
 	)

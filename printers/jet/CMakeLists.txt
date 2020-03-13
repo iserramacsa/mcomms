@@ -72,6 +72,7 @@ include_directories(${PRINTERS_INCLUDES})
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src         ${PROJECT_BINARY_DIR}/printers/src)
 add_subdirectory(${PROJECT_SOURCE_DIR}/include     ${PROJECT_BINARY_DIR}/printers/include)
+add_subdirectory(${PROJECT_SOURCE_DIR}/xmlprotocol ${PROJECT_BINARY_DIR}/xmlprotocol)
 add_subdirectory(${PROJECT_SOURCE_DIR}/jetprotocol ${PROJECT_BINARY_DIR}/jetprotocol)
 add_subdirectory(${PROJECT_SOURCE_DIR}/jet/src     ${PROJECT_BINARY_DIR}/jet/src)
 add_subdirectory(${PROJECT_SOURCE_DIR}/jet/include ${PROJECT_BINARY_DIR}/jet/include)
