@@ -5,7 +5,7 @@
 #include <string>
 #include <tinyxml2.h>
 #include <map>
-#include "printer/datatypes.h"
+#include "utils/smartenum.h
 #include "jet/jetprinter.h"
 
 namespace Macsa{

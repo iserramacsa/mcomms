@@ -64,6 +64,7 @@ SET (PRINTERS_INCLUDES
 	${PROJECT_SOURCE_DIR}/include
 	${PROJECT_SOURCE_DIR}/jet/src
 	${PROJECT_SOURCE_DIR}/jet/include
+	${PROJECT_SOURCE_DIR}/../utils/include
 	${LIB_PREFIX}/include
 )
 

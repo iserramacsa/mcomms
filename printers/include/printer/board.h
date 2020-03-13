@@ -6,7 +6,7 @@
 #include <vector>
 #include <stdint.h>
 
-#include "datatypes.h"
+#include "../tij/datatypes.h"
 #include "datecodes.h"
 #include "shotmode.h"
 #include "inputs.h"

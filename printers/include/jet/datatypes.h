@@ -1,11 +1,7 @@
-#ifndef MACSA_PRINTERS_DATA_TYPES_H
-#define MACSA_PRINTERS_DATA_TYPES_H
+#ifndef MACSA_TIJ_PRINTER_DATA_TYPES_H
+#define MACSA_TIJ_PRINTER_DATA_TYPES_H
 
-#include <cinttypes>
-#include <ostream>
-#include <string>
-#include <vector>
-#include <stdint.h>
+#include "utils/smartenum.h"
 
 //#ifndef UNKNOWN
 //#define UNKNOWN				"Unknown"
@@ -65,9 +61,9 @@
 #define ERROR_CODE_FILE_USER_DATAOT_FOUND			"FILE.USER_DATAOT_FOUND"
 #define ERROR_CODE_FILE_IN_USE						"FILE.IN_USE"
 #define ERROR_CODE_PARAM_BOARD_IDOT_FOUND			"PARAM.BOARD_IDOT_FOUND"
-#define ERROR_CODE_PARAM_COUNTER_IDOT_FOUND		"PARAM.COUNTER_IDOT_FOUND"
+#define ERROR_CODE_PARAM_COUNTER_IDOT_FOUND		    "PARAM.COUNTER_IDOT_FOUND"
 #define ERROR_CODE_PARAM_COUNTER_VALUE_REJECTED		"PARAM.COUNTER_VALUE_REJECTED"
-#define ERROR_CODE_PARAM_OUTPUT_IDOT_FOUND		"PARAM.OUTPUT_IDOT_FOUND"
+#define ERROR_CODE_PARAM_OUTPUT_IDOT_FOUND		    "PARAM.OUTPUT_IDOT_FOUND"
 #define ERROR_CODE_PARAM_BCD_INVALID_MODE			"PARAM.CANT_SET_MSG_IN_BCD_MODE"
 #define ERROR_CODE_PARAM_BOARD_IS_ENABLED			"PARAM.BOARD_IS_ENABLED"
 #define ERROR_CODE_PARAM_BOARD_IS_DISABLED			"PARAM.BOARD_ISOT_ENABLED"
@@ -103,48 +99,12 @@
 
 namespace Macsa {
 	namespace Printers {
-
-		///
-		/// \brief The SmartEnum class is an abstract class to avoid boilerplate code.
-		/// Only equal operator and toString must be overrided.
-		/// This class is allows to use and object as an enum and can be setted with
-		/// string, or return an string from the internal value.
-		///
-		template <typename N>
-		class SmartEnum
-		{
-			public:
-				SmartEnum(){}
-				virtual ~SmartEnum(){}
-				inline N operator()() const {return _val;}
-				inline bool operator == (const N& val) const {return _val == val;}
-				inline bool operator != (const N& val) const {return _val != val;}
-				inline bool operator == (const SmartEnum& other) const {return _val == other._val;}
-				inline bool operator != (const SmartEnum& other) const {return _val != other._val;}
-				inline void operator =  (const SmartEnum& other){_val = other._val;}
-
-				virtual void operator =  (const N& v) = 0;
-				virtual void operator = (const std::string& val) = 0;
-				virtual std::string toString() const = 0;
-				virtual std::vector<std::string> stringList() const = 0;
-
-			protected:
-					N _val;
-		};
-		template <typename N>
-		inline std::ostream& operator << (std::ostream& os, const SmartEnum<N>& value) {return os << value.toString();}
-		template <typename N>
-		inline std::string& operator << (std::string&, const SmartEnum<N>& value) {return value.toString();}
-		template <typename N>
-		inline const SmartEnum<N>& operator << (SmartEnum<N>& se, const std::string& str) {se = str; return se;}
-
-
 		enum nBCDMode{
 			USER_MODE = 0,
 			BCD_MODE_1,
 			BCD_MODE_2
 		};
-		class BCDMode : public SmartEnum<nBCDMode>
+		class BCDMode : public Utils::SmartEnum<nBCDMode>
 		{
 			public:
 				virtual void operator = (const enum nBCDMode& v){_val = v;}
@@ -181,7 +141,7 @@ namespace Macsa {
 			L2R,        //Left to Right
 			AUTO        //Input depends
 		};
-		class PrinterDir : public SmartEnum<nPrinterDir>
+		class PrinterDir : public Utils::SmartEnum<nPrinterDir>
 		{
 			public:
 				virtual void operator = (const enum nPrinterDir& v){_val = v;}
@@ -217,7 +177,7 @@ namespace Macsa {
 			MULTI_SHOT_REL,  // for multishot with relative delay.
 			MULTI_SHOT_ABS   // for multishot with absolute delay.
 		};
-		class ShootingMode : public SmartEnum<nShootingMode>
+		class ShootingMode : public Utils::SmartEnum<nShootingMode>
 		{
 			public:
 				ShootingMode() : SmartEnum() {_val = SINGLE_SHOT;}
@@ -254,7 +214,7 @@ namespace Macsa {
 			COL_B,      //Column B
 			COL_BOTH    //Both
 		};
-		class NozzlesCol : public SmartEnum<nNozzlesCol>
+		class NozzlesCol : public Utils::SmartEnum<nNozzlesCol>
 		{
 			public:
 				NozzlesCol() {_val = COL_A;}
@@ -290,7 +250,7 @@ namespace Macsa {
 			UNITS_MM = 0,
 			UNITS_DOTS,
 		};
-		class DelayUnits : public SmartEnum<nDelayUnits>
+		class DelayUnits : public Utils::SmartEnum<nDelayUnits>
 		{
 			public:
 				DelayUnits() {_val = UNITS_DOTS;}
@@ -323,7 +283,7 @@ namespace Macsa {
 			INTERNAL_ENCODER,
 			EXTERNAL_ENCODER
 		};
-		class EncoderMode : public SmartEnum<nEncoderMode>
+		class EncoderMode : public Utils::SmartEnum<nEncoderMode>
 		{
 			public:
 				EncoderMode() { _val = FIXED_SPEED; }
@@ -362,7 +322,7 @@ namespace Macsa {
 			PHCELL_B,		//Photocell of column B
 			PHCELL_EXT,		//External photocell
 		};
-		class Photocell : public SmartEnum<nPhotocell>
+		class Photocell : public Utils::SmartEnum<nPhotocell>
 		{
 			public:
 				Photocell() {_val = PHCELL_A;}
@@ -398,7 +358,7 @@ namespace Macsa {
 			INPUT_EDGE = 0,
 			INPUT_STATUS
 		};
-		class InputMode : public SmartEnum<nInputMode>
+		class InputMode : public Utils::SmartEnum<nInputMode>
 		{
 			public:
 				InputMode() {_val = INPUT_EDGE;}
@@ -439,7 +399,7 @@ namespace Macsa {
 								//		except the electronics takes the time as maximum to mantain the output in OFF state
 								//		afterwards the output returns to ON.
 		};
-		class OutputType : public SmartEnum<nOutputType>
+		class OutputType : public Utils::SmartEnum<nOutputType>
 		{
 			public:
 				OutputType(){_val = OUTPUT_ONPULSE;}
@@ -485,7 +445,7 @@ namespace Macsa {
 			WARNING,
 			ERROR
 		};
-		class ErrorType : public SmartEnum<nErrorType>
+		class ErrorType : public Utils::SmartEnum<nErrorType>
 		{
 			public:
 				virtual void operator = (const enum nErrorType& v){_val = v;}
@@ -572,7 +532,7 @@ namespace Macsa {
 
 			UNKOWN_ERROR				//Last error for unknown code
 		};
-		class ErrorCode : public SmartEnum<nErrorCode>
+		class ErrorCode : public Utils::SmartEnum<nErrorCode>
 		{
 			public:
 				ErrorCode() : SmartEnum() {_val = UNKOWN_ERROR;}
@@ -774,7 +734,7 @@ namespace Macsa {
 			LOG_DEBUG,
 			LOG_DISABLED
 		};
-		class LoggerLevel : public SmartEnum<nLoggerLevel>
+		class LoggerLevel : public Utils::SmartEnum<nLoggerLevel>
 		{
 			public:
 				LoggerLevel(){_val = LOG_DISABLED;}

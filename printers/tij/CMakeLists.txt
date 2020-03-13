@@ -4,7 +4,7 @@
 ## Project configuration
 cmake_minimum_required(VERSION 3.5)
 
-set(TIJ_LIBRARY_NAME TijLibrary)
+set(TIJ_LIBRARY_NAME TijPrinter)
 
 project(${TIJ_LIBRARY_NAME})
 set (PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..)
@@ -64,6 +64,7 @@ SET (PRINTERS_INCLUDES
 	${PROJECT_SOURCE_DIR}/include
 	${PROJECT_SOURCE_DIR}/tij/src
 	${PROJECT_SOURCE_DIR}/tij/include
+	${PROJECT_SOURCE_DIR}/../utils/include
 	${LIB_PREFIX}/include
 )
 
