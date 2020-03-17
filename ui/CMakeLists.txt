@@ -88,8 +88,8 @@ if (${BUILD_STATIC_LIBS})
 	target_link_libraries( ${PROJECT_NAME} ${QT_LIBRARIES} ${EXTERNAL_LIBS}
 		${PROJECT_BINARY_DIR}/core/libMComms.a
 		${PROJECT_BINARY_DIR}/core/network/libMNetwork.a
-		${PROJECT_BINARY_DIR}/printers/tij/libTijLibrary.a
+		${PROJECT_BINARY_DIR}/printers/tij/libTijPrinter.a
 		${LIB_PREFIX}/lib/libtinyxml2.a)
 else()
-	target_link_libraries( ${PROJECT_NAME} ${QT_LIBRARIES} MComms MNetwork TijLibrary)
+	target_link_libraries( ${PROJECT_NAME} ${QT_LIBRARIES} MComms MNetwork TijPrinter)
 endif()

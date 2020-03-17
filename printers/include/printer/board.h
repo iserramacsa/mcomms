@@ -14,7 +14,7 @@
 #include "encoder.h"
 #include "cartridge.h"
 #include "errors.h"
-#include "messagemanager.h"
+#include "tij/messagemanager.h"
 #include <mutex>
 namespace Macsa {
 	namespace Printers {

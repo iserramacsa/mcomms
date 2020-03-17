@@ -3,6 +3,7 @@
 
 using namespace Macsa::JetProtocol;
 using namespace Macsa::Printers;
+using namespace tinyxml2;
 
 //=============		Get Counters		=============//
 JetGetCounters::JetGetCounters(JetPrinter &printer) :
@@ -24,12 +25,11 @@ bool JetGetCounters::parseResponse(const tinyxml2::XMLElement *xml)
 
 void JetGetCounters::buildRequest()
 {
-
+	newCommandWind();
 }
 
 void JetGetCounters::buildResponse()
 {
-
 }
 
 //=============		Set Counters		=============//
@@ -52,12 +52,10 @@ bool JetSetCounters::parseResponse(const tinyxml2::XMLElement *xml)
 
 void JetSetCounters::buildRequest()
 {
-
 }
 
 void JetSetCounters::buildResponse()
 {
-
 }
 
 //=============		Reset Counters		=============//
@@ -80,10 +78,10 @@ bool JetResetCounters::parseResponse(const tinyxml2::XMLElement *xml)
 
 void JetResetCounters::buildRequest()
 {
+	newCommandWind();
 
 }
 
 void JetResetCounters::buildResponse()
 {
-
 }

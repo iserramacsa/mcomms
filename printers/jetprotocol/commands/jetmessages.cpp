@@ -1,57 +1,34 @@
-#include "mprotocol/mcurrentmessage.h"
-#include "mprotocol/mprotocol.h"
+#include "jetprotocol/jetmessages.h"
+#include "jetprotocol/jetprotocol.h"
 
 using namespace Macsa::JetProtocol;
 using namespace tinyxml2;
 
-MSetCurrentMessage::MSetCurrentMessage(Printers::TijPrinter &printer, const std::string &filename) :
-	MCommand(MSET_CURRENT_MESSAGE, printer)
+JetSetCurrentMessage::JetSetCurrentMessage(Macsa::Printers::JetPrinter &printer, const std::string &filename) :
+	JetCommand(CMD_SEND_MESSAGE, printer)
 {
-	_filePath = filename;
+	//_filePath = filename;
 }
 
-MSetCurrentMessage::~MSetCurrentMessage()
+JetSetCurrentMessage::~JetSetCurrentMessage()
 {}
 
-void MSetCurrentMessage::buildRequest()
+void JetSetCurrentMessage::buildRequest()
 {
-	XMLElement* cmd = newCommandNode();
-	if (cmd != nullptr && _filePath.length()) {
-		cmd->SetAttribute(ATTRIBUTE_BOARD_ID, 0);
-		cmd->SetAttribute(ATTRIBUTE_FILEPATH, _filePath.c_str());
-	}
 }
 
-void MSetCurrentMessage::buildResponse()
+void JetSetCurrentMessage::buildResponse()
 {
-	//XMLElement* cmd = newCommandNode();
-	newCommandNode();
-	_error = Printers::nErrorCode::SUCCESS; //TODO:
-	addWindError(_error);
 }
 
-bool MSetCurrentMessage::parseRequest(const tinyxml2::XMLElement *xml)
+bool JetSetCurrentMessage::parseRequest(const tinyxml2::XMLElement *xml)
 {
-	const XMLElement* cmd = getCommand(xml, _id);
-	bool valid = false;
-	if  (cmd != nullptr) {
-		valid = (cmd != nullptr && cmd->NoChildren());
-		if (valid){
-			_filePath = getTextAttribute(cmd, ATTRIBUTE_FILEPATH, "");
-		}
-	}
-	return valid;
+	return false;
 }
 
-bool MSetCurrentMessage::parseResponse(const tinyxml2::XMLElement *xml)
+bool JetSetCurrentMessage::parseResponse(const tinyxml2::XMLElement *xml)
 {
-	_attributes.clear();
-	const XMLElement * cmd = getCommand(xml, _id);
-	bool valid = (cmd != nullptr);
-	if (valid) {
-		_error = getCommandError(xml);
-	}
-	return valid;
+	return false;
 }
 
 

@@ -1,6 +1,6 @@
 #ifndef MACSA_MCOMMS_TIJ_CONTROLLER_H
 #define MACSA_MCOMMS_TIJ_CONTROLLER_H
-#include "printer/datatypes.h"
+#include "tij/datatypes.h"
 #include "printercontroller.h"
 #include "tijnotifier.h"
 #include "mprotocol/mcommandsfactory.h"

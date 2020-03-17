@@ -95,7 +95,7 @@ if (${BUILD_SHARED_LIBS} OR ${BUILD_STATIC_LIBS})
 				PROPERTIES SOVERSION ${SOVERSION} OUTPUT_NAME ${PROJECT_NAME})
 		target_link_libraries(${PROJECT_NAME}-static  ${EXTERNAL_LIBS}
 			${PROJECT_BINARY_DIR}/network/libMNetwork.a
-			${PROJECT_BINARY_DIR}/../printers/tij/libTijLibrary.a)
+			${PROJECT_BINARY_DIR}/../printers/tij/libTijPrinter.a)
 		install(TARGETS ${PROJECT_NAME}-static
 			LIBRARY DESTINATION ${LIB_PREFIX}/lib)
 	endif()
@@ -108,7 +108,7 @@ if (${BUILD_SHARED_LIBS} OR ${BUILD_STATIC_LIBS})
 			${PROJECT_BINARY_DIR}/printers/tij
 			)
 		add_executable(${PROJECT_TEST_NAME} ${SRC_TEST} ${HDRS_TEST})
-		target_link_libraries(${PROJECT_TEST_NAME} ${EXTERNAL_LIBS} MComms MNetwork TijLibrary)
+		target_link_libraries(${PROJECT_TEST_NAME} ${EXTERNAL_LIBS} MComms MNetwork TijPrinter)
 		add_test(${PROJECT_NAME} ${PROJECT_TEST_NAME})
 
 	endif()

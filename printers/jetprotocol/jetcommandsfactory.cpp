@@ -84,4 +84,9 @@ bool JetCommandsFactory::parseRequest(const std::string &frame, JetCommand** cmd
 	return valid;
 }
 
+JetCommand *JetCommandsFactory::getStatusCommand()
+{
+	return new JetGetStatus(_printer);
+}
+
 

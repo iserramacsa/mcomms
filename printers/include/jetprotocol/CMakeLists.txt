@@ -8,7 +8,8 @@ set(SOURCES ${SOURCES}
 
 set(HEADERS ${HEADERS}
 	${CMAKE_CURRENT_SOURCE_DIR}/jetcommandsfactory.h
-	${CMAKE_CURRENT_SOURCE_DIR}/jetcommands.h
+	${CMAKE_CURRENT_SOURCE_DIR}/jetcommand.h
+	${CMAKE_CURRENT_SOURCE_DIR}/jetpause.h
 	${CMAKE_CURRENT_SOURCE_DIR}/jetconfigbase.h
 	${CMAKE_CURRENT_SOURCE_DIR}/jetconfig.h
 	${CMAKE_CURRENT_SOURCE_DIR}/jetcounters.h
@@ -18,5 +19,6 @@ set(HEADERS ${HEADERS}
 	${CMAKE_CURRENT_SOURCE_DIR}/jetmessagevalues.h
 	${CMAKE_CURRENT_SOURCE_DIR}/jetprotocol.h
 	${CMAKE_CURRENT_SOURCE_DIR}/jetstatus.h
+	${CMAKE_CURRENT_SOURCE_DIR}/jetoutput.h
 	PARENT_SCOPE
 	)

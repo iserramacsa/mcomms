@@ -7,8 +7,7 @@
 
 namespace Macsa{
 	///
-	/// \brief The JetCommand class is the base class from MProtocol command.
-	/// Based on a xml structure, this interface
+	/// \brief XMLCommand
 	///
 	class XMLCommand
 	{
@@ -31,6 +30,24 @@ namespace Macsa{
 			tinyxml2::XMLElement * createIntTextChildNode(const std::string &child, int value, tinyxml2::XMLElement **parent);
 			tinyxml2::XMLElement * createUnsignedTextChildNode(const std::string &child, unsigned value, tinyxml2::XMLElement **parent);
 			tinyxml2::XMLElement * createDoubleTextChildNode(const std::string &child, double value, unsigned precision, tinyxml2::XMLElement **parent);
+
+			std::string toString(); //return current xml document in a std::string
+
+			std::string toLower(std::string &str) const;
+			std::string toLower(const std::string &str) const;
+			std::string toUpper(std::string &str) const;
+			std::string toUpper(const std::string &str) const;
+
+			virtual bool strToBool(const std::string& str) const;
+
+			virtual std::string toString(bool val) const;
+			virtual std::string toString(int value) const;
+			virtual std::string toString(unsigned int value) const;
+			virtual std::string toString(float value, int precision) const;
+			virtual std::string toString(double value, int precision) const;
+
+		protected:
+			tinyxml2::XMLDocument _doc;
 	};
 }
 

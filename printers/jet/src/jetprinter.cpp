@@ -24,7 +24,7 @@ std::string JetPrinter::libraryVersion() { return JET_LIBRARY_VERSION_STR;  }
 JetPrinter::JetPrinter() :
 	_mutex(new std::mutex())
 {
-	_type = "SM200";
+	_type = "idjet";
 }
 
 JetPrinter::JetPrinter(const JetPrinter &other) :
@@ -81,7 +81,7 @@ std::string JetPrinter::formatedDateTime(time_t time) const
 	return dt.str();
 }
 
-time_t JetPrinter::dateTimeFromString(std::string dt) const
+time_t JetPrinter::dateTimeFromString(const std::string& dt) const
 {
 	time_t rawtime;
 	struct tm * timeInfo;
@@ -89,14 +89,34 @@ time_t JetPrinter::dateTimeFromString(std::string dt) const
 	time(&rawtime);
 	timeInfo = localtime(&rawtime);
 
-	if (dt.length() == 14)
+	if (dt.length() >= 8)
 	{
 		timeInfo->tm_mday = std::atoi(dt.substr(0, 2).c_str());
 		timeInfo->tm_mon  = std::atoi(dt.substr(2, 2).c_str()) - 1;
 		timeInfo->tm_year = std::atoi(dt.substr(4, 4).c_str()) - 1900;
-		timeInfo->tm_hour = std::atoi(dt.substr(8, 2).c_str());
-		timeInfo->tm_min  = std::atoi(dt.substr(10, 2).c_str());
-		timeInfo->tm_sec  = std::atoi(dt.substr(12, 2).c_str());
+
+		if (dt.length() >= 10)
+		{
+			timeInfo->tm_hour = std::atoi(dt.substr(8, 2).c_str());
+		}
+		else {
+			timeInfo->tm_hour = 0;
+		}
+		if (dt.length() >= 12)
+		{
+			timeInfo->tm_min  = std::atoi(dt.substr(10, 2).c_str());
+		}
+		else{
+			timeInfo->tm_min = 0;
+		}
+		if (dt.length() >= 14)
+		{
+			timeInfo->tm_sec  = std::atoi(dt.substr(12, 2).c_str());
+		}
+		else
+		{
+			timeInfo->tm_sec  = 0;
+		}
 		rawtime = mktime ( timeInfo );
 	}
 
@@ -112,182 +132,82 @@ void JetPrinter::setDateTime(const time_t &dateTime)
 void JetPrinter::setDateTime(const std::string &formatedDatetime)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
-	time_t rawtime;
-	struct tm * timeInfo;
+	time_t rawtime = dateTimeFromString(formatedDatetime);
+	Printer::setDateTime(rawtime);
+}
 
-	time(&rawtime);
-	timeInfo = localtime(&rawtime);
+unsigned int JetPrinter::printheadTemperature(unsigned int id)
+{
+	std::lock_guard<std::mutex>lock(*_mutex);
+	if (_printheads.find(id) != _printheads.end()) {
+		return _printheads.at(id).temperature();
+	}
+	return 0;
+}
 
-	if (formatedDatetime.length() == 14)
-	{
-		timeInfo->tm_mday = std::atoi(formatedDatetime.substr(0, 2).c_str());
-		timeInfo->tm_mon  = std::atoi(formatedDatetime.substr(2, 2).c_str()) - 1;
-		timeInfo->tm_year = std::atoi(formatedDatetime.substr(4, 4).c_str()) - 1900;
-		timeInfo->tm_hour = std::atoi(formatedDatetime.substr(8, 2).c_str());
-		timeInfo->tm_min  = std::atoi(formatedDatetime.substr(10, 2).c_str());
-		timeInfo->tm_sec  = std::atoi(formatedDatetime.substr(12, 2).c_str());
-		rawtime = mktime ( timeInfo );
-		Printer::setDateTime(rawtime);
+void JetPrinter::setPrintheadTemperature(unsigned int id, unsigned int temperature)
+{
+	std::lock_guard<std::mutex>lock(*_mutex);
+	if (_printheads.find(id) != _printheads.end()) {
+		_printheads.at(id).setTemperature(temperature);
 	}
 }
 
-std::string JetPrinter::controllerVersion() const
+unsigned int JetPrinter::tankLevel(unsigned int id)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
-	return _controllerVersion;
-}
-
-std::string JetPrinter::apiVersion() const
-{
-	std::lock_guard<std::mutex>lock(*_mutex);
-	return _apiVersion;
-}
-
-std::string JetPrinter::fpgaVersion() const
-{
-	std::lock_guard<std::mutex>lock(*_mutex);
-	return _fpgaVersion;
-}
-
-void JetPrinter::setVersions(const std::string &controllerVersion, const std::string &apiVersion, const std::string &fpgaVersion)
-{
-	std::lock_guard<std::mutex>lock(*_mutex);
-	_controllerVersion = controllerVersion;
-	_apiVersion = apiVersion;
-	_fpgaVersion = fpgaVersion;
-}
-
-DateCodes JetPrinter::dateCodes() const
-{
-	std::lock_guard<std::mutex>lock(*_mutex);
-	return _dateCodes;
-}
-
-void JetPrinter::setDateCodes(const DateCodes &dateCodes)
-{
-	std::lock_guard<std::mutex>lock(*_mutex);
-	_dateCodes = dateCodes;
-}
-
-std::vector<Board> JetPrinter::boards() const
-{
-	std::lock_guard<std::mutex>lock(*_mutex);
-	return _boards;
-}
-
-Board* JetPrinter::board(int id)
-{
-	std::lock_guard<std::mutex>lock(*_mutex);
-	Board* board = nullptr;
-	for (unsigned int i = 0; i < _boards.size(); i++) {
-		if (_boards.at(i).id() == id){
-			board = &_boards[i];
-			break;
-		}
+	if (_inkTanks.find(id) != _inkTanks.end()) {
+		return _inkTanks.at(id);
 	}
-	return board;
+	return 0;
 }
 
-const Board * JetPrinter::board(int id) const
+void JetPrinter::setTankLevel(unsigned int id, unsigned int level)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
-	const Board* board = nullptr;
-	for (unsigned int i = 0; i < _boards.size(); i++) {
-		if (_boards.at(i).id() == id){
-			board = &_boards.at(i);
-			break;
-		}
+	if (_inkTanks.find(id) == _inkTanks.end()) {
+		_inkTanks.insert(std::pair<unsigned int, unsigned int>(id, level));
 	}
-	return board;
-}
-
-void JetPrinter::setBoard(const Board &board)
-{
-	std::lock_guard<std::mutex>lock(*_mutex);
-	for (unsigned int i = 0; i < _boards.size(); i++) {
-		if (_boards.at(i).id() == board.id()){
-			_boards[i] = board;
-			break;
-		}
-	}
-
-}
-
-void JetPrinter::setBoards(const std::vector<Board> &boards)
-{
-	std::lock_guard<std::mutex>lock(*_mutex);
-	_boards = boards;
-	for (std::vector<Board>::iterator board = _boards.begin(); board != _boards.end(); board++) {
-//		board->setParent(this);
+	else {
+		_inkTanks.at(id) = level;
 	}
 }
 
-std::vector<Error> JetPrinter::errorsLog() const
+bool JetPrinter::paused() const
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
-	return _errorsLog;
+    return _paused;
 }
 
-void JetPrinter::setErrorsLog(const std::vector<Error> &errorsLog)
+void JetPrinter::setPause(bool paused)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
-	_errorsLog = errorsLog;
+    _paused = paused;
 }
 
-bool JetPrinter::logsEnabled() const
+bool JetPrinter::printStatus() const
 {
-	std::lock_guard<std::mutex>lock(*_mutex);
-	return _traceLogs;
+	return _printStatus;
 }
 
-void JetPrinter::setlogsEnabled(bool enable)
+void JetPrinter::setPrintStatus(bool printStatus)
 {
-	std::lock_guard<std::mutex>lock(*_mutex);
-	_traceLogs = enable;
+	_printStatus = printStatus;
 }
 
-bool JetPrinter::logComsEnabled() const
+JetMessagesManager &JetPrinter::messageManager()
 {
-	std::lock_guard<std::mutex>lock(*_mutex);
-	return  _traceComms;
+	return _messageManager;
 }
 
-void JetPrinter::setlogComsEnabled(bool enable)
+void JetPrinter::setMessageManager(const JetMessagesManager &manager)
 {
-	std::lock_guard<std::mutex>lock(*_mutex);
-	_traceComms = enable;
-}
-
-LoggerLevel JetPrinter::loggerLevel() const
-{
-	std::lock_guard<std::mutex>lock(*_mutex);
-	return _logLevel;
-}
-
-void JetPrinter::setloggerLevel(const LoggerLevel &logLevel)
-{
-	std::lock_guard<std::mutex>lock(*_mutex);
-	_logLevel = logLevel;
-}
-
-void JetPrinter::setloggerLevel(const std::string &logLevel)
-{
-	std::lock_guard<std::mutex>lock(*_mutex);
-	_logLevel = logLevel;
+	_messageManager = manager;
 }
 
 bool JetPrinter::equal(const Printer &other) const
 {
 	bool equal = false;
-
-	try {
-		const JetPrinter& printer = dynamic_cast<const JetPrinter&>(other);
-		//TODO
-		equal = (_dateCodes == printer._dateCodes);
-	}
-	catch(std::bad_cast exp) {
-		std::cout << __func__ <<"Caught bad cast" << std::endl;
-	}
 
 	return equal;
 }
@@ -300,15 +220,5 @@ void JetPrinter::copy(const JetPrinter &other)
 	_files = PrinterFiles();
 	_files = other._files;
 	_comms = other._comms;
-
-	_controllerVersion = other._controllerVersion;
-	_apiVersion = other._apiVersion;
-	_fpgaVersion = other._fpgaVersion;
-	_dateCodes = other._dateCodes;
-
-	_boards.assign(other._boards.begin(), other._boards.end());
-	_logLevel = other._logLevel;
-	_traceLogs = other._traceLogs;
-	_traceComms = other._traceComms;
 }
 

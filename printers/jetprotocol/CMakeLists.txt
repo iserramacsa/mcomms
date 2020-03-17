@@ -6,21 +6,14 @@ if (INCLUDE_TESTS)
 	add_subdirectory(test)
 endif()
 
-set(PROTOCOL_SOURCES ${PROTOCOL_SOURCES}
-	${CMAKE_CURRENT_SOURCE_DIR}/jetcommandsfactory.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/jetprotocol.cpp
-)
-
-set(PROTOCOL_HEADERS ${PROTOCOL_HEADERS}
-)
-
 include_directories(commands)
 add_subdirectory(commands)
 
-
 set(JET_PROTOCOL_SOURCES ${JET_PROTOCOL_SOURCES}
+	${CMAKE_CURRENT_SOURCE_DIR}/jetcommandsfactory.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/jetprotocol.cpp
 	PARENT_SCOPE
-	)
+)
 
 set(JET_PROTOCOL_HEADERS ${JET_PROTOCOL_HEADERS}
 	PARENT_SCOPE

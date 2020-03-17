@@ -1,5 +1,5 @@
 #include "printerview.h"
-#include "printer/datatypes.h"
+#include "tij/datatypes.h"
 #include <QScrollArea>
 
 #define ERROR_ICON	":/icons/error.svg"

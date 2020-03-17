@@ -1,16 +1,16 @@
-#ifndef MACSA_MPROTOCOL_COMMANDS_ERRORS_LOGS_H
-#define MACSA_MPROTOCOL_COMMANDS_ERRORS_LOGS_H
+#ifndef MACSA_JETPROTOCOL_COMMANDS_ERRORS_LOGS_H
+#define MACSA_JETPROTOCOL_COMMANDS_ERRORS_LOGS_H
 
-#include "mcommands.h"
+#include "jetcommand.h"
 
 namespace Macsa
 {
-	namespace MProtocol {
+	namespace JetProtocol {
 
-		class MErrorsLogs : public MCommand
+		class JetErrorsLogs : public JetCommand
 		{
 			public:
-				MErrorsLogs(Printers::TijPrinter &printer);
+				JetErrorsLogs(Printers::JetPrinter &printer);
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
 
@@ -18,8 +18,8 @@ namespace Macsa
 				virtual void buildRequest();
 				virtual void buildResponse();
 
-				virtual void addNewItem(const Macsa::Printers::Error& error, tinyxml2::XMLElement** parent);
-				virtual bool parseItem(const tinyxml2::XMLElement* item, Macsa::Printers::Error& error);
+//				virtual void addNewItem(const Macsa::Printers::Error& error, tinyxml2::XMLElement** parent);
+//				virtual bool parseItem(const tinyxml2::XMLElement* item, Macsa::Printers::Error& error);
 		};
 	}
 }

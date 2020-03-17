@@ -1,4 +1,4 @@
-#include "printer/messagemanager.h"
+#include "tij/messagemanager.h"
 
 using namespace Macsa::Printers;
 
@@ -135,3 +135,4 @@ void MessageManager::copy(const MessageManager &other)
 		_bcdTable[i] = other._bcdTable.at(i);
 	}
 }
+

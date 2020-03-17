@@ -93,5 +93,5 @@ elseif(UNIX)
     add_executable( ${PROJECT_NAME} ${SOURCES} ${MOC_SRCS} ${RES_SOURCES} ${UI_HEADERS} )
 endif()
 # build it (link libraries)
-target_link_libraries( ${PROJECT_NAME} ${QT_LIBRARIES} MComms MNetwork TijLibrary)
+target_link_libraries( ${PROJECT_NAME} ${QT_LIBRARIES} MComms MNetwork TijPrinter)
 

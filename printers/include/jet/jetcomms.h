@@ -60,35 +60,6 @@ namespace Macsa {
 
 		};
 
-
-		class BlueTooth
-		{
-			public:
-				BlueTooth();
-				~BlueTooth();
-
-				std::string name() const;
-				void setName(const std::string &name);
-
-				std::string pass() const;
-				void setPass(const std::string &pass);
-
-				bool visible() const;
-				void setVisible(bool visible);
-
-				inline bool operator == (const BlueTooth& other) const {return compare(other);}
-				inline bool operator != (const BlueTooth& other) const {return !compare(other);}
-				inline void operator = (const BlueTooth& other) {return copy(other);}
-
-			private:
-				std::string _name;
-				std::string _pass;
-				bool _visible;
-
-				void copy (const BlueTooth& other);
-				bool compare(const BlueTooth& other) const;
-		};
-
 		class JetComms : public PrinterComms{
 			public:
 				int ethernetIfaces() const;
@@ -98,24 +69,16 @@ namespace Macsa {
 				int setEthernetIface(const std::string& addr, const std::string& mask, const std::string& gw, const std::string hw = "", uint16_t tcpPort = DEFAULT_TIJ_TCP_PORT);
 				int setEthernetIface(const Ethernet * ethAdapter);
 
-				BlueTooth* bluetooth();
-				const BlueTooth* bluetooth() const;
-
-				void setBluetooth(const BlueTooth& bluetooth);
-				void setBluetooth(const std::string& device, const std::string& pass, bool visible);
-
 				inline bool operator == (const JetComms& other) const {return  compare(other);}
 				inline bool operator != (const JetComms& other) const {return !compare(other);}
 				inline void operator = (const JetComms& other) {return copy(other);}
 
 			private:
 				std::vector<Ethernet> _ifaces;
-				BlueTooth _bluetooth;
 
 				bool compare(const JetComms& other) const;
 				void copy (const JetComms& other);
 				std::vector<Ethernet>::iterator getEthAdapter(const std::string & addr, const std::string & mac);
-
 		};
 	}
 }

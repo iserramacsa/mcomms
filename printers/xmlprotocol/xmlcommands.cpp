@@ -2,12 +2,15 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <algorithm>
 
 using namespace Macsa;
 using namespace tinyxml2;
 
 XMLCommand::XMLCommand()
-{}
+{
+	_doc.Clear();
+}
 
 XMLCommand::~XMLCommand()
 {}
@@ -30,7 +33,7 @@ bool XMLCommand::getBoolFromChildNode(const XMLElement *parent, const std::strin
 	if (parent)	{
 		const XMLElement * node = parent->FirstChildElement(child.c_str());
 		if (node) {
-			//value = MTools::boolfromString(node->GetText());
+			value = strToBool(node->GetText());
 		}
 	}
 	return value;
@@ -96,13 +99,14 @@ std::string XMLCommand::getTextAttribute(const XMLElement *element, const std::s
 
 bool XMLCommand::getBoolAttribute(const XMLElement *element, const std::string &attribute, bool defaultValue) const
 {
-	std::string def = MTools::toString (defaultValue);
-	return MTools::boolfromString (getTextAttribute(element, attribute, def));
+	std::string def = toString (defaultValue);
+	return strToBool(getTextAttribute(element, attribute, def));
 }
 
 XMLElement *XMLCommand::createChildNode(const std::string &child, XMLElement **parent)
 {
 	XMLElement * node = (*parent)->FirstChildElement(child.c_str());
+
 	if (node == nullptr){
 		node = _doc.NewElement(child.c_str());
 		if (parent != nullptr && *parent != nullptr){
@@ -126,7 +130,7 @@ XMLElement *XMLCommand::createBoolTextChildNode(const std::string &child, bool v
 {
 	XMLElement * node = createChildNode(child, parent);
 	if (node != nullptr) {
-		node->SetText(MTools::toString(value).c_str());
+		node->SetText(toString(value).c_str());
 	}
 	return node;
 }
@@ -135,7 +139,7 @@ XMLElement *XMLCommand::createIntTextChildNode(const std::string &child, int val
 {
 	XMLElement * node = createChildNode(child, parent);
 	if (node != nullptr) {
-		node->SetText(MTools::toString(value).c_str());
+		node->SetText(toString(value).c_str());
 	}
 	return node;
 }
@@ -144,7 +148,7 @@ XMLElement *XMLCommand::createUnsignedTextChildNode(const std::string &child, un
 {
 	XMLElement * node = createChildNode(child, parent);
 	if (node != nullptr) {
-		node->SetText(MTools::toString(value).c_str());
+		node->SetText(toString(value).c_str());
 	}
 	return node;
 }
@@ -153,9 +157,92 @@ XMLElement *XMLCommand::createDoubleTextChildNode(const std::string &child, doub
 {
 	XMLElement * node = createChildNode(child, parent);
 	if (node != nullptr) {
-		node->SetText(MTools::toString(value, static_cast<int>(precision)).c_str());
+		node->SetText(toString(value, static_cast<int>(precision)).c_str());
 	}
 	return node;
+}
+
+std::string XMLCommand::toString()
+{
+	XMLPrinter p;
+	_doc.Print(&p);
+	return p.CStr();
+}
+
+std::string XMLCommand::toLower(std::string &str) const
+{
+	for (std::string::iterator c = str.begin(); c != str.end(); c++){
+		*c = static_cast<char>(std::tolower(*c));
+	}
+	return str;
+}
+
+std::string XMLCommand::toLower(const std::string &str) const
+{
+	std::string s = str;
+	for (std::string::iterator c = s.begin(); c != s.end(); c++){
+		*c = static_cast<char>(std::tolower(*c));
+	}
+	return s;
+}
+
+std::string XMLCommand::toUpper(std::string &str) const
+{
+	for (std::string::iterator c = str.begin(); c != str.end(); c++){
+		*c = static_cast<char>(std::toupper(*c));
+	}
+	return str;
+}
+
+std::string XMLCommand::toUpper(const std::string &str) const
+{
+	std::string s = str;
+	for (std::string::iterator c = s.begin(); c != s.end(); c++){
+		*c = static_cast<char>(std::toupper(*c));
+	}
+	return s;
+}
+
+bool XMLCommand::strToBool(const std::string &str) const
+{
+	return (toLower(str).compare("true") == 0);
+}
+
+std::string XMLCommand::toString(bool val) const
+{
+	return (val ? "true" : "false");
+}
+
+std::string XMLCommand::toString(int value) const
+{
+	std::stringstream s;
+	s  << value;
+	return s.str();
+}
+
+std::string XMLCommand::toString(unsigned int value) const
+{
+	std::stringstream s;
+	s  << value;
+	return s.str();
+}
+
+std::string XMLCommand::toString(float value, int precision) const
+{
+	std::stringstream s;
+	s.precision(precision);
+	s << std::fixed << value;
+	return s.str();
+
+}
+
+std::string XMLCommand::toString(double value, int precision) const
+{
+	std::stringstream s;
+	s.precision(precision);
+	s << std::fixed << value;
+	return s.str();
+
 }
 
 

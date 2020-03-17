@@ -1,7 +1,7 @@
 #ifndef MACSA_JETPROTOCOL_FILES_COMMANDS_H
 #define MACSA_JETPROTOCOL_FILES_COMMANDS_H
 
-#include "jetcommands.h"
+#include "jetcommand.h"
 
 namespace Macsa {
 	namespace JetProtocol {

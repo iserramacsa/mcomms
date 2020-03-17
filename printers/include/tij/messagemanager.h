@@ -1,7 +1,7 @@
 #ifndef MACSA_PRINTERS_MESSAGE_MANAGER_H
 #define MACSA_PRINTERS_MESSAGE_MANAGER_H
 
-#include "datatypes.h"
+#include "tij/datatypes.h"
 #include <string>
 #include <vector>
 #include <array>

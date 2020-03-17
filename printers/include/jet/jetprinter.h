@@ -1,8 +1,9 @@
-#ifndef MACSA_PRINTER_TIJ_PRINTER_H
-#define MACSA_PRINTER_TIJ_PRINTER_H
+#ifndef MACSA_PRINTER_JET_PRINTER_H
+#define MACSA_PRINTER_JET_PRINTER_H
 
 #include "printer/printer.h"
-#include "printer/board.h"
+#include "printhead.h"
+#include "messagemanager.h"
 #include "jetcomms.h"
 #include <map>
 
@@ -30,52 +31,38 @@ namespace Macsa {
 
 				virtual std::string formatedDateTime() const;
 				virtual std::string formatedDateTime(time_t time) const;
-				virtual std::time_t dateTimeFromString(std::string dt) const;
+				virtual std::time_t dateTimeFromString(const std::string &dt) const;
 
 				virtual void setDateTime(const std::time_t& dateTime) override;
 				virtual void setDateTime(const std::string& formatedDatetime);
 
-				virtual std::string controllerVersion() const;
-				virtual std::string apiVersion() const;
-				virtual std::string fpgaVersion() const;
-				virtual void setVersions(const std::string &controllerVersion, const std::string &apiVersion, const std::string &fpgaVersion);
-
-				virtual DateCodes dateCodes() const;
-				virtual void setDateCodes(const DateCodes &dateCodes);
-
-				virtual std::vector<Board> boards() const;
-				virtual Board* board(int id);
-				virtual const Board * board(int id) const;
-				virtual void setBoard(const Board& board);
-				virtual void setBoards(const std::vector<Board>& boards);
-
-				virtual std::vector<Error> errorsLog() const;
-				virtual void setErrorsLog(const std::vector<Error>& errorsLog);
-
-				virtual bool logsEnabled() const;
-				virtual void setlogsEnabled(bool enable);
-				virtual bool logComsEnabled() const;
-				virtual void setlogComsEnabled(bool enable);
-				virtual LoggerLevel loggerLevel() const;
-				virtual void setloggerLevel(const LoggerLevel& logLevel);
-				virtual void setloggerLevel(const std::string& logLevel);
-
 				virtual void operator = (const JetPrinter& other){return copy(other);}
 
-            protected:
+				unsigned int printheadTemperature(unsigned int id);
+				void setPrintheadTemperature(unsigned int id, unsigned int temperature);
+
+				unsigned int tankLevel(unsigned int id);
+				void setTankLevel(unsigned int id, unsigned int level);
+
+				bool paused() const;
+				void setPause(bool paused);
+
+				bool printStatus() const;
+				void setPrintStatus(bool printStatus);
+
+				JetMessagesManager& messageManager();
+				void setMessageManager(const JetMessagesManager& manager);
+
+			protected:
+				std::mutex* _mutex;
 				PrinterFiles _files;
 				JetComms	_comms;
-				std::string _controllerVersion;
-				std::string _apiVersion;
-				std::string _fpgaVersion;
-				DateCodes	_dateCodes;
-				std::mutex* _mutex;
+				std::map<unsigned int, JetPrinthead> _printheads;
+				JetMessagesManager _messageManager;
+				std::map<unsigned int, unsigned int> _inkTanks;
 
-				std::vector<Board> _boards;
-				std::vector<Error> _errorsLog;
-				LoggerLevel _logLevel;
-				bool _traceLogs;
-				bool _traceComms;
+				bool _paused;
+				bool _printStatus;
 
 				virtual bool equal(const Printer &other) const override;
 				virtual void copy (const JetPrinter& other);

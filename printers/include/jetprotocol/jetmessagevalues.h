@@ -1,132 +1,44 @@
-#ifndef  MACSA_MPROTOCOL_COMMANDS_MESSAGE_VALUES_H
-#define  MACSA_MPROTOCOL_COMMANDS_MESSAGE_VALUES_H
+#ifndef  MACSA_JetProtocol_COMMANDS_MESSAGE_VALUES_H
+#define  MACSA_JetProtocol_COMMANDS_MESSAGE_VALUES_H
 
-#include "mcommands.h"
+#include "jetcommand.h"
 #include <string>
 #include <map>
 #include "nisx/counter.h"
 #include "nisx/datetime.h"
 
 namespace Macsa {
-	namespace MProtocol {
+	namespace JetProtocol {
 
-#if __cplusplus >= 201103L
-		using userFieldsMap = std::map<std::string, std::string>;
-		using datesMap      = std::map<std::string, Nisx::DateTime>;
-		using countersMap   = std::map<std::string, Nisx::Counter>;
-#else
-		typedef std::map<std::string, std::string>           userFieldsMap;
-		typedef std::map<std::string, Nisx::DateTime> datesMap;
-		typedef std::map<std::string, Nisx::Counter>  countersMap;
-#endif
+//#if __cplusplus >= 201103L
+//		using userFieldsMap = std::map<std::string, std::string>;
+//		using datesMap      = std::map<std::string, Nisx::DateTime>;
+//		using countersMap   = std::map<std::string, Nisx::Counter>;
+//#else
+//		typedef std::map<std::string, std::string>           userFieldsMap;
+//		typedef std::map<std::string, Nisx::DateTime> datesMap;
+//		typedef std::map<std::string, Nisx::Counter>  countersMap;
+//#endif
 		/**
-		 * @brief The MMessageValues is an abstract class to group all methods related
-		 * to get/modify variable fields of printer message files
+		 * @brief The JetMessageNumber
 		 */
-		class MMessageValues : public MCommand
+		class JetMessageNumber : public JetCommand
 		{
 			public:
-				MMessageValues(const std::string& command, Printers::TijPrinter& printer, const std::string& filename);
-				virtual ~MMessageValues();
+				JetMessageNumber(Printers::JetPrinter& printer, const std::string& filename);
+				virtual ~JetMessageNumber();
 
-				std::string filename() const;
-				MProtocol::userFieldsMap userFieldsMap() const;
-				MProtocol::countersMap countersMap() const;
-				MProtocol::datesMap datesMap() const;
+				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
+				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
 
 			protected:
 				std::string _filename;
-				MProtocol::userFieldsMap _userFieldsMap;
-				MProtocol::countersMap _countersMap;
-				MProtocol::datesMap _datesMap;
 
-				tinyxml2::XMLElement* userFieldsToXml(tinyxml2::XMLElement** parent);
-				tinyxml2::XMLElement* datesToXml(tinyxml2::XMLElement** parent);
-				tinyxml2::XMLElement* countersToXml(tinyxml2::XMLElement** parent);
-
-				void userFieldsFromXml(const tinyxml2::XMLElement *parent, MProtocol::userFieldsMap& map) const;
-				void datesFromXml(const tinyxml2::XMLElement* parent, MProtocol::datesMap& map) const;
-				void countersFromXml(const tinyxml2::XMLElement* parent, MProtocol::countersMap& map) const;
-
-		};
-
-		/**
-		 * @brief The GETMESSAGEVALUES command class, allow the client to get user filed of the specified Nisx file in filename
-		 */
-		class MGetMessageValues : public MMessageValues
-		{
-			public:
-				MGetMessageValues(Printers::TijPrinter& printer, const std::string& filename = "",
-								  const MProtocol::userFieldsMap &userFields = MProtocol::userFieldsMap());
-				virtual  ~MGetMessageValues();
-				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
-				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
-			private:
-				virtual void buildRequest();
-				virtual void buildResponse();
-		};
-
-		/**
-		 * @brief The SETMESSAGEVALUES command class, allow the client to change user filed of specified Nisx file in filename
-		 */
-		class MSetMessageValues : public MMessageValues
-		{
-			public:
-				MSetMessageValues(Printers::TijPrinter& printer, const std::string& filename = "",
-								  const MProtocol::userFieldsMap& userFields = MProtocol::userFieldsMap());
-				virtual  ~MSetMessageValues();
-				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
-				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
-
-			private:
-				virtual void buildRequest();
-				virtual void buildResponse();
-		};
-
-		/**
-		 * @brief The GETMESSAGEDATASOURCE command class, allow the client to get variable fields of the specified Nisx file in filename
-		 */
-		class MGetMessageDataSource : public MMessageValues
-		{
-			public:
-				MGetMessageDataSource(Printers::TijPrinter& printer, const std::string& filename = "", const std::string& fieldType = "",
-									  const MProtocol::userFieldsMap &userFields = MProtocol::userFieldsMap(),
-									  const MProtocol::datesMap &dates = MProtocol::datesMap(),
-									  const MProtocol::countersMap &counters = MProtocol::countersMap());
-				virtual ~MGetMessageDataSource();
-				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
-				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
-				std::string fieldType() const;
-
-			private:
 				virtual void buildRequest();
 				virtual void buildResponse();
 
-				std::string _fieldType;
-		};
-
-		/**
-		 * @brief The SETMESSAGEDATASOURCE command class, allow the client to change variable fields of the specified Nisx file in filename
-		 */
-		class MSetMessageDataSource : public MMessageValues
-		{
-			public:
-				MSetMessageDataSource(Printers::TijPrinter& printer, const std::string& filename = "", const std::string& fieldType = "",
-									  const MProtocol::userFieldsMap &userFields = MProtocol::userFieldsMap(),
-									  const MProtocol::datesMap &dates = MProtocol::datesMap(),
-									  const MProtocol::countersMap &counters = MProtocol::countersMap());
-				virtual ~MSetMessageDataSource();
-				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
-				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
-				std::string fieldType() const;
-
-			private:
-				virtual void buildRequest();
-				virtual void buildResponse();
-
-				std::string _fieldType;
 		};
 	}
 }
 
-#endif // MACSA_MPROTOCOL_COMMANDS_MESSAGE_VALUES_H
+#endif // MACSA_JetProtocol_COMMANDS_MESSAGE_VALUES_H

@@ -2,7 +2,7 @@
 #define MACSA_JETPROTOCOL_COMMANDSFACTORY_H
 
 #include <map>
-#include "jetcommands.h"
+#include "jetcommand.h"
 #include "printer/printer.h"
 
 namespace Macsa {
@@ -17,7 +17,7 @@ namespace Macsa {
 				bool parseRequest(const std::string &frame, JetCommand **cmd);
 
 				//Status
-//				JetCommand* getStatusCommand();
+				JetCommand* getStatusCommand();
 //				JetCommand* getPrinterLogs();
 
 				//Config

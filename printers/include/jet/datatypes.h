@@ -1,5 +1,5 @@
-#ifndef MACSA_TIJ_PRINTER_DATA_TYPES_H
-#define MACSA_TIJ_PRINTER_DATA_TYPES_H
+#ifndef MACSA_JET_PRINTER_DATA_TYPES_H
+#define MACSA_JET_PRINTER_DATA_TYPES_H
 
 #include "utils/smartenum.h"
 
@@ -7,121 +7,132 @@
 //#define UNKNOWN				"Unknown"
 //#endif
 
-#define DIR_RIGHT_TO_LEFT	"RL"
-#define DIR_LEFT_TO_RIGHT	"LR"
-#define DIR_AUTO			"AUTO"
+/// IdJet Printers Models
+#define JET_ID_NEO_17		"Neo17"
+#define JET_ID_NEO_36		"Neo36"
+#define JET_ID_NEO_50		"Neo50"
+#define JET_ID_NEO_70		"Neo70"
+#define JET_ID_NEO_100		"Neo100"
+#define JET_ID_NEO_140		"Neo140"
+#define JET_ID_NEO_17D		"Neo17DUO"
+#define JET_ID_NEO_50D		"Neo50DUO"
+#define JET_ID_NEO_70D		"Neo70DUO"
 
-#define SHOOTING_MODE_ONCE	"SingleShot"
-#define SHOOTING_MODE_REL	"MultiShotRelative"
-#define SHOOTING_MODE_ABS	"MultiShotAbsolute"
+///Printhead OVERLAPPING_TYPE operating modes
+#define OVERLAPPING_TYPE_BOTH_PH	"Both Printheads"
+#define OVERLAPPING_TYPE_UPPER_PH	"Only Upper Printheads"
+#define OVERLAPPING_TYPE_LOWER_PH	"Only Lower Printheads"
+#define OVERLAPPING_TYPE_PIXELS		"One Pixel per Printhead"
 
-#define NOZZLES_COL_A		"COL_A"
-#define NOZZLES_COL_B		"COL_B"
-#define NOZZLES_COL_BOTH	"COL_BOTH"
+#define TRIGGER_CANCEL_PRINT	"Trigger cancels current print and starts new one"
+#define TRIGGER_SKIPPED_PRINT	"During a print the received triggers will be ignored"
 
-#define ENCODER_MODE_FIXED		"FixedSpeed"
-#define ENCODER_MODE_INTERNAL	"Internal"
-#define ENCODER_MODE_EXTERNAL	"External"
 
-#define PHOTOCELL_A		"FTC1"
-#define PHOTOCELL_B		"FTC2"
-#define PHOTOCELL_EXT	"FTCEXT"
+#define PRINTER_DIR_RL		"Right To Left"
+#define PRINTER_DIR_LR		"Left To Right"
 
-#define INPUT_MODE_EDGE		"Edge"
-#define INPUT_MODE_STATE	"State"
+#define LOG_TYPE_INFO		"Info"
+#define LOG_TYPE_WARN		"Warning"
+#define LOG_TYPE_ERR		"Error"
+#define LOG_TYPE_SUCCESS	"Ok"
+#define LOG_TYPE_ALL		"All"
 
-#define OUTPUT_TYPE_STATE		"State"
-#define OUTPUT_TYPE_ONPULSE		"OnPulse"
-#define OUTPUT_TYPE_OFFPULSE	"OffPulse"
-#define OUTPUT_TYPE_MAXON		"MaxOn"
-#define OUTPUT_TYPE_MAXOFF		"MaxOff"
-
-#define BCD_MODE_USER   "Mode0"
-#define BCD_MODE_BCD_1  "Mode1"
-#define BCD_MODE_BCD_2  "Mode2"
-
-#define DELAY_UNIT_MM	"mm"
-#define DELAY_UNIT_DOTS	"dts"
-
-#define ERROR_TYPE_INFO		"Information"
-#define ERROR_TYPE_WARN		"Warning"
-#define ERROR_TYPE_ERR		"Error"
-#define ERROR_TYPE_INVALID	"Invalid"
-
-#define ERROR_CODE_SUCCCESS							"SUCCESS"
-#define ERROR_CODE_FILEOT_FOUND					"FILE.NOT_FOUND"
-#define ERROR_CODE_FILE_ALREADY_EXIST				"FILE.ALREADY_EXIST"
-#define ERROR_CODE_FILE_COPY_FAIL					"FILE.COPY_FAIL"
-#define ERROR_CODE_FILE_DELETE_FAIL					"FILE.DELETE_FAIL"
-#define ERROR_CODE_FILE_MOVE_FAIL					"FILE.MOVE_FAIL"
-#define ERROR_CODE_FILE_MOVE_INCOMPLETED			"FILE.MOVE_INCOMPLETE"
-#define ERROR_CODE_FILE_READ_FAIL					"FILE.READ_CANOT"
-#define ERROR_CODE_FILE_WRITE_FAIL					"FILE.WRITE_CANOT"
-#define ERROR_CODE_FILE_WRITE_INCOMPLETED			"FILE.WRITE_INCOMPLETE"
-#define ERROR_CODE_FILE_USER_DATAOT_FOUND			"FILE.USER_DATAOT_FOUND"
-#define ERROR_CODE_FILE_IN_USE						"FILE.IN_USE"
-#define ERROR_CODE_PARAM_BOARD_IDOT_FOUND			"PARAM.BOARD_IDOT_FOUND"
-#define ERROR_CODE_PARAM_COUNTER_IDOT_FOUND		    "PARAM.COUNTER_IDOT_FOUND"
-#define ERROR_CODE_PARAM_COUNTER_VALUE_REJECTED		"PARAM.COUNTER_VALUE_REJECTED"
-#define ERROR_CODE_PARAM_OUTPUT_IDOT_FOUND		    "PARAM.OUTPUT_IDOT_FOUND"
-#define ERROR_CODE_PARAM_BCD_INVALID_MODE			"PARAM.CANT_SET_MSG_IN_BCD_MODE"
-#define ERROR_CODE_PARAM_BOARD_IS_ENABLED			"PARAM.BOARD_IS_ENABLED"
-#define ERROR_CODE_PARAM_BOARD_IS_DISABLED			"PARAM.BOARD_ISOT_ENABLED"
-#define ERROR_CODE_PARAM_CHANGE_ADAPTER_FAILS		"PARAM.CANNOT_CHANGE_ADAPTER"
-#define ERROR_CODE_PARAM_INVALID_IP_ADDRESS			"PARAM.INVALID_IP_ADDRESS"
-#define ERROR_CODE_PARAM_INVALID_MASK_ADDRESS		"PARAM.INVALID_MASK_ADDRESS"
-#define ERROR_CODE_PARAM_INVALID_GATEWAY_ADDRESS	"PARAM.INVALID_GATEWAY_ADDRESS"
-#define ERROR_CODE_PARAM_INVALID_PROP_COUNT			"PARAM.INVALID_PROP_COUNT"
-#define ERROR_CODE_GENERIC_UNEXPECTED_TAG			"GEN.UNEXPECTED_TAG"
-#define ERROR_CODE_GENERICOT_IMPLEMENTED			"GEN.NOT_IMPLEMENTED"
-#define ERROR_CODE_GENERIC_LOCK_TIMEOUT				"GEN.LOCK_TIMEOUT"
-#define ERROR_CODE_PH_PCAOT_DETECTED				"PCA.NOTDETECTED"
-#define ERROR_CODE_PH_OVERTEMP						"PH.OVERTEMP"
-#define ERROR_CODE_PH_OVERSPEED						"GEN.OVERSPEED"
-#define ERROR_CODE_MSG_FORMAT_ERROR					"MSG.FORMATERROR"
-#define ERROR_CODE_MSGOEXIST						"MSG.NOEXIST"
-#define ERROR_CODE_PHO_CARTRIDGE					"PH.NOCARTRIDGE"
-#define ERROR_CODE_PH_SC_INVALID					"SMC.INVALID"
-#define ERROR_CODE_PH_GENERIC_FAULT					"PH.GENFAULT"
-#define ERROR_CODE_PH_SC_CARTRIDGE_EMPTY			"SMC.CARTRIDGE_EMPTY"
-#define ERROR_CODE_PH_SC_CARTRIDGE_OUT_OF_DATE		"SMC.CARTRIDGE_OUTOFDATE"
-#define ERROR_CODE_PH_SC_CARTRIDGEEAR_END			"SMC.CARTRIDGEEAREND"
-#define ERROR_CODE_PH_SC_UNRECOGNIZED_DATA			"SMC.UNRECOGNIZED_DATA"
-#define ERROR_CODE_PH_SC_INITIALIZING				"PH.INITIALIZING_CARTRIDGE"
-#define ERROR_CODE_PH_SC_HOST_SMARTCARD_FAIL		"SMC.HOST_SMARTCARD"
+#define ERROR_CODE_COMMAND_OK						"Ok"
+#define ERROR_CODE_INVALID_COMMAND					"Object reference not set to an instance of an object."
+#define ERROR_CODE_NOT_CONNECTED					"Printer not Connected"
+#define ERROR_CODE_CHECKSUM_ERROR					"Checksum Error"
+#define ERROR_CODE_INVALID_MESSAGE_GROUP			"MessageGroupNoExists"
+#define ERROR_CODE_INVALID_PRINTHEAD				"Incorrect PrintHead"
+#define ERROR_CODE_INVALID_OUTPUT_ID				"Wrong Output"
+#define ERROR_CODE_INVALID_OUTPUT_PULSE				"Wrong Pulse"
+#define ERROR_CODE_INVALID_MSG_NUMBER				"Message not found"
+#define ERROR_CODE_INVALID_MSG_VARIABLE				"Variable not found"
+#define ERROR_CODE_INVALID_DATETIME_VALUE			"Wrong Date Time Value"
+#define ERROR_CODE_USB_NOT_CONNECTED				"USB Not Connected"
+#define ERROR_CODE_INVALID_EVENT_TYPE				"Wrong Event Type"
+#define ERROR_CODE_INVALID_VALUE					"WrongValue"
+#define ERROR_CODE_INVALID_IP						"WrongIPValue"
+#define ERROR_CODE_INVALID_PRINTHEAD_ID				"WrongPrintHeadId"
+#define ERROR_CODE_INVALID_NET_ADAPTER				"WrongNetAdapter"
+#define ERROR_CODE_INVALID_NET_MASK					"WrongNetMask"
+#define ERROR_CODE_INVALID_GATEWAY					"WrongGateway"
+#define ERROR_CODE_INVALID_DNS						"WrongDNS"
+#define ERROR_CODE_INVALID_PULSES					"WrongPulses"
+#define ERROR_CODE_INVALID_WHEEL					"WrongWheel"
+#define ERROR_CODE_INVALID_ABC						"WrongABC"
+#define ERROR_CODE_INVALID_MAX_TIME_PRINT			"WrongMaxTimePrint"
+#define ERROR_CODE_INVALID_OVERLAPPING_TYPE			"WrongOverlappingType"
+#define ERROR_CODE_INVALID_HORIZONTAL_RESOLUTION	"WrongHorizontalResolution"
+#define ERROR_CODE_INVALID_DEFAULT_FONT				"WrongDefaultFont"
+#define ERROR_CODE_INVALID_LAMP_CONTROL_TIME		"WrongLampControlTime"
+#define ERROR_CODE_INVALID_XR_OFFSET				"WrongXROffset"
+#define ERROR_CODE_INVALID_PHOTOCELL_FILTER			"WrongStPrintFilter"
+#define ERROR_CODE_INVALID_PRINT_MODE				"WrongPrintMode"
+#define ERROR_CODE_INVALID_IP_ADDR_TYPE				"WrongIPType"
+#define ERROR_CODE_IP_ALREADY_CONFIGURED			"IPAlreadyConfigured"
+#define ERROR_CODE_IP_NO_PING_RESPONSE				"NoPing"
+#define ERROR_CODE_PRINTHEAD_NOT_ASSIGNED			"PrintheadNotAssigned"
+#define ERROR_CODE_SPECIFIC_NISX_COMMAND			"SpecificNisXCommand"
+#define ERROR_CODE_MESSAGE_NUMBER_NOT_FOUND			"MessageNumberNoExists"
+#define ERROR_CODE_MISSING_FILENAME_ATTRIBUTTE		"MissingFileNameAttribute"
+#define ERROR_CODE_NISX_INVALID_FORMAT				"NisXInvalidFormat"
+#define ERROR_CODE_NISX_PARSING_ERROR				"NisXParsingError"
 #define ERROR_CODE_UNKNOWN							"UNKNOWN"
-
-#define LOG_LEVEL_ERROR		"Errors"
-#define LOG_LEVEL_WARNING	"Warnings"
-#define LOG_LEVEL_INFO		"Info"
-#define LOG_LEVEL_DEBUG		"Debug"
-#define LOG_LEVEL_DISABLED	"Disabled"
 
 namespace Macsa {
 	namespace Printers {
-		enum nBCDMode{
-			USER_MODE = 0,
-			BCD_MODE_1,
-			BCD_MODE_2
+
+		enum nJetPrinterType
+		{
+			ID_NEO_17 = 0,
+			ID_NEO_36,
+			ID_NEO_50,
+			ID_NEO_70,
+			ID_NEO_100,
+			ID_NEO_140,
+			ID_NEO_17D,
+			ID_NEO_50D,
+			ID_NEO_70D
 		};
-		class BCDMode : public Utils::SmartEnum<nBCDMode>
+		class JetPrinterType : public Utils::SmartEnum<nJetPrinterType>
 		{
 			public:
-				virtual void operator = (const enum nBCDMode& v){_val = v;}
-				virtual void operator = (const std::string& val){
-					if (val.compare(BCD_MODE_USER) == 0)
-						_val = USER_MODE;
-					else if (val.compare(BCD_MODE_BCD_1) == 0)
-						_val = BCD_MODE_1;
-					else if (val.compare(BCD_MODE_BCD_2) == 0)
-						_val = BCD_MODE_2;
+				JetPrinterType() : SmartEnum() {_val = ID_NEO_17;}
+				JetPrinterType(nJetPrinterType n) : SmartEnum() {_val = n;}
+				virtual ~JetPrinterType(){}
+				virtual void operator = (const enum nJetPrinterType& v){_val = v;}
+				virtual void operator = (const std::string& val) {
+					if(val.compare(JET_ID_NEO_17 ) == 0)
+						_val = ID_NEO_17;
+					else if(val.compare(JET_ID_NEO_36 ) == 0)
+						_val = ID_NEO_36;
+					else if(val.compare(JET_ID_NEO_50 ) == 0)
+						_val = ID_NEO_50;
+					else if(val.compare(JET_ID_NEO_70 ) == 0)
+						_val = ID_NEO_70;
+					else if(val.compare(JET_ID_NEO_100) == 0)
+						_val = ID_NEO_100;
+					else if(val.compare(JET_ID_NEO_140) == 0)
+						_val = ID_NEO_140;
+					else if(val.compare(JET_ID_NEO_17D) == 0)
+						_val = ID_NEO_17D;
+					else if(val.compare(JET_ID_NEO_50D) == 0)
+						_val = ID_NEO_50D;
+					else if(val.compare(JET_ID_NEO_70D) == 0)
+						_val = ID_NEO_70D;
 				}
 
 				virtual std::string toString() const {
 					switch (_val) {
-						case USER_MODE:  return BCD_MODE_USER;
-						case BCD_MODE_1: return BCD_MODE_BCD_1;
-						case BCD_MODE_2: return BCD_MODE_BCD_2;
+						case ID_NEO_17:	 return JET_ID_NEO_17;
+						case ID_NEO_36:	 return JET_ID_NEO_36;
+						case ID_NEO_50:	 return JET_ID_NEO_50;
+						case ID_NEO_70:	 return JET_ID_NEO_70;
+						case ID_NEO_100: return JET_ID_NEO_100;
+						case ID_NEO_140: return JET_ID_NEO_140;
+						case ID_NEO_17D: return JET_ID_NEO_17D;
+						case ID_NEO_50D: return JET_ID_NEO_50D;
+						case ID_NEO_70D: return JET_ID_NEO_70D;
 					}
 					return "";
 				}
@@ -129,550 +140,311 @@ namespace Macsa {
 				virtual std::vector<std::string> stringList() const
 				{
 					std::vector<std::string> list;
-					list.push_back(BCD_MODE_USER);
-					list.push_back(BCD_MODE_BCD_1);
-					list.push_back(BCD_MODE_BCD_2);
+					list.push_back(JET_ID_NEO_17);
+					list.push_back(JET_ID_NEO_36);
+					list.push_back(JET_ID_NEO_50);
+					list.push_back(JET_ID_NEO_70);
+					list.push_back(JET_ID_NEO_100);
+					list.push_back(JET_ID_NEO_140);
+					list.push_back(JET_ID_NEO_17D);
+					list.push_back(JET_ID_NEO_50D);
+					list.push_back(JET_ID_NEO_70D);
 					return list;
 				}
 		};
 
-		enum nPrinterDir{
-			R2L = 0,    //Right to Left
-			L2R,        //Left to Right
-			AUTO        //Input depends
+		enum nOverlappingMode{
+			OVERLAPPING_BOTH = 0,
+			OVERLAPPING_UPPER,
+			OVERLAPPING_LOWER,
+			OVERLAPPING_PIXEL
 		};
-		class PrinterDir : public Utils::SmartEnum<nPrinterDir>
+		class OverlappingMode : public Utils::SmartEnum<nOverlappingMode>
 		{
 			public:
-				virtual void operator = (const enum nPrinterDir& v){_val = v;}
+				OverlappingMode() : SmartEnum() {_val = OVERLAPPING_BOTH;}
+				OverlappingMode(nOverlappingMode n) : SmartEnum() {_val = n;}
+				virtual ~OverlappingMode(){}
+				virtual void operator = (const enum nOverlappingMode& v){_val = v;}
 				virtual void operator = (const std::string& val){
-					if (val.compare(DIR_RIGHT_TO_LEFT) == 0)
-						_val = R2L;
-					else if (val.compare(DIR_RIGHT_TO_LEFT) == 0)
-						_val = L2R;
-					else if (val.compare(DIR_RIGHT_TO_LEFT) == 0)
-						_val = AUTO;
+					if (val.compare(OVERLAPPING_TYPE_BOTH_PH) == 0)
+						_val = OVERLAPPING_BOTH;
+					else if (val.compare(OVERLAPPING_TYPE_UPPER_PH) == 0)
+						_val = OVERLAPPING_UPPER;
+					else if (val.compare(OVERLAPPING_TYPE_LOWER_PH) == 0)
+						_val = OVERLAPPING_LOWER;
+					else if (val.compare(OVERLAPPING_TYPE_PIXELS) == 0)
+						_val = OVERLAPPING_PIXEL;
 				}
 				virtual std::string toString() const {
 					switch (_val) {
-						case R2L:  return DIR_RIGHT_TO_LEFT;
-						case L2R:  return DIR_LEFT_TO_RIGHT;
-						case AUTO: return DIR_AUTO;
+						case OVERLAPPING_BOTH: return OVERLAPPING_TYPE_BOTH_PH;
+						case OVERLAPPING_UPPER: return OVERLAPPING_TYPE_UPPER_PH;
+						case OVERLAPPING_LOWER: return OVERLAPPING_TYPE_LOWER_PH;
+						case OVERLAPPING_PIXEL: return OVERLAPPING_TYPE_PIXELS;
 					}
 					return "";
 				}
-
 				virtual std::vector<std::string> stringList() const
 				{
 					std::vector<std::string> list;
-					list.push_back(DIR_RIGHT_TO_LEFT);
-					list.push_back(DIR_LEFT_TO_RIGHT);
-					list.push_back(DIR_AUTO);
+					list.push_back(OVERLAPPING_TYPE_BOTH_PH );
+					list.push_back(OVERLAPPING_TYPE_UPPER_PH);
+					list.push_back(OVERLAPPING_TYPE_LOWER_PH);
+					list.push_back(OVERLAPPING_TYPE_PIXELS	);
 					return list;
 				}
 		};
 
-		enum nShootingMode{
-			SINGLE_SHOT = 0, // for single shot.
-			MULTI_SHOT_REL,  // for multishot with relative delay.
-			MULTI_SHOT_ABS   // for multishot with absolute delay.
+		enum nTriggerMode{
+			NEW_PRINT_ON_TRIGGER = 0,
+			SKIP_TRIGGER_ON_PRINTING
 		};
-		class ShootingMode : public Utils::SmartEnum<nShootingMode>
+		class TriggerMode : public Utils::SmartEnum<nTriggerMode>
 		{
 			public:
-				ShootingMode() : SmartEnum() {_val = SINGLE_SHOT;}
-				virtual void operator = (const enum nShootingMode& v){_val = v;}
+				TriggerMode() : SmartEnum() {_val = NEW_PRINT_ON_TRIGGER;}
+				TriggerMode(nTriggerMode n) : SmartEnum() {_val = n;}
+				virtual ~TriggerMode(){}
+				virtual void operator = (const enum nTriggerMode& v){_val = v;}
 				virtual void operator = (const std::string& val){
-					if (val.compare(SHOOTING_MODE_ONCE) == 0)
-						_val = SINGLE_SHOT;
-					else if (val.compare(SHOOTING_MODE_REL) == 0)
-						_val = MULTI_SHOT_REL;
-					else if (val.compare(SHOOTING_MODE_ABS) == 0)
-						_val = MULTI_SHOT_ABS;
-				}
-				std::string toString() const {
-					switch (_val) {
-						case SINGLE_SHOT:		return SHOOTING_MODE_ONCE;
-						case MULTI_SHOT_REL:	return SHOOTING_MODE_REL;
-						case MULTI_SHOT_ABS:	return SHOOTING_MODE_ABS;
-					}
-					return "";
-				}
-
-				virtual std::vector<std::string> stringList() const
-				{
-					std::vector<std::string> list;
-					list.push_back(SHOOTING_MODE_ONCE);
-					list.push_back(SHOOTING_MODE_REL);
-					list.push_back(SHOOTING_MODE_ABS);
-					return list;
-				}
-		};
-
-		enum nNozzlesCol{
-			COL_A = 0,  //Column A
-			COL_B,      //Column B
-			COL_BOTH    //Both
-		};
-		class NozzlesCol : public Utils::SmartEnum<nNozzlesCol>
-		{
-			public:
-				NozzlesCol() {_val = COL_A;}
-				virtual void operator = (const enum nNozzlesCol& v){_val = v;}
-				virtual void operator = (const std::string& val){
-					if (val.compare(NOZZLES_COL_A) == 0)
-						_val = COL_A;
-					else if (val.compare(NOZZLES_COL_B) == 0)
-						_val = COL_B;
-					else if (val.compare(NOZZLES_COL_BOTH) == 0)
-						_val = COL_BOTH;
+					if (val.compare(TRIGGER_CANCEL_PRINT) == 0)
+						_val = NEW_PRINT_ON_TRIGGER;
+					else if (val.compare(TRIGGER_SKIPPED_PRINT) == 0)
+						_val = SKIP_TRIGGER_ON_PRINTING;
 				}
 				virtual std::string toString() const {
 					switch (_val) {
-						case COL_A:		return NOZZLES_COL_A;
-						case COL_B:		return NOZZLES_COL_B;
-						case COL_BOTH:	return NOZZLES_COL_BOTH;
+						case NEW_PRINT_ON_TRIGGER: return TRIGGER_CANCEL_PRINT;
+						case SKIP_TRIGGER_ON_PRINTING: return TRIGGER_SKIPPED_PRINT;
 					}
 					return "";
 				}
-
 				virtual std::vector<std::string> stringList() const
 				{
 					std::vector<std::string> list;
-					list.push_back(NOZZLES_COL_A);
-					list.push_back(NOZZLES_COL_B);
-					list.push_back(NOZZLES_COL_BOTH);
+					list.push_back(TRIGGER_CANCEL_PRINT );
+					list.push_back(TRIGGER_SKIPPED_PRINT);
 					return list;
 				}
 		};
 
-		enum nDelayUnits {
-			UNITS_MM = 0,
-			UNITS_DOTS,
+
+
+		enum nPrintDirection{
+			PRINTDIR_LR = 0,
+			PRINTDIR_RL
 		};
-		class DelayUnits : public Utils::SmartEnum<nDelayUnits>
+		class PrintDirection : public Utils::SmartEnum<nPrintDirection>
 		{
 			public:
-				DelayUnits() {_val = UNITS_DOTS;}
-				virtual void operator = (const enum nDelayUnits& v){_val = v;}
-				virtual void operator = (const std::string& v) {
-					if (v.compare(DELAY_UNIT_MM) == 0)
-						_val = UNITS_MM;
-					else if (v.compare(DELAY_UNIT_DOTS) == 0)
-						_val = UNITS_DOTS;
+				PrintDirection() : SmartEnum() {_val = PRINTDIR_LR;}
+				PrintDirection(nPrintDirection n) : SmartEnum() {_val = n;}
+				virtual ~PrintDirection(){}
+				virtual void operator = (const enum nPrintDirection& v){_val = v;}
+				virtual void operator = (const std::string& val){
+					if (val.compare(PRINTER_DIR_LR) == 0)
+						_val = PRINTDIR_LR;
+					else if (val.compare(PRINTER_DIR_RL) == 0)
+						_val = PRINTDIR_RL;
 				}
 				virtual std::string toString() const {
 					switch (_val) {
-						case UNITS_MM:	 return DELAY_UNIT_MM;
-						case UNITS_DOTS: return DELAY_UNIT_DOTS;
+						case PRINTDIR_LR: return PRINTER_DIR_LR;
+						case PRINTDIR_RL: return PRINTER_DIR_RL;
 					}
 					return "";
 				}
-
 				virtual std::vector<std::string> stringList() const
 				{
 					std::vector<std::string> list;
-					list.push_back(DELAY_UNIT_MM);
-					list.push_back(DELAY_UNIT_DOTS);
+					list.push_back(PRINTER_DIR_LR);
+					list.push_back(PRINTER_DIR_RL);
 					return list;
 				}
 		};
 
-		enum nEncoderMode{
-			FIXED_SPEED = 0,
-			INTERNAL_ENCODER,
-			EXTERNAL_ENCODER
+		enum nJetErrorCode {
+			COMMAND_OK	= 0,						// No error
+			INVALID_COMMAND = 1,
+			PRINTER_NOT_CONNECTED = 2,
+			CHECKSUM_ERROR = 3,
+			INVALID_MESSAGE_GROUP = 4,
+			INVALID_PRINTHEAD = 5,
+			INVALID_OUTPUT_ID = 6,
+			INVALID_OUTPUT_PULSE = 7,
+			INVALID_MSG_NUMBER = 8,
+			INVALID_MSG_VARIABLE = 9,
+
+			INVALID_DATETIME_VALUE = 13,
+			USB_NOT_CONNECTED = 14,
+			INVALID_EVENT_TYPE = 15,
+			INVALID_VALUE = 16,
+			INVALID_IP = 17,
+			INVALID_PRINTHEAD_ID = 18,
+
+			INVALID_NET_ADAPTER = 20,
+			INVALID_NET_MASK = 21,
+			INVALID_GATEWAY = 22,
+			INVALID_DNS = 23,
+			INVALID_PULSES = 24,
+			INVALID_WHEEL = 25,
+			INVALID_ABC = 26,
+			INVALID_MAX_TIME_PRINT = 27,
+			INVALID_OVERLAPPING_TYPE = 28,
+			INVALID_HORIZONTAL_RESOLUTION = 29,
+
+			INVALID_DEFAULT_FONT = 30,
+			INVALID_LAMP_CONTROL_TIME = 31,
+			INVALID_XR_OFFSET = 32,
+			INVALID_PHOTOCELL_FILTER = 33,
+			INVALID_PRINT_MODE = 34,
+			INVALID_IP_ADDR_TYPE = 35,
+			IP_ALREADY_CONFIGURED = 36,
+			IP_NO_PING_RESPONSE = 37,
+			PRINTHEAD_NOT_ASSIGNED = 38,
+
+			SPECIFIC_NISX_COMMAND = 40,
+			MESSAGE_NUMBER_NOT_FOUND = 41,
+
+			MISSING_FILENAME_ATTRIBUTTE = 44,
+			NISX_INVALID_FORMAT = 45,
+			NISX_PARSING_ERROR = 46,
+
+			COMMAND_UNKOWN_ERROR				//Last error for unknown code
 		};
-		class EncoderMode : public Utils::SmartEnum<nEncoderMode>
+		class JetErrorCode : public Utils::SmartEnum<nJetErrorCode>
 		{
 			public:
-				EncoderMode() { _val = FIXED_SPEED; }
-				EncoderMode(const std::string& val){*this = val;}
-				EncoderMode(const EncoderMode& val){*this = val;}
-				virtual void operator = (const enum nEncoderMode& v){_val = v;}
+				JetErrorCode() : SmartEnum() {_val = COMMAND_UNKOWN_ERROR;}
+				JetErrorCode(nJetErrorCode n) : SmartEnum() {_val = n;}
+				virtual ~JetErrorCode(){}
+				virtual void operator = (const enum nJetErrorCode& v){_val = v;}
 				virtual void operator = (const std::string& val){
-					if (val.compare(ENCODER_MODE_FIXED) == 0)
-						_val = FIXED_SPEED;
-					else if (val.compare(ENCODER_MODE_INTERNAL) == 0)
-						_val = INTERNAL_ENCODER;
-					else if (val.compare(ENCODER_MODE_EXTERNAL) == 0)
-						_val = EXTERNAL_ENCODER;
-				}
-				std::string toString() const {
-					switch (_val) {
-						case FIXED_SPEED:		return ENCODER_MODE_FIXED;
-						case INTERNAL_ENCODER:	return ENCODER_MODE_INTERNAL;
-						case EXTERNAL_ENCODER:	return ENCODER_MODE_EXTERNAL;
-					}
-					return "";
-				}
-
-				virtual std::vector<std::string> stringList() const
-				{
-					std::vector<std::string> list;
-					list.push_back(ENCODER_MODE_FIXED);
-					list.push_back(ENCODER_MODE_INTERNAL);
-					list.push_back(ENCODER_MODE_EXTERNAL);
-					return list;
-				}
-		};
-
-		enum nPhotocell{
-			PHCELL_A = 0,	//Photocell of column A
-			PHCELL_B,		//Photocell of column B
-			PHCELL_EXT,		//External photocell
-		};
-		class Photocell : public Utils::SmartEnum<nPhotocell>
-		{
-			public:
-				Photocell() {_val = PHCELL_A;}
-				virtual void operator = (const enum nPhotocell& v){_val = v;}
-				virtual void operator = (const std::string& val){
-					if (val.compare(PHOTOCELL_A) == 0)
-						_val = PHCELL_A;
-					else if (val.compare(PHOTOCELL_B) == 0)
-						_val = PHCELL_B;
-					else if (val.compare(PHOTOCELL_EXT) == 0)
-						_val = PHCELL_EXT;
-				}
-				std::string toString() const {
-					switch (_val) {
-						case PHCELL_A:	 return PHOTOCELL_A;
-						case PHCELL_B:	 return PHOTOCELL_B;
-						case PHCELL_EXT: return PHOTOCELL_EXT;
-					}
-					return "";
-				}
-
-				virtual std::vector<std::string> stringList() const
-				{
-					std::vector<std::string> list;
-					list.push_back(PHOTOCELL_A);
-					list.push_back(PHOTOCELL_B);
-					list.push_back(PHOTOCELL_EXT);
-					return list;
-				}
-		};
-
-		enum nInputMode {
-			INPUT_EDGE = 0,
-			INPUT_STATUS
-		};
-		class InputMode : public Utils::SmartEnum<nInputMode>
-		{
-			public:
-				InputMode() {_val = INPUT_EDGE;}
-				virtual void operator = (const enum nInputMode& v){_val = v;}
-				virtual void operator = (const std::string& val){
-					if (val.compare(INPUT_MODE_EDGE) == 0)
-						_val = INPUT_EDGE;
-					else if (val.compare(INPUT_MODE_STATE) == 0)
-						_val = INPUT_STATUS;
-				}
-				virtual std::string toString() const {
-					switch (_val) {
-						case INPUT_EDGE:	 return INPUT_MODE_EDGE;
-						case INPUT_STATUS:	 return INPUT_MODE_STATE;
-					}
-					return "";
-				}
-
-				virtual std::vector<std::string> stringList() const
-				{
-					std::vector<std::string> list;
-					list.push_back(INPUT_MODE_EDGE);
-					list.push_back(INPUT_MODE_STATE);
-					return list;
-				}
-		};
-
-
-		enum nOutputType {
-			OUTPUT_STATE = 0,	// Set the output state. The output remain in this state until the state would be changed.
-								//		The TIME configuration is not taken into consideration.
-			OUTPUT_ONPULSE,		// The output change the state to ON, waits the time specified and return to OFF.
-			OUTPUT_OFFPULSE,	// The output change the state to OFF, waits the time specified and return to ON.
-			OUTPUT_MAXON,		// The behaviour is the same as the 'State' type,
-								//		except the electronics takes the time as maximum to mantain the output in ON state,
-								//		afterwards the output returns to OFF.
-			OUTPUT_MAXOFF		//	The behaviour is the same as the 'State' type,
-								//		except the electronics takes the time as maximum to mantain the output in OFF state
-								//		afterwards the output returns to ON.
-		};
-		class OutputType : public Utils::SmartEnum<nOutputType>
-		{
-			public:
-				OutputType(){_val = OUTPUT_ONPULSE;}
-				virtual void operator = (const enum nOutputType& v){_val = v;}
-				virtual void operator = (const std::string& val){
-					if (val.compare(OUTPUT_TYPE_STATE   ) == 0)
-						_val = OUTPUT_STATE;
-					else if (val.compare(OUTPUT_TYPE_ONPULSE ) == 0)
-						_val = OUTPUT_ONPULSE;
-					else if (val.compare(OUTPUT_TYPE_OFFPULSE) == 0)
-						_val = OUTPUT_OFFPULSE;
-					else if (val.compare(OUTPUT_TYPE_MAXON   ) == 0)
-						_val = OUTPUT_MAXON;
-					else if (val.compare(OUTPUT_TYPE_MAXOFF  ) == 0)
-						_val = OUTPUT_MAXOFF;
-				}
-				std::string toString() const {
-					switch (_val) {
-						case OUTPUT_STATE:		return OUTPUT_TYPE_STATE;
-						case OUTPUT_ONPULSE:	return OUTPUT_TYPE_ONPULSE;
-						case OUTPUT_OFFPULSE:	return OUTPUT_TYPE_OFFPULSE;
-						case OUTPUT_MAXON:		return OUTPUT_TYPE_MAXON;
-						case OUTPUT_MAXOFF:		return OUTPUT_TYPE_MAXOFF;
-					}
-					return "";
-				}
-
-				virtual std::vector<std::string> stringList() const
-				{
-					std::vector<std::string> list;
-					list.push_back(OUTPUT_TYPE_STATE);
-					list.push_back(OUTPUT_TYPE_ONPULSE);
-					list.push_back(OUTPUT_TYPE_OFFPULSE);
-					list.push_back(OUTPUT_TYPE_MAXON);
-					list.push_back(OUTPUT_TYPE_MAXOFF);
-					return list;
-				}
-		};
-
-		enum nErrorType {
-			INVALID = -1,
-			INFORMATION = 0,
-			WARNING,
-			ERROR
-		};
-		class ErrorType : public Utils::SmartEnum<nErrorType>
-		{
-			public:
-				virtual void operator = (const enum nErrorType& v){_val = v;}
-				virtual void operator = (const std::string& val){
-					if (val.compare(ERROR_TYPE_INFO) == 0)
-						_val = INFORMATION;
-					else if (val.compare(ERROR_TYPE_WARN) == 0)
-						_val = WARNING;
-					else if (val.compare(ERROR_TYPE_ERR) == 0)
-						_val = ERROR;
-					else
-						_val = INVALID;
-				}
-				virtual std::string toString() const {
-					switch (_val) {
-						case INFORMATION:	return ERROR_TYPE_INFO;
-						case WARNING:		return ERROR_TYPE_WARN;
-						case ERROR:			return ERROR_TYPE_ERR;
-						default: 			return ERROR_TYPE_INVALID;
-					}
-					return "";
-				}
-
-				virtual std::vector<std::string> stringList() const
-				{
-					std::vector<std::string> list;
-					list.push_back(ERROR_TYPE_INFO);
-					list.push_back(ERROR_TYPE_WARN);
-					list.push_back(ERROR_TYPE_ERR);
-					list.push_back(ERROR_TYPE_INVALID);
-					return list;
-				}
-		};
-
-		enum nErrorCode {
-			SUCCESS	= 0					, // No error
-			// FILES ERRORS
-			FILE_NOT_FOUND				, // the specified file not exist
-			FILE_ALREADY_EXIST			, // in move or copy operations, if the file already exist...
-			FILE_COPY_FAIL				, // copy file operation error
-			FILE_DELETE_FAIL			, // delete file operation error
-			FILE_MOVE_FAIL				, // move operation error
-			FILE_MOVE_INCOMPLETED		, // move operation has copied the source to target, but not delete the source
-			FILE_READ_ERROR				, // can't read the file
-			FILE_WRITE_ERROR			, // can't write the file
-			FILE_WRITE_INCOMPLETED		, // the write on the file is not complete
-			FILE_USER_DATAOT_FOUND	, // the name of a user-name-value is not found
-			FILE_IN_USE					, // the file is currenty in use
-
-			// PARAMS ERRORS
-			PARAM_BOARD_IDOT_FOUND	 , // The BoardId specified by the command was not found
-			PARAM_COUNTER_IDOT_FOUND	 , // The CounterId specified by the command was not found
-			PARAM_COUNTER_VALUE_REJECTED , // The device has rejected the counter modification
-			PARAM_OUTPUT_IDOT_FOUND	 , // The output id specified by the command was not found
-			PARAM_INVALID_BCD_MODE		 , // Is not posible set a manual current message if the board is in Bcd mode
-			PARAM_BOARD_IS_ENABLED		 , // the command requires a enabled board
-			PARAM_BOARD_IS_DISABLED		 , // the command requires a disabled board
-			PARAM_CHANGE_ADAPTER_FAIL	 , // The server can not change the adapter settings
-			PARAM_INVALID_IP_ADDRESS	 , // The ip is invalid
-			PARAM_INVALID_MASK_ADDRESS	 , // The mask is invalid
-			PARAM_INVALID_GATEWAY_ADDRESS, // The Gateway is invalid
-			PARAM_INVALID_PROP_COUNT	 , // The client can not change the number of properties
-
-			// OTHER GENERIC ERRORS
-			GEN_UNEXPECTED_TAG			, // generic xml error
-			GENOT_IMPLEMENTED			, // informs that operation is not implemented on the server
-			GEN_LOCK_TIMEOUT			, // Lock data fail
-
-			// NEOTIJ ERRORS
-			PCAOT_DETECTED			, // "PCA.NOTDETECTED"				"No connection with PCA"
-			PH_OVERTEMP					, // "PH.OVERTEMP"					"Printhead over temperature"
-			GEN_OVERSPEED				, // "GEN.OVERSPEED"				"Overspeed"
-			MSG_FORMAT_ERROR			, // "MSG.FORMATERROR"				"NISX format error"
-			MSGO_EXIST				, // "MSG.NOEXIST"					"Message doesn't exist"
-			PHO_CARTRIDGE				, // "PH.NOCARTRIDGE"				"No cartridge loaded"
-			SMC_INVALID					, // "SMC.INVALID"					"No valid smartcard on cartridge"
-			PH_GEN_FAULT				, // "PH.GENFAULT"					"Cartridge fault - not valid"
-			SMC_CARTRIDGE_EMPTY			, // "SMC.CARTRIDGE_EMPTY"			"Cartridge empty"
-			SMC_CARTRIDGE_OUT_OF_DATE	, // "SMC.CARTRIDGE_OUTOFDATE"		"Cartridge out of expiration date"
-			SMC_CARTRIDGEEAR_END		, // "SMC.CARTRIDGEEAREND"		"Cartridge near empty"
-			SMC_CARTRIDGE_INVALID		, // "SMC.UNRECOGNIZED_DATA"		"Cartridge invalid Data"
-			SMC_INITIALIZING_CARTRIDGE	, // "PH.INITIALIZING_CARTRIDGE"	"Initializing cartridge "
-			SMC_HOST_INVALID			, // "SMC.HOST_SMARTCARD"			"Invalid Host Smart Card"
-
-			UNKOWN_ERROR				//Last error for unknown code
-		};
-		class ErrorCode : public Utils::SmartEnum<nErrorCode>
-		{
-			public:
-				ErrorCode() : SmartEnum() {_val = UNKOWN_ERROR;}
-				ErrorCode(nErrorCode n) : SmartEnum() {_val = n;}
-				virtual ~ErrorCode(){}
-				virtual void operator = (const enum nErrorCode& v){_val = v;}
-				virtual void operator = (const std::string& val){
-					if (val.compare(ERROR_CODE_SUCCCESS) == 0)
-						_val = SUCCESS;
-					else if (val.compare(ERROR_CODE_FILEOT_FOUND) == 0)
-						_val = FILE_NOT_FOUND;
-					else if (val.compare(ERROR_CODE_FILE_ALREADY_EXIST) == 0)
-						_val = FILE_ALREADY_EXIST;
-					else if (val.compare(ERROR_CODE_FILE_COPY_FAIL) == 0)
-						_val = FILE_COPY_FAIL;
-					else if (val.compare(ERROR_CODE_FILE_DELETE_FAIL) == 0)
-						_val = FILE_DELETE_FAIL;
-					else if (val.compare(ERROR_CODE_FILE_MOVE_FAIL) == 0)
-						_val = FILE_MOVE_FAIL;
-					else if (val.compare(ERROR_CODE_FILE_MOVE_INCOMPLETED) == 0)
-						_val = FILE_MOVE_INCOMPLETED;
-					else if (val.compare(ERROR_CODE_FILE_READ_FAIL) == 0)
-						_val = FILE_READ_ERROR;
-					else if (val.compare(ERROR_CODE_FILE_WRITE_FAIL) == 0)
-						_val = FILE_WRITE_ERROR;
-					else if (val.compare(ERROR_CODE_FILE_WRITE_INCOMPLETED) == 0)
-						_val = FILE_WRITE_INCOMPLETED;
-					else if (val.compare(ERROR_CODE_FILE_USER_DATAOT_FOUND) == 0)
-						_val = FILE_USER_DATAOT_FOUND;
-					else if (val.compare(ERROR_CODE_FILE_IN_USE) == 0)
-						_val = FILE_IN_USE;
-					else if (val.compare(ERROR_CODE_PARAM_BOARD_IDOT_FOUND) == 0)
-						_val = PARAM_BOARD_IDOT_FOUND;
-					else if (val.compare(ERROR_CODE_PARAM_COUNTER_IDOT_FOUND) == 0)
-						_val = PARAM_COUNTER_IDOT_FOUND;
-					else if (val.compare(ERROR_CODE_PARAM_COUNTER_VALUE_REJECTED) == 0)
-						_val = PARAM_COUNTER_VALUE_REJECTED;
-					else if (val.compare(ERROR_CODE_PARAM_OUTPUT_IDOT_FOUND) == 0)
-						_val = PARAM_OUTPUT_IDOT_FOUND;
-					else if (val.compare(ERROR_CODE_PARAM_BCD_INVALID_MODE) == 0)
-						_val = PARAM_INVALID_BCD_MODE;
-					else if (val.compare(ERROR_CODE_PARAM_BOARD_IS_ENABLED) == 0)
-						_val = PARAM_BOARD_IS_ENABLED;
-					else if (val.compare(ERROR_CODE_PARAM_BOARD_IS_DISABLED) == 0)
-						_val = PARAM_BOARD_IS_DISABLED;
-					else if (val.compare(ERROR_CODE_PARAM_CHANGE_ADAPTER_FAILS) == 0)
-						_val = PARAM_CHANGE_ADAPTER_FAIL;
-					else if (val.compare(ERROR_CODE_PARAM_INVALID_IP_ADDRESS) == 0)
-						_val = PARAM_INVALID_IP_ADDRESS;
-					else if (val.compare(ERROR_CODE_PARAM_INVALID_MASK_ADDRESS) == 0)
-						_val = PARAM_INVALID_MASK_ADDRESS;
-					else if (val.compare(ERROR_CODE_PARAM_INVALID_GATEWAY_ADDRESS) == 0)
-						_val = PARAM_INVALID_GATEWAY_ADDRESS;
-					else if (val.compare(ERROR_CODE_PARAM_INVALID_PROP_COUNT) == 0)
-						_val = PARAM_INVALID_PROP_COUNT;
-					else if (val.compare(ERROR_CODE_GENERIC_UNEXPECTED_TAG) == 0)
-						_val = GEN_UNEXPECTED_TAG;
-					else if (val.compare(ERROR_CODE_GENERICOT_IMPLEMENTED) == 0)
-						_val = GENOT_IMPLEMENTED;
-					else if (val.compare(ERROR_CODE_GENERIC_LOCK_TIMEOUT) == 0)
-						_val = GEN_LOCK_TIMEOUT;
-					else if (val.compare(ERROR_CODE_PH_PCAOT_DETECTED) == 0)
-						_val = PCAOT_DETECTED;
-					else if (val.compare(ERROR_CODE_PH_OVERTEMP) == 0)
-						_val = PH_OVERTEMP;
-					else if (val.compare(ERROR_CODE_PH_OVERSPEED) == 0)
-						_val = GEN_OVERSPEED;
-					else if (val.compare(ERROR_CODE_MSG_FORMAT_ERROR) == 0)
-						_val = MSG_FORMAT_ERROR;
-					else if (val.compare(ERROR_CODE_MSGOEXIST) == 0)
-						_val = MSGO_EXIST;
-					else if (val.compare(ERROR_CODE_PHO_CARTRIDGE) == 0)
-						_val = PHO_CARTRIDGE;
-					else if (val.compare(ERROR_CODE_PH_SC_INVALID) == 0)
-						_val = SMC_INVALID;
-					else if (val.compare(ERROR_CODE_PH_GENERIC_FAULT) == 0)
-						_val = PH_GEN_FAULT;
-					else if (val.compare(ERROR_CODE_PH_SC_CARTRIDGE_EMPTY) == 0)
-						_val = SMC_CARTRIDGE_EMPTY;
-					else if (val.compare(ERROR_CODE_PH_SC_CARTRIDGE_OUT_OF_DATE) == 0)
-						_val = SMC_CARTRIDGE_OUT_OF_DATE;
-					else if (val.compare(ERROR_CODE_PH_SC_CARTRIDGEEAR_END) == 0)
-						_val = SMC_CARTRIDGEEAR_END;
-					else if (val.compare(ERROR_CODE_PH_SC_UNRECOGNIZED_DATA) == 0)
-						_val = SMC_CARTRIDGE_INVALID;
-					else if (val.compare(ERROR_CODE_PH_SC_INITIALIZING) == 0)
-						_val = SMC_INITIALIZING_CARTRIDGE;
-					else if (val.compare(ERROR_CODE_PH_SC_HOST_SMARTCARD_FAIL) == 0)
-						_val = SMC_HOST_INVALID;
+					if (val.compare(ERROR_CODE_COMMAND_OK) == 0)
+						_val = COMMAND_OK;
+					else if (val.compare(ERROR_CODE_INVALID_COMMAND) == 0)
+						_val = INVALID_COMMAND;
+					else if (val.compare(ERROR_CODE_NOT_CONNECTED) == 0)
+						_val = PRINTER_NOT_CONNECTED;
+					else if (val.compare(ERROR_CODE_CHECKSUM_ERROR) == 0)
+						_val = CHECKSUM_ERROR;
+					else if (val.compare(ERROR_CODE_INVALID_MESSAGE_GROUP) == 0)
+						_val = INVALID_MESSAGE_GROUP;
+					else if (val.compare(ERROR_CODE_INVALID_PRINTHEAD) == 0)
+						_val = INVALID_PRINTHEAD;
+					else if (val.compare(ERROR_CODE_INVALID_OUTPUT_ID) == 0)
+						_val = INVALID_OUTPUT_ID;
+					else if (val.compare(ERROR_CODE_INVALID_OUTPUT_PULSE) == 0)
+						_val = INVALID_OUTPUT_PULSE;
+					else if (val.compare(ERROR_CODE_INVALID_MSG_NUMBER) == 0)
+						_val = INVALID_MSG_NUMBER;
+					else if (val.compare(ERROR_CODE_INVALID_MSG_VARIABLE) == 0)
+						_val = INVALID_MSG_VARIABLE;
+					else if (val.compare(ERROR_CODE_INVALID_DATETIME_VALUE) == 0)
+						_val = INVALID_DATETIME_VALUE;
+					else if (val.compare(ERROR_CODE_USB_NOT_CONNECTED) == 0)
+						_val = USB_NOT_CONNECTED;
+					else if (val.compare(ERROR_CODE_INVALID_EVENT_TYPE) == 0)
+						_val = INVALID_EVENT_TYPE;
+					else if (val.compare(ERROR_CODE_INVALID_VALUE) == 0)
+						_val = INVALID_VALUE;
+					else if (val.compare(ERROR_CODE_INVALID_IP) == 0)
+						_val = INVALID_IP;
+					else if (val.compare(ERROR_CODE_INVALID_PRINTHEAD_ID) == 0)
+						_val = INVALID_PRINTHEAD_ID;
+					else if (val.compare(ERROR_CODE_INVALID_NET_ADAPTER) == 0)
+						_val = INVALID_NET_ADAPTER;
+					else if (val.compare(ERROR_CODE_INVALID_NET_MASK) == 0)
+						_val = INVALID_NET_MASK;
+					else if (val.compare(ERROR_CODE_INVALID_GATEWAY) == 0)
+						_val = INVALID_GATEWAY;
+					else if (val.compare(ERROR_CODE_INVALID_DNS) == 0)
+						_val = INVALID_DNS;
+					else if (val.compare(ERROR_CODE_INVALID_PULSES) == 0)
+						_val = INVALID_PULSES;
+					else if (val.compare(ERROR_CODE_INVALID_WHEEL) == 0)
+						_val = INVALID_WHEEL;
+					else if (val.compare(ERROR_CODE_INVALID_ABC) == 0)
+						_val = INVALID_ABC;
+					else if (val.compare(ERROR_CODE_INVALID_MAX_TIME_PRINT) == 0)
+						_val = INVALID_MAX_TIME_PRINT;
+					else if (val.compare(ERROR_CODE_INVALID_OVERLAPPING_TYPE) == 0)
+						_val = INVALID_OVERLAPPING_TYPE;
+					else if (val.compare(ERROR_CODE_INVALID_HORIZONTAL_RESOLUTION) == 0)
+						_val = INVALID_HORIZONTAL_RESOLUTION;
+					else if (val.compare(ERROR_CODE_INVALID_DEFAULT_FONT) == 0)
+						_val = INVALID_DEFAULT_FONT;
+					else if (val.compare(ERROR_CODE_INVALID_LAMP_CONTROL_TIME) == 0)
+						_val = INVALID_LAMP_CONTROL_TIME;
+					else if (val.compare(ERROR_CODE_INVALID_XR_OFFSET) == 0)
+						_val = INVALID_XR_OFFSET;
+					else if (val.compare(ERROR_CODE_INVALID_PHOTOCELL_FILTER) == 0)
+						_val = INVALID_PHOTOCELL_FILTER;
+					else if (val.compare(ERROR_CODE_INVALID_PRINT_MODE) == 0)
+						_val = INVALID_PRINT_MODE;
+					else if (val.compare(ERROR_CODE_INVALID_IP_ADDR_TYPE) == 0)
+						_val = INVALID_IP_ADDR_TYPE;
+					else if (val.compare(ERROR_CODE_IP_ALREADY_CONFIGURED) == 0)
+						_val = IP_ALREADY_CONFIGURED;
+					else if (val.compare(ERROR_CODE_IP_NO_PING_RESPONSE) == 0)
+						_val = IP_NO_PING_RESPONSE;
+					else if (val.compare(ERROR_CODE_PRINTHEAD_NOT_ASSIGNED) == 0)
+						_val = PRINTHEAD_NOT_ASSIGNED;
+					else if (val.compare(ERROR_CODE_SPECIFIC_NISX_COMMAND) == 0)
+						_val = SPECIFIC_NISX_COMMAND;
+					else if (val.compare(ERROR_CODE_MESSAGE_NUMBER_NOT_FOUND) == 0)
+						_val = MESSAGE_NUMBER_NOT_FOUND;
+					else if (val.compare(ERROR_CODE_MISSING_FILENAME_ATTRIBUTTE) == 0)
+						_val = MISSING_FILENAME_ATTRIBUTTE;
+					else if (val.compare(ERROR_CODE_NISX_INVALID_FORMAT) == 0)
+						_val = NISX_INVALID_FORMAT;
+					else if (val.compare(ERROR_CODE_NISX_PARSING_ERROR) == 0)
+						_val = NISX_PARSING_ERROR;
 					else if (val.compare(ERROR_CODE_UNKNOWN) == 0)
-						_val = UNKOWN_ERROR;
+						_val = COMMAND_UNKOWN_ERROR;
 				}
 				virtual std::string toString() const {
 					switch (_val) {
-						case SUCCESS:						return ERROR_CODE_SUCCCESS;
-							// FILES ERRORS
-						case FILE_NOT_FOUND:				return ERROR_CODE_FILEOT_FOUND;
-						case FILE_ALREADY_EXIST:			return ERROR_CODE_FILE_ALREADY_EXIST;
-						case FILE_COPY_FAIL:				return ERROR_CODE_FILE_COPY_FAIL;
-						case FILE_DELETE_FAIL:				return ERROR_CODE_FILE_DELETE_FAIL;
-						case FILE_MOVE_FAIL:				return ERROR_CODE_FILE_MOVE_FAIL;
-						case FILE_MOVE_INCOMPLETED:			return ERROR_CODE_FILE_MOVE_INCOMPLETED;
-						case FILE_READ_ERROR:				return ERROR_CODE_FILE_READ_FAIL;
-						case FILE_WRITE_ERROR:				return ERROR_CODE_FILE_WRITE_FAIL;
-						case FILE_WRITE_INCOMPLETED:		return ERROR_CODE_FILE_WRITE_INCOMPLETED;
-						case FILE_USER_DATAOT_FOUND:		return ERROR_CODE_FILE_USER_DATAOT_FOUND;
-						case FILE_IN_USE:					return ERROR_CODE_FILE_IN_USE;
-							// PARAMS ERRORS
-						case PARAM_BOARD_IDOT_FOUND:		return ERROR_CODE_PARAM_BOARD_IDOT_FOUND;
-						case PARAM_COUNTER_IDOT_FOUND:	return ERROR_CODE_PARAM_COUNTER_IDOT_FOUND;
-						case PARAM_COUNTER_VALUE_REJECTED:	return ERROR_CODE_PARAM_COUNTER_VALUE_REJECTED;
-						case PARAM_OUTPUT_IDOT_FOUND:		return ERROR_CODE_PARAM_OUTPUT_IDOT_FOUND;
-						case PARAM_INVALID_BCD_MODE:		return ERROR_CODE_PARAM_BCD_INVALID_MODE;
-						case PARAM_BOARD_IS_ENABLED:		return ERROR_CODE_PARAM_BOARD_IS_ENABLED;
-						case PARAM_BOARD_IS_DISABLED:		return ERROR_CODE_PARAM_BOARD_IS_DISABLED;
-						case PARAM_CHANGE_ADAPTER_FAIL:		return ERROR_CODE_PARAM_CHANGE_ADAPTER_FAILS;
-						case PARAM_INVALID_IP_ADDRESS:		return ERROR_CODE_PARAM_INVALID_IP_ADDRESS;
-						case PARAM_INVALID_MASK_ADDRESS:	return ERROR_CODE_PARAM_INVALID_MASK_ADDRESS;
-						case PARAM_INVALID_GATEWAY_ADDRESS:	return ERROR_CODE_PARAM_INVALID_GATEWAY_ADDRESS;
-						case PARAM_INVALID_PROP_COUNT:		return ERROR_CODE_PARAM_INVALID_PROP_COUNT;
-							// OTHER GENERIC ERRORS
-						case GEN_UNEXPECTED_TAG:			return ERROR_CODE_GENERIC_UNEXPECTED_TAG;
-						case GENOT_IMPLEMENTED:			return ERROR_CODE_GENERICOT_IMPLEMENTED;
-						case GEN_LOCK_TIMEOUT:				return ERROR_CODE_GENERIC_LOCK_TIMEOUT;
-							// NEOTIJ ERRORS
-						case PCAOT_DETECTED:				return ERROR_CODE_PH_PCAOT_DETECTED;
-						case PH_OVERTEMP:					return ERROR_CODE_PH_OVERTEMP;
-						case GEN_OVERSPEED:					return ERROR_CODE_PH_OVERSPEED;
-						case MSG_FORMAT_ERROR:				return ERROR_CODE_MSG_FORMAT_ERROR;
-						case MSGO_EXIST:					return ERROR_CODE_MSGOEXIST;
-						case PHO_CARTRIDGE:				return ERROR_CODE_PHO_CARTRIDGE;
-						case SMC_INVALID:					return ERROR_CODE_PH_SC_INVALID;
-						case PH_GEN_FAULT:					return ERROR_CODE_PH_GENERIC_FAULT;
-						case SMC_CARTRIDGE_EMPTY:			return ERROR_CODE_PH_SC_CARTRIDGE_EMPTY;
-						case SMC_CARTRIDGE_OUT_OF_DATE:		return ERROR_CODE_PH_SC_CARTRIDGE_OUT_OF_DATE;
-						case SMC_CARTRIDGEEAR_END:		return ERROR_CODE_PH_SC_CARTRIDGEEAR_END;
-						case SMC_CARTRIDGE_INVALID:			return ERROR_CODE_PH_SC_UNRECOGNIZED_DATA;
-						case SMC_INITIALIZING_CARTRIDGE:	return ERROR_CODE_PH_SC_INITIALIZING;
-						case SMC_HOST_INVALID:				return ERROR_CODE_PH_SC_HOST_SMARTCARD_FAIL;
-
+						case COMMAND_OK:					return ERROR_CODE_COMMAND_OK;
+						case PRINTER_NOT_CONNECTED:			return ERROR_CODE_NOT_CONNECTED;
+						case CHECKSUM_ERROR: 				return ERROR_CODE_CHECKSUM_ERROR;
+						case INVALID_MESSAGE_GROUP: 		return ERROR_CODE_INVALID_MESSAGE_GROUP;
+						case INVALID_PRINTHEAD: 			return ERROR_CODE_INVALID_PRINTHEAD;
+						case INVALID_OUTPUT_ID: 			return ERROR_CODE_INVALID_OUTPUT_ID;
+						case INVALID_OUTPUT_PULSE: 			return ERROR_CODE_INVALID_OUTPUT_PULSE;
+						case INVALID_MSG_NUMBER: 			return ERROR_CODE_INVALID_MSG_NUMBER;
+						case INVALID_MSG_VARIABLE: 			return ERROR_CODE_INVALID_MSG_VARIABLE;
+						case INVALID_DATETIME_VALUE: 		return ERROR_CODE_INVALID_DATETIME_VALUE;
+						case USB_NOT_CONNECTED: 			return ERROR_CODE_USB_NOT_CONNECTED;
+						case INVALID_EVENT_TYPE: 			return ERROR_CODE_INVALID_EVENT_TYPE;
+						case INVALID_VALUE: 				return ERROR_CODE_INVALID_VALUE;
+						case INVALID_IP: 					return ERROR_CODE_INVALID_IP;
+						case INVALID_PRINTHEAD_ID: 			return ERROR_CODE_INVALID_PRINTHEAD_ID;
+						case INVALID_NET_ADAPTER: 			return ERROR_CODE_INVALID_NET_ADAPTER;
+						case INVALID_NET_MASK: 				return ERROR_CODE_INVALID_NET_MASK;
+						case INVALID_GATEWAY: 				return ERROR_CODE_INVALID_GATEWAY;
+						case INVALID_DNS: 					return ERROR_CODE_INVALID_DNS;
+						case INVALID_PULSES: 				return ERROR_CODE_INVALID_PULSES;
+						case INVALID_WHEEL: 				return ERROR_CODE_INVALID_WHEEL;
+						case INVALID_ABC: 					return ERROR_CODE_INVALID_ABC;
+						case INVALID_MAX_TIME_PRINT: 		return ERROR_CODE_INVALID_MAX_TIME_PRINT;
+						case INVALID_OVERLAPPING_TYPE: 		return ERROR_CODE_INVALID_OVERLAPPING_TYPE;
+						case INVALID_HORIZONTAL_RESOLUTION: return ERROR_CODE_INVALID_HORIZONTAL_RESOLUTION;
+						case INVALID_DEFAULT_FONT: 			return ERROR_CODE_INVALID_DEFAULT_FONT;
+						case INVALID_LAMP_CONTROL_TIME: 	return ERROR_CODE_INVALID_LAMP_CONTROL_TIME;
+						case INVALID_XR_OFFSET: 			return ERROR_CODE_INVALID_XR_OFFSET;
+						case INVALID_PHOTOCELL_FILTER: 		return ERROR_CODE_INVALID_PHOTOCELL_FILTER;
+						case INVALID_PRINT_MODE: 			return ERROR_CODE_INVALID_PRINT_MODE;
+						case INVALID_IP_ADDR_TYPE: 			return ERROR_CODE_INVALID_IP_ADDR_TYPE;
+						case IP_ALREADY_CONFIGURED: 		return ERROR_CODE_IP_ALREADY_CONFIGURED;
+						case IP_NO_PING_RESPONSE: 			return ERROR_CODE_IP_NO_PING_RESPONSE;
+						case PRINTHEAD_NOT_ASSIGNED: 		return ERROR_CODE_PRINTHEAD_NOT_ASSIGNED;
+						case SPECIFIC_NISX_COMMAND: 		return ERROR_CODE_SPECIFIC_NISX_COMMAND;
+						case MESSAGE_NUMBER_NOT_FOUND: 		return ERROR_CODE_MESSAGE_NUMBER_NOT_FOUND;
+						case MISSING_FILENAME_ATTRIBUTTE: 	return ERROR_CODE_MISSING_FILENAME_ATTRIBUTTE;
+						case NISX_INVALID_FORMAT: 			return ERROR_CODE_NISX_INVALID_FORMAT;
+						case NISX_PARSING_ERROR:			return ERROR_CODE_NISX_PARSING_ERROR;
 						default:							return ERROR_CODE_UNKNOWN;
 					}
 					return "";
@@ -681,97 +453,45 @@ namespace Macsa {
 				virtual std::vector<std::string> stringList() const
 				{
 					std::vector<std::string> list;
-					list.push_back(ERROR_CODE_SUCCCESS);
-					list.push_back(ERROR_CODE_FILEOT_FOUND);
-					list.push_back(ERROR_CODE_FILE_ALREADY_EXIST);
-					list.push_back(ERROR_CODE_FILE_COPY_FAIL);
-					list.push_back(ERROR_CODE_FILE_DELETE_FAIL);
-					list.push_back(ERROR_CODE_FILE_MOVE_FAIL);
-					list.push_back(ERROR_CODE_FILE_MOVE_INCOMPLETED);
-					list.push_back(ERROR_CODE_FILE_READ_FAIL);
-					list.push_back(ERROR_CODE_FILE_WRITE_FAIL);
-					list.push_back(ERROR_CODE_FILE_WRITE_INCOMPLETED);
-					list.push_back(ERROR_CODE_FILE_USER_DATAOT_FOUND);
-					list.push_back(ERROR_CODE_FILE_IN_USE);
-					list.push_back(ERROR_CODE_PARAM_BOARD_IDOT_FOUND);
-					list.push_back(ERROR_CODE_PARAM_COUNTER_IDOT_FOUND);
-					list.push_back(ERROR_CODE_PARAM_COUNTER_VALUE_REJECTED);
-					list.push_back(ERROR_CODE_PARAM_OUTPUT_IDOT_FOUND);
-					list.push_back(ERROR_CODE_PARAM_BCD_INVALID_MODE);
-					list.push_back(ERROR_CODE_PARAM_BOARD_IS_ENABLED);
-					list.push_back(ERROR_CODE_PARAM_BOARD_IS_DISABLED);
-					list.push_back(ERROR_CODE_PARAM_CHANGE_ADAPTER_FAILS);
-					list.push_back(ERROR_CODE_PARAM_INVALID_IP_ADDRESS);
-					list.push_back(ERROR_CODE_PARAM_INVALID_MASK_ADDRESS);
-					list.push_back(ERROR_CODE_PARAM_INVALID_GATEWAY_ADDRESS);
-					list.push_back(ERROR_CODE_PARAM_INVALID_PROP_COUNT);
-					list.push_back(ERROR_CODE_GENERIC_UNEXPECTED_TAG);
-					list.push_back(ERROR_CODE_GENERICOT_IMPLEMENTED);
-					list.push_back(ERROR_CODE_GENERIC_LOCK_TIMEOUT);
-					list.push_back(ERROR_CODE_PH_PCAOT_DETECTED);
-					list.push_back(ERROR_CODE_PH_OVERTEMP);
-					list.push_back(ERROR_CODE_PH_OVERSPEED);
-					list.push_back(ERROR_CODE_MSG_FORMAT_ERROR);
-					list.push_back(ERROR_CODE_MSGOEXIST);
-					list.push_back(ERROR_CODE_PHO_CARTRIDGE);
-					list.push_back(ERROR_CODE_PH_SC_INVALID);
-					list.push_back(ERROR_CODE_PH_GENERIC_FAULT);
-					list.push_back(ERROR_CODE_PH_SC_CARTRIDGE_EMPTY);
-					list.push_back(ERROR_CODE_PH_SC_CARTRIDGE_OUT_OF_DATE);
-					list.push_back(ERROR_CODE_PH_SC_CARTRIDGEEAR_END);
-					list.push_back(ERROR_CODE_PH_SC_UNRECOGNIZED_DATA);
-					list.push_back(ERROR_CODE_PH_SC_INITIALIZING);
-					list.push_back(ERROR_CODE_PH_SC_HOST_SMARTCARD_FAIL);
-					list.push_back(ERROR_CODE_UNKNOWN);
-					return list;
-				}
-		};
-
-		enum nLoggerLevel {
-			LOG_ERROR=0,
-			LOG_WARNING,
-			LOG_INFO,
-			LOG_DEBUG,
-			LOG_DISABLED
-		};
-		class LoggerLevel : public Utils::SmartEnum<nLoggerLevel>
-		{
-			public:
-				LoggerLevel(){_val = LOG_DISABLED;}
-				void operator = (const enum nLoggerLevel& v){_val = v;}
-				void operator = (const std::string& val){
-					if (val.compare(LOG_LEVEL_ERROR) == 0)
-						_val = LOG_ERROR;
-					else if (val.compare(LOG_LEVEL_WARNING) == 0)
-						_val = LOG_WARNING;
-					else if (val.compare(LOG_LEVEL_INFO) == 0)
-						_val = LOG_INFO;
-					else if (val.compare(LOG_LEVEL_DEBUG) == 0)
-						_val = LOG_DEBUG;
-					else
-						_val = LOG_DISABLED;
-				}
-
-
-				std::string toString() const {
-					switch (_val) {
-						case LOG_ERROR:		return LOG_LEVEL_ERROR;
-						case LOG_WARNING:	return LOG_LEVEL_WARNING;
-						case LOG_INFO:		return LOG_LEVEL_INFO;
-						case LOG_DEBUG:		return LOG_LEVEL_DEBUG;
-						case LOG_DISABLED:	return LOG_LEVEL_DISABLED;
-					}
-					return "";
-				}
-
-				virtual std::vector<std::string> stringList() const
-				{
-					std::vector<std::string> list;
-					list.push_back(LOG_LEVEL_ERROR);
-					list.push_back(LOG_LEVEL_WARNING);
-					list.push_back(LOG_LEVEL_INFO);
-					list.push_back(LOG_LEVEL_DEBUG);
-					list.push_back(LOG_LEVEL_DISABLED);
+					list.push_back(ERROR_CODE_COMMAND_OK);
+					list.push_back(ERROR_CODE_NOT_CONNECTED);
+					list.push_back(ERROR_CODE_CHECKSUM_ERROR);
+					list.push_back(ERROR_CODE_INVALID_MESSAGE_GROUP);
+					list.push_back(ERROR_CODE_INVALID_PRINTHEAD);
+					list.push_back(ERROR_CODE_INVALID_OUTPUT_ID);
+					list.push_back(ERROR_CODE_INVALID_OUTPUT_PULSE);
+					list.push_back(ERROR_CODE_INVALID_MSG_NUMBER);
+					list.push_back(ERROR_CODE_INVALID_MSG_VARIABLE);
+					list.push_back(ERROR_CODE_INVALID_DATETIME_VALUE);
+					list.push_back(ERROR_CODE_USB_NOT_CONNECTED);
+					list.push_back(ERROR_CODE_INVALID_EVENT_TYPE);
+					list.push_back(ERROR_CODE_INVALID_VALUE);
+					list.push_back(ERROR_CODE_INVALID_IP);
+					list.push_back(ERROR_CODE_INVALID_PRINTHEAD_ID);
+					list.push_back(ERROR_CODE_INVALID_NET_ADAPTER);
+					list.push_back(ERROR_CODE_INVALID_NET_MASK);
+					list.push_back(ERROR_CODE_INVALID_GATEWAY);
+					list.push_back(ERROR_CODE_INVALID_DNS);
+					list.push_back(ERROR_CODE_INVALID_PULSES);
+					list.push_back(ERROR_CODE_INVALID_WHEEL);
+					list.push_back(ERROR_CODE_INVALID_ABC);
+					list.push_back(ERROR_CODE_INVALID_MAX_TIME_PRINT);
+					list.push_back(ERROR_CODE_INVALID_OVERLAPPING_TYPE);
+					list.push_back(ERROR_CODE_INVALID_HORIZONTAL_RESOLUTION);
+					list.push_back(ERROR_CODE_INVALID_DEFAULT_FONT);
+					list.push_back(ERROR_CODE_INVALID_LAMP_CONTROL_TIME);
+					list.push_back(ERROR_CODE_INVALID_XR_OFFSET);
+					list.push_back(ERROR_CODE_INVALID_PHOTOCELL_FILTER);
+					list.push_back(ERROR_CODE_INVALID_PRINT_MODE);
+					list.push_back(ERROR_CODE_INVALID_IP_ADDR_TYPE);
+					list.push_back(ERROR_CODE_IP_ALREADY_CONFIGURED);
+					list.push_back(ERROR_CODE_IP_NO_PING_RESPONSE);
+					list.push_back(ERROR_CODE_PRINTHEAD_NOT_ASSIGNED);
+					list.push_back(ERROR_CODE_SPECIFIC_NISX_COMMAND);
+					list.push_back(ERROR_CODE_MESSAGE_NUMBER_NOT_FOUND);
+					list.push_back(ERROR_CODE_MISSING_FILENAME_ATTRIBUTTE);
+					list.push_back(ERROR_CODE_NISX_INVALID_FORMAT);
+					list.push_back(ERROR_CODE_NISX_PARSING_ERROR);
 					return list;
 				}
 		};
@@ -779,4 +499,4 @@ namespace Macsa {
 }
 
 
-#endif
+#endif //MACSA_JET_PRINTER_DATA_TYPES_H

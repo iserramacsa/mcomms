@@ -38,6 +38,9 @@ add_definitions(-DJET_LIBRARY_VERSION_STR="${JET_LIBRARY_VERSION}")
 
 ####################  SOURCES AND HEADERS  #############################
 
+set(SOURCES)
+set(HEADERS)
+
 set(PRINTERS_SOURCES)
 set(PRINTERS_HEADERS)
 set(PRINTERS_INCLUDES)
@@ -70,13 +73,16 @@ SET (PRINTERS_INCLUDES
 
 include_directories(${PRINTERS_INCLUDES})
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/src         ${PROJECT_BINARY_DIR}/printers/src)
-add_subdirectory(${PROJECT_SOURCE_DIR}/include     ${PROJECT_BINARY_DIR}/printers/include)
-add_subdirectory(${PROJECT_SOURCE_DIR}/xmlprotocol ${PROJECT_BINARY_DIR}/xmlprotocol)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src         ${PROJECT_BINARY_DIR}/printers/jet/src)
+add_subdirectory(${PROJECT_SOURCE_DIR}/include     ${PROJECT_BINARY_DIR}/printers/jet/include)
 add_subdirectory(${PROJECT_SOURCE_DIR}/jetprotocol ${PROJECT_BINARY_DIR}/jetprotocol)
+add_subdirectory(${PROJECT_SOURCE_DIR}/xmlprotocol ${PROJECT_BINARY_DIR}/xmlprotocol)
 add_subdirectory(${PROJECT_SOURCE_DIR}/jet/src     ${PROJECT_BINARY_DIR}/jet/src)
 add_subdirectory(${PROJECT_SOURCE_DIR}/jet/include ${PROJECT_BINARY_DIR}/jet/include)
 add_subdirectory(${PROJECT_SOURCE_DIR}/labels      ${PROJECT_BINARY_DIR}/labels)
+
+set(SOURCES ${SOURCES} ${JET_SOURCES} ${PRINTERS_SOURCES} ${JET_PROTOCOL_SOURCES} ${LABELS_SOURCES})
+set(HEADERS ${HEADERS} ${JET_HEADERS} ${PRINTERS_HEADERS} ${JET_PROTOCOL_HEADERS} ${LABELS_HEADERS})
 
 if (${ENABLE_TESTS})
 	set(SRC_TEST ${SRC_TEST})
@@ -92,11 +98,7 @@ if (${BUILD_SHARED_LIBS} OR ${BUILD_STATIC_LIBS})
 	set(SOVERSION ${JET_LIBRARY_VERSION})
 
 	if (${BUILD_SHARED_LIBS})
-		add_library(${PROJECT_NAME} SHARED
-							${JET_SOURCES} ${JET_HEADERS}
-							${PRINTERS_SOURCES} ${PRINTERS_HEADERS}
-							${PROTOCOL_SOURCES} ${PROTOCOL_HEADERS}
-							${LABELS_SOURCES} ${LABELS_HEADERS})
+		add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
 
 		set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${SOVERSION})
 		target_link_libraries(${PROJECT_NAME} ${EXTERNAL_LIBS})
@@ -105,11 +107,7 @@ if (${BUILD_SHARED_LIBS} OR ${BUILD_STATIC_LIBS})
 
 
 	if (${BUILD_STATIC_LIBS})
-		add_library(${PROJECT_NAME}-static STATIC
-						${JET_SOURCES} ${JET_HEADERS}
-						${PRINTERS_SOURCES} ${PRINTERS_HEADERS}
-						${PROTOCOL_SOURCES} ${PROTOCOL_HEADERS}
-						${LABELS_SOURCES} ${LABELS_HEADERS})
+		add_library(${PROJECT_NAME}-static STATIC ${SOURCES} ${HEADERS})
 		set_target_properties(${PROJECT_NAME}-static PROPERTIES SOVERSION ${SOVERSION} OUTPUT_NAME ${PROJECT_NAME})
 		target_link_libraries(${PROJECT_NAME}-static ${EXTERNAL_LIBS})
 		install(TARGETS ${PROJECT_NAME}-static LIBRARY DESTINATION ${LIB_PREFIX}/lib)

@@ -11,17 +11,9 @@
 #define DIR_LEFT_TO_RIGHT	"LR"
 #define DIR_AUTO			"AUTO"
 
-#define SHOOTING_MODE_ONCE	"SingleShot"
-#define SHOOTING_MODE_REL	"MultiShotRelative"
-#define SHOOTING_MODE_ABS	"MultiShotAbsolute"
-
 #define NOZZLES_COL_A		"COL_A"
 #define NOZZLES_COL_B		"COL_B"
 #define NOZZLES_COL_BOTH	"COL_BOTH"
-
-#define ENCODER_MODE_FIXED		"FixedSpeed"
-#define ENCODER_MODE_INTERNAL	"Internal"
-#define ENCODER_MODE_EXTERNAL	"External"
 
 #define PHOTOCELL_A		"FTC1"
 #define PHOTOCELL_B		"FTC2"
@@ -40,16 +32,13 @@
 #define BCD_MODE_BCD_1  "Mode1"
 #define BCD_MODE_BCD_2  "Mode2"
 
-#define DELAY_UNIT_MM	"mm"
-#define DELAY_UNIT_DOTS	"dts"
-
 #define ERROR_TYPE_INFO		"Information"
 #define ERROR_TYPE_WARN		"Warning"
 #define ERROR_TYPE_ERR		"Error"
 #define ERROR_TYPE_INVALID	"Invalid"
 
 #define ERROR_CODE_SUCCCESS							"SUCCESS"
-#define ERROR_CODE_FILEOT_FOUND					"FILE.NOT_FOUND"
+#define ERROR_CODE_FILEOT_FOUND						"FILE.NOT_FOUND"
 #define ERROR_CODE_FILE_ALREADY_EXIST				"FILE.ALREADY_EXIST"
 #define ERROR_CODE_FILE_COPY_FAIL					"FILE.COPY_FAIL"
 #define ERROR_CODE_FILE_DELETE_FAIL					"FILE.DELETE_FAIL"
@@ -172,42 +161,6 @@ namespace Macsa {
 				}
 		};
 
-		enum nShootingMode{
-			SINGLE_SHOT = 0, // for single shot.
-			MULTI_SHOT_REL,  // for multishot with relative delay.
-			MULTI_SHOT_ABS   // for multishot with absolute delay.
-		};
-		class ShootingMode : public Utils::SmartEnum<nShootingMode>
-		{
-			public:
-				ShootingMode() : SmartEnum() {_val = SINGLE_SHOT;}
-				virtual void operator = (const enum nShootingMode& v){_val = v;}
-				virtual void operator = (const std::string& val){
-					if (val.compare(SHOOTING_MODE_ONCE) == 0)
-						_val = SINGLE_SHOT;
-					else if (val.compare(SHOOTING_MODE_REL) == 0)
-						_val = MULTI_SHOT_REL;
-					else if (val.compare(SHOOTING_MODE_ABS) == 0)
-						_val = MULTI_SHOT_ABS;
-				}
-				std::string toString() const {
-					switch (_val) {
-						case SINGLE_SHOT:		return SHOOTING_MODE_ONCE;
-						case MULTI_SHOT_REL:	return SHOOTING_MODE_REL;
-						case MULTI_SHOT_ABS:	return SHOOTING_MODE_ABS;
-					}
-					return "";
-				}
-
-				virtual std::vector<std::string> stringList() const
-				{
-					std::vector<std::string> list;
-					list.push_back(SHOOTING_MODE_ONCE);
-					list.push_back(SHOOTING_MODE_REL);
-					list.push_back(SHOOTING_MODE_ABS);
-					return list;
-				}
-		};
 
 		enum nNozzlesCol{
 			COL_A = 0,  //Column A
@@ -246,76 +199,7 @@ namespace Macsa {
 				}
 		};
 
-		enum nDelayUnits {
-			UNITS_MM = 0,
-			UNITS_DOTS,
-		};
-		class DelayUnits : public Utils::SmartEnum<nDelayUnits>
-		{
-			public:
-				DelayUnits() {_val = UNITS_DOTS;}
-				virtual void operator = (const enum nDelayUnits& v){_val = v;}
-				virtual void operator = (const std::string& v) {
-					if (v.compare(DELAY_UNIT_MM) == 0)
-						_val = UNITS_MM;
-					else if (v.compare(DELAY_UNIT_DOTS) == 0)
-						_val = UNITS_DOTS;
-				}
-				virtual std::string toString() const {
-					switch (_val) {
-						case UNITS_MM:	 return DELAY_UNIT_MM;
-						case UNITS_DOTS: return DELAY_UNIT_DOTS;
-					}
-					return "";
-				}
 
-				virtual std::vector<std::string> stringList() const
-				{
-					std::vector<std::string> list;
-					list.push_back(DELAY_UNIT_MM);
-					list.push_back(DELAY_UNIT_DOTS);
-					return list;
-				}
-		};
-
-		enum nEncoderMode{
-			FIXED_SPEED = 0,
-			INTERNAL_ENCODER,
-			EXTERNAL_ENCODER
-		};
-		class EncoderMode : public Utils::SmartEnum<nEncoderMode>
-		{
-			public:
-				EncoderMode() { _val = FIXED_SPEED; }
-				EncoderMode(const std::string& val){*this = val;}
-				EncoderMode(const EncoderMode& val){*this = val;}
-				virtual void operator = (const enum nEncoderMode& v){_val = v;}
-				virtual void operator = (const std::string& val){
-					if (val.compare(ENCODER_MODE_FIXED) == 0)
-						_val = FIXED_SPEED;
-					else if (val.compare(ENCODER_MODE_INTERNAL) == 0)
-						_val = INTERNAL_ENCODER;
-					else if (val.compare(ENCODER_MODE_EXTERNAL) == 0)
-						_val = EXTERNAL_ENCODER;
-				}
-				std::string toString() const {
-					switch (_val) {
-						case FIXED_SPEED:		return ENCODER_MODE_FIXED;
-						case INTERNAL_ENCODER:	return ENCODER_MODE_INTERNAL;
-						case EXTERNAL_ENCODER:	return ENCODER_MODE_EXTERNAL;
-					}
-					return "";
-				}
-
-				virtual std::vector<std::string> stringList() const
-				{
-					std::vector<std::string> list;
-					list.push_back(ENCODER_MODE_FIXED);
-					list.push_back(ENCODER_MODE_INTERNAL);
-					list.push_back(ENCODER_MODE_EXTERNAL);
-					return list;
-				}
-		};
 
 		enum nPhotocell{
 			PHCELL_A = 0,	//Photocell of column A
