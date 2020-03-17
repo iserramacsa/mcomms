@@ -121,10 +121,71 @@ std::vector<std::string> JetMessagesGroup::messages()
 	return messages;
 }
 
+void JetMessagesGroup::setMessages(const std::vector<std::string> &messages)
+{
+	std::string current = currentMessageName();
+	_messages.clear();
+	for (unsigned int i = 0; i < messages.size(); i++) {
+		JetMessage message(messages.at(i), i);
+		_messages.push_back(message);
+		if (current.length()){
+			if (message.name() == current) {
+				setCurrentMessage(message.name(), message.number());
+			}
+		}
+	}
+}
+
+JetMessage JetMessagesGroup::message(const std::string &name)
+{
+	for (auto& message : _messages) {
+		if (message.name() == name) {
+			return message;
+		}
+	}
+	return JetMessage(name);
+}
+
+bool JetMessagesGroup::equal(const JetMessagesGroup &other) const
+{
+	bool equal = false;
+
+	if (_name == other._name) {
+		if (_messages.size() == other._messages.size()) {
+			for (unsigned int i = 0; i < _messages.size(); i++) {
+				equal = (_messages.at(i) == other._messages.at(i));
+				if (!equal) {
+					break;
+				}
+			}
+			if (equal) {
+				if (_currentMessage != nullptr && other._currentMessage != nullptr) {
+					equal = (_currentMessage->name() == other._currentMessage->name());
+				}
+				else {
+					equal = (_currentMessage == nullptr && other._currentMessage == nullptr);
+				}
+			}
+		}
+	}
+
+	return equal;
+}
+
+void JetMessagesGroup::copy(const JetMessagesGroup &other)
+{
+	_messages.clear();
+	_messages = other._messages;
+	if(other._currentMessage != nullptr) {
+		setCurrentMessage(other._currentMessage->name(), other._currentMessage->number());
+	}
+}
+
 /**************  Jet Message Manager  **************/
 JetMessagesManager::JetMessagesManager()
 {
 	_currentGroup = nullptr;
+	_messageGroups.push_back(JetMessagesGroup(""));
 }
 
 JetMessagesManager::JetMessagesManager(const JetMessagesManager& other)
@@ -136,6 +197,7 @@ JetMessagesManager::JetMessagesManager(const JetMessagesManager& other)
 JetMessagesManager::~JetMessagesManager()
 {
 	_currentGroup = nullptr;
+	_messageGroups.clear();
 }
 
 std::string JetMessagesManager::currentGroup() const
@@ -182,12 +244,34 @@ void JetMessagesManager::setCurrentMessage(const std::string& name, unsigned int
 
 bool JetMessagesManager::equal(const JetMessagesManager &other) const
 {
-	return false;
+	bool equal = false;
+	if (_messageGroups.size() == other._messageGroups.size()) {
+		for (unsigned int i = 0; i < _messageGroups.size(); i++) {
+			equal = (_messageGroups.at(i) == other._messageGroups.at(i));
+			if (!equal) {
+				break;
+			}
+		}
+		if (equal) {
+			if (_currentGroup != nullptr && other._currentGroup != nullptr) {
+				equal = (_currentGroup->name() == other._currentGroup->name());
+			}
+			else {
+				equal = (_currentGroup == nullptr && other._currentGroup == nullptr);
+			}
+		}
+	}
+	return equal;
 }
 
 void JetMessagesManager::copy(const JetMessagesManager &other)
 {
-	return;
+	_currentGroup = nullptr;
+	_messageGroups.clear();
+	_messageGroups = other._messageGroups;
+	if (other._currentGroup != nullptr) {
+		setCurrentGroup(other._currentGroup->name());
+	}
 }
 
 

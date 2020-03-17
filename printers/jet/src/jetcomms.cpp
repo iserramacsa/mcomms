@@ -3,13 +3,58 @@
 #include <sstream>
 #include <algorithm>
 
-#define IP_ADDRESS_MIN_LENGTH	 7
-#define IP_ADDRESS_MAX_LENGTH	15
-#define IP_ADDRESS_NUM_DOTS		 3
-#define MAC_ADDRESS_LENGTH		17
-#define MAC_ADDRESS_NUM_COLONS	 5
-
 using namespace Macsa::Printers;
+
+// ========== IP Address  ===========//
+IpAddress::IpAddress(const std::string& address, IpVersion version) :
+	_address(address),
+	_version(version())
+{
+	_netmask = "";
+}
+
+IpAddress::IpAddress(const IpAddress &other) :
+	_address(other._address),
+	_version(other._version())
+{
+	_netmask = other._netmask;
+}
+
+std::string IpAddress::address() const
+{
+	return _address;
+}
+
+IpVersion IpAddress::version() const
+{
+	return _version;
+}
+
+std::string IpAddress::netmask() const
+{
+	return _netmask;
+}
+
+void IpAddress::setNetmask(const std::string &netmask)
+{
+	_netmask = netmask;
+}
+
+void IpAddress::copy(const IpAddress &other)
+{
+	if (_address == other._address && _version == other._version){
+		_netmask = other._netmask;
+	}
+}
+
+bool IpAddress::compare(const IpAddress &other) const
+{
+	if (_address != other._address)		{ return false;}
+	if (_version() != other._version()) { return false;}
+	if (_netmask != other._netmask)		{ return false;}
+
+	return true;
+}
 
 // ========== Ethernet  ===========//
 Ethernet::Ethernet()
@@ -23,217 +68,121 @@ Ethernet::Ethernet(const Ethernet &eth)
 Ethernet::~Ethernet()
 {}
 
-bool Ethernet::setAddress(const std::string &addr)
+std::string Ethernet::id() const
 {
-	if(validIp(addr)){
-		_address = addr;
-		return true;
-	}
-	return false;
+	return _id;
 }
 
-bool Ethernet::setAddress(const uint32_t &addr)
+void Ethernet::setId(const std::string &id)
 {
-	std::string ip = ipFromU32(addr);
-	if(validIp(ip)){
-		_address = ip;
-		return true;
-	}
-	return false;
+	_id = id;
 }
 
-bool Ethernet::setGateway(const uint32_t &gw)
+void Ethernet::setAddress(const std::string &addr, IpVersion version, std::string netmask)
 {
-	std::string gateway = ipFromU32(gw);
-	if(validIp(gateway)){
-		_gateway = gateway;
-		return true;
-	}
-	return false;
-}
-
-bool Ethernet::setGateway(const std::string &gw)
-{
-	if(validIp(gw)){
-		_gateway = gw;
-		return true;
-	}
-	return false;
-}
-
-bool Ethernet::setNetmask(const std::string &mask)
-{
-	if(validIp(mask)){
-		_mask = mask;
-		return true;
-	}
-	return false;
-}
-
-bool Ethernet::setNetmask(const uint32_t &mask)
-{
-	std::string netmask = ipFromU32(mask);
-	if(validIp(netmask)){
-		_mask = netmask;
-		return true;
-	}
-	return false;
-}
-
-bool Ethernet::setMacAddress(const std::string &mac)
-{
-	if(validMacAddress(mac)){
-		_mac = mac;
-		return true;
-	}
-	return false;
-}
-
-void Ethernet::setDhcp(bool enable)
-{
-	_dhcp = enable;
-}
-
-void Ethernet::setHostname(const std::string &hostname)
-{
-	_hostname = hostname;
-}
-
-void Ethernet::setTcpPort(uint16_t port)
-{
-	_tcpPort = port;
-}
-
-std::string Ethernet::address() const
-{
-	return _address;
-}
-
-std::string Ethernet::macAddress() const
-{
-	return _mac;
-}
-
-std::string Ethernet::gateway() const
-{
-	return _gateway;
-}
-
-std::string Ethernet::netmask() const
-{
-	return _mask;
-}
-
-bool Ethernet::dhcp() const
-{
-	return _dhcp;
-}
-
-std::string Ethernet::hostname() const
-{
-	return _hostname;
-}
-
-uint16_t Ethernet::tcpPort() const
-{
-	return _tcpPort;
-}
-
-bool Ethernet::validIp(const std::string &ip) const
-{
-	//Pattern 999.999.999.999
-	if(isInRange(static_cast<int>(ip.length()), IP_ADDRESS_MIN_LENGTH, IP_ADDRESS_MAX_LENGTH)) {
-		int ndots = 0;
-		size_t dot = ip.find_first_of(".");
-		while (dot != ip.npos){
-			size_t next = ip.find_first_of(".", dot + 1);
-			if(next != ip.npos){
-				next = next - dot;
-			}
-
-			int val = std::atoi(ip.substr(dot + 1, next).c_str());
-			if (!isInRange(val, 0, 255)) {
-				break;
-			}
-
-			ndots++;
-			dot = ip.find_first_of(".", dot + 1);
+	bool exist = false;
+	for (auto & address : _addresses){
+		if (address.address() == addr) {
+			address.setNetmask(netmask);
+			exist = true;
+			break;
 		}
-		return ndots == IP_ADDRESS_NUM_DOTS;
 	}
-	return false;
+
+	if(!exist) {
+		IpAddress address(addr, version);
+		address.setNetmask(netmask);
+		_addresses.push_back(address);
+	}
 }
 
-std::string Ethernet::ipFromU32(const uint32_t &ip) const
+void Ethernet::setGateway(const std::string &gw, IpVersion version)
 {
-	std::stringstream ss;
-
-	ss << ((ip >> 24) & 0x000000FF) << ".";
-	ss << ((ip >> 16) & 0x000000FF) << ".";
-	ss << ((ip >>  8) & 0x000000FF) << ".";
-	ss << ( ip        & 0x000000FF);
-
-	return ss.str();
-}
-
-bool Ethernet::validMacAddress(const std::string &mac) const
-{
-	//Pattern 00:00:00:00:00:00
-	if(mac.length() == MAC_ADDRESS_LENGTH) {
-		int ncolons = 0;
-		size_t colon = mac.find_first_of(":");
-		bool invalid = false;
-		while (colon != mac.npos){
-			std::string val = mac.substr(static_cast<size_t>(ncolons* 3), 2);
-			invalid |= ((isInRange(val.at(0), '0', '9') || isInRange(val.at(0), 'A', 'F') || isInRange(val.at(0), 'a', 'f')) == false);
-			invalid |= ((isInRange(val.at(1), '0', '9') || isInRange(val.at(1), 'A', 'F') || isInRange(val.at(1), 'a', 'f')) == false);
-
-			if (invalid) {
-				break;
-			}
-
-			ncolons++;
-			colon = mac.find_first_of(":", (colon + 1));
+	bool exist = false;
+	for (auto & gateway : _gateways){
+		if (gateway.address() == gw) {
+			exist = true;
+			break;
 		}
-		return ncolons == MAC_ADDRESS_NUM_COLONS;
 	}
 
-	return false;
+	if(!exist) {
+		IpAddress gateway(gw, version);
+		_gateways.push_back(gateway);
+	}
 }
 
-bool Ethernet::isInRange(int val, int min, int max) const
+void Ethernet::setNetmask(const std::string &addr, const std::string &mask)
 {
-	if (min > max){
-		int tmp = max;
-		max = min;
-		min = tmp;
+	for (auto & address : _addresses){
+		if (address.address() == addr) {
+			address.setNetmask(mask);
+			break;
+		}
+	}
+}
+
+void Ethernet::setDNS(const std::string &addr, IpVersion version)
+{
+	bool exist = false;
+	for (auto & dns : _dns){
+		if (dns.address() == addr) {
+			exist = true;
+			break;
+		}
 	}
 
-	return ((val >= min) && (val <= max));
+	if(!exist) {
+		IpAddress dns(addr, version);
+		_dns.push_back(dns);
+	}
+}
+
+std::vector<IpAddress> Ethernet::addresses() const
+{
+	return _addresses;
+}
+
+std::vector<IpAddress> Ethernet::gateways() const
+{
+	return _gateways;
+}
+
+std::vector<IpAddress> Ethernet::dns() const
+{
+	return _dns;
+}
+
+
+bool Ethernet::connected() const
+{
+	return _connected;
+}
+
+void Ethernet::setConnected(bool connected)
+{
+	_connected = connected;
 }
 
 void Ethernet::copy(const Ethernet &other)
 {
-	_address  = other._address;
-	_mask     = other._mask;
-	_gateway  = other._gateway;
-	_mac      = other._mac;
-	_dhcp     = other._dhcp;
-	_hostname = other._hostname;
-	_tcpPort  = other._tcpPort ;
+	_addresses.clear();
+	_gateways.clear();
+	_dns.clear();
+
+	_addresses = other._addresses;
+	_gateways  = other._gateways;
+	_dns  = other._dns;
+	_connected = other._connected;
 }
 
 bool Ethernet::compare(const Ethernet &other) const
 {
-	if (_address.compare(other._address) != 0)   { return false; }
-	if (_mask.compare(other._mask) != 0)         { return false; }
-	if (_gateway.compare(other._gateway) != 0)   { return false; }
-	if (_mac.compare(other._mac) != 0)           { return false; }
-	if (_hostname.compare(other._hostname) != 0) { return false; }
-	if (_dhcp != other._dhcp)       { return false; }
-	if (_tcpPort != other._tcpPort) { return false; }
+	if (_addresses != other._addresses) { return false; }
+	if (_gateways != other._gateways) { return false; }
+	if (_dns != other._dns) { return false; }
 
-	return true;
+	return (_connected == other._connected);
 }
 
 // ========== PrinterComms  ===========//
@@ -242,83 +191,43 @@ int JetComms::ethernetIfaces() const
 	return static_cast<int>(_ifaces.size());
 }
 
-Ethernet *JetComms::ethernetIface(int iface)
+Ethernet *JetComms::ethernetIface(const std::string &iface)
 {
-	Ethernet * eth = nullptr;
-	if (iface >= 0 && static_cast<unsigned long>(iface) < _ifaces.size())
-	{
-		eth = &_ifaces[static_cast<unsigned long>(iface)];
-	}
-	return eth;
-}
-
-const Ethernet *JetComms::ethernetIface(int iface) const
-{
-	if (iface >= 0 && static_cast<unsigned long>(iface) < _ifaces.size())
-	{
-		return &_ifaces[static_cast<unsigned long>(iface)];
+	std::vector<Ethernet>::iterator it = getEthAdapter(iface);
+	if (it != _ifaces.end()) {
+		return &(*it);
 	}
 	return nullptr;
 }
 
-int JetComms::setEthernetIface(const std::string &addr, const std::string &mask, const std::string &gw, const std::string hw, uint16_t tcpPort)
+const Ethernet *JetComms::ethernetIface(const std::string& iface) const
 {
-	std::vector<Ethernet>::iterator it = getEthAdapter(addr, hw);
-
-	if (it == _ifaces.end()){
-		Ethernet eth;
-		eth.setAddress(addr);
-		eth.setGateway(gw);
-		eth.setNetmask(mask);
-		eth.setMacAddress(hw);
-		eth.setTcpPort(tcpPort);
-
-		_ifaces.push_back(eth);
-		return 0;
+	std::vector<Ethernet>::const_iterator it = getEthAdapter(iface);
+	if (it != _ifaces.end()) {
+		return &(*it);
 	}
-	else {
-		//TODO: review
-		it->setNetmask(mask);
-		it->setGateway(gw);
-		it->setTcpPort(tcpPort);
-		return 0;
-	}
+	return nullptr;
 }
 
-int JetComms::setEthernetIface(const Ethernet *ethAdapter)
+void JetComms::setEthernetIface(const Ethernet *ethAdapter)
 {
 	if (ethAdapter != nullptr) {
-		std::vector<Ethernet>::iterator it = getEthAdapter(ethAdapter->address(), ethAdapter->macAddress());
+		std::vector<Ethernet>::iterator it = getEthAdapter(ethAdapter->id());
 
 		if (it == _ifaces.end()){
 			Ethernet eth = (*ethAdapter);
-
 			_ifaces.push_back(eth);
-			return static_cast<int>(_ifaces.size() - 1);
 		}
 		else {
 			*it = *ethAdapter;
-			return (it - _ifaces.begin());
 		}
 	}
-
-	return -1;
 
 }
 
 bool JetComms::compare(const JetComms &other) const
 {
-	if (_ifaces.size() != _ifaces.size()) {
-		return false;
-	}
-
-	for (uint eth = 0; eth < _ifaces.size(); ++eth) {
-		if (_ifaces.at(eth) != other._ifaces.at(eth)) {
-			return false;
-		}
-	}
-
-	return true;
+	return (_ifaces == other._ifaces);
 }
 
 void JetComms::copy(const JetComms &other)
@@ -327,13 +236,24 @@ void JetComms::copy(const JetComms &other)
 	_ifaces = other._ifaces;
 }
 
-std::vector<Ethernet>::iterator JetComms::getEthAdapter(const std::string &addr, const std::string &mac)
+std::vector<Ethernet>::iterator JetComms::getEthAdapter(const std::string &id)
 {
 	for (std::vector<Ethernet>::iterator it = _ifaces.begin(); it != _ifaces.end(); it++) {
-		if ((it->address().compare(addr) == 0) || (it->macAddress().compare(mac) == 0)) {
+		if (it->id().compare(id) == 0) {
 			return it;
 		}
 	}
 
 	return _ifaces.end();
 }
+std::vector<Ethernet>::const_iterator JetComms::getEthAdapter(const std::string &id) const
+{
+	for (std::vector<Ethernet>::const_iterator it = _ifaces.begin(); it != _ifaces.end(); it++) {
+		if (it->id().compare(id) == 0) {
+			return it;
+		}
+	}
+
+	return _ifaces.end();
+}
+

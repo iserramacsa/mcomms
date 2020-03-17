@@ -23,6 +23,7 @@ namespace Macsa {
 				void parsePrintheadsTemperature(const tinyxml2::XMLElement* ePrintheads);
 				void parseInkLevels(const tinyxml2::XMLElement* eTanks);
 				void parseCurrentMessage(const tinyxml2::XMLElement* eCmd);
+				void parseNetworkStatus(const tinyxml2::XMLElement* eNetwork);
 		};
 
 		/**

@@ -2,72 +2,83 @@
 #define MACSA_PRINTER_JET_COMMS_H
 
 #include "printer/printer.h"
-#include "printer/board.h"
+#include "jet/datatypes.h"
 
 #define DEFAULT_TIJ_TCP_PORT	9991
 
 namespace Macsa {
 	namespace Printers {
+
+		class IpAddress {
+			public:
+				IpAddress(const std::string& address, IpVersion version = IP_V4);
+				IpAddress(const IpAddress& other);
+
+				std::string address() const;
+				IpVersion version() const;
+
+				std::string netmask() const;
+				void setNetmask(const std::string &netmask);
+
+				inline bool operator == (const IpAddress& other) const {return compare(other);}
+				inline bool operator != (const IpAddress& other) const {return !compare(other);}
+				inline void operator = (const IpAddress& other) {return copy(other);}
+
+			private:
+				const std::string _address;
+				const IpVersion _version;
+				std::string _netmask;
+
+				void copy(const IpAddress& other);
+				bool compare(const IpAddress& other) const;
+		};
+
 		class Ethernet
 		{
 			public:
 				Ethernet();
 				Ethernet(const Ethernet& eth);
 				~Ethernet();
-				bool setAddress(const std::string& addr);
-				bool setAddress(const uint32_t& addr);
-				bool setGateway(const uint32_t& gw);
-				bool setGateway(const std::string& gw);
-				bool setNetmask(const std::string& mask);
-				bool setNetmask(const uint32_t& mask);
-				bool setMacAddress(const std::string& mac);
 
-				void setDhcp(bool enable);
-				void setHostname(const std::string& hostname);
-				void setTcpPort(uint16_t port);
+				std::string id() const;
+				void setId(const std::string &id);
 
+				void setAddress(const std::string& addr, IpVersion version, std::string netmask);
+				void setGateway(const std::string& gw, IpVersion version);
+				void setNetmask(const std::string& addr, const std::string& mask);
+				void setDNS(const std::string& gw, IpVersion version);
 
-				std::string address() const;
-				std::string macAddress() const;
-				std::string gateway() const;
-				std::string netmask() const;
-				bool dhcp() const;
-				std::string hostname() const;
-				uint16_t tcpPort() const;
+				std::vector<IpAddress> addresses() const;
+				std::vector<IpAddress> gateways() const;
+				std::vector<IpAddress> dns() const;
+
+				bool connected() const;
+				void setConnected(bool connected);
 
 				inline bool operator == (const Ethernet& other) const {return compare(other);}
 				inline bool operator != (const Ethernet& other) const {return !compare(other);}
 				inline void operator = (const Ethernet& other) {return copy(other);}
 
 			private:
-				std::string _address;
-				std::string _mask;
-				std::string _gateway;
-				std::string _mac;
-				bool _dhcp;
-				//??
-				std::string _hostname;
-				uint16_t _tcpPort;
-
-
-				bool validIp(const std::string& ip) const;
-				std::string ipFromU32(const uint32_t& ip) const;
-				bool validMacAddress(const std::string& mac) const;
-				inline bool isInRange(int val, int min, int max) const;
+				std::string _id;
+				std::vector<IpAddress> _addresses;
+				std::vector<IpAddress> _dns;
+				std::vector<IpAddress> _gateways;
+				bool _connected;
 
 				void copy(const Ethernet& other);
 				bool compare(const Ethernet& other) const;
+				bool compare(const std::vector<IpAddress>& v1, const std::vector<IpAddress>& v2) const;
 
 		};
 
 		class JetComms : public PrinterComms{
 			public:
 				int ethernetIfaces() const;
-				Ethernet * ethernetIface(int iface);
-				const Ethernet * ethernetIface(int iface) const;
+				Ethernet * ethernetIface(const std::string& iface);
+				const Ethernet * ethernetIface(const std::string& iface) const;
 
-				int setEthernetIface(const std::string& addr, const std::string& mask, const std::string& gw, const std::string hw = "", uint16_t tcpPort = DEFAULT_TIJ_TCP_PORT);
-				int setEthernetIface(const Ethernet * ethAdapter);
+				void setEthernetIface(const Ethernet * ethAdapter);
 
 				inline bool operator == (const JetComms& other) const {return  compare(other);}
 				inline bool operator != (const JetComms& other) const {return !compare(other);}
@@ -78,7 +89,8 @@ namespace Macsa {
 
 				bool compare(const JetComms& other) const;
 				void copy (const JetComms& other);
-				std::vector<Ethernet>::iterator getEthAdapter(const std::string & addr, const std::string & mac);
+				std::vector<Ethernet>::iterator getEthAdapter(const std::string & id);
+				std::vector<Ethernet>::const_iterator getEthAdapter(const std::string & id) const;
 		};
 	}
 }

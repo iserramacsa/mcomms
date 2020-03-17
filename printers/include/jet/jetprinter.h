@@ -5,6 +5,7 @@
 #include "printhead.h"
 #include "messagemanager.h"
 #include "jetcomms.h"
+#include <mutex>
 #include <map>
 
 namespace Macsa {

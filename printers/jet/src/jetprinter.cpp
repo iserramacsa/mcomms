@@ -6,13 +6,6 @@
 using namespace Macsa;
 using namespace Macsa::Printers;
 
-#if __cplusplus >= 201103L
-		using itBoard  = std::vector<Printers::Board>::iterator;
-		using citBoard = std::vector<Printers::Board>::const_iterator;
-#else
-		typedef std::vector<Printers::Board>::iterator			itBoard;
-		typedef std::vector<Printers::Board>::const_iterator	citBoard;
-#endif
 
 
 int JetPrinter::libraryVersionMajor()	  { return JET_LIBRARY_VERSION_MAJOR;}

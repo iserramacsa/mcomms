@@ -56,9 +56,30 @@ void JetGetStatus::parseInkLevels(const XMLElement *eTanks)
 void JetGetStatus::parseCurrentMessage(const XMLElement *eCmd)
 {
 	if (eCmd) {
-		const XMLElement* eMsgNum = eCmd->FirstChildElement(JET_MESSAGE_NUMBER);
-		const XMLElement* eMsgName = eCmd->FirstChildElement(JET_MESSAGE_NAME);
-		Printers::JetMessagesManager& manager = _printer.messageManager();
+		unsigned int num = getUnsignedFromChildNode(eCmd, JET_MESSAGE_NUMBER);
+		std::string filename = getTextFromChildNode(eCmd, JET_MESSAGE_NAME);
+		if (filename.length()){
+			_printer.messageManager().setCurrentMessage(filename, num);
+		}
+	}
+}
+
+void JetGetStatus::parseNetworkStatus(const XMLElement *eNetwork)
+{
+	if (eNetwork) {
+		const XMLElement* eAdapter = eNetwork->FirstChildElement(JET_NETWORK_ADAPTER);
+		while(eAdapter) {
+			const XMLAttribute* eIfaceID = eAdapter->FindAttribute(ID_ATTRIBUTE);
+			if (eIfaceID){
+				std::string id = (eIfaceID->Value() ? eIfaceID->Value() : "");
+				Printers::JetComms* comms =  dynamic_cast<Printers::JetComms*>(_printer.comms());
+				if (comms) {
+					Printers::Ethernet* eth = comms->ethernetIface(id);
+					eth->setConnected(eAdapter->BoolAttribute(CONNECTED_ATTRIBUTE, false));
+				}
+			}
+			eAdapter = eAdapter->NextSiblingElement(JET_NETWORK_ADAPTER);
+		}
 	}
 }
 
@@ -71,6 +92,8 @@ bool JetGetStatus::parseResponse(const XMLElement *xml)
 		parseInkLevels(xml->FirstChildElement(JET_INK_TANKS_LIST));
 		_printer.setPrintStatus(getBoolFromChildNode(xml, JET_PRINT_STATUS, _printer.printStatus()));
 		_printer.setPause(getBoolFromChildNode(xml, JET_PRINT_PAUSE, _printer.paused()));
+		parseCurrentMessage(xml);
+		parseNetworkStatus(xml->FirstChildElement(JET_NETWORKS_LIST));
 
 	}
 	return valid;

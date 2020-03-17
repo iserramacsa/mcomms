@@ -27,6 +27,8 @@
 #define TRIGGER_CANCEL_PRINT	"Trigger cancels current print and starts new one"
 #define TRIGGER_SKIPPED_PRINT	"During a print the received triggers will be ignored"
 
+#define IPv4 "IPv4"
+#define IPv6 "IPv6"
 
 #define PRINTER_DIR_RL		"Right To Left"
 #define PRINTER_DIR_LR		"Left To Right"
@@ -229,6 +231,38 @@ namespace Macsa {
 				}
 		};
 
+		enum nIpVersion{
+			IP_V4 = 0,
+			IP_V6
+		};
+		class IpVersion : public Utils::SmartEnum<nIpVersion>
+		{
+			public:
+				IpVersion() : SmartEnum() {_val = IP_V4;}
+				IpVersion(nIpVersion n) : SmartEnum() {_val = n;}
+				virtual ~IpVersion(){}
+				virtual void operator = (const enum nIpVersion& v){_val = v;}
+				virtual void operator = (const std::string& val){
+					if (val.compare(IPv4) == 0)
+						_val = IP_V4;
+					else if (val.compare(IPv6) == 0)
+						_val = IP_V6;
+				}
+				virtual std::string toString() const {
+					switch (_val) {
+						case IP_V4: return IPv4;
+						case IP_V6: return IPv6;
+					}
+					return "";
+				}
+				virtual std::vector<std::string> stringList() const
+				{
+					std::vector<std::string> list;
+					list.push_back(IPv4);
+					list.push_back(IPv6);
+					return list;
+				}
+		};
 
 
 		enum nPrintDirection{
