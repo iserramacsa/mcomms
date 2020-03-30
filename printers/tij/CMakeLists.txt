@@ -38,12 +38,15 @@ add_definitions(-DTIJ_LIBRARY_VERSION_STR="${TIJ_LIBRARY_VERSION}")
 
 ####################  SOURCES AND HEADERS  #############################
 
+set(SOURCES)
+set(HEADERS)
+
 set(PRINTERS_SOURCES)
 set(PRINTERS_HEADERS)
 set(PRINTERS_INCLUDES)
 
-set(PROTOCOL_SOURCES)
-set(PROTOCOL_HEADERS)
+set(TIJ_PROTOCOL_SOURCES)
+set(TIJ_PROTOCOL_HEADERS)
 
 set(TIJ_SOURCES)
 set(TIJ_HEADERS)
@@ -51,6 +54,7 @@ set(TIJ_HEADERS)
 set(LABELS_SOURCES)
 set(LABELS_HEADERS)
 
+set(TIJ true)
 ## Enable labels
 set(NISX_LABELS	true)
 
@@ -58,6 +62,11 @@ if (${ENABLE_TESTS})
 	set(SRC_TEST)
 	set(HDRS_TEST)
 endif()
+
+set (UTILS_SOURCES
+	${PROJECT_SOURCE_DIR}/../utils/base64/base64.c
+)
+set (UTILS_HEADERS)
 
 SET (PRINTERS_INCLUDES
 	${PROJECT_SOURCE_DIR}/src
@@ -70,12 +79,16 @@ SET (PRINTERS_INCLUDES
 
 include_directories(${PRINTERS_INCLUDES})
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/src         ${PROJECT_BINARY_DIR}/printers/src)
-add_subdirectory(${PROJECT_SOURCE_DIR}/include     ${PROJECT_BINARY_DIR}/printers/include)
-add_subdirectory(${PROJECT_SOURCE_DIR}/mprotocol   ${PROJECT_BINARY_DIR}/mprotocol)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src         ${PROJECT_BINARY_DIR}/tij/printers/src)
+add_subdirectory(${PROJECT_SOURCE_DIR}/include     ${PROJECT_BINARY_DIR}/tij/printers/include)
+add_subdirectory(${PROJECT_SOURCE_DIR}/mprotocol   ${PROJECT_BINARY_DIR}/tij/mprotocol)
+add_subdirectory(${PROJECT_SOURCE_DIR}/xmlprotocol ${PROJECT_BINARY_DIR}/tij/xmlprotocol)
 add_subdirectory(${PROJECT_SOURCE_DIR}/tij/src     ${PROJECT_BINARY_DIR}/tij/src)
 add_subdirectory(${PROJECT_SOURCE_DIR}/tij/include ${PROJECT_BINARY_DIR}/tij/include)
-add_subdirectory(${PROJECT_SOURCE_DIR}/labels      ${PROJECT_BINARY_DIR}/labels)
+add_subdirectory(${PROJECT_SOURCE_DIR}/labels      ${PROJECT_BINARY_DIR}/tij/labels)
+
+set(SOURCES ${SOURCES} ${TIJ_SOURCES} ${PRINTERS_SOURCES} ${TIJ_PROTOCOL_SOURCES} ${LABELS_SOURCES} ${UTILS_SOURCES})
+set(HEADERS ${HEADERS} ${TIJ_HEADERS} ${PRINTERS_HEADERS} ${TIJ_PROTOCOL_HEADERS} ${LABELS_HEADERS} ${UTILS_HEADERS})
 
 if (${ENABLE_TESTS})
 	set(SRC_TEST ${SRC_TEST})
@@ -91,11 +104,7 @@ if (${BUILD_SHARED_LIBS} OR ${BUILD_STATIC_LIBS})
 	set(SOVERSION ${TIJ_LIBRARY_VERSION})
 
 	if (${BUILD_SHARED_LIBS})
-		add_library(${PROJECT_NAME} SHARED
-							${TIJ_SOURCES} ${TIJ_HEADERS}
-							${PRINTERS_SOURCES} ${PRINTERS_HEADERS}
-							${PROTOCOL_SOURCES} ${PROTOCOL_HEADERS}
-							${LABELS_SOURCES} ${LABELS_HEADERS})
+		add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
 
 		set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${SOVERSION})
 		target_link_libraries(${PROJECT_NAME} ${EXTERNAL_LIBS})
@@ -104,11 +113,7 @@ if (${BUILD_SHARED_LIBS} OR ${BUILD_STATIC_LIBS})
 
 
 	if (${BUILD_STATIC_LIBS})
-		add_library(${PROJECT_NAME}-static STATIC
-						${TIJ_SOURCES} ${TIJ_HEADERS}
-						${PRINTERS_SOURCES} ${PRINTERS_HEADERS}
-						${PROTOCOL_SOURCES} ${PROTOCOL_HEADERS}
-						${LABELS_SOURCES} ${LABELS_HEADERS})
+		add_library(${PROJECT_NAME}-static STATIC ${SOURCES} ${HEADERS})
 		set_target_properties(${PROJECT_NAME}-static PROPERTIES SOVERSION ${SOVERSION} OUTPUT_NAME ${PROJECT_NAME})
 		target_link_libraries(${PROJECT_NAME}-static ${EXTERNAL_LIBS})
 		install(TARGETS ${PROJECT_NAME}-static LIBRARY DESTINATION ${LIB_PREFIX}/lib)

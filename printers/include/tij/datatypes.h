@@ -22,6 +22,9 @@
 #define INPUT_MODE_EDGE		"Edge"
 #define INPUT_MODE_STATE	"State"
 
+#define BOARD_TYPE_PRINTHEAD	"PH"
+#define BOARD_TYPE_SIGNAL		"SIGNAL"
+
 #define OUTPUT_TYPE_STATE		"State"
 #define OUTPUT_TYPE_ONPULSE		"OnPulse"
 #define OUTPUT_TYPE_OFFPULSE	"OffPulse"

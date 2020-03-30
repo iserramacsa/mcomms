@@ -14,9 +14,17 @@ namespace Macsa {
 				virtual ~JetConfigCommand();
 
 			protected:
-				void generalConfigToXml(const Printers::JetPrinter& printer, tinyxml2::XMLElement **parent);
-				void datetimeToXml(const Printers::JetPrinter& printer, tinyxml2::XMLElement **parent);
+				void printheadToXml(const Printers::JetPrinter& printer, tinyxml2::XMLElement **parent);
+				void printerCommsToXml(const Printers::JetComms& comms, tinyxml2::XMLElement **parent);
+				void printheadFromXml( const tinyxml2::XMLElement *ePrinthead, Printers::JetPrinter& printer);
+				void printerCommsFromXml(const tinyxml2::XMLElement *eComms, Printers::JetComms& comms);
 
+			private:
+				tinyxml2::XMLElement* insertPrintheadProperty(const std::string &propetyName, const std::string &value, tinyxml2::XMLElement **parent);
+				tinyxml2::XMLElement* insertPrintheadProperty(const std::string &propetyName, unsigned int value, tinyxml2::XMLElement **parent);
+				tinyxml2::XMLElement* insertPrintheadProperty(const std::string &propetyName, bool value, tinyxml2::XMLElement **parent);
+				void networkApaterToXml(const Printers::Ethernet& eth, tinyxml2::XMLElement **parent);
+				void networkAdapterFromXml(const tinyxml2::XMLElement* eEth, Printers::Ethernet& eth);
 		};
 	}
 }

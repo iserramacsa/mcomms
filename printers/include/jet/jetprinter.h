@@ -2,14 +2,20 @@
 #define MACSA_PRINTER_JET_PRINTER_H
 
 #include "printer/printer.h"
-#include "printhead.h"
-#include "messagemanager.h"
-#include "jetcomms.h"
+#include "jet/datatypes.h"
+#include "jet/printhead.h"
+#include "jet/messagemanager.h"
+#include "jet/jetcomms.h"
+#include "jet/jetio.h"
+#include "jet/jetboard.h"
+#include "jet/jetlog.h"
 #include <mutex>
 #include <map>
+#include <list>
 
 namespace Macsa {
 	namespace Printers {
+
 		class JetPrinter : public Printer {
 
 			public:
@@ -37,7 +43,14 @@ namespace Macsa {
 				virtual void setDateTime(const std::time_t& dateTime) override;
 				virtual void setDateTime(const std::string& formatedDatetime);
 
-				virtual void operator = (const JetPrinter& other){return copy(other);}
+				std::string getLibraryVersion(const std::string& library) const;
+				void clearLibrariesVersions();
+				void setLibrariesVersions(const std::map<std::string, std::string> &librariesVersions);
+				void setLibraryVersion(const std::string& library, const std::string& version);
+
+				std::vector<unsigned int> printheads() const;
+				JetPrinthead printhead(unsigned int id) const;
+				void setPrinthead(const JetPrinthead ph);
 
 				unsigned int printheadTemperature(unsigned int id);
 				void setPrintheadTemperature(unsigned int id, unsigned int temperature);
@@ -54,17 +67,56 @@ namespace Macsa {
 				JetMessagesManager& messageManager();
 				void setMessageManager(const JetMessagesManager& manager);
 
+				bool inputEnabled(const std::string &boardType, unsigned int boardNum, const std::string &inputId) const;
+				void setInputs(const std::string& boardType, unsigned int boardNum, const std::map<std::string, bool>& inputs);
+
+				JetBoard board(const std::string& boardType, unsigned int boardNum) const;
+				JetBoard board(JetBoardType boardType, unsigned int boardNum) const;
+				void setBoard(const JetBoard& board);
+
+				bool outputEnabled(const std::string& outputId) const;
+				void setOutputs(const std::vector<JetIO>& outputs);
+
+				PrintDirection printDir() const;
+				void setPrintDir(const PrintDirection &printDir);
+
+				unsigned int sscc() const;
+				void setSscc(unsigned int sscc);
+
+				bool bitmapInverted() const;
+				void setBitmapInverted(bool bmpInverted);
+
+				bool isInError() const;
+				void setIsInError(bool isInError);
+
+				void updateLogs(std::list<LogItem> logs);
+				std::list<LogItem> logs(time_t from, time_t to) const;
+				std::list<LogItem> logs() const ;
+
+				virtual void operator = (const JetPrinter& other){return copy(other);}
+				virtual bool operator == (const JetPrinter& other) const {return  equal(other);}
+				virtual bool operator != (const JetPrinter& other) const {return !equal(other);}
+
 			protected:
 				std::mutex* _mutex;
 				PrinterFiles _files;
 				JetComms	_comms;
+				std::map<std::string, std::string> _librariesVersions;
 				std::map<unsigned int, JetPrinthead> _printheads;
-				JetMessagesManager _messageManager;
 				std::map<unsigned int, unsigned int> _inkTanks;
-
+				std::vector<JetBoard> _boards;
+				std::vector<JetIO> _outputs;
+				std::list<LogItem> _logs;
+				JetMessagesManager _messageManager;
+				PrintDirection _printDir;
+				bool _bmpInverted;
 				bool _paused;
 				bool _printStatus;
+				bool _isInError;
+				unsigned int _sscc;
 
+				std::vector<JetBoard>::iterator getBoard(JetBoardType boardType, unsigned int boardNum);
+				std::vector<JetBoard>::const_iterator getBoard(JetBoardType boardType, unsigned int boardNum) const;
 				virtual bool equal(const Printer &other) const override;
 				virtual void copy (const JetPrinter& other);
 

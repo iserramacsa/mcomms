@@ -26,6 +26,7 @@ namespace Macsa{
 		class JetSetCounters : public JetCommand
 		{
 			public:
+				JetSetCounters(Printers::JetPrinter& printer, std::map<unsigned int, unsigned int> counters);
 				JetSetCounters(Printers::JetPrinter& printer);
 				virtual ~JetSetCounters();
 
@@ -33,6 +34,8 @@ namespace Macsa{
 				virtual bool parseResponse(const tinyxml2::XMLElement* xml);
 
 			protected:
+				std::map<unsigned int, unsigned int> _counters;
+
 				virtual void buildRequest();
 				virtual void buildResponse();
 		};

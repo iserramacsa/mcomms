@@ -61,6 +61,8 @@ namespace Macsa {
 		{
 			public:
 				SmartEnum(){}
+				SmartEnum(const std::string& val) {*this = val;}
+				SmartEnum(const N&  val) {*this = val;}
 				virtual ~SmartEnum(){}
 				inline N operator()() const {return _val;}
 				inline bool operator == (const N& val) const {return _val == val;}

@@ -4,10 +4,16 @@
 
 add_subdirectory(printer)
 add_subdirectory(xmlprotocol)
-add_subdirectory(tij)
-add_subdirectory(jet)
-add_subdirectory(mprotocol)
-add_subdirectory(jetprotocol)
+
+if (TIJ)
+	add_subdirectory(tij)
+	add_subdirectory(mprotocol)
+endif()
+if(JET)
+	add_subdirectory(jet)
+	add_subdirectory(jetprotocol)
+endif()
+
 add_subdirectory(nisx)
 
 set(SOURCES ${SOURCES}

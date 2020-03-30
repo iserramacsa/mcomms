@@ -11,9 +11,6 @@ namespace Macsa {
 				JetPrinthead(unsigned int id);
 				JetPrinthead(const JetPrinthead&);
 
-				inline bool operator == (const JetPrinthead& other) const {return equal(other);}
-				inline bool operator != (const JetPrinthead& other) const {return !equal(other);}
-
 				unsigned int id() const;
 
 				std::string ipAddress() const;
@@ -34,11 +31,62 @@ namespace Macsa {
 				unsigned int horizontalResolution() const;
 				void sethorizontalResolution(unsigned int hRes);
 
-				bool invertedBitmap() const;
-				void setInvertedBitmap(bool inverted);
-
 				unsigned int temperature() const;
 				void setTemperature(unsigned int temperature);
+
+				inline void operator = (const JetPrinthead& other) {return copy(other);}
+				inline bool operator == (const JetPrinthead& other) const {return equal(other);}
+				inline bool operator != (const JetPrinthead& other) const {return !equal(other);}
+
+				const Encoder& encoder() const;
+				Encoder& encoder();
+				void setEncoder(const Encoder &encoder);
+
+				bool printingList() const;
+				void setPrintingList(bool printingList);
+
+				bool fifo() const;
+				void setFifo(bool fifo);
+
+				bool delayInPoints() const;
+				void setDelayInPoints(bool delayInPoints);
+
+				bool sendImageAfterPrint() const;
+				void setSendImageAfterPrint(bool sendImageAfterPrint);
+
+				bool stbIncrementsSSCC() const;
+				void setStbIncrementsSSCC(bool stbIncrementsSSCC);
+
+				bool stbResetPrintingList() const;
+				void setStbResetPrintingList(bool stbResetPrintingList);
+
+				bool optimizeBarcode() const;
+				void setOptimizeBarcode(bool optimizeBarcode);
+
+				int maxPrintTime() const;
+				void setMaxPrintTime(int maxPrintTime);
+
+				int uvLampTime() const;
+				void setUvLampTime(int uvLampTime);
+
+				bool uvLampControl() const;
+				void setUvLampControl(bool uvLampControl);
+
+				int xrOffset() const;
+				void setXrOffset(int xrOffset);
+
+				int cellFilter() const;
+				void setCellFilter(int cellFilter);
+
+				OverlappingMode overlappingMode() const;
+				void setOverlappingMode(const OverlappingMode &overlappingMode);
+				void setOverlappingMode(const nOverlappingMode &overlappingMode);
+				void setOverlappingMode(const std::string &overlappingMode);
+
+				TriggerMode printMode() const;
+				void setPrintMode(const TriggerMode &printMode);
+				void setPrintMode(const nTriggerMode &printMode);
+				void setPrintMode(const std::string &printMode);
 
 			protected:
 				//std::mutex* _mutex;
@@ -50,7 +98,6 @@ namespace Macsa {
 				double _printDelay;
 				unsigned int _temperature;
 				unsigned int _hres;
-				bool _inverted;
 				bool _printingList;
 				bool _fifo;
 				bool _delayInPoints;
@@ -58,13 +105,15 @@ namespace Macsa {
 				bool _stbIncrementsSSCC;
 				bool _stbResetPrintingList;
 				bool _optimizeBarcode;
-				int _maxPrintTime;
-				Encoder _encoder;
-				int _uvLampTime;
 				bool _uvLampControl;
+				int _maxPrintTime;
+				int _uvLampTime;
 				int _xrOffset;
 				int _cellFilter;
 				OverlappingMode _overlappingMode;
+				TriggerMode _printMode;
+				Encoder _encoder;
+				PHEnableMode _phMode; //Only for Neo72
 
 				bool equal(const JetPrinthead &other) const;
 				void copy (const JetPrinthead& other);

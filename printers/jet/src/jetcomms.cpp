@@ -209,6 +209,15 @@ const Ethernet *JetComms::ethernetIface(const std::string& iface) const
 	return nullptr;
 }
 
+std::vector<std::string> JetComms::ifaces() const
+{
+	std::vector<std::string> eths;
+	for ( auto& eth : _ifaces) {
+		eths.push_back(eth.id());
+	}
+	return eths;
+}
+
 void JetComms::setEthernetIface(const Ethernet *ethAdapter)
 {
 	if (ethAdapter != nullptr) {

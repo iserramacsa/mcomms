@@ -2,22 +2,22 @@
 #include <sstream>
 #include <typeinfo>
 #include <iostream>
+#include <algorithm>
 
 using namespace Macsa;
 using namespace Macsa::Printers;
 
-
-
-int JetPrinter::libraryVersionMajor()	  { return JET_LIBRARY_VERSION_MAJOR;}
-int JetPrinter::libraryVersionMinor()	  { return JET_LIBRARY_VERSION_MINOR;}
+int JetPrinter::libraryVersionMajor()	 { return JET_LIBRARY_VERSION_MAJOR;}
+int JetPrinter::libraryVersionMinor()	 { return JET_LIBRARY_VERSION_MINOR;}
 int JetPrinter::libraryVersionRevision() { return JET_LIBRARY_VERSION_PATCH;}
 std::string JetPrinter::libraryVersion() { return JET_LIBRARY_VERSION_STR;  }
-
 
 JetPrinter::JetPrinter() :
 	_mutex(new std::mutex())
 {
 	_type = "idjet";
+	_logs.clear();
+	_librariesVersions.clear();
 }
 
 JetPrinter::JetPrinter(const JetPrinter &other) :
@@ -129,6 +129,65 @@ void JetPrinter::setDateTime(const std::string &formatedDatetime)
 	Printer::setDateTime(rawtime);
 }
 
+std::string JetPrinter::getLibraryVersion(const std::string &library) const
+{
+	if (_librariesVersions.find(library) != _librariesVersions.end()){
+		return _librariesVersions.at(library);
+	}
+	return "";
+}
+
+void JetPrinter::clearLibrariesVersions()
+{
+	_librariesVersions.clear();
+}
+
+void JetPrinter::setLibrariesVersions(const std::map<std::string, std::string> &librariesVersions)
+{
+	_librariesVersions = librariesVersions;
+}
+
+void JetPrinter::setLibraryVersion(const std::string &library, const std::string &version)
+{
+	if (_librariesVersions.find(library) != _librariesVersions.end()){
+		 _librariesVersions[library] = version;
+	}
+	else {
+		_librariesVersions.insert(std::pair<std::string, std::string>(library, version));
+	}
+}
+
+std::vector<unsigned int> JetPrinter::printheads() const
+{
+	std::vector<unsigned int> printheads;
+	std::lock_guard<std::mutex>lock(*_mutex);
+	for (auto & ph : _printheads){
+		printheads.push_back(ph.first);
+	}
+	return printheads;
+}
+
+JetPrinthead JetPrinter::printhead(unsigned int id) const
+{
+	std::lock_guard<std::mutex>lock(*_mutex);
+	if (_printheads.find(id) != _printheads.end()) {
+		return _printheads.at(id);
+	}
+	return JetPrinthead(id);
+}
+
+void JetPrinter::setPrinthead(const JetPrinthead ph)
+{
+	std::lock_guard<std::mutex>lock(*_mutex);
+	std::map<unsigned int, JetPrinthead>::iterator it = _printheads.find(ph.id());
+	if (it != _printheads.end()) {
+		it->second = ph;
+	}
+	else {
+		_printheads.insert(std::pair<unsigned int, JetPrinthead>(ph.id(), ph));
+	}
+}
+
 unsigned int JetPrinter::printheadTemperature(unsigned int id)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
@@ -180,38 +239,227 @@ void JetPrinter::setPause(bool paused)
 
 bool JetPrinter::printStatus() const
 {
+	std::lock_guard<std::mutex>lock(*_mutex);
 	return _printStatus;
 }
 
 void JetPrinter::setPrintStatus(bool printStatus)
 {
+	std::lock_guard<std::mutex>lock(*_mutex);
 	_printStatus = printStatus;
 }
 
 JetMessagesManager &JetPrinter::messageManager()
 {
+	std::lock_guard<std::mutex>lock(*_mutex);
 	return _messageManager;
 }
 
 void JetPrinter::setMessageManager(const JetMessagesManager &manager)
 {
+	std::lock_guard<std::mutex>lock(*_mutex);
 	_messageManager = manager;
+}
+
+bool JetPrinter::inputEnabled(const std::string &boardType, unsigned int boardNum, const std::string &inputId) const
+{
+	std::lock_guard<std::mutex>lock(*_mutex);
+
+	std::vector<JetBoard>::const_iterator itBoard = getBoard(boardType, boardNum);
+	if (itBoard != _boards.end()) {
+		return itBoard->input(inputId);
+	}
+	return false;
+}
+
+void JetPrinter::setInputs(const std::string &boardType, unsigned int boardNum, const std::map<std::string, bool>& inputs)
+{
+	std::lock_guard<std::mutex>lock(*_mutex);
+
+	std::vector<JetBoard>::iterator itBoard = getBoard(boardType, boardNum);
+	if (itBoard != _boards.end()) {
+		JetBoard& board = *itBoard;
+		board.setInputs(inputs);
+	}
+}
+
+JetBoard JetPrinter::board(const std::string &boardType, unsigned int boardNum) const
+{
+	std::vector<JetBoard>::const_iterator itBoard = getBoard(boardType, boardNum);
+	if (itBoard != _boards.end()) {
+		return *itBoard;
+	}
+	return JetBoard(boardType, boardNum);
+}
+
+void JetPrinter::setBoard(const JetBoard &board)
+{
+	std::vector<JetBoard>::iterator itBoard = getBoard(board.type(), board.number());
+	if (itBoard != _boards.end()) {
+		*itBoard = board;
+	}
+	else {
+		_boards.push_back(board);
+	}
+}
+
+bool JetPrinter::outputEnabled(const std::string &outputId) const
+{
+	std::lock_guard<std::mutex>lock(*_mutex);
+	for (unsigned int o = 0; o < _outputs.size(); o++) {
+		if (_outputs.at(o).id() == outputId) {
+			return _outputs.at(o).value();
+		}
+	}
+	return false;
+}
+
+void JetPrinter::setOutputs(const std::vector<JetIO> &outputs)
+{
+	std::lock_guard<std::mutex>lock(*_mutex);
+	_outputs = outputs;
+}
+
+bool JetPrinter::isInError() const
+{
+	return _isInError;
+}
+
+void JetPrinter::setIsInError(bool isInError)
+{
+	_isInError = isInError;
+}
+
+void JetPrinter::updateLogs(std::list<LogItem>logs)
+{
+	if (logs.size()){
+		logs.sort();
+
+		time_t firstNewLog = logs.begin()->timestamp();
+		for (std::list<LogItem>::iterator it = _logs.begin(); it != _logs.end(); it++) {
+			if (it->timestamp() >= firstNewLog) {
+				_logs.erase(it, _logs.end());
+				break;
+			}
+		}
+		_logs.insert(_logs.end(), logs.begin(), logs.end());
+	}
+}
+
+std::list<LogItem> JetPrinter::logs(time_t from, time_t to) const
+{
+
+	std::list<LogItem> list;
+	if (from < to && _logs.size()){
+		std::list<LogItem>::const_iterator first = _logs.begin();
+		std::list<LogItem>::const_iterator last = std::prev(_logs.end());
+		while (first != _logs.end() && first->timestamp() < from){
+			first++;
+		}
+		while (std::distance(first, last) > 0 && last->timestamp() > to) {
+			last--;
+		}
+		list.assign(first, last);
+	}
+	return list;
+}
+
+std::list<LogItem> JetPrinter::logs() const
+{
+	return _logs;
+}
+
+PrintDirection JetPrinter::printDir() const
+{
+	return _printDir;
+}
+
+void JetPrinter::setPrintDir(const PrintDirection &printDir)
+{
+	_printDir = printDir;
+}
+
+unsigned int JetPrinter::sscc() const
+{
+	return _sscc;
+}
+
+void JetPrinter::setSscc(unsigned int sscc)
+{
+	_sscc = sscc;
+}
+
+bool JetPrinter::bitmapInverted() const
+{
+	return _bmpInverted;
+}
+
+void JetPrinter::setBitmapInverted(bool bmpInverted)
+{
+	_bmpInverted = bmpInverted;
+}
+
+std::vector<JetBoard>::iterator JetPrinter::getBoard(JetBoardType boardType, unsigned int boardNum)
+{
+	auto search = [&](const JetBoard& board)
+	{
+		return board.type() == boardType && board.number() == boardNum;
+	};
+
+	return std::find_if(_boards.begin(), _boards.end(), search);
+}
+
+std::vector<JetBoard>::const_iterator JetPrinter::getBoard(JetBoardType boardType, unsigned int boardNum) const
+{
+	auto search = [&](const JetBoard& board)
+	{
+		return board.type() == boardType && board.number() == boardNum;
+	};
+
+	return std::find_if(_boards.begin(), _boards.end(), search);
 }
 
 bool JetPrinter::equal(const Printer &other) const
 {
-	bool equal = false;
+	try {
+		const JetPrinter& printer = dynamic_cast<const JetPrinter&>(other);
+		//todo
+		if (_comms				!= printer._comms)				{return false;}
+		if (_printheads			!= printer._printheads)			{return false;}
+		if (_inkTanks			!= printer._inkTanks)			{return false;}
+		if (_boards				!= printer._boards)				{return false;}
+		if (_outputs			!= printer._outputs)			{return false;}
+		if (_messageManager		!= printer._messageManager)		{return false;}
+		if (_paused				!= printer._paused)				{return false;}
+		if (_printStatus		!= printer._printStatus)		{return false;}
+		if (_librariesVersions	!= printer._librariesVersions)	{return false;}
 
-	return equal;
+		return true;
+	}
+	catch(std::bad_cast exp) {
+		std::cout << __func__ <<"Caught bad cast" << std::endl;
+	}
+
+	return false;
 }
 
 void JetPrinter::copy(const JetPrinter &other)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
-	_type = other._type;
 
+	_type = other._type;
 	_files = PrinterFiles();
 	_files = other._files;
 	_comms = other._comms;
+	_printheads = other._printheads;
+	_inkTanks = other._inkTanks;
+	_boards = other._boards;
+	_outputs = other._outputs;
+	_messageManager = other._messageManager;
+	_paused	= other._paused;
+	_printStatus = other._printStatus;
+	_logs = other._logs;
+	_librariesVersions = other._librariesVersions;
 }
+
 

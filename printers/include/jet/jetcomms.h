@@ -46,7 +46,7 @@ namespace Macsa {
 				void setAddress(const std::string& addr, IpVersion version, std::string netmask);
 				void setGateway(const std::string& gw, IpVersion version);
 				void setNetmask(const std::string& addr, const std::string& mask);
-				void setDNS(const std::string& gw, IpVersion version);
+				void setDNS(const std::string& addr, IpVersion version);
 
 				std::vector<IpAddress> addresses() const;
 				std::vector<IpAddress> gateways() const;
@@ -77,6 +77,7 @@ namespace Macsa {
 				int ethernetIfaces() const;
 				Ethernet * ethernetIface(const std::string& iface);
 				const Ethernet * ethernetIface(const std::string& iface) const;
+				std::vector<std::string> ifaces() const;
 
 				void setEthernetIface(const Ethernet * ethAdapter);
 

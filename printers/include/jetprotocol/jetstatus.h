@@ -24,38 +24,10 @@ namespace Macsa {
 				void parseInkLevels(const tinyxml2::XMLElement* eTanks);
 				void parseCurrentMessage(const tinyxml2::XMLElement* eCmd);
 				void parseNetworkStatus(const tinyxml2::XMLElement* eNetwork);
-		};
-
-		/**
-		 * @brief The JetGetIOStatus class
-		 */
-		class JetGetIOStatus : public JetCommand
-		{
-			public:
-				JetGetIOStatus(Printers::JetPrinter& printer);
-				virtual ~JetGetIOStatus();
-				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
-				virtual bool parseResponse(const tinyxml2::XMLElement* xml);
-
-			private:
-				virtual void buildRequest();
-				virtual void buildResponse();
-		};
-
-		/**
-		 * @brief The JetGetErrors class
-		 */
-		class JetGetErrors : public JetCommand
-		{
-			public:
-				JetGetErrors(Printers::JetPrinter& printer);
-				virtual ~JetGetErrors();
-				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
-				virtual bool parseResponse(const tinyxml2::XMLElement* xml);
-
-			private:
-				virtual void buildRequest();
-				virtual void buildResponse();
+				void parseInputs(const tinyxml2::XMLElement* eInputs);
+				void parseOutputs(const tinyxml2::XMLElement* eOutputs);
+				void parseCounters(const tinyxml2::XMLElement* eCounters);
+				bool parseIOElement(const tinyxml2::XMLElement* eIO, std::string& id, bool& value);
 		};
 	}
 }

@@ -59,6 +59,8 @@ namespace Macsa {
 
 				inline EncoderMode mode() const { return _mode;}
 				inline void setMode(const EncoderMode &value) { _mode = value;}
+				inline void setMode(const nEncoderMode &value) { _mode = value;}
+				inline void setMode(const std::string &value) { _mode = value;}
 
 				inline double fixedSpeed() const { return _fixedSpeed;}
 				inline void setFixedSpeed(double value) { _fixedSpeed = value; }

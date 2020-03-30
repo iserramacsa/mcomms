@@ -9,30 +9,86 @@
 
 namespace Macsa {
 	namespace JetProtocol {
-
-//#if __cplusplus >= 201103L
-//		using userFieldsMap = std::map<std::string, std::string>;
-//		using datesMap      = std::map<std::string, Nisx::DateTime>;
-//		using countersMap   = std::map<std::string, Nisx::Counter>;
-//#else
-//		typedef std::map<std::string, std::string>           userFieldsMap;
-//		typedef std::map<std::string, Nisx::DateTime> datesMap;
-//		typedef std::map<std::string, Nisx::Counter>  countersMap;
-//#endif
 		/**
-		 * @brief The JetMessageNumber
+		 * @brief The JetSetMessageVariable
 		 */
-		class JetMessageNumber : public JetCommand
+		class JetSetMessageVariable : public JetCommand
 		{
 			public:
-				JetMessageNumber(Printers::JetPrinter& printer, const std::string& filename);
-				virtual ~JetMessageNumber();
+				JetSetMessageVariable(Printers::JetPrinter& printer, unsigned int filenum, const std::string& variable, const std::string& value);
+				JetSetMessageVariable(Printers::JetPrinter& printer);
 
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
 
 			protected:
-				std::string _filename;
+				unsigned int _filenum;
+				std::string _variable;
+				std::string _value;
+
+				virtual void buildRequest();
+				virtual void buildResponse();
+
+		};
+
+		/**
+		 * @brief The JetSetMessageVariables
+		 */
+		class JetSetMessageVariables : public JetCommand
+		{
+			public:
+				JetSetMessageVariables(Printers::JetPrinter& printer, unsigned int filenum, const std::map<std::string, std::string>& values);
+				JetSetMessageVariables(Printers::JetPrinter& printer);
+
+				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
+				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
+
+			protected:
+				unsigned int _filenum;
+				std::map<std::string, std::string> _values;
+
+				virtual void buildRequest();
+				virtual void buildResponse();
+
+		};
+
+		/**
+		 * @brief The JetGetMessageUserFields
+		 */
+		class JetGetMessageUserFields : public JetCommand
+		{
+			public:
+				JetGetMessageUserFields(Printers::JetPrinter& printer, unsigned int filenum, const std::string& group="");
+				JetGetMessageUserFields(Printers::JetPrinter& printer);
+
+				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
+				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
+
+			protected:
+				unsigned int _filenum;
+				std::string _group;
+
+				virtual void buildRequest();
+				virtual void buildResponse();
+
+		};
+
+		/**
+		 * @brief The JetSetMessageUserFields
+		 */
+		class JetSetMessageUserFields : public JetCommand
+		{
+			public:
+				JetSetMessageUserFields(Printers::JetPrinter& printer, unsigned int filenum, const std::map<std::string, std::string>& uiFields, const std::string& group="");
+				JetSetMessageUserFields(Printers::JetPrinter& printer);
+
+				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
+				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
+
+			protected:
+				unsigned int _filenum;
+				std::string _group;
+				std::map<std::string, std::string> _uiFields;
 
 				virtual void buildRequest();
 				virtual void buildResponse();

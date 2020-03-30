@@ -53,7 +53,7 @@ set(JET_HEADERS)
 
 set(LABELS_SOURCES)
 set(LABELS_HEADERS)
-
+set(JET true)
 ## Enable labels
 set(NISX_LABELS	true)
 
@@ -71,18 +71,23 @@ SET (PRINTERS_INCLUDES
 	${LIB_PREFIX}/include
 )
 
+set (UTILS_SOURCES
+	${PROJECT_SOURCE_DIR}/../utils/base64/base64.c
+)
+set (UTILS_HEADERS)
+
 include_directories(${PRINTERS_INCLUDES})
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/src         ${PROJECT_BINARY_DIR}/printers/jet/src)
-add_subdirectory(${PROJECT_SOURCE_DIR}/include     ${PROJECT_BINARY_DIR}/printers/jet/include)
-add_subdirectory(${PROJECT_SOURCE_DIR}/jetprotocol ${PROJECT_BINARY_DIR}/jetprotocol)
-add_subdirectory(${PROJECT_SOURCE_DIR}/xmlprotocol ${PROJECT_BINARY_DIR}/xmlprotocol)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src         ${PROJECT_BINARY_DIR}/jet/printers/jet/src)
+add_subdirectory(${PROJECT_SOURCE_DIR}/include     ${PROJECT_BINARY_DIR}/jet/printers/jet/include)
+add_subdirectory(${PROJECT_SOURCE_DIR}/jetprotocol ${PROJECT_BINARY_DIR}/jet/jetprotocol)
+add_subdirectory(${PROJECT_SOURCE_DIR}/xmlprotocol ${PROJECT_BINARY_DIR}/jet/xmlprotocol)
 add_subdirectory(${PROJECT_SOURCE_DIR}/jet/src     ${PROJECT_BINARY_DIR}/jet/src)
 add_subdirectory(${PROJECT_SOURCE_DIR}/jet/include ${PROJECT_BINARY_DIR}/jet/include)
-add_subdirectory(${PROJECT_SOURCE_DIR}/labels      ${PROJECT_BINARY_DIR}/labels)
+add_subdirectory(${PROJECT_SOURCE_DIR}/labels      ${PROJECT_BINARY_DIR}/jet/labels)
 
-set(SOURCES ${SOURCES} ${JET_SOURCES} ${PRINTERS_SOURCES} ${JET_PROTOCOL_SOURCES} ${LABELS_SOURCES})
-set(HEADERS ${HEADERS} ${JET_HEADERS} ${PRINTERS_HEADERS} ${JET_PROTOCOL_HEADERS} ${LABELS_HEADERS})
+set(SOURCES ${SOURCES} ${JET_SOURCES} ${PRINTERS_SOURCES} ${JET_PROTOCOL_SOURCES} ${LABELS_SOURCES} ${UTILS_SOURCES})
+set(HEADERS ${HEADERS} ${JET_HEADERS} ${PRINTERS_HEADERS} ${JET_PROTOCOL_HEADERS} ${LABELS_HEADERS} ${UTILS_HEADERS})
 
 if (${ENABLE_TESTS})
 	set(SRC_TEST ${SRC_TEST})

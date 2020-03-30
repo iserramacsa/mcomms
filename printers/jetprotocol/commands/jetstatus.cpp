@@ -25,6 +25,61 @@ bool JetGetStatus::parseRequest(const XMLElement *xml)
 void JetGetStatus::buildResponse()
 {
 	newCommandWind();
+	//TODO
+}
+
+bool JetGetStatus::parseResponse(const XMLElement *xml)
+{
+	bool valid = isValidWind(xml);
+	if(valid) {
+		parseCommandError();
+		parsePrintheadsTemperature(xml->FirstChildElement(JET_PRINTHEADS_LIST));
+		parseInkLevels(xml->FirstChildElement(JET_INK_TANKS_LIST));
+		_printer.setPrintStatus(getBoolFromChildNode(xml, JET_PRINT_STATUS, _printer.printStatus()));
+		_printer.setPause(getBoolFromChildNode(xml, JET_PRINT_PAUSE, _printer.paused()));
+		parseCurrentMessage(xml);
+		parseNetworkStatus(xml->FirstChildElement(JET_NETWORKS_LIST));
+		parseInputs(xml->FirstChildElement(JET_INPUTS_LIST));
+		parseOutputs(xml->FirstChildElement(JET_OUTPUTS_LIST));
+		parseCounters(xml->FirstChildElement(JET_COUNTERS_LIST));
+
+		const XMLElement* eError = xml->FirstChildElement(JET_ERROR_TAG);
+		if (eError) {
+			const char* isInError = eError->Attribute(VALUE_ATTRIBUTE);
+			if (isInError != nullptr) {
+				_printer.setIsInError(strToBool(isInError));
+			}
+		}
+
+		const XMLElement* ePrintDir = xml->FirstChildElement(JET_PRINT_DIRECTION_TAG);
+		if (ePrintDir) {
+			unsigned int printDir = ePrintDir->UnsignedAttribute(VALUE_ATTRIBUTE, _printer.printDir()());
+			_printer.setPrintDir(static_cast<Printers::nPrintDirection>(printDir));
+		}
+
+		const XMLElement* eBMPInverted = xml->FirstChildElement(JET_BITMAPINVERTED_TAG);
+		if (eBMPInverted) {
+			const char* bmpInverted = eBMPInverted->Attribute(VALUE_ATTRIBUTE);
+			if (bmpInverted != nullptr) {
+				_printer.setBitmapInverted(strToBool(bmpInverted));
+			}
+		}
+
+		const XMLElement* eSSCC = xml->FirstChildElement(JET_PRINT_DIRECTION_TAG);
+		if (eSSCC) {
+			unsigned int sscc = eSSCC->UnsignedAttribute(VALUE_ATTRIBUTE, _printer.sscc());
+			_printer.setSscc(sscc);
+		}
+
+		const XMLElement* eDatetime = xml->FirstChildElement(JET_DATETIME_TAG);
+		if (eDatetime) {
+			const char* datetime = eDatetime->Attribute(VALUE_ATTRIBUTE);
+			if (datetime != nullptr) {
+				_printer.setDateTime(datetime);
+			}
+		}
+	}
+	return valid;
 }
 
 void JetGetStatus::parsePrintheadsTemperature(const XMLElement *ePrintheads)
@@ -67,7 +122,7 @@ void JetGetStatus::parseCurrentMessage(const XMLElement *eCmd)
 void JetGetStatus::parseNetworkStatus(const XMLElement *eNetwork)
 {
 	if (eNetwork) {
-		const XMLElement* eAdapter = eNetwork->FirstChildElement(JET_NETWORK_ADAPTER);
+		const XMLElement* eAdapter = eNetwork->FirstChildElement(JET_ADAPTER_TAG);
 		while(eAdapter) {
 			const XMLAttribute* eIfaceID = eAdapter->FindAttribute(ID_ATTRIBUTE);
 			if (eIfaceID){
@@ -78,78 +133,85 @@ void JetGetStatus::parseNetworkStatus(const XMLElement *eNetwork)
 					eth->setConnected(eAdapter->BoolAttribute(CONNECTED_ATTRIBUTE, false));
 				}
 			}
-			eAdapter = eAdapter->NextSiblingElement(JET_NETWORK_ADAPTER);
+			eAdapter = eAdapter->NextSiblingElement(JET_ADAPTER_TAG);
 		}
 	}
 }
 
-bool JetGetStatus::parseResponse(const XMLElement *xml)
+void JetGetStatus::parseInputs(const XMLElement *eInputs)
 {
-	bool valid = isValidWind(xml);
-	if(valid) {
-		parseCommandError();
-		parsePrintheadsTemperature(xml->FirstChildElement(JET_PRINTHEADS_LIST));
-		parseInkLevels(xml->FirstChildElement(JET_INK_TANKS_LIST));
-		_printer.setPrintStatus(getBoolFromChildNode(xml, JET_PRINT_STATUS, _printer.printStatus()));
-		_printer.setPause(getBoolFromChildNode(xml, JET_PRINT_PAUSE, _printer.paused()));
-		parseCurrentMessage(xml);
-		parseNetworkStatus(xml->FirstChildElement(JET_NETWORKS_LIST));
-
+	if (eInputs) {
+		const XMLElement* eBoard = eInputs->FirstChildElement(JET_BOARD_TAG);
+		while (eBoard != nullptr) {
+			std::string type = getTextAttribute(eBoard, TYPE_ATTRIBUTE);
+			if (type.length() > 0) {
+				unsigned int number = eBoard->UnsignedAttribute(NUMBER_ATTRIBUTE, 0);
+				Printers::JetBoard board = _printer.board(type, number);
+				std::map<std::string, bool> inputs;
+				const XMLElement* eInput = eBoard->FirstChildElement(JET_INPUT_TAG);
+				while (eInput != nullptr) {
+					std::string id = "";
+					bool value = false;
+					if (parseIOElement(eInput, id, value)) {
+						inputs.insert(std::pair<std::string, bool>(id, value));
+					}
+					eInput = eInput->NextSiblingElement(JET_INPUT_TAG);
+				}
+				board.setInputs(inputs);
+			}
+			eBoard = eBoard->NextSiblingElement(JET_BOARD_TAG);
+		}
 	}
-	return valid;
 }
 
-//================		GET IO STATUS COMMAND		================//
-JetGetIOStatus::JetGetIOStatus(Macsa::Printers::JetPrinter &printer):
-	JetCommand("", printer)
-{}
-
-JetGetIOStatus::~JetGetIOStatus()
-{}
-
-void JetGetIOStatus::buildRequest()
+void JetGetStatus::parseOutputs(const XMLElement *eOutputs)
 {
-	newCommandWind();
+	if (eOutputs) {
+		const XMLElement* eOutput = eOutputs->FirstChildElement(JET_OUTPUT_TAG);
+		std::vector<Printers::JetIO> outputs;
+		while (eOutput != nullptr) {
+			std::string id = "";
+			bool value = false;
+			if (parseIOElement(eOutput, id, value)) {
+				Printers::JetIO output(id);
+				output.setValue(value);
+				outputs.push_back(output);
+			}
+			eOutput = eOutput->NextSiblingElement(JET_OUTPUT_TAG);
+		}
+		_printer.setOutputs(outputs);
+	}
 }
 
-bool JetGetIOStatus::parseRequest(const XMLElement *xml)
+void JetGetStatus::parseCounters(const XMLElement *eCounters)
 {
+	if (eCounters) {
+		const XMLElement* eCounter = eCounters->FirstChildElement(JET_COUNTER_TAG);
+		while (eCounter != nullptr) {
+			unsigned int msgNum = eCounter->UnsignedAttribute(MESSAGE_ATTRIBUTE);
+			unsigned int msgCnt = eCounter->UnsignedAttribute(VALUE_ATTRIBUTE);
+
+			_printer.messageManager().setMessageCounter(msgNum, msgCnt);
+
+			eCounter = eCounter->NextSiblingElement(JET_COUNTER_TAG);
+		}
+	}
+}
+
+bool JetGetStatus::parseIOElement(const XMLElement *eIO, std::string &id, bool &value)
+{
+	if (eIO) {
+		const char* inputId = eIO->Attribute(UPPERCASE_ID_ATTRIBUTE);
+		if (inputId != nullptr && strlen(inputId) > 0) {
+			const char* valueStr = eIO->Attribute(VALUE_ATTRIBUTE);
+			if (valueStr != nullptr) {
+				value = strToBool(valueStr);
+				id = inputId;
+				return true;
+			}
+		}
+	}
 	return false;
 }
 
-void JetGetIOStatus::buildResponse()
-{
-}
-
-bool JetGetIOStatus::parseResponse(const XMLElement *xml)
-{
-	return false;
-
-}
-
-//================		GET CURRENT ERRORS COMMAND		================//
-JetGetErrors::JetGetErrors(Macsa::Printers::JetPrinter &printer):
-	JetCommand("", printer)
-{}
-
-JetGetErrors::~JetGetErrors()
-{}
-
-void JetGetErrors::buildRequest()
-{
-	newCommandWind();
-}
-
-bool JetGetErrors::parseRequest(const XMLElement *xml)
-{
-	return false;
-}
-void JetGetErrors::buildResponse()
-{
-
-}
-bool JetGetErrors::parseResponse(const XMLElement *xml)
-{
-	return false;
-}
 

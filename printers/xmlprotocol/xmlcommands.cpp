@@ -103,6 +103,34 @@ bool XMLCommand::getBoolAttribute(const XMLElement *element, const std::string &
 	return strToBool(getTextAttribute(element, attribute, def));
 }
 
+std::string XMLCommand::getChildAttribute(const XMLElement *element, const std::string &child, const std::string &attribute, const std::string &defaultValue) const
+{
+	if (element) {
+		return getTextAttribute(element->FirstChildElement(child.c_str()), attribute, defaultValue);
+	}
+	return defaultValue;
+}
+
+int XMLCommand::getChildAttribute(const XMLElement *element, const std::string &child, const std::string &attribute, int defaultValue) const
+{
+	return atoi(getChildAttribute(element, child, attribute, toString(defaultValue)).c_str());
+}
+
+unsigned int XMLCommand::getChildAttribute(const XMLElement *element, const std::string &child, const std::string &attribute, unsigned int defaultValue) const
+{
+	return static_cast<unsigned int>(atoi(getChildAttribute(element, child, attribute, toString(defaultValue)).c_str()));
+}
+
+double XMLCommand::getChildAttribute(const XMLElement *element, const std::string &child, const std::string &attribute, double defaultValue, int precision) const
+{
+	return atof(getChildAttribute(element, child, attribute, toString(defaultValue, precision)).c_str());
+}
+
+bool XMLCommand::getChildAttribute(const XMLElement *element, const std::string &child, const std::string &attribute, bool defaultValue) const
+{
+	return strToBool(getChildAttribute(element, child, attribute, toString(defaultValue)));
+}
+
 XMLElement *XMLCommand::createChildNode(const std::string &child, XMLElement **parent)
 {
 	XMLElement * node = (*parent)->FirstChildElement(child.c_str());

@@ -29,12 +29,15 @@ namespace Macsa{
 		class JetSetPause : public JetCommand
 		{
 			public:
+				JetSetPause(Printers::JetPrinter& printer, bool pause);
 				JetSetPause(Printers::JetPrinter& printer);
 				virtual ~JetSetPause();
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
 
 			protected:
+				bool _pause;
+
 				virtual void buildRequest();
 				virtual void buildResponse();
 		};

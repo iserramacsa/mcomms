@@ -23,13 +23,13 @@ std::vector<std::string> TijViewer::printerDrives() const
 	return drives;
 }
 
-std::vector<std::string> TijViewer::printerFolders(const std::string& drive) const
+std::vector<std::string> TijViewer::printerDirectory(const std::string& drive) const
 {
-	std::vector<std::string> folders;
+	std::vector<std::string> directories;
 	if (tijprinter().files()) {
-		folders = tijprinter().files()->getFolders(drive);
+		directories = tijprinter().files()->getDirectories(drive);
 	}
-	return folders;
+	return directories;
 }
 
 std::vector<std::string> TijViewer::printerFiles(const std::string& drive, const std::string& folder) const
@@ -58,10 +58,10 @@ const Drive* TijViewer::getPrinterDrive(const std::string& drive) const
 	return nullptr;
 }
 
-const Folder* TijViewer::getPrinterFolder(const std::string& drive, const std::string& folder) const
+const Directory* TijViewer::getPrinterFolder(const std::string& drive, const std::string& folder) const
 {
 	if (tijprinter().files()) {
-		return tijprinter().files()->getFolder(drive, folder);
+		return tijprinter().files()->getDirectory(drive, folder);
 	}
 	return nullptr;
 }

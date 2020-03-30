@@ -50,13 +50,13 @@ namespace Macsa {
 				std::vector<uint8_t> getFile(const std::string& filepath);
 
 				inline std::vector<std::string> getFonts() { return getFiles(FONTS_FILTER); }
-				inline std::vector<std::string> getFonts(const std::string &drive) { return getFiles(drive, FONTS_FOLDER);}
+				inline std::vector<std::string> getFonts(const std::string &drive) { return getFiles(drive, FONTS_DIRECTORY);}
 
 				inline std::vector<std::string> getMessages() { return getFiles(MESSAGES_FILTER); }
-				inline std::vector<std::string> getMessages(const std::string &drive) { return getFiles(drive, MESSAGES_FOLDER);}
+				inline std::vector<std::string> getMessages(const std::string &drive) { return getFiles(drive, MESSAGES_DIRECTORY);}
 
 				inline std::vector<std::string> getImages() { return getFiles(IMAGES_FILTER); }
-				inline std::vector<std::string> getImages(const std::string &drive) { return getFiles(drive, IMAGES_FOLDER);}
+				inline std::vector<std::string> getImages(const std::string &drive) { return getFiles(drive, IMAGES_DIRECTORY);}
 
 				inline std::vector<std::string> getAllFiles() { return getFiles(ALL_FILES_FILTER); }
 

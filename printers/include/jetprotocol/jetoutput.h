@@ -2,7 +2,7 @@
 #define MACSA_JETPROTOCOL_SET_OUTPUT_COMMAND_H
 
 #include "jetcommand.h"
-
+#include "jet/jetio.h"
 namespace Macsa{
 	namespace JetProtocol {
 		///
@@ -12,7 +12,8 @@ namespace Macsa{
 		class JetSetOutput : public JetCommand
 		{
 			public:
-				JetSetOutput(Printers::JetPrinter& printer, const std::string& outputId, bool value, unsigned int pulse);
+				JetSetOutput(Printers::JetPrinter& printer);
+				JetSetOutput(Printers::JetPrinter& printer, const Printers::JetIO& output);
 				virtual ~JetSetOutput();
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
@@ -22,10 +23,7 @@ namespace Macsa{
 				virtual void buildResponse();
 
 			private:
-				std::string _outputId;
-				unsigned int _pulse;
-				bool _value;
-
+				Printers::JetIO* _output;
 		};
 	}
 }

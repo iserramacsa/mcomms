@@ -24,6 +24,13 @@ namespace Macsa{
 			std::string getTextAttribute(const tinyxml2::XMLElement *element,const std::string &attribute, const std::string &defaultValue = "") const;
 			bool        getBoolAttribute(const tinyxml2::XMLElement *element,const std::string &attribute, bool defaultValue = false) const;
 
+			std::string  getChildAttribute(const tinyxml2::XMLElement *element, const std::string &child, const std::string &attribute, const std::string &defaultValue = "") const;
+			int			 getChildAttribute(const tinyxml2::XMLElement *element, const std::string &child, const std::string &attribute, int defaultValue = 0) const;
+			unsigned int getChildAttribute(const tinyxml2::XMLElement *element, const std::string &child, const std::string &attribute, unsigned int defaultValue = 0) const;
+			double		 getChildAttribute(const tinyxml2::XMLElement *element, const std::string &child, const std::string &attribute, double defaultValue = 0, int precision = 0) const;
+			bool		 getChildAttribute(const tinyxml2::XMLElement *element, const std::string &child, const std::string &attribute, bool defaultValue = false) const;
+
+
 			tinyxml2::XMLElement * createChildNode(const std::string &child, tinyxml2::XMLElement **parent);
 			tinyxml2::XMLElement * createTextChildNode(const std::string &child, const std::string& text, tinyxml2::XMLElement **parent);
 			tinyxml2::XMLElement * createBoolTextChildNode(const std::string &child, bool value, tinyxml2::XMLElement **parent);

@@ -30,14 +30,21 @@
 #define IPv4 "IPv4"
 #define IPv6 "IPv6"
 
+#define JET_BOARD_PRINTHEAD "PH"
+#define JET_BOARD_SIGNALS	"SIGNAL"
+
 #define PRINTER_DIR_RL		"Right To Left"
 #define PRINTER_DIR_LR		"Left To Right"
 
-#define LOG_TYPE_INFO		"Info"
-#define LOG_TYPE_WARN		"Warning"
-#define LOG_TYPE_ERR		"Error"
-#define LOG_TYPE_SUCCESS	"Ok"
-#define LOG_TYPE_ALL		"All"
+#define PH_ENABLE_MODE_BOTH		"Enable upper and lower printheads"
+#define PH_ENABLE_MODE_UPPER	"Enable only upper printhead"
+#define PH_ENABLE_MODE_LOWER	"Enable only lower printhead"
+
+#define JET_LOG_TYPE_INFO		"Info"
+#define JET_LOG_TYPE_WARN		"Warning"
+#define JET_LOG_TYPE_ERR		"Error"
+#define JET_LOG_TYPE_SUCCESS	"Ok"
+#define JET_LOG_TYPE_ALL		"All"
 
 #define ERROR_CODE_COMMAND_OK						"Ok"
 #define ERROR_CODE_INVALID_COMMAND					"Object reference not set to an instance of an object."
@@ -80,6 +87,45 @@
 #define ERROR_CODE_NISX_INVALID_FORMAT				"NisXInvalidFormat"
 #define ERROR_CODE_NISX_PARSING_ERROR				"NisXParsingError"
 #define ERROR_CODE_UNKNOWN							"UNKNOWN"
+
+
+#define JET_CONFIG_ITEM_PH_ID						"PH_ID"
+#define JET_CONFIG_ITEM_PH_IP_ADDRESS				"PH_IP_ADDRESS"
+#define JET_CONFIG_ITEM_PRINTERDIRECTION			"PRINTERDIRECTION"
+#define JET_CONFIG_ITEM_BITMAPINVERTED				"BITMAPINVERTED"
+#define JET_CONFIG_ITEM_PRINTSPEED					"PRINTSPEED"
+#define JET_CONFIG_ITEM_PRINTDELAY					"PRINTDELAY"
+#define JET_CONFIG_ITEM_HORIZONTAL_RESOLUTION		"HORIZONTAL_RESOLUTION"
+#define JET_CONFIG_ITEM_ENCODER_ENABLED				"ENCODER.ENABLED"
+#define JET_CONFIG_ITEM_ENCODER_PULSES				"ENCODER.PULSES"
+#define JET_CONFIG_ITEM_ENCODER_WHEEL				"ENCODER.WHEEL"
+#define JET_CONFIG_ITEM_ENCODER_ABC_PITCH			"ENCODER.ABC_PITCH"
+#define JET_CONFIG_ITEM_PRINTINGLIST				"PRINTINGLIST"
+#define JET_CONFIG_ITEM_FIFO						"FIFO"
+#define JET_CONFIG_ITEM_DELAY_IN_POINTS				"DELAY_IN_POINTS"
+#define JET_CONFIG_ITEM_STB_INC_SSCC				"STB_INC_SSCC"
+#define JET_CONFIG_ITEM_SEND_IMG_AFTER_PRINT		"SEND_IMG_AFTER_PRINT"
+#define JET_CONFIG_ITEM_STB_RESET_PRINTING_LIST		"STB_RESET_PRINTING_LIST"
+#define JET_CONFIG_ITEM_LINE_ID						"LINE_ID"
+#define JET_CONFIG_ITEM_MACHINE_ID					"MACHINE_ID"
+#define JET_CONFIG_ITEM_MAX_PRINT_TIME				"MAX_PRINT_TIME"
+#define JET_CONFIG_ITEM_OPTIMIZE_BARCODE			"OPTIMIZE_BARCODE"
+#define JET_CONFIG_ITEM_OVERLAPPING_TYPE			"OVERLAPPING_TYPE"
+#define JET_CONFIG_ITEM_DEFAULT_FONT				"DEFAULT_FONT"
+#define JET_CONFIG_ITEM_LAMP_CONTROL				"LAMP_CONTROL"
+#define JET_CONFIG_ITEM_LAMP_CONTROL_TIME			"LAMP_CONTROL.TIME"
+#define JET_CONFIG_ITEM_XROFFSET					"XROFFSET"
+#define JET_CONFIG_ITEM_CELL_FILTER					"CELL_FILTER"
+#define JET_CONFIG_ITEM_PRINT_MODE					"PRINT_MODE"
+#define JET_CONFIG_ITEM_NETWORK_ADAPTER				"NETWORK_ADAPTER"
+#define JET_CONFIG_ITEM_NET_IP_ADDRESS_VALUE		"NET_IP_ADDRESS_VALUE"
+#define JET_CONFIG_ITEM_NET_IP_ADDRESS_TYPE			"NET_IP_ADDRESS_TYPE"
+#define JET_CONFIG_ITEM_NET_IP_ADDRESS_MASK			"NET_IP_ADDRESS_MASK"
+#define JET_CONFIG_ITEM_NET_GATEWAY_VALUE			"NET_GATEWAY_VALUE"
+#define JET_CONFIG_ITEM_NET_GATEWAY_TYPE			"NET_GATEWAY_TYPE"
+#define JET_CONFIG_ITEM_NET_DNS						"NET_DNS"
+#define JET_CONFIG_ITEM_NET_DNS_TYPE				"NET_DNS_TYPE"
+
 
 namespace Macsa {
 	namespace Printers {
@@ -151,6 +197,79 @@ namespace Macsa {
 					list.push_back(JET_ID_NEO_17D);
 					list.push_back(JET_ID_NEO_50D);
 					list.push_back(JET_ID_NEO_70D);
+					return list;
+				}
+		};
+
+		enum nJetBoardType {
+			PRINTHEAD_BOARD = 0,
+			SIGNALS_BOARD
+		};
+		class JetBoardType : public Utils::SmartEnum<nJetBoardType>
+		{
+			public:
+				JetBoardType() : SmartEnum() {_val = PRINTHEAD_BOARD;}
+				JetBoardType(nJetBoardType n) : SmartEnum() {_val = n;}
+				JetBoardType(const std::string& name) : SmartEnum() {*this = name;}
+				virtual ~JetBoardType(){}
+				virtual void operator = (const enum nJetBoardType& v){_val = v;}
+				virtual void operator = (const std::string& val){
+					if (val.compare(JET_BOARD_PRINTHEAD) == 0)
+						_val = PRINTHEAD_BOARD;
+					else if (val.compare(JET_BOARD_SIGNALS) == 0)
+						_val = SIGNALS_BOARD;
+				}
+				virtual std::string toString() const {
+					switch (_val) {
+						case PRINTHEAD_BOARD: return JET_BOARD_PRINTHEAD;
+						case SIGNALS_BOARD:	  return JET_BOARD_SIGNALS;
+					}
+					return "";
+				}
+				virtual std::vector<std::string> stringList() const
+				{
+					std::vector<std::string> list;
+					list.push_back(JET_BOARD_PRINTHEAD);
+					list.push_back(JET_BOARD_SIGNALS);
+					return list;
+				}
+		};
+
+
+		enum nPHEnableMode{
+			ENABLE_BOTH = 0,
+			ENABLE_UPPER,
+			ENABLE_LOWER,
+		};
+		class PHEnableMode : public Utils::SmartEnum<nPHEnableMode>
+		{
+			public:
+				PHEnableMode() : SmartEnum() {_val = ENABLE_BOTH;}
+				PHEnableMode(nPHEnableMode n) : SmartEnum() {_val = n;}
+				virtual ~PHEnableMode(){}
+				virtual void operator = (const enum nPHEnableMode& v){_val = v;}
+				virtual void operator = (const std::string& val){
+					if (val.compare(PH_ENABLE_MODE_BOTH) == 0)
+						_val = ENABLE_BOTH;
+					else if (val.compare(PH_ENABLE_MODE_UPPER) == 0)
+						_val = ENABLE_UPPER;
+					else if (val.compare(PH_ENABLE_MODE_LOWER) == 0)
+						_val = ENABLE_LOWER;
+				}
+				virtual std::string toString() const {
+					switch (_val) {
+						case ENABLE_BOTH: return PH_ENABLE_MODE_BOTH;
+						case ENABLE_UPPER: return PH_ENABLE_MODE_UPPER;
+						case ENABLE_LOWER: return PH_ENABLE_MODE_LOWER;
+					}
+					return "";
+				}
+				virtual std::vector<std::string> stringList() const
+				{
+					std::vector<std::string> list;
+					list.push_back(PH_ENABLE_MODE_BOTH);
+					list.push_back(PH_ENABLE_MODE_UPPER);
+					list.push_back(PH_ENABLE_MODE_LOWER);
 					return list;
 				}
 		};
@@ -297,6 +416,58 @@ namespace Macsa {
 					return list;
 				}
 		};
+
+
+		enum nJetLogType {
+			LOG_TYPE_ALL = 0,
+			LOG_TYPE_INFO,
+			LOG_TYPE_WARN,
+			LOG_TYPE_ERR,
+			LOG_TYPE_SUCCESS,
+		};
+		class JetLogType : public Utils::SmartEnum<nJetLogType>
+		{
+			public:
+				JetLogType() : SmartEnum() {_val = LOG_TYPE_ALL;}
+				JetLogType(nJetLogType n) : SmartEnum() {_val = n;}
+				virtual ~JetLogType(){}
+				virtual void operator = (const enum nJetLogType& v){_val = v;}
+				virtual void operator = (const std::string& val){
+					if (val.compare(JET_LOG_TYPE_ALL) == 0)
+						_val = LOG_TYPE_ALL;
+					else if (val.compare(JET_LOG_TYPE_INFO) == 0)
+						_val = LOG_TYPE_INFO;
+					else if (val.compare(JET_LOG_TYPE_WARN) == 0)
+						_val = LOG_TYPE_WARN;
+					else if (val.compare(JET_LOG_TYPE_ERR) == 0)
+						_val = LOG_TYPE_ERR;
+					else if (val.compare(JET_LOG_TYPE_SUCCESS) == 0)
+						_val = LOG_TYPE_SUCCESS;
+				}
+				virtual std::string toString() const {
+					switch (_val) {
+						case LOG_TYPE_ALL: return JET_LOG_TYPE_ALL;
+						case LOG_TYPE_INFO: return JET_LOG_TYPE_INFO;
+						case LOG_TYPE_WARN: return JET_LOG_TYPE_WARN;
+						case LOG_TYPE_ERR: return JET_LOG_TYPE_ERR;
+						case LOG_TYPE_SUCCESS: return JET_LOG_TYPE_SUCCESS;
+					}
+					return "";
+				}
+				virtual std::vector<std::string> stringList() const
+				{
+					std::vector<std::string> list;
+					list.push_back(JET_LOG_TYPE_ALL);
+					list.push_back(JET_LOG_TYPE_INFO);
+					list.push_back(JET_LOG_TYPE_WARN);
+					list.push_back(JET_LOG_TYPE_ERR);
+					list.push_back(JET_LOG_TYPE_SUCCESS);
+					return list;
+				}
+		};
+
+
+
 
 		enum nJetErrorCode {
 			COMMAND_OK	= 0,						// No error
@@ -526,6 +697,176 @@ namespace Macsa {
 					list.push_back(ERROR_CODE_MISSING_FILENAME_ATTRIBUTTE);
 					list.push_back(ERROR_CODE_NISX_INVALID_FORMAT);
 					list.push_back(ERROR_CODE_NISX_PARSING_ERROR);
+					return list;
+				}
+		};
+
+		enum nJetConfigItem{
+			CONFIG_ITEM_PH_ID = 0,
+			CONFIG_ITEM_PH_IP_ADDRESS,
+			CONFIG_ITEM_PRINTERDIRECTION,
+			CONFIG_ITEM_BITMAPINVERTED,
+			CONFIG_ITEM_PRINTSPEED,
+			CONFIG_ITEM_PRINTDELAY,
+			CONFIG_ITEM_HORIZONTAL_RESOLUTION,
+			CONFIG_ITEM_ENCODER_ENABLED,
+			CONFIG_ITEM_ENCODER_PULSES,
+			CONFIG_ITEM_ENCODER_WHEEL,
+			CONFIG_ITEM_ENCODER_ABC_PITCH,
+			CONFIG_ITEM_PRINTINGLIST,
+			CONFIG_ITEM_FIFO,
+			CONFIG_ITEM_DELAY_IN_POINTS,
+			CONFIG_ITEM_STB_INC_SSCC,
+			CONFIG_ITEM_SEND_IMG_AFTER_PRINT,
+			CONFIG_ITEM_STB_RESET_PRINTING_LIST,
+			CONFIG_ITEM_LINE_ID,
+			CONFIG_ITEM_MACHINE_ID,
+			CONFIG_ITEM_MAX_PRINT_TIME,
+			CONFIG_ITEM_OPTIMIZE_BARCODE,
+			CONFIG_ITEM_OVERLAPPING_TYPE,
+			CONFIG_ITEM_DEFAULT_FONT,
+			CONFIG_ITEM_LAMP_CONTROL,
+			CONFIG_ITEM_LAMP_CONTROL_TIME,
+			CONFIG_ITEM_XROFFSET,
+			CONFIG_ITEM_CELL_FILTER,
+			CONFIG_ITEM_PRINT_MODE,
+			CONFIG_ITEM_NETWORK_ADAPTER,
+			CONFIG_ITEM_NET_IP_ADDRESS_VALUE,
+			CONFIG_ITEM_NET_IP_ADDRESS_TYPE,
+			CONFIG_ITEM_NET_IP_ADDRESS_MASK,
+			CONFIG_ITEM_NET_GATEWAY_VALUE,
+			CONFIG_ITEM_NET_GATEWAY_TYPE,
+			CONFIG_ITEM_NET_DNS,
+			CONFIG_ITEM_NET_DNS_TYPE,
+			CONFIG_ITEM_INVALID
+		};
+		class JetConfigItem : public Utils::SmartEnum<nJetConfigItem>
+		{
+			public:
+				JetConfigItem() : SmartEnum() {_val = CONFIG_ITEM_INVALID;}
+				JetConfigItem(nJetConfigItem n) : SmartEnum() {_val = n;}
+				virtual ~JetConfigItem(){}
+				virtual void operator = (const enum nJetConfigItem& v){_val = v;}
+				virtual void operator = (const std::string& val){
+					if (val.compare(JET_CONFIG_ITEM_PH_ID) == 0)						_val = CONFIG_ITEM_PH_ID;
+					else if (val.compare(JET_CONFIG_ITEM_PH_IP_ADDRESS) == 0)			_val = CONFIG_ITEM_PH_IP_ADDRESS;
+					else if (val.compare(JET_CONFIG_ITEM_PRINTERDIRECTION) == 0)		_val = CONFIG_ITEM_PRINTERDIRECTION;
+					else if (val.compare(JET_CONFIG_ITEM_BITMAPINVERTED) == 0)			_val = CONFIG_ITEM_BITMAPINVERTED;
+					else if (val.compare(JET_CONFIG_ITEM_PRINTSPEED) == 0)				_val = CONFIG_ITEM_PRINTSPEED;
+					else if (val.compare(JET_CONFIG_ITEM_PRINTDELAY) == 0)				_val = CONFIG_ITEM_PRINTDELAY;
+					else if (val.compare(JET_CONFIG_ITEM_HORIZONTAL_RESOLUTION) == 0)	_val = CONFIG_ITEM_HORIZONTAL_RESOLUTION;
+					else if (val.compare(JET_CONFIG_ITEM_ENCODER_ENABLED) == 0)			_val = CONFIG_ITEM_ENCODER_ENABLED;
+					else if (val.compare(JET_CONFIG_ITEM_ENCODER_PULSES) == 0)			_val = CONFIG_ITEM_ENCODER_PULSES;
+					else if (val.compare(JET_CONFIG_ITEM_ENCODER_WHEEL) == 0)			_val = CONFIG_ITEM_ENCODER_WHEEL;
+					else if (val.compare(JET_CONFIG_ITEM_ENCODER_ABC_PITCH) == 0)		_val = CONFIG_ITEM_ENCODER_ABC_PITCH;
+					else if (val.compare(JET_CONFIG_ITEM_PRINTINGLIST) == 0)			_val = CONFIG_ITEM_PRINTINGLIST;
+					else if (val.compare(JET_CONFIG_ITEM_FIFO) == 0)					_val = CONFIG_ITEM_FIFO;
+					else if (val.compare(JET_CONFIG_ITEM_DELAY_IN_POINTS) == 0)			_val = CONFIG_ITEM_DELAY_IN_POINTS;
+					else if (val.compare(JET_CONFIG_ITEM_STB_INC_SSCC) == 0)			_val = CONFIG_ITEM_STB_INC_SSCC;
+					else if (val.compare(JET_CONFIG_ITEM_SEND_IMG_AFTER_PRINT) == 0)	_val = CONFIG_ITEM_SEND_IMG_AFTER_PRINT;
+					else if (val.compare(JET_CONFIG_ITEM_STB_RESET_PRINTING_LIST) == 0)	_val = CONFIG_ITEM_STB_RESET_PRINTING_LIST;
+					else if (val.compare(JET_CONFIG_ITEM_LINE_ID) == 0)					_val = CONFIG_ITEM_LINE_ID;
+					else if (val.compare(JET_CONFIG_ITEM_MACHINE_ID) == 0)				_val = CONFIG_ITEM_MACHINE_ID;
+					else if (val.compare(JET_CONFIG_ITEM_MAX_PRINT_TIME) == 0)			_val = CONFIG_ITEM_MAX_PRINT_TIME;
+					else if (val.compare(JET_CONFIG_ITEM_OPTIMIZE_BARCODE) == 0)		_val = CONFIG_ITEM_OPTIMIZE_BARCODE;
+					else if (val.compare(JET_CONFIG_ITEM_OVERLAPPING_TYPE) == 0)		_val = CONFIG_ITEM_OVERLAPPING_TYPE;
+					else if (val.compare(JET_CONFIG_ITEM_DEFAULT_FONT) == 0)			_val = CONFIG_ITEM_DEFAULT_FONT;
+					else if (val.compare(JET_CONFIG_ITEM_LAMP_CONTROL) == 0)			_val = CONFIG_ITEM_LAMP_CONTROL;
+					else if (val.compare(JET_CONFIG_ITEM_LAMP_CONTROL_TIME) == 0)		_val = CONFIG_ITEM_LAMP_CONTROL_TIME;
+					else if (val.compare(JET_CONFIG_ITEM_XROFFSET) == 0)				_val = CONFIG_ITEM_XROFFSET;
+					else if (val.compare(JET_CONFIG_ITEM_CELL_FILTER) == 0)				_val = CONFIG_ITEM_CELL_FILTER;
+					else if (val.compare(JET_CONFIG_ITEM_PRINT_MODE) == 0)				_val = CONFIG_ITEM_PRINT_MODE;
+					else if (val.compare(JET_CONFIG_ITEM_NETWORK_ADAPTER) == 0)			_val = CONFIG_ITEM_NETWORK_ADAPTER;
+					else if (val.compare(JET_CONFIG_ITEM_NET_IP_ADDRESS_VALUE) == 0)	_val = CONFIG_ITEM_NET_IP_ADDRESS_VALUE;
+					else if (val.compare(JET_CONFIG_ITEM_NET_IP_ADDRESS_TYPE) == 0)		_val = CONFIG_ITEM_NET_IP_ADDRESS_TYPE;
+					else if (val.compare(JET_CONFIG_ITEM_NET_IP_ADDRESS_MASK) == 0)		_val = CONFIG_ITEM_NET_IP_ADDRESS_MASK;
+					else if (val.compare(JET_CONFIG_ITEM_NET_GATEWAY_VALUE) == 0)		_val = CONFIG_ITEM_NET_GATEWAY_VALUE;
+					else if (val.compare(JET_CONFIG_ITEM_NET_GATEWAY_TYPE) == 0)		_val = CONFIG_ITEM_NET_GATEWAY_TYPE;
+					else if (val.compare(JET_CONFIG_ITEM_NET_DNS) == 0)					_val = CONFIG_ITEM_NET_DNS;
+					else if (val.compare(JET_CONFIG_ITEM_NET_DNS_TYPE) == 0)			_val = CONFIG_ITEM_NET_DNS_TYPE;
+				}
+				virtual std::string toString() const {
+					switch (_val) {
+						case CONFIG_ITEM_PH_ID:						return JET_CONFIG_ITEM_PH_ID;
+						case CONFIG_ITEM_PH_IP_ADDRESS:				return JET_CONFIG_ITEM_PH_IP_ADDRESS;
+						case CONFIG_ITEM_PRINTERDIRECTION:			return JET_CONFIG_ITEM_PRINTERDIRECTION;
+						case CONFIG_ITEM_BITMAPINVERTED:			return JET_CONFIG_ITEM_BITMAPINVERTED;
+						case CONFIG_ITEM_PRINTSPEED:				return JET_CONFIG_ITEM_PRINTSPEED;
+						case CONFIG_ITEM_PRINTDELAY:				return JET_CONFIG_ITEM_PRINTDELAY;
+						case CONFIG_ITEM_HORIZONTAL_RESOLUTION:		return JET_CONFIG_ITEM_HORIZONTAL_RESOLUTION;
+						case CONFIG_ITEM_ENCODER_ENABLED:			return JET_CONFIG_ITEM_ENCODER_ENABLED;
+						case CONFIG_ITEM_ENCODER_PULSES:			return JET_CONFIG_ITEM_ENCODER_PULSES;
+						case CONFIG_ITEM_ENCODER_WHEEL:				return JET_CONFIG_ITEM_ENCODER_WHEEL;
+						case CONFIG_ITEM_ENCODER_ABC_PITCH:			return JET_CONFIG_ITEM_ENCODER_ABC_PITCH;
+						case CONFIG_ITEM_PRINTINGLIST:				return JET_CONFIG_ITEM_PRINTINGLIST;
+						case CONFIG_ITEM_FIFO:						return JET_CONFIG_ITEM_FIFO;
+						case CONFIG_ITEM_DELAY_IN_POINTS:			return JET_CONFIG_ITEM_DELAY_IN_POINTS;
+						case CONFIG_ITEM_STB_INC_SSCC:				return JET_CONFIG_ITEM_STB_INC_SSCC;
+						case CONFIG_ITEM_SEND_IMG_AFTER_PRINT:		return JET_CONFIG_ITEM_SEND_IMG_AFTER_PRINT;
+						case CONFIG_ITEM_STB_RESET_PRINTING_LIST:	return JET_CONFIG_ITEM_STB_RESET_PRINTING_LIST;
+						case CONFIG_ITEM_LINE_ID:					return JET_CONFIG_ITEM_LINE_ID;
+						case CONFIG_ITEM_MACHINE_ID:				return JET_CONFIG_ITEM_MACHINE_ID;
+						case CONFIG_ITEM_MAX_PRINT_TIME:			return JET_CONFIG_ITEM_MAX_PRINT_TIME;
+						case CONFIG_ITEM_OPTIMIZE_BARCODE:			return JET_CONFIG_ITEM_OPTIMIZE_BARCODE;
+						case CONFIG_ITEM_OVERLAPPING_TYPE:			return JET_CONFIG_ITEM_OVERLAPPING_TYPE;
+						case CONFIG_ITEM_DEFAULT_FONT:				return JET_CONFIG_ITEM_DEFAULT_FONT;
+						case CONFIG_ITEM_LAMP_CONTROL:				return JET_CONFIG_ITEM_LAMP_CONTROL;
+						case CONFIG_ITEM_LAMP_CONTROL_TIME:			return JET_CONFIG_ITEM_LAMP_CONTROL_TIME;
+						case CONFIG_ITEM_XROFFSET:					return JET_CONFIG_ITEM_XROFFSET;
+						case CONFIG_ITEM_CELL_FILTER:				return JET_CONFIG_ITEM_CELL_FILTER;
+						case CONFIG_ITEM_PRINT_MODE:				return JET_CONFIG_ITEM_PRINT_MODE;
+						case CONFIG_ITEM_NETWORK_ADAPTER:			return JET_CONFIG_ITEM_NETWORK_ADAPTER;
+						case CONFIG_ITEM_NET_IP_ADDRESS_VALUE:		return JET_CONFIG_ITEM_NET_IP_ADDRESS_VALUE;
+						case CONFIG_ITEM_NET_IP_ADDRESS_TYPE:		return JET_CONFIG_ITEM_NET_IP_ADDRESS_TYPE;
+						case CONFIG_ITEM_NET_IP_ADDRESS_MASK:		return JET_CONFIG_ITEM_NET_IP_ADDRESS_MASK;
+						case CONFIG_ITEM_NET_GATEWAY_VALUE:			return JET_CONFIG_ITEM_NET_GATEWAY_VALUE;
+						case CONFIG_ITEM_NET_GATEWAY_TYPE:			return JET_CONFIG_ITEM_NET_GATEWAY_TYPE;
+						case CONFIG_ITEM_NET_DNS:					return JET_CONFIG_ITEM_NET_DNS;
+						case CONFIG_ITEM_NET_DNS_TYPE:				return JET_CONFIG_ITEM_NET_DNS_TYPE;
+						case CONFIG_ITEM_INVALID:					return "";
+					}
+					return "";
+				}
+
+				virtual std::vector<std::string> stringList() const
+				{
+					std::vector<std::string> list;
+					list.push_back(JET_CONFIG_ITEM_PH_ID);
+					list.push_back(JET_CONFIG_ITEM_PH_IP_ADDRESS);
+					list.push_back(JET_CONFIG_ITEM_PRINTERDIRECTION);
+					list.push_back(JET_CONFIG_ITEM_BITMAPINVERTED);
+					list.push_back(JET_CONFIG_ITEM_PRINTSPEED);
+					list.push_back(JET_CONFIG_ITEM_PRINTDELAY);
+					list.push_back(JET_CONFIG_ITEM_HORIZONTAL_RESOLUTION);
+					list.push_back(JET_CONFIG_ITEM_ENCODER_ENABLED);
+					list.push_back(JET_CONFIG_ITEM_ENCODER_PULSES);
+					list.push_back(JET_CONFIG_ITEM_ENCODER_WHEEL);
+					list.push_back(JET_CONFIG_ITEM_ENCODER_ABC_PITCH);
+					list.push_back(JET_CONFIG_ITEM_PRINTINGLIST);
+					list.push_back(JET_CONFIG_ITEM_FIFO);
+					list.push_back(JET_CONFIG_ITEM_DELAY_IN_POINTS);
+					list.push_back(JET_CONFIG_ITEM_STB_INC_SSCC);
+					list.push_back(JET_CONFIG_ITEM_SEND_IMG_AFTER_PRINT);
+					list.push_back(JET_CONFIG_ITEM_STB_RESET_PRINTING_LIST);
+					list.push_back(JET_CONFIG_ITEM_LINE_ID);
+					list.push_back(JET_CONFIG_ITEM_MACHINE_ID);
+					list.push_back(JET_CONFIG_ITEM_MAX_PRINT_TIME);
+					list.push_back(JET_CONFIG_ITEM_OPTIMIZE_BARCODE);
+					list.push_back(JET_CONFIG_ITEM_OVERLAPPING_TYPE);
+					list.push_back(JET_CONFIG_ITEM_DEFAULT_FONT);
+					list.push_back(JET_CONFIG_ITEM_LAMP_CONTROL);
+					list.push_back(JET_CONFIG_ITEM_LAMP_CONTROL_TIME);
+					list.push_back(JET_CONFIG_ITEM_XROFFSET);
+					list.push_back(JET_CONFIG_ITEM_CELL_FILTER);
+					list.push_back(JET_CONFIG_ITEM_PRINT_MODE);
+					list.push_back(JET_CONFIG_ITEM_NETWORK_ADAPTER);
+					list.push_back(JET_CONFIG_ITEM_NET_IP_ADDRESS_VALUE);
+					list.push_back(JET_CONFIG_ITEM_NET_IP_ADDRESS_TYPE);
+					list.push_back(JET_CONFIG_ITEM_NET_IP_ADDRESS_MASK);
+					list.push_back(JET_CONFIG_ITEM_NET_GATEWAY_VALUE);
+					list.push_back(JET_CONFIG_ITEM_NET_GATEWAY_TYPE);
+					list.push_back(JET_CONFIG_ITEM_NET_DNS);
+					list.push_back(JET_CONFIG_ITEM_NET_DNS_TYPE);
 					return list;
 				}
 		};

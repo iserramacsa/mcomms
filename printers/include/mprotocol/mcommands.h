@@ -37,15 +37,12 @@ namespace Macsa{
 			protected:
 				uint32_t _id;
 				std::map<std::string, std::string> _attributes;
-				tinyxml2::XMLDocument _doc;
 				Printers::ErrorCode _error;
 				Printers::TijPrinter& _printer;
 
 				virtual void buildRequest() = 0;
 				virtual void buildResponse() = 0;
 
-
-				std::string toString(); //return current xml document in a std::string
 				tinyxml2::XMLElement * newCommandNode();
 
 			protected:

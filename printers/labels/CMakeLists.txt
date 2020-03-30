@@ -11,7 +11,11 @@ set(LABELS_HEADERS ${LABELS_HEADERS}
 ## LABEL FORMAT SELECTOR (NisX, Zeta, ...)
 if (NISX_LABELS)
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include/nisx)
-	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/nisx ${CMAKE_BINARY_DIR}/nisx)
+	if(TIJ)
+		add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/nisx ${CMAKE_BINARY_DIR}/tij/nisx)
+	elseif(JET)
+		add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/nisx ${CMAKE_BINARY_DIR}/jet/nisx)
+	endif()
 endif()
 
 set(LABELS_SOURCES ${LABELS_SOURCES}

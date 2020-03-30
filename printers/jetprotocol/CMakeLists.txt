@@ -11,7 +11,6 @@ add_subdirectory(commands)
 
 set(JET_PROTOCOL_SOURCES ${JET_PROTOCOL_SOURCES}
 	${CMAKE_CURRENT_SOURCE_DIR}/jetcommandsfactory.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/jetprotocol.cpp
 	PARENT_SCOPE
 )
 
