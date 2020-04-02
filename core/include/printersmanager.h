@@ -3,6 +3,7 @@
 
 #include "network/network.h"
 #include "tij/tijmonitor.h"
+#include "jet/jetmonitor.h"
 
 #define DEFAULT_DISCOVER_TIMEOUT	5
 
@@ -16,8 +17,11 @@ namespace Macsa {
 
 				virtual unsigned int size() const;
 
+
 				bool addTijPrinter(const std::string name, const std::string& address, bool monitorize = false);
-				bool removeTijPrinter(const std::string name);
+				bool addJetPrinter(const std::string name, const std::string& address, bool monitorize = false);
+
+				bool removePrinter(const std::string name);
 				bool connectPrinter(const std::string name);
 				bool disconnectPrinter(const std::string name);
 				void sendDiscover(int timeout = DEFAULT_DISCOVER_TIMEOUT);

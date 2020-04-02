@@ -101,7 +101,7 @@ void MainWindow::onDelPrinter()
 		if (controller != nullptr) {
 			controller->disconnect();
 			QString name = QString("%1: %2").arg(controller->id().c_str()).arg(controller->address().c_str());
-			_manager.removeTijPrinter(controller->id().c_str());
+			_manager.removePrinter(controller->id().c_str());
 
 			refreshPrintersList();
 		}
