@@ -155,7 +155,7 @@ JetCommand *JetCommandsFactory::resetMessagesGroup()
 	return new JetResetCurrentGroup(_printer);
 }
 
-JetCommand *JetCommandsFactory::getMessagesGroup(const std::string group)
+JetCommand *JetCommandsFactory::getMessagesGroup(const std::string& group)
 {
 	return new JetGetMessages(_printer, group);
 }
@@ -165,7 +165,7 @@ JetCommand *JetCommandsFactory::createMessageGroup(const std::string &group)
 	return new JetCreateMessagesGroup(_printer, group);
 }
 
-JetCommand *JetCommandsFactory::sendMessageGroup(const std::string group, const Printers::Message& message, const std::vector<char> &content, bool raw)
+JetCommand *JetCommandsFactory::sendMessageGroup(const std::string& group, const Printers::Message& message, const std::vector<char> &content, bool raw)
 {
 	return new JetSendMessageGroup(_printer, group, message, content, raw);
 }

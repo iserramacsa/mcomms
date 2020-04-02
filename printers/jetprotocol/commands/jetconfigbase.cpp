@@ -83,7 +83,7 @@ void JetConfigCommand::printerCommsToXml(const Macsa::Printers::JetComms &comms,
 	std::vector<std::string> ifaces = comms.ifaces();
 	if (eNetwork) {
 		for (unsigned int i = 0; i < ifaces.size(); i++) {
-			const Ethernet* eth = comms.ethernetIface(ifaces.at(i));
+			const JetEthernet* eth = comms.ethernetIface(ifaces.at(i));
 			if (eth) {
 				XMLElement * eIface = createChildNode(JET_NETWORK_ADAPTER_TAG, &eIface);
 				if (eIface){
@@ -95,7 +95,7 @@ void JetConfigCommand::printerCommsToXml(const Macsa::Printers::JetComms &comms,
 	}
 }
 
-void JetConfigCommand::networkApaterToXml(const Ethernet &eth, XMLElement **parent)
+void JetConfigCommand::networkApaterToXml(const JetEthernet &eth, XMLElement **parent)
 {
 	XMLElement* eIPlist = createChildNode(JET_ETH_IP_ADDR_LIST, parent);
 	if (eIPlist) {
@@ -194,10 +194,10 @@ void JetConfigCommand::printerCommsFromXml(const XMLElement *eComms, Macsa::Prin
 		while (eEth != nullptr) {
 			bool newAdapter = false;
 			std::string id = eEth->Attribute(UPPERCASE_ID_ATTRIBUTE, "");
-			Ethernet *eth = comms.ethernetIface(id);
+			JetEthernet *eth = comms.ethernetIface(id);
 			if (eth == nullptr) {
 				newAdapter = true;
-				eth = new Ethernet();
+				eth = new JetEthernet();
 				eth->setId(id);
 			}
 			networkAdapterFromXml(eEth, *eth);
@@ -236,7 +236,7 @@ tinyxml2::XMLElement* JetConfigCommand::insertPrintheadProperty(const std::strin
 	return eProp;
 }
 
-void JetConfigCommand::networkAdapterFromXml(const XMLElement *eEth, Ethernet &eth)
+void JetConfigCommand::networkAdapterFromXml(const XMLElement *eEth, JetEthernet &eth)
 {
 	// IP Address
 	const XMLElement* eIPlist = eEth->FirstChildElement(JET_ETH_IP_ADDR_LIST);

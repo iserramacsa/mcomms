@@ -129,7 +129,7 @@ void JetGetStatus::parseNetworkStatus(const XMLElement *eNetwork)
 				std::string id = (eIfaceID->Value() ? eIfaceID->Value() : "");
 				Printers::JetComms* comms =  dynamic_cast<Printers::JetComms*>(_printer.comms());
 				if (comms) {
-					Printers::Ethernet* eth = comms->ethernetIface(id);
+					Printers::JetEthernet* eth = comms->ethernetIface(id);
 					eth->setConnected(eAdapter->BoolAttribute(CONNECTED_ATTRIBUTE, false));
 				}
 			}

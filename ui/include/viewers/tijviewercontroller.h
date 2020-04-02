@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QDateTime>
-#include "tijviewer.h"
+#include "tij/tijviewer.h"
 
 #include <QThread>
 #include <QDebug>

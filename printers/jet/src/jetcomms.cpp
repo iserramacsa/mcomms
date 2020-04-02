@@ -57,28 +57,28 @@ bool IpAddress::compare(const IpAddress &other) const
 }
 
 // ========== Ethernet  ===========//
-Ethernet::Ethernet()
+JetEthernet::JetEthernet()
 {}
 
-Ethernet::Ethernet(const Ethernet &eth)
+JetEthernet::JetEthernet(const JetEthernet &eth)
 {
 	copy(eth);
 }
 
-Ethernet::~Ethernet()
+JetEthernet::~JetEthernet()
 {}
 
-std::string Ethernet::id() const
+std::string JetEthernet::id() const
 {
 	return _id;
 }
 
-void Ethernet::setId(const std::string &id)
+void JetEthernet::setId(const std::string &id)
 {
 	_id = id;
 }
 
-void Ethernet::setAddress(const std::string &addr, IpVersion version, std::string netmask)
+void JetEthernet::setAddress(const std::string &addr, IpVersion version, std::string netmask)
 {
 	bool exist = false;
 	for (auto & address : _addresses){
@@ -96,7 +96,7 @@ void Ethernet::setAddress(const std::string &addr, IpVersion version, std::strin
 	}
 }
 
-void Ethernet::setGateway(const std::string &gw, IpVersion version)
+void JetEthernet::setGateway(const std::string &gw, IpVersion version)
 {
 	bool exist = false;
 	for (auto & gateway : _gateways){
@@ -112,7 +112,7 @@ void Ethernet::setGateway(const std::string &gw, IpVersion version)
 	}
 }
 
-void Ethernet::setNetmask(const std::string &addr, const std::string &mask)
+void JetEthernet::setNetmask(const std::string &addr, const std::string &mask)
 {
 	for (auto & address : _addresses){
 		if (address.address() == addr) {
@@ -122,7 +122,7 @@ void Ethernet::setNetmask(const std::string &addr, const std::string &mask)
 	}
 }
 
-void Ethernet::setDNS(const std::string &addr, IpVersion version)
+void JetEthernet::setDNS(const std::string &addr, IpVersion version)
 {
 	bool exist = false;
 	for (auto & dns : _dns){
@@ -138,33 +138,33 @@ void Ethernet::setDNS(const std::string &addr, IpVersion version)
 	}
 }
 
-std::vector<IpAddress> Ethernet::addresses() const
+std::vector<IpAddress> JetEthernet::addresses() const
 {
 	return _addresses;
 }
 
-std::vector<IpAddress> Ethernet::gateways() const
+std::vector<IpAddress> JetEthernet::gateways() const
 {
 	return _gateways;
 }
 
-std::vector<IpAddress> Ethernet::dns() const
+std::vector<IpAddress> JetEthernet::dns() const
 {
 	return _dns;
 }
 
 
-bool Ethernet::connected() const
+bool JetEthernet::connected() const
 {
 	return _connected;
 }
 
-void Ethernet::setConnected(bool connected)
+void JetEthernet::setConnected(bool connected)
 {
 	_connected = connected;
 }
 
-void Ethernet::copy(const Ethernet &other)
+void JetEthernet::copy(const JetEthernet &other)
 {
 	_addresses.clear();
 	_gateways.clear();
@@ -176,7 +176,7 @@ void Ethernet::copy(const Ethernet &other)
 	_connected = other._connected;
 }
 
-bool Ethernet::compare(const Ethernet &other) const
+bool JetEthernet::compare(const JetEthernet &other) const
 {
 	if (_addresses != other._addresses) { return false; }
 	if (_gateways != other._gateways) { return false; }
@@ -191,18 +191,18 @@ int JetComms::ethernetIfaces() const
 	return static_cast<int>(_ifaces.size());
 }
 
-Ethernet *JetComms::ethernetIface(const std::string &iface)
+JetEthernet *JetComms::ethernetIface(const std::string &iface)
 {
-	std::vector<Ethernet>::iterator it = getEthAdapter(iface);
+	std::vector<JetEthernet>::iterator it = getEthAdapter(iface);
 	if (it != _ifaces.end()) {
 		return &(*it);
 	}
 	return nullptr;
 }
 
-const Ethernet *JetComms::ethernetIface(const std::string& iface) const
+const JetEthernet *JetComms::ethernetIface(const std::string& iface) const
 {
-	std::vector<Ethernet>::const_iterator it = getEthAdapter(iface);
+	std::vector<JetEthernet>::const_iterator it = getEthAdapter(iface);
 	if (it != _ifaces.end()) {
 		return &(*it);
 	}
@@ -218,13 +218,13 @@ std::vector<std::string> JetComms::ifaces() const
 	return eths;
 }
 
-void JetComms::setEthernetIface(const Ethernet *ethAdapter)
+void JetComms::setEthernetIface(const JetEthernet *ethAdapter)
 {
 	if (ethAdapter != nullptr) {
-		std::vector<Ethernet>::iterator it = getEthAdapter(ethAdapter->id());
+		std::vector<JetEthernet>::iterator it = getEthAdapter(ethAdapter->id());
 
 		if (it == _ifaces.end()){
-			Ethernet eth = (*ethAdapter);
+			JetEthernet eth = (*ethAdapter);
 			_ifaces.push_back(eth);
 		}
 		else {
@@ -245,9 +245,9 @@ void JetComms::copy(const JetComms &other)
 	_ifaces = other._ifaces;
 }
 
-std::vector<Ethernet>::iterator JetComms::getEthAdapter(const std::string &id)
+std::vector<JetEthernet>::iterator JetComms::getEthAdapter(const std::string &id)
 {
-	for (std::vector<Ethernet>::iterator it = _ifaces.begin(); it != _ifaces.end(); it++) {
+	for (std::vector<JetEthernet>::iterator it = _ifaces.begin(); it != _ifaces.end(); it++) {
 		if (it->id().compare(id) == 0) {
 			return it;
 		}
@@ -255,9 +255,9 @@ std::vector<Ethernet>::iterator JetComms::getEthAdapter(const std::string &id)
 
 	return _ifaces.end();
 }
-std::vector<Ethernet>::const_iterator JetComms::getEthAdapter(const std::string &id) const
+std::vector<JetEthernet>::const_iterator JetComms::getEthAdapter(const std::string &id) const
 {
-	for (std::vector<Ethernet>::const_iterator it = _ifaces.begin(); it != _ifaces.end(); it++) {
+	for (std::vector<JetEthernet>::const_iterator it = _ifaces.begin(); it != _ifaces.end(); it++) {
 		if (it->id().compare(id) == 0) {
 			return it;
 		}

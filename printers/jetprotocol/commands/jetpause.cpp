@@ -10,9 +10,6 @@ JetGetPause::JetGetPause(JetPrinter &printer) :
 	JetCommand(CMD_GET_PAUSE, printer)
 {}
 
-JetGetPause::~JetGetPause()
-{}
-
 bool JetGetPause::parseRequest(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);

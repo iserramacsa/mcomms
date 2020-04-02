@@ -1,6 +1,6 @@
 #include "printersmanager.h"
-#include "tijcontroller.h"
-#include "tijmonitor.h"
+#include "tij/tijcontroller.h"
+#include "tij/tijmonitor.h"
 
 #include <cstdint>
 

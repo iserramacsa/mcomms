@@ -15,6 +15,11 @@ namespace Macsa{
 			XMLCommand();
 			virtual ~XMLCommand();
 
+			virtual std::string getRequest(uint32_t id = 0) = 0;
+			virtual std::string getResponse() = 0;
+			virtual bool parseRequest(const tinyxml2::XMLElement* xml) = 0;
+			virtual bool parseResponse(const tinyxml2::XMLElement*xml) = 0;
+
 			std::string getTextFromChildNode(const tinyxml2::XMLElement *parent, const std::string &child, const std::string& defaultValue="") const;
 			bool        getBoolFromChildNode(const tinyxml2::XMLElement *parent, const std::string &child, bool defaultValue = false) const;
 			int         getIntFromChildNode(const tinyxml2::XMLElement *parent, const std::string &child, int defaultValue = 0) const;
@@ -55,6 +60,9 @@ namespace Macsa{
 
 		protected:
 			tinyxml2::XMLDocument _doc;
+
+			virtual void buildRequest() = 0;
+			virtual void buildResponse() = 0;
 	};
 }
 

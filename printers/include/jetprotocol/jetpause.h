@@ -13,7 +13,6 @@ namespace Macsa{
 		{
 			public:
 				JetGetPause(Printers::JetPrinter& printer);
-				virtual ~JetGetPause();
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
 
@@ -31,7 +30,6 @@ namespace Macsa{
 			public:
 				JetSetPause(Printers::JetPrinter& printer, bool pause);
 				JetSetPause(Printers::JetPrinter& printer);
-				virtual ~JetSetPause();
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml);
 

@@ -7,10 +7,10 @@
 using namespace Macsa;
 using namespace Macsa::Printers;
 
-int JetPrinter::libraryVersionMajor()	 { return JET_LIBRARY_VERSION_MAJOR;}
-int JetPrinter::libraryVersionMinor()	 { return JET_LIBRARY_VERSION_MINOR;}
-int JetPrinter::libraryVersionRevision() { return JET_LIBRARY_VERSION_PATCH;}
-std::string JetPrinter::libraryVersion() { return JET_LIBRARY_VERSION_STR;  }
+int JetPrinter::jetLibraryVersionMajor()	 { return JET_LIBRARY_VERSION_MAJOR;}
+int JetPrinter::jetLibraryVersionMinor()	 { return JET_LIBRARY_VERSION_MINOR;}
+int JetPrinter::jetLibraryVersionRevision()  { return JET_LIBRARY_VERSION_PATCH;}
+std::string JetPrinter::jetLibraryVersion()  { return JET_LIBRARY_VERSION_STR;  }
 
 JetPrinter::JetPrinter() :
 	_mutex(new std::mutex())
@@ -137,6 +137,11 @@ std::string JetPrinter::getLibraryVersion(const std::string &library) const
 	return "";
 }
 
+std::map<std::string, std::string> JetPrinter::getLibrariesVersions() const
+{
+	return _librariesVersions;
+}
+
 void JetPrinter::clearLibrariesVersions()
 {
 	_librariesVersions.clear();
@@ -205,7 +210,12 @@ void JetPrinter::setPrintheadTemperature(unsigned int id, unsigned int temperatu
 	}
 }
 
-unsigned int JetPrinter::tankLevel(unsigned int id)
+JetPrinter::tanksMap JetPrinter::inkTanks() const
+{
+	return _inkTanks;
+}
+
+unsigned int JetPrinter::tankLevel(unsigned int id) const
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
 	if (_inkTanks.find(id) != _inkTanks.end()) {
@@ -255,6 +265,12 @@ JetMessagesManager &JetPrinter::messageManager()
 	return _messageManager;
 }
 
+const JetMessagesManager &JetPrinter::messageManager() const
+{
+	std::lock_guard<std::mutex>lock(*_mutex);
+	return _messageManager;
+}
+
 void JetPrinter::setMessageManager(const JetMessagesManager &manager)
 {
 	std::lock_guard<std::mutex>lock(*_mutex);
@@ -292,6 +308,15 @@ JetBoard JetPrinter::board(const std::string &boardType, unsigned int boardNum) 
 	return JetBoard(boardType, boardNum);
 }
 
+JetBoard JetPrinter::board(JetBoardType boardType, unsigned int boardNum) const
+{
+	std::vector<JetBoard>::const_iterator itBoard = getBoard(boardType, boardNum);
+	if (itBoard != _boards.end()) {
+		return *itBoard;
+	}
+	return JetBoard(boardType, boardNum);
+}
+
 void JetPrinter::setBoard(const JetBoard &board)
 {
 	std::vector<JetBoard>::iterator itBoard = getBoard(board.type(), board.number());
@@ -301,6 +326,11 @@ void JetPrinter::setBoard(const JetBoard &board)
 	else {
 		_boards.push_back(board);
 	}
+}
+
+std::vector<JetIO> JetPrinter::outputs() const
+{
+	return _outputs;
 }
 
 bool JetPrinter::outputEnabled(const std::string &outputId) const
@@ -346,7 +376,7 @@ void JetPrinter::updateLogs(std::list<LogItem>logs)
 	}
 }
 
-std::list<LogItem> JetPrinter::logs(time_t from, time_t to) const
+JetPrinter::logsList JetPrinter::logs(time_t from, time_t to) const
 {
 
 	std::list<LogItem> list;
@@ -364,7 +394,7 @@ std::list<LogItem> JetPrinter::logs(time_t from, time_t to) const
 	return list;
 }
 
-std::list<LogItem> JetPrinter::logs() const
+JetPrinter::logsList JetPrinter::logs() const
 {
 	return _logs;
 }

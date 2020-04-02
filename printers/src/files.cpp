@@ -881,6 +881,11 @@ std::vector<string> Directory::getFilesList() const
 	return getItemsList(_files);
 }
 
+std::vector<string> Directory::getSubdirectoriesList() const
+{
+	return getItemsList(_subdirectories);
+}
+
 const Directory *Directory::getSubdirectory(const string &name) const
 {
 	return getItem(name, _subdirectories);

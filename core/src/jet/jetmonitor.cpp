@@ -1,25 +1,25 @@
-#include "tijmonitor.h"
-#include "mprotocol/mprotocol.h"
-#include "mprotocol/mfiles.h"
+#include "jet/jetmonitor.h"
+#include <iostream>
+
 
 using namespace Macsa;
 using namespace Macsa::MComms;
 using namespace Macsa::Network;
 
-TijMonitor::TijMonitor(const std::string &id, const std::string &address) :
-	TijController(id, address)
+JetMonitor::JetMonitor(const std::string &id, const std::string &address) :
+	JetController(id, address)
 {
 	_running.store(false);
 	_maxReconnections = 30;
 	_reconnections = 0;
 }
 
-TijMonitor::~TijMonitor()
+JetMonitor::~JetMonitor()
 {
 	stop();
 }
 
-bool TijMonitor::connect()
+bool JetMonitor::connect()
 {
 	bool connected = PrinterController::connect();
 	if (connected) {
@@ -28,7 +28,7 @@ bool TijMonitor::connect()
 	return connected;
 }
 
-bool TijMonitor::disconnect()
+bool JetMonitor::disconnect()
 {
 	bool disconnected = PrinterController::disconnect();
 	if (NetworkNode::status() == DISCONNECTED) {
@@ -37,9 +37,7 @@ bool TijMonitor::disconnect()
 	return disconnected;
 }
 
-#include <iostream>
-
-void TijMonitor::run()
+void JetMonitor::run()
 {
 	_running.store(true);
 
@@ -48,13 +46,13 @@ void TijMonitor::run()
 			std::unique_lock<std::mutex> _lck(_mLoop);
 			if (_cv.wait_for(_lck, std::chrono::seconds(1)) == std::cv_status::timeout) {
 				const std::lock_guard<std::mutex>lock(_mCommands);
-				_commands.push_back(_factory.getLiveCommand());
+				_commands.push_back(_factory.getStatus());
 			} else if (_running.load() == false){
 				break;
 			}
 		}
 		while (_commands.size()) {
-			MProtocol::MCommand* cmd = nullptr;
+			JetProtocol::JetCommand* cmd = nullptr;
 			{
 				const std::lock_guard<std::mutex>lock(_mCommands);
 				cmd = (*_commands.begin());
@@ -67,36 +65,17 @@ void TijMonitor::run()
 				_commands.pop_front();
 			}
 		}
-
-		if (isStatusChanged()) {
-			TijController::updateStatus();
-		}
-		if (isConfigChanged()) {
-			TijController::updateConfig();
-		}
-		if (isFilesChanged()) {
-			TijController::updateFilesList();
-		}
-		if (isFontsChanged())  {
-			TijController::updateFontsList();
-		}
-		if  (isUserValuesChanged()){
-			TijController::updateUserValues();
-		}
-		if (isErrorsLogsChanged()) {
-			TijController::updateErrorsList();
-		}
 	}
 	_reconnections = 0;
 
 }
 
-bool TijMonitor::send(MProtocol::MCommand *cmd)
+bool JetMonitor::send(XMLCommand *cmd)
 {
 	ulong numCommands = _commands.size();
 	{
 		const std::lock_guard<std::mutex>lock(_mCommands);
-		_commands.push_back(cmd);
+		_commands.push_back(dynamic_cast<JetProtocol::JetCommand*>(cmd));
 	}
 	{
 		std::unique_lock<std::mutex> _lck(_mLoop);
@@ -105,18 +84,18 @@ bool TijMonitor::send(MProtocol::MCommand *cmd)
 	return ((_commands.size() - numCommands) > 0);
 }
 
-bool TijMonitor::sendCmd(MProtocol::MCommand *cmd)
+bool JetMonitor::sendCmd(Macsa::JetProtocol::JetCommand *cmd)
 {
 	bool success = false;
 
-	success = TijController::send(cmd);
+	success = JetController::send(cmd);
 	if (!success) {
 		std::cout << __FUNCTION__ << " Send command " << cmd->commandName() << " failed" << std::endl;
 		std::cout << "        reason: " << std::flush;
 		switch (_lastSentStatus) {
-			case nFrameStatus::FRAME_TIMEOUT: std::cout <<		"FRAME_TIMEOUT" 	 << std::endl; _reconnections++; break;
-			case nFrameStatus::FRAME_INCOMPLETED: std::cout <<	"FRAME_INCOMPLETED"	 << std::endl; break;
-			case nFrameStatus::FRAME_ERROR: std::cout	<<		"FRAME_ERROR"		 << std::endl; _reconnections++; break;
+			case nFrameStatus::FRAME_TIMEOUT:		std::cout << "FRAME_TIMEOUT" 	 << std::endl; _reconnections++; break;
+			case nFrameStatus::FRAME_INCOMPLETED:	std::cout << "FRAME_INCOMPLETED" << std::endl; break;
+			case nFrameStatus::FRAME_ERROR:			std::cout << "FRAME_ERROR"		 << std::endl; _reconnections++; break;
 			default: break;
 		}
 		PrinterController::reconnect();
@@ -128,25 +107,15 @@ bool TijMonitor::sendCmd(MProtocol::MCommand *cmd)
 	return success;
 }
 
-int TijMonitor::maxReconnections() const
-{
-	return _maxReconnections;
-}
-
-void TijMonitor::setMaxReconnections(int maxReconnections)
-{
-	_maxReconnections = maxReconnections;
-}
-
-void TijMonitor::start()
+void JetMonitor::start()
 {
 	if (_running.load()) {
 		stop();
 	}
-	_th = std::thread(&TijMonitor::run, this);
+	_th = std::thread(&JetMonitor::run, this);
 }
 
-void TijMonitor::stop()
+void JetMonitor::stop()
 {
 	if (_running.load()){
 		_running.store(false);

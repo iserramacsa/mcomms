@@ -23,8 +23,8 @@ namespace Macsa {
 				tinyxml2::XMLElement* insertPrintheadProperty(const std::string &propetyName, const std::string &value, tinyxml2::XMLElement **parent);
 				tinyxml2::XMLElement* insertPrintheadProperty(const std::string &propetyName, unsigned int value, tinyxml2::XMLElement **parent);
 				tinyxml2::XMLElement* insertPrintheadProperty(const std::string &propetyName, bool value, tinyxml2::XMLElement **parent);
-				void networkApaterToXml(const Printers::Ethernet& eth, tinyxml2::XMLElement **parent);
-				void networkAdapterFromXml(const tinyxml2::XMLElement* eEth, Printers::Ethernet& eth);
+				void networkApaterToXml(const Printers::JetEthernet& eth, tinyxml2::XMLElement **parent);
+				void networkAdapterFromXml(const tinyxml2::XMLElement* eEth, Printers::JetEthernet& eth);
 		};
 	}
 }

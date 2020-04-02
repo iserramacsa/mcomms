@@ -11,10 +11,10 @@ namespace Macsa {
 		{
 			public:
 				JetCommandsFactory(Printers::JetPrinter& printer);
-				~JetCommandsFactory();
+				virtual ~JetCommandsFactory();
 
-				virtual bool parseResponse(const std::string &rx, JetCommand *cmd);
-				virtual bool parseRequest(const std::string &frame, JetCommand **cmd);
+				virtual bool parseResponse(const std::string& rx, JetCommand *cmd);
+				virtual bool parseRequest(const std::string& frame, JetCommand **cmd);
 
 				//Status
 				JetCommand* getCounters();
@@ -34,21 +34,21 @@ namespace Macsa {
 
 				//Messages
 				JetCommand* setCurrentMessage(unsigned int messageNumber);
-				JetCommand* sendMessage(const Printers::Message& message, const std::vector<char> &content, bool raw);
+				JetCommand* sendMessage(const Printers::Message& message, const std::vector<char>& content, bool raw);
 				JetCommand* resetMessagesGroup();
-				JetCommand* getMessagesGroup(const std::string group);
+				JetCommand* getMessagesGroup(const std::string& group);
 				JetCommand* createMessageGroup(const std::string& group);
-				JetCommand* sendMessageGroup(const std::string group, const Printers::Message &message, const std::vector<char> &content, bool raw);
+				JetCommand* sendMessageGroup(const std::string& group, const Printers::Message& message, const std::vector<char>& content, bool raw);
 				JetCommand* deleteMessageGroup(const std::string& group);
 				JetCommand* setMessageVariable(unsigned int filenum, const std::string& variable, const std::string& value);
 				JetCommand* setMessageVariables(unsigned int filenum, const std::map<std::string, std::string>& values);
-				JetCommand* getUserInputs(unsigned int filenum, const std::string &group = "");
+				JetCommand* getUserInputs(unsigned int filenum, const std::string& group = "");
 				JetCommand* setUserInputs(unsigned int filenum, const std::map<std::string, std::string>& uiFields, const std::string& group = "");
 
 				//Config
 				JetCommand* setPause(bool pause);
 				JetCommand* incrementSSCC();
-				JetCommand* setDateTime(const time_t &datetime);
+				JetCommand* setDateTime(const time_t& datetime);
 				JetCommand* setOutput(const Printers::JetIO& output);
 				JetCommand* setPrintDirection(Printers::PrintDirection dir);
 				JetCommand* setPrintBitmapInverted(bool inverted);
@@ -56,7 +56,7 @@ namespace Macsa {
 				JetCommand* setPrintSpeed(unsigned int speed);
 				JetCommand* setPrintDelay(unsigned int delay);
 				JetCommand* setHorizontalResolution(unsigned int resolution);
-				JetCommand* setConfig(Printers::JetPrinter &printer);
+				JetCommand* setConfig(Printers::JetPrinter& printer);
 
 				JetCommand* getPrintSpeed();
 				JetCommand* getPrintDelay();
@@ -74,7 +74,6 @@ namespace Macsa {
 				Printers::JetPrinter& _printer;
 
 				JetCommand* getCommand(tinyxml2::XMLElement* eCmd);
-				inline bool isWindValid(tinyxml2::XMLElement* wind) const;
 
 		};
 	}

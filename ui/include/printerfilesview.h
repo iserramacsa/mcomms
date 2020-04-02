@@ -5,7 +5,7 @@
 #include <QtGui>
 #include "ui_printerfiles.h"
 #include "viewers/tijviewercontroller.h"
-#include "tijcontroller.h"
+#include "tij/tijcontroller.h"
 
 class PrinterFilesView : public QWidget
 {

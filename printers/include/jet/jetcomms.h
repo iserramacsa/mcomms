@@ -33,12 +33,12 @@ namespace Macsa {
 				bool compare(const IpAddress& other) const;
 		};
 
-		class Ethernet
+		class JetEthernet
 		{
 			public:
-				Ethernet();
-				Ethernet(const Ethernet& eth);
-				~Ethernet();
+				JetEthernet();
+				JetEthernet(const JetEthernet& eth);
+				~JetEthernet();
 
 				std::string id() const;
 				void setId(const std::string &id);
@@ -55,9 +55,9 @@ namespace Macsa {
 				bool connected() const;
 				void setConnected(bool connected);
 
-				inline bool operator == (const Ethernet& other) const {return compare(other);}
-				inline bool operator != (const Ethernet& other) const {return !compare(other);}
-				inline void operator = (const Ethernet& other) {return copy(other);}
+				inline bool operator == (const JetEthernet& other) const {return compare(other);}
+				inline bool operator != (const JetEthernet& other) const {return !compare(other);}
+				inline void operator = (const JetEthernet& other) {return copy(other);}
 
 			private:
 				std::string _id;
@@ -66,8 +66,8 @@ namespace Macsa {
 				std::vector<IpAddress> _gateways;
 				bool _connected;
 
-				void copy(const Ethernet& other);
-				bool compare(const Ethernet& other) const;
+				void copy(const JetEthernet& other);
+				bool compare(const JetEthernet& other) const;
 				bool compare(const std::vector<IpAddress>& v1, const std::vector<IpAddress>& v2) const;
 
 		};
@@ -75,23 +75,23 @@ namespace Macsa {
 		class JetComms : public PrinterComms{
 			public:
 				int ethernetIfaces() const;
-				Ethernet * ethernetIface(const std::string& iface);
-				const Ethernet * ethernetIface(const std::string& iface) const;
+				JetEthernet * ethernetIface(const std::string& iface);
+				const JetEthernet * ethernetIface(const std::string& iface) const;
 				std::vector<std::string> ifaces() const;
 
-				void setEthernetIface(const Ethernet * ethAdapter);
+				void setEthernetIface(const JetEthernet * ethAdapter);
 
 				inline bool operator == (const JetComms& other) const {return  compare(other);}
 				inline bool operator != (const JetComms& other) const {return !compare(other);}
 				inline void operator = (const JetComms& other) {return copy(other);}
 
 			private:
-				std::vector<Ethernet> _ifaces;
+				std::vector<JetEthernet> _ifaces;
 
 				bool compare(const JetComms& other) const;
 				void copy (const JetComms& other);
-				std::vector<Ethernet>::iterator getEthAdapter(const std::string & id);
-				std::vector<Ethernet>::const_iterator getEthAdapter(const std::string & id) const;
+				std::vector<JetEthernet>::iterator getEthAdapter(const std::string & id);
+				std::vector<JetEthernet>::const_iterator getEthAdapter(const std::string & id) const;
 		};
 	}
 }

@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "tijcontroller.h"
+#include "tij/tijcontroller.h"
 
 using namespace Macsa;
 using namespace Macsa::MComms;

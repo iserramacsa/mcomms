@@ -66,7 +66,7 @@ namespace Macsa {
 				MProtocol::LiveFlags _liveFlags;
 				nFrameStatus _lastSentStatus;
 
-				virtual bool send(MProtocol::MCommand *cmd) override;
+				virtual bool send(XMLCommand *cmd) override;
 
 			private:
 				std::mutex _mutex;
@@ -81,8 +81,8 @@ namespace Macsa {
 				std::vector<std::string> getFiles(const std::string &extension);
 				std::vector<std::string> getFiles(const std::string &drive,const std::string &folder);
 
-				template<typename... Args>
-				bool sendCommand(std::function<MProtocol::MCommand*(MProtocol::MCommandsFactory*, const Args& ...)>& command, const Args& ...args);
+//				template<typename... Args>
+//				bool sendCommand(std::function<MProtocol::MCommand*(MProtocol::MCommandsFactory*, const Args& ...)>& command, const Args& ...args);
 
 		};
 	}

@@ -1,4 +1,4 @@
-#include "tijviewer.h"
+#include "tij/tijviewer.h"
 
 using namespace Macsa;
 using namespace Macsa::MComms;

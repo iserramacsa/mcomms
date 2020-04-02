@@ -193,6 +193,8 @@ namespace Macsa {
 				std::string pwd() const;
 				std::string name() const;
 				std::vector<std::string> getFilesList() const;
+				std::vector<std::string> getSubdirectoriesList() const;
+
 
 				const Directory* getSubdirectory(const std::string& name) const;
 				Directory* getSubdirectory(const std::string& name);

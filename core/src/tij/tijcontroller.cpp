@@ -1,8 +1,8 @@
-#include "tijcontroller.h"
+#include "tij/tijcontroller.h"
+#include "tij/tijobserver.h"
 #include "mprotocol/mprotocol.h"
 #include "mprotocol/mcommandsfactory.h"
 #include "network/networknode.h"
-#include "tijobserver.h"
 
 #include <iostream>
 
@@ -23,32 +23,27 @@ TijController::TijController(const std::string &id, const std::string &address) 
 
 void TijController::getLive()
 {
-	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getLiveCommand;
-	sendCommand(command);
+	send(_factory.getLiveCommand());
 }
 
 bool TijController::updateStatus()
 {
-	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getStatusCommand;
-	return  sendCommand(command);
+	return  send(_factory.getStatusCommand());
 }
 
 bool TijController::updateErrorsList()
 {
-	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getErrorsList;
-	return  sendCommand(command);
+	return send(_factory.getErrorsList());
 }
 
 bool TijController::updateConfig()
 {
-	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getConfigCommand;
-	return  sendCommand(command);
+	return send(_factory.getConfigCommand());
 }
 
 bool TijController::setDateTime(const time_t &dt)
 {
-	std::function<MCommand*(MCommandsFactory*, const time_t &)> command = &MCommandsFactory::setDateTimeCommand;
-	return  sendCommand(command, dt);
+	return  send(_factory.setDateTimeCommand(dt));
 }
 
 bool TijController::setEnabled(bool enabled)
@@ -103,20 +98,17 @@ bool TijController::setPrintRotated(bool rotated)
 
 bool TijController::setUserMessage(const std::string &filepath)
 {
-	std::function<MCommand*(MCommandsFactory*, const std::string &)> command = &MCommandsFactory::setCurrentMessage;
-	return  sendCommand(command, filepath);
+	return  send(_factory.setCurrentMessage(filepath));
 }
 
 bool TijController::updateFilesList()
 {
-	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getAllFilesCommand;
-	return  sendCommand(command);
+	return  send(_factory.getAllFilesCommand());
 }
 
 bool TijController::updateFontsList()
 {
-	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getFontsCommand;
-	return  sendCommand(command);
+	return  send(_factory.getFontsCommand());
 }
 
 bool TijController::updateUserValues()
@@ -128,20 +120,17 @@ bool TijController::updateUserValues()
 
 bool TijController::updateMessagesList()
 {
-	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getMessagesCommand;
-	return  sendCommand(command);
+	return send(_factory.getMessagesCommand());
 }
 
 bool TijController::updateImagesList()
 {
-	std::function<MCommand*(MCommandsFactory*)> command = &MCommandsFactory::getImagesCommand;
-	return  sendCommand(command);
+	return send(_factory.getImagesCommand());
 }
 
 bool TijController::updateFile(const std::string &filepath, bool rawMode)
 {
-	std::function<MCommand*(MCommandsFactory*, const std::string &, const bool&)> command = &MCommandsFactory::getFileContent;
-	return  sendCommand(command, filepath, rawMode);
+	return  send(_factory.getFileContent(filepath, rawMode));
 }
 
 std::vector<std::string> TijController::getDrives()
@@ -169,33 +158,36 @@ std::vector<uint8_t> TijController::getFile(const std::string &filepath)
 	return content;
 }
 
-bool TijController::send(MCommand* cmd)
+bool TijController::send(XMLCommand* cmd)
 {
 	bool success = false;
-
-	std::string tx = cmd->getRequest(_factory.nextId());
-#if TRACE_TX
-	std::cout << __func__ << " TX: " << tx << std::endl;
-#endif
-
-	_lastSentStatus = Network::NetworkNode::sendPacket(tx, MPROTOCOL_PORT);
-	if (_lastSentStatus == ISocket::FRAME_SUCCESS)
+	MProtocol::MCommand* mCmd = dynamic_cast<MProtocol::MCommand*>(cmd);
+	if (cmd != nullptr)
 	{
-		std::string resp = "";
-		_lastSentStatus = Network::NetworkNode::receivePacket(resp, MPROTOCOL_PORT);
-		if(_lastSentStatus == ISocket::FRAME_SUCCESS)
-		{
-			std::lock_guard<std::mutex> lock(_mutex);
-			success = _factory.parseResponse(resp, cmd);
-			if (success && cmd->getError() == Printers::nErrorCode::SUCCESS) {
-				checkCommand(cmd->commandName(), cmd->attributes());
-			}
-		}
-#if TRACE_RX
-		std::cout << __func__ << " RX: " << resp << std::endl;
+		std::string tx = cmd->getRequest(_factory.nextId());
+#if TRACE_TX
+		std::cout << __func__ << " TX: " << tx << std::endl;
 #endif
+
+		_lastSentStatus = Network::NetworkNode::sendPacket(tx, MPROTOCOL_PORT);
+		if (_lastSentStatus == ISocket::FRAME_SUCCESS)
+		{
+			std::string resp = "";
+			_lastSentStatus = Network::NetworkNode::receivePacket(resp, MPROTOCOL_PORT);
+			if(_lastSentStatus == ISocket::FRAME_SUCCESS)
+			{
+				std::lock_guard<std::mutex> lock(_mutex);
+				success = _factory.parseResponse(resp, mCmd);
+				if (success && mCmd->getError() == Printers::nErrorCode::SUCCESS) {
+					checkCommand(mCmd->commandName(), mCmd->attributes());
+				}
+			}
+#if TRACE_RX
+			std::cout << __func__ << " RX: " << resp << std::endl;
+#endif
+		}
+		delete cmd;
 	}
-	delete cmd;
 	return success;
 }
 
@@ -210,8 +202,7 @@ bool TijController::getBaseBoard(Printers::Board& board)
 
 bool TijController::changeBoardConfig(const Printers::Board &board)
 {
-	std::function<MCommand*(MCommandsFactory*, const Printers::Board&)> command = &MCommandsFactory::setConfigBoard;
-	return  sendCommand(command, board);
+	return  send(_factory.setConfigBoard(board));
 }
 
 void TijController::checkCommand(const std::string &cmd, const std::map<std::string,std::string>& attributes)
@@ -274,14 +265,14 @@ std::vector<std::string> TijController::getFiles(const std::string &drive, const
 }
 
 
-template<typename ... Args>
-bool TijController::sendCommand(std::function<MCommand*(MCommandsFactory*, const Args& ...)>& command, const Args& ...args)
-{
-	bool success = false;
-	std::function<MCommand*(const Args& ...)> function = std::bind(command, &_factory, args...);
-	MCommand* cmd = function(args...);
-	if (cmd) {
-		success = send(cmd);
-	}
-	return success;
-}
+//template<typename ... Args>
+//bool TijController::sendCommand(std::function<MCommand*(MCommandsFactory*, const Args& ...)>& command, const Args& ...args)
+//{
+//	bool success = false;
+//	std::function<MCommand*(const Args& ...)> function = std::bind(command, &_factory, args...);
+//	MCommand* cmd = function(args...);
+//	if (cmd) {
+//		success = send(cmd);
+//	}
+//	return success;
+//}

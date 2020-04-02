@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "tijmonitor.h"
+#include "tij/tijmonitor.h"
 
 using namespace Macsa;
 using namespace Macsa::MComms;

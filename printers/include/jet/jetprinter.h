@@ -19,10 +19,14 @@ namespace Macsa {
 		class JetPrinter : public Printer {
 
 			public:
-				static int libraryVersionMajor();
-				static int libraryVersionMinor();
-				static int libraryVersionRevision();
-				static std::string libraryVersion();
+				static int jetLibraryVersionMajor();
+				static int jetLibraryVersionMinor();
+				static int jetLibraryVersionRevision();
+				static std::string jetLibraryVersion();
+
+			public:
+				using logsList = std::list<Printers::LogItem>;
+				using tanksMap = std::map<unsigned int, unsigned int>;
 
 			public:
 				JetPrinter();
@@ -44,6 +48,7 @@ namespace Macsa {
 				virtual void setDateTime(const std::string& formatedDatetime);
 
 				std::string getLibraryVersion(const std::string& library) const;
+				std::map<std::string,std::string> getLibrariesVersions() const;
 				void clearLibrariesVersions();
 				void setLibrariesVersions(const std::map<std::string, std::string> &librariesVersions);
 				void setLibraryVersion(const std::string& library, const std::string& version);
@@ -55,7 +60,8 @@ namespace Macsa {
 				unsigned int printheadTemperature(unsigned int id);
 				void setPrintheadTemperature(unsigned int id, unsigned int temperature);
 
-				unsigned int tankLevel(unsigned int id);
+				tanksMap inkTanks() const;
+				unsigned int tankLevel(unsigned int id) const;
 				void setTankLevel(unsigned int id, unsigned int level);
 
 				bool paused() const;
@@ -64,7 +70,8 @@ namespace Macsa {
 				bool printStatus() const;
 				void setPrintStatus(bool printStatus);
 
-				JetMessagesManager& messageManager();
+				JetMessagesManager &messageManager();
+				const JetMessagesManager &messageManager() const;
 				void setMessageManager(const JetMessagesManager& manager);
 
 				bool inputEnabled(const std::string &boardType, unsigned int boardNum, const std::string &inputId) const;
@@ -74,6 +81,7 @@ namespace Macsa {
 				JetBoard board(JetBoardType boardType, unsigned int boardNum) const;
 				void setBoard(const JetBoard& board);
 
+				std::vector<JetIO> outputs() const;
 				bool outputEnabled(const std::string& outputId) const;
 				void setOutputs(const std::vector<JetIO>& outputs);
 
@@ -90,8 +98,8 @@ namespace Macsa {
 				void setIsInError(bool isInError);
 
 				void updateLogs(std::list<LogItem> logs);
-				std::list<LogItem> logs(time_t from, time_t to) const;
-				std::list<LogItem> logs() const ;
+				logsList logs(time_t from, time_t to) const;
+				logsList logs() const ;
 
 				virtual void operator = (const JetPrinter& other){return copy(other);}
 				virtual bool operator == (const JetPrinter& other) const {return  equal(other);}

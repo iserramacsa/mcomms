@@ -11,6 +11,14 @@ JetBoard::JetBoard(const std::string &type, unsigned int num) :
 	_version = "";
 }
 
+JetBoard::JetBoard(const JetBoardType &type, unsigned int num) :
+	_type(type),
+	_number(num)
+{
+	_inputs.clear();
+	_version = "";
+}
+
 JetBoard::JetBoard(const JetBoard &other) :
 	_type(other._type),
 	_number(other._number)
@@ -63,6 +71,17 @@ void JetBoard::setInputs(const std::map<std::string, bool> &inputs)
 		input.setValue(it->second);
 		_inputs.push_back(input);
 	}
+}
+
+std::vector<std::string> JetBoard::inputsList() const
+{
+	std::vector<std::string> inputs;
+
+	for (auto& in : _inputs) {
+		inputs.push_back(in.id());
+	}
+
+	return inputs;
 }
 
 unsigned int JetBoard::number() const

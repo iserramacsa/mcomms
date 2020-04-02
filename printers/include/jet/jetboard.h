@@ -12,7 +12,8 @@ namespace Macsa {
 
 		class JetBoard {
 			public:
-				JetBoard(const std::string& type, unsigned int id);
+				JetBoard(const std::string& type, unsigned int num);
+				JetBoard(const JetBoardType& type, unsigned int num);
 				JetBoard(const JetBoard& other);
 				~JetBoard();
 
@@ -27,6 +28,8 @@ namespace Macsa {
 
 				bool input(const std::string& id) const;
 				void setInputs(const std::map<std::string, bool>& inputs);
+
+				std::vector<std::string> inputsList() const;
 
 				inline void operator = (const JetBoard& other) {return copy(other);}
 				inline bool operator == (const JetBoard& other) const {return equal(other);}

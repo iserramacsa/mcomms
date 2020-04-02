@@ -11,14 +11,20 @@ namespace Macsa{
 		/// \brief The JetCommand class is the base class from jet protocol command.
 		/// Based on a xml structure, this interface
 		///
-		class JetCommand : protected XMLCommand
+		class JetCommand : public XMLCommand
 		{
 			public:
 				JetCommand(const std::string& commandName, Printers::JetPrinter& printer);
 				virtual ~JetCommand() override;
 
-				virtual std::string getRequest();
-				virtual std::string getResponse();
+				///
+				/// \brief getRequest. Herited methods to get the jetCommand request
+				/// with string format.
+				/// \param id. Only for inheritance compatibility
+				/// \return string with the request command.
+				///
+				virtual std::string getRequest(uint32_t id = 0) override;
+				virtual std::string getResponse() override;
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml) = 0;
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml) = 0;
 
@@ -26,7 +32,7 @@ namespace Macsa{
 				inline Printers::JetErrorCode getError() const{ return _error;}
 				void setError(const Printers::JetErrorCode &error);
 
-				std::map<std::string, std::string> attributes() const;
+				const std::map<std::string, std::string> &attributes() const;
 
 			protected:
 				std::map<std::string, std::string> _attributes;

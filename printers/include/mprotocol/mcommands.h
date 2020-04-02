@@ -21,8 +21,8 @@ namespace Macsa{
 				MCommand(const std::string& commandName, Printers::TijPrinter& printer);
 				virtual ~MCommand();
 
-				virtual std::string getRequest(uint32_t windId);
-				virtual std::string getResponse();
+				virtual std::string getRequest(uint32_t windId) override;
+				virtual std::string getResponse() override;
 				virtual bool parseRequest(const tinyxml2::XMLElement* xml) = 0;
 				virtual bool parseResponse(const tinyxml2::XMLElement*xml) = 0;
 

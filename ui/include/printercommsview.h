@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include "viewers/tijviewercontroller.h"
-#include "tijcontroller.h"
+#include "tij/tijcontroller.h"
 #include <QLineEdit>
 #include <QPushButton>
 #include <QLabel>

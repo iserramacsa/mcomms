@@ -23,7 +23,7 @@ namespace Macsa {
 
 			protected:
 				virtual void run();
-				virtual bool send(MProtocol::MCommand *cmd) override;
+				virtual bool send(XMLCommand *cmd) override;
 				virtual bool sendCmd(MProtocol::MCommand *cmd);
 
 			private:

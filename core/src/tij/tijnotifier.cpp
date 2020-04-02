@@ -1,5 +1,5 @@
-#include "tijnotifier.h"
-#include "tijobserver.h"
+#include "tij/tijnotifier.h"
+#include "tij/tijobserver.h"
 
 using namespace Macsa;
 using namespace Macsa::MComms;

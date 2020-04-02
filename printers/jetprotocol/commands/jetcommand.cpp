@@ -19,7 +19,7 @@ JetCommand::JetCommand(const std::string& commandName, Printers::JetPrinter &pri
 JetCommand::~JetCommand()
 {}
 
-std::string JetCommand::getRequest()
+std::string JetCommand::getRequest(uint32_t)
 {
 	buildRequest();
 	return XMLCommand::toString();
@@ -36,7 +36,7 @@ void JetCommand::setError(const Printers::JetErrorCode &error)
 	_error = error;
 }
 
-std::map<std::string, std::string> JetCommand::attributes() const
+const std::map<std::string, std::string>& JetCommand::attributes() const
 {
     return _attributes;
 }
