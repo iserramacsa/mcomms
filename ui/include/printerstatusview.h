@@ -5,7 +5,7 @@
 #include <QtGui>
 #include <QTimer>
 #include "viewers/tijviewercontroller.h"
-#include "tijcontroller.h"
+#include "tij/tijcontroller.h"
 #include <QCheckBox>
 #include <QLabel>
 #include <QMap>

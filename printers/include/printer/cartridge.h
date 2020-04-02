@@ -1,7 +1,7 @@
 #ifndef MACSA_PRINTERS_CARTRIDGE_H
 #define MACSA_PRINTERS_CARTRIDGE_H
 
-#include "datatypes.h"
+#include "tij/datatypes.h"
 
 namespace Macsa {
 	namespace Printers {

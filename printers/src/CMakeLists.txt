@@ -19,7 +19,7 @@ set(PRINTERS_SOURCES ${PRINTERS_SOURCES}
 	${CMAKE_CURRENT_SOURCE_DIR}/encoder.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/cartridge.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/errors.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/messagemanager.cpp
+#	${CMAKE_CURRENT_SOURCE_DIR}/messagemanager.cpp
 
 	PARENT_SCOPE
 )

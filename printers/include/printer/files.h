@@ -7,13 +7,13 @@
 
 #include "ifilesmanager.h"
 
-#define MESSAGES_FOLDER	"messages"
+#define MESSAGES_DIRECTORY	"messages"
 #define MESSAGES_FILTER	".nisx"
 
-#define FONTS_FOLDER	"fonts"
+#define FONTS_DIRECTORY	"fonts"
 #define FONTS_FILTER	".ttf"
 
-#define IMAGES_FOLDER		"images"
+#define IMAGES_DIRECTORY		"images"
 #define IMAGES_FILTER_PNG	".png"
 #define IMAGES_FILTER_JPG	".jpg"
 #define IMAGES_FILTER_JPEG	".jpeg"
@@ -27,7 +27,7 @@
 namespace Macsa {
 	namespace Printers {
 		class Drive;
-		class Folder;
+		class Directory;
 		class File;
 
 		class FileSystemAbstract
@@ -74,36 +74,36 @@ namespace Macsa {
 				virtual ~PrinterFiles() override;
 
 				std::vector<std::string> getDrives() const;
-				std::vector<std::string> getFolders(const std::string& drive) const;
-				std::vector<std::string> getFiles(const std::string& drive, const std::string& folder) const;
+				std::vector<std::string> getDirectories(const std::string& drive) const;
+				std::vector<std::string> getFiles(const std::string& drive, const std::string& directory) const;
 				std::vector<std::string> getAllFiles(const std::string& filter) const;
 
 				const Drive* getDrive(const std::string& drive) const;
-//				const Folder* getFolder(const std::string& path) const;
-				const Folder* getFolder(const std::string& drive, const std::string& folder) const;
-				const File* getFile(const std::string& drive, const std::string& folder, const std::string& filename) const;
+				Drive* getDrive(const std::string& drive);
+				const Directory* getDirectory(const std::string& drive, const std::string& directory) const;
+				const File* getFile(const std::string& drive, const std::string& directory, const std::string& filename) const;
 				const File* getFile(const std::string& filepath) const;
 
 				virtual bool driveExist(const std::string& drive) const;
-				virtual bool folderExist(const std::string& drive, const std::string& folder) const;
-				virtual bool fileExist(const std::string& drive, const std::string& folder, const std::string& filename) const;
+				virtual bool directoryExist(const std::string& drive, const std::string& directory) const;
+				virtual bool fileExist(const std::string& drive, const std::string& directory, const std::string& filename) const;
 
 				virtual bool clear();
 				virtual bool addNewDrive(const std::string& drive);
-				virtual bool addNewFolder(const std::string& drive, const std::string& folder);
-				virtual bool addNewFile(const std::string& drive, const std::string& folder, const std::string& filename);
-				virtual bool addFile(const std::string& drive, const std::string& folder, const std::string& filename, const std::vector<uint8_t>& data);
-				virtual bool setFile(const std::string& drive, const std::string& folder, const std::string& filename, const std::vector<uint8_t>& data);
+				virtual bool addNewDirectory(const std::string& drive, const std::string& directory);
+				virtual bool addNewFile(const std::string& drive, const std::string& directory, const std::string& filename);
+				virtual bool addFile(const std::string& drive, const std::string& directory, const std::string& filename, const std::vector<uint8_t>& data);
+				virtual bool setFile(const std::string& drive, const std::string& directory, const std::string& filename, const std::vector<uint8_t>& data);
 				virtual bool setFile(const std::string& filepath, const std::vector<uint8_t>& data);
 				virtual bool clearDrive(const std::string& drive);
-				virtual bool clearFolder(const std::string& drive, const std::string& folder);
+				virtual bool clearDirectory(const std::string& drive, const std::string& directory);
 				virtual bool deleteDrive(const std::string& drive);
-				virtual bool deleteFolder(const std::string& drive, const std::string& folder);
-				virtual bool deleteFile(const std::string& drive, const std::string& folder, const std::string& filename);
-				virtual bool renameFolder(const std::string& drive, const std::string& oldfolder, const std::string& newFolder);
-				virtual bool renameFile(const std::string& drive, const std::string& folder, const std::string& oldName, const std::string& newName);
-				virtual bool moveFile(const std::string &oldDrive, const std::string& oldFolder, const std::string& oldName,
-							  const std::string &newDrive, const std::string& newFolder, const std::string& newName);
+				virtual bool deleteDirectory(const std::string& drive, const std::string& directory);
+				virtual bool deleteFile(const std::string& drive, const std::string& directory, const std::string& filename);
+				virtual bool renameDirectory(const std::string& drive, const std::string& olddirectory, const std::string& newDirectory);
+				virtual bool renameFile(const std::string& drive, const std::string& directory, const std::string& oldName, const std::string& newName);
+				virtual bool moveFile(const std::string &oldDrive, const std::string& oldDirectory, const std::string& oldName,
+									 const std::string &newDrive, const std::string& newDirectory, const std::string& newName);
 
 				virtual void updateDrives(const std::vector<std::string> drives);
 				virtual void clearFilesOfType(const std::string& drive, const std::string& extension);
@@ -111,12 +111,12 @@ namespace Macsa {
 
 				 /* Full transfer methods*/
 				virtual Drive*	removeDrive(const std::string& drive);
-				virtual Folder* removeFolder(const std::string &drive, const std::string &folder);/*Full transfer*/
-				virtual File*	removeFile(const std::string &drive, const std::string& folder, const std::string& filename);/*Full transfer*/
+				virtual Directory* removeDirectory(const std::string &drive, const std::string &directory);/*Full transfer*/
+				virtual File*	removeFile(const std::string &drive, const std::string& directory, const std::string& filename);/*Full transfer*/
 
 
-				void splitFilepath(const std::string &pwd, std::string &drive, std::vector<std::string> &folders, std::string &file) const;
-				void splitFilepath(const std::string &pwd, std::string &drive, std::string &folder, std::string &file) const;
+				void splitFilepath(const std::string &pwd, std::string &drive, std::vector<std::string> &directories, std::string &file) const;
+				void splitFilepath(const std::string &pwd, std::string &drive, std::string &directory, std::string &file) const;
 
 				IFilesManager *filesManager() const;
 				void setFilesManager(IFilesManager *filesManager);
@@ -139,51 +139,66 @@ namespace Macsa {
 
 				std::string name() const;
 
-				std::vector<std::string> getFoldersList() const;
-				std::vector<std::string> getFilesList(const std::string& folder) const;
+				std::string description() const;
+				void setDescription(const std::string &description);
+
+				std::vector<std::string> getDirectoriesList() const;
+				std::vector<std::string> getFilesList(const std::string& directory) const;
 				std::vector<const File*> getFiles() const;
 
-				const Folder* getFolder(const std::string& folder) const;
-				const File* getFile(const std::string& folder, const std::string& file) const;
+				const Directory* getDirectory(const std::string& directory) const;
+				Directory* getDirectory(const std::string& directory);
+				const File* getFile(const std::string& directory, const std::string& file) const;
+				const File* getFile(const std::string& pwd) const;
 
 				bool clear();
-				bool clearFolder(const std::string& folder);
-				bool addEmptyFolder(const std::string& folder);
-				bool addNewFile(const std::string& folder, const std::string& filename);
-				bool addFile(const std::string& folder, const std::string& filename, const std::vector<uint8_t>& data);
-				bool addFile(const std::string& folder, File* file);
-				bool setFileData(const std::string& folder, const std::string& filename, const std::vector<uint8_t>& data);
-				bool renameFolder(const std::string& oldfolder, const std::string& newFolder);
-				bool renameFile(const std::string& folder, const std::string& oldName, const std::string& newName);
-				bool moveFile(const std::string& oldFolder, const std::string& oldName, const std::string& newFolder, const std::string& newName);
-				bool moveFile(const std::string& oldFolder, const std::string& newFolder, const std::string& filename);
-				bool deleteFolder(const std::string& folder);
-				bool deleteFile(const std::string& folder, const std::string& file);
+				bool clearDirectory(const std::string& directory);
+				bool addEmptyDirectory(const std::string& directory);
+				bool addNewFile(const std::string& directory, const std::string& filename);
+				bool addFile(const std::string& directory, const std::string& filename, const std::vector<uint8_t>& data);
+				bool addFile(const std::string& directory, File* file);
+				bool setFileData(const std::string& directory, const std::string& filename, const std::vector<uint8_t>& data);
+				bool renameDirectory(const std::string& olddirectory, const std::string& newDirectory);
+				bool renameFile(const std::string& directory, const std::string& oldName, const std::string& newName);
+				bool moveFile(const std::string& oldDirectory, const std::string& oldName, const std::string& newDirectory, const std::string& newName);
+				bool moveFile(const std::string& oldDirectory, const std::string& newDirectory, const std::string& filename);
+				bool deleteDirectory(const std::string& directory);
+				bool deleteFile(const std::string& directory, const std::string& file);
 
-				Folder* removeFolder(const std::string& folder);
-				File* removeFile(const std::string& folder, const std::string& filename);
+				Directory* removeDirectory(const std::string& directory);
+				File* removeFile(const std::string& directory, const std::string& filename);
+
 
 				virtual void operator = (const Drive& other){return copy(other);}
 
+
 			private:
 				const std::string _name;
+				std::string _description;
 				const PrinterFiles* _parent;
-				std::map<std::string, Folder*> _folders;
+				std::map<std::string, Directory*> _directories;
 
 				virtual bool equal (const FileSystemAbstract& other) const override;
 				virtual void copy (const Drive& other);
 
 		};
 
-		class Folder : public FileSystemAbstract
+		class Directory : public FileSystemAbstract
 		{
 			public:
-				Folder(const std::string& name, const Drive* parent);
-				virtual ~Folder() override;
+				Directory(const std::string& name, const Drive* parent);
+				Directory(const std::string& name, const Directory* parent);
+				virtual ~Directory() override;
 
 				std::string pwd() const;
 				std::string name() const;
 				std::vector<std::string> getFilesList() const;
+				std::vector<std::string> getSubdirectoriesList() const;
+
+
+				const Directory* getSubdirectory(const std::string& name) const;
+				Directory* getSubdirectory(const std::string& name);
+				bool addSubdirectory(const std::string &name);
 
 				const File* getFile(const std::string& filename) const;
 				std::vector<const File*> getFiles() const;
@@ -200,24 +215,26 @@ namespace Macsa {
 				bool deleteFile(const std::string& file);
 				bool renameFile(const std::string& oldName, const std::string& newName);
 
-				virtual void operator = (const Folder& other){return copy(other);}
+				virtual void operator = (const Directory& other){return copy(other);}
 
 			private:
 				const Drive* _parent;
+				const Directory* _parentDirectory;
 				std::string _name;
+				std::map<std::string, Directory*> _subdirectories;
 				std::map<std::string, File*> _files;
 
 				virtual bool equal (const FileSystemAbstract& other) const override;
-				virtual void copy (const Folder& other);
+				virtual void copy (const Directory& other);
 		};
 
 		class File {
 			public:
-				File(const std::string& filename, const Folder* parent);
+				File(const std::string& filename, const Directory* parent);
 				virtual ~File();
 
 				std::string pwd() const;
-				std::string folder() const;
+				std::string directory() const;
 				std::string name() const;
 				unsigned int size() const;
 				std::string extension() const;
@@ -233,7 +250,7 @@ namespace Macsa {
 				virtual void operator = (const File& other) {return copy(other);}
 
 			private:
-				const Folder* _parent;
+				const Directory* _parent;
 				std::string _name;
 				std::vector<uint8_t>* _data;
 

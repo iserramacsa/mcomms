@@ -1,30 +1,78 @@
 #ifndef MACSA_PRINTERS_ENCODER_H
 #define MACSA_PRINTERS_ENCODER_H
 
-#include "datatypes.h"
+#include "utils/smartenum.h"
+
+#define ENCODER_MODE_FIXED		"FixedSpeed"
+#define ENCODER_MODE_INTERNAL	"Internal"
+#define ENCODER_MODE_EXTERNAL	"External"
 
 namespace Macsa {
 	namespace Printers {
+
+		enum nEncoderMode{
+			FIXED_SPEED = 0,
+			INTERNAL_ENCODER,
+			EXTERNAL_ENCODER
+		};
+		class EncoderMode : public Utils::SmartEnum<nEncoderMode>
+		{
+			public:
+				EncoderMode() { _val = FIXED_SPEED; }
+				EncoderMode(const std::string& val){*this = val;}
+				EncoderMode(const EncoderMode& val){*this = val;}
+				virtual void operator = (const enum nEncoderMode& v){_val = v;}
+				virtual void operator = (const std::string& val){
+					if (val.compare(ENCODER_MODE_FIXED) == 0)
+						_val = FIXED_SPEED;
+					else if (val.compare(ENCODER_MODE_INTERNAL) == 0)
+						_val = INTERNAL_ENCODER;
+					else if (val.compare(ENCODER_MODE_EXTERNAL) == 0)
+						_val = EXTERNAL_ENCODER;
+				}
+				std::string toString() const {
+					switch (_val) {
+						case FIXED_SPEED:		return ENCODER_MODE_FIXED;
+						case INTERNAL_ENCODER:	return ENCODER_MODE_INTERNAL;
+						case EXTERNAL_ENCODER:	return ENCODER_MODE_EXTERNAL;
+					}
+					return "";
+				}
+
+				virtual std::vector<std::string> stringList() const
+				{
+					std::vector<std::string> list;
+					list.push_back(ENCODER_MODE_FIXED);
+					list.push_back(ENCODER_MODE_INTERNAL);
+					list.push_back(ENCODER_MODE_EXTERNAL);
+					return list;
+				}
+		};
+
 		class Encoder
 		{
 			public:
 				Encoder();					//Constructor to set internal encoder by default
 				Encoder(double fixedspeed); //Constructor to set fixed speed by default
-				Encoder(double resolution, double diameter); //Constructor to set external encoder by default
+				Encoder(double resolution, double diameter, double abcPitch = 0); //Constructor to set external encoder by default
 				~Encoder();
 
-				EncoderMode mode() const;
-				void setMode(const EncoderMode &value);
-//				void setMode(const std::string &value);
+				inline EncoderMode mode() const { return _mode;}
+				inline void setMode(const EncoderMode &value) { _mode = value;}
+				inline void setMode(const nEncoderMode &value) { _mode = value;}
+				inline void setMode(const std::string &value) { _mode = value;}
 
-				double fixedSpeed() const;
-				void setFixedSpeed(double value);
+				inline double fixedSpeed() const { return _fixedSpeed;}
+				inline void setFixedSpeed(double value) { _fixedSpeed = value; }
 
-				double resolution() const;
-				void setResolution(double value);
+				inline double resolution() const { return _resolution; }
+				inline void setResolution(double value) { _resolution = value; }
 
-				double diameter() const;
-				void setDiameter(double value);
+				inline double diameter() const { return _diameter; }
+				inline void setDiameter(double value) { _diameter = value; }
+
+				inline double abcPitch() const { return _abcPitch; }
+				inline void setAbcPitch(double abcPitch) { _abcPitch = abcPitch; }
 
 				void clear();
 
@@ -38,9 +86,11 @@ namespace Macsa {
 				double _fixedSpeed;
 				double _resolution;
 				double _diameter;
+				double _abcPitch;
+
 				bool equal(const Encoder& other) const;
 		};
 	}
 }
 
-#endif	//MACSA_PRINTERS_STATUS_H
+#endif	//MACSA_PRINTERS_ENCODER_H

@@ -5,7 +5,7 @@
 #include <QtGui>
 #include "ui_printerview.h"
 #include "viewers/tijviewercontroller.h"
-#include "tijcontroller.h"
+#include "tij/tijcontroller.h"
 #include "printerstatusview.h"
 #include "printerfilesview.h"
 #include "printerconfigview.h"

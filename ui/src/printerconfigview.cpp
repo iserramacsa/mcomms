@@ -1,7 +1,7 @@
 #include "printerconfigview.h"
 #include "QFormLayout"
 #include <QTimer>
-#include "printer/datatypes.h"
+#include "tij/datatypes.h"
 #include "messageselector.h"
 
 #include <QDebug>
@@ -807,7 +807,7 @@ void PrinterConfigView::onSelectUserMessage()
 }
 
 template<typename N>
-QStringList PrinterConfigView::getPrinterEnumOptions(const Macsa::Printers::SmartEnum<N> &e) const
+QStringList PrinterConfigView::getPrinterEnumOptions(const Macsa::Utils::SmartEnum<N> &e) const
 {
 	QStringList list;
 	std::vector<std::string> eList = e.stringList();

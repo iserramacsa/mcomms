@@ -43,10 +43,11 @@ set(INCLUDES)
 set(UIS)
 set(RESOURCES)
 
-
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src		${PROJECT_BINARY_DIR}/tij/src)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include	${PROJECT_BINARY_DIR}/tij/include)
 if (BUILD_EMULATOR_LIBS)
+	set(INCLUDE_TIJ_LIBS ON)
+	set(INCLUDE_JET_LIBS OFF)
 	add_subdirectory(${PROJECT_SOURCE_DIR}/../core		${PROJECT_BINARY_DIR}/core)
 endif()
 
@@ -82,8 +83,8 @@ QT4_WRAP_CPP( MOC_SRCS ${HEADERS} )
 
 link_directories(
 	${PROJECT_BINARY_DIR}/core
-	${PROJECT_BINARY_DIR}/core/network
-	${PROJECT_BINARY_DIR}/core/printers/tij
+	${PROJECT_BINARY_DIR}/network
+	${PROJECT_BINARY_DIR}/printers/tij
     )
 
 # compile
@@ -93,5 +94,5 @@ elseif(UNIX)
     add_executable( ${PROJECT_NAME} ${SOURCES} ${MOC_SRCS} ${RES_SOURCES} ${UI_HEADERS} )
 endif()
 # build it (link libraries)
-target_link_libraries( ${PROJECT_NAME} ${QT_LIBRARIES} MComms MNetwork TijLibrary)
+target_link_libraries( ${PROJECT_NAME} ${QT_LIBRARIES} MComms MNetwork TijPrinter)
 

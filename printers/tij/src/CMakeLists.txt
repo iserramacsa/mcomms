@@ -5,6 +5,7 @@
 set(TIJ_SOURCES ${TIJ_SOURCES}
 	${CMAKE_CURRENT_SOURCE_DIR}/tijprinter.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/tijcomms.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/messagemanager.cpp
 	PARENT_SCOPE
 	)
 

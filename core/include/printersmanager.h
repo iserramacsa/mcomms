@@ -2,7 +2,7 @@
 #define MACSA_MCOMMS_PRINTER_MANAGER_H
 
 #include "network/network.h"
-#include "tijmonitor.h"
+#include "tij/tijmonitor.h"
 
 #define DEFAULT_DISCOVER_TIMEOUT	5
 

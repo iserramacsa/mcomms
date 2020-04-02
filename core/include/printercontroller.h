@@ -21,7 +21,7 @@ namespace Macsa {
 				virtual Printers::Printer* printer() = 0;
 
 			protected:
-				virtual bool send(MProtocol::MCommand *cmd) = 0;
+				virtual bool send(Macsa::XMLCommand *cmd) = 0;
 
 			private:
 				uint16_t _printerPort;

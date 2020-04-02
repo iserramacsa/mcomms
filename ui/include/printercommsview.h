@@ -3,12 +3,12 @@
 
 #include <QWidget>
 #include "viewers/tijviewercontroller.h"
-#include "tijcontroller.h"
+#include "tij/tijcontroller.h"
 #include <QLineEdit>
 #include <QPushButton>
 #include <QLabel>
 #include <QCheckBox>
-#include "printer/datatypes.h"
+#include "tij/datatypes.h"
 
 class PrinterCommsView : public QWidget
 {

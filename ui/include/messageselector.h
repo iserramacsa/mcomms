@@ -5,7 +5,7 @@
 #include <QDialog>
 #include "ui_selectMessageDialog.h"
 
-#include "tijviewer.h"
+#include "tij/tijviewer.h"
 
 
 class MessageSelectorDialog : public QDialog, public Macsa::MComms::TijViewer

@@ -1,6 +1,6 @@
 #include "printerstatusview.h"
 #include "QFormLayout"
-#include "printer/datatypes.h"
+#include "tij/datatypes.h"
 
 #define ERROR_ICON	":/icons/error.svg"
 #define WARN_ICON	":/icons/warning.svg"

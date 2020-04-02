@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include "viewers/tijviewercontroller.h"
-#include "tijcontroller.h"
+#include "tij/tijcontroller.h"
 #include <QCheckBox>
 #include <QComboBox>
 #include <QPushButton>
@@ -11,7 +11,7 @@
 #include <QMap>
 #include <QTableWidget>
 #include <QSpinBox>
-#include "printer/datatypes.h"
+#include "tij/datatypes.h"
 
 class PrinterConfigView : public QWidget
 {
@@ -118,7 +118,7 @@ class PrinterConfigView : public QWidget
 		void addOutputRow(QTableWidget* table, int row, const TIJViewerController::PrinterOutput& output);
 
 		template <typename N>
-		QStringList getPrinterEnumOptions(const Macsa::Printers::SmartEnum<N>& e) const;
+		QStringList getPrinterEnumOptions(const Macsa::Utils::SmartEnum<N>& e) const;
 
 
 		void resizeEvent(QResizeEvent*);

@@ -1,5 +1,5 @@
 #include "viewers/tijviewercontroller.h"
-#include "tijmonitor.h"
+#include "tij/tijmonitor.h"
 #include <QDateTime>
 #include <QVector>
 #include "printer/board.h"
