@@ -22,7 +22,7 @@ JetCommand::~JetCommand()
 std::string JetCommand::getRequest(uint32_t)
 {
 	buildRequest();
-	return XMLCommand::toString();
+	return toString();
 }
 
 std::string JetCommand::getResponse()
@@ -85,6 +85,22 @@ void JetCommand::parseCommandError()
 			_error = static_cast<Printers::nJetErrorCode>(error);
 		}
 	}
+}
+
+std::string JetCommand::toString()
+{
+	XMLPrinter p;
+	_doc.Print(&p);
+	std::string command = p.CStr();
+	if (_doc.RootElement() && _doc.RootElement()->NoChildren()) {
+		if (!_doc.RootElement()->GetText()) {
+			size_t pos = command.find_last_of("/>");
+			if (pos != command.npos){
+				command.replace(pos - 1, strlen("/>"), "></WIND>");
+			}
+		}
+	}
+	return command;
 }
 
 std::string JetCommand::toString(bool val) const

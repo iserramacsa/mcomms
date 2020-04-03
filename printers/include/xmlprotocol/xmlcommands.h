@@ -43,7 +43,7 @@ namespace Macsa{
 			tinyxml2::XMLElement * createUnsignedTextChildNode(const std::string &child, unsigned value, tinyxml2::XMLElement **parent);
 			tinyxml2::XMLElement * createDoubleTextChildNode(const std::string &child, double value, unsigned precision, tinyxml2::XMLElement **parent);
 
-			std::string toString(); //return current xml document in a std::string
+			virtual std::string toString(); //return current xml document in a std::string
 
 			std::string toLower(std::string &str) const;
 			std::string toLower(const std::string &str) const;

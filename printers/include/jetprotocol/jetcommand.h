@@ -48,6 +48,7 @@ namespace Macsa{
 				void setCommandError(const Printers::JetErrorCode &errorCode);
 				void parseCommandError();
 
+				virtual std::string toString() override;
 				virtual std::string toString(bool val) const override;
 
 				inline void insertAttribute(const std::string& key, const std::string& value) {_attributes.insert(std::pair<std::string, std::string>(key, value));}
