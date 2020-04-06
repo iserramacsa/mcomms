@@ -1,5 +1,5 @@
-#ifndef MACSA_MCOMMS_UI_MESSAGE_SELECTOR_DIALOG_H
-#define MACSA_MCOMMS_UI_MESSAGE_SELECTOR_DIALOG_H
+#ifndef MACSA_MCOMMS_UI_TIJ_MESSAGE_SELECTOR_DIALOG_H
+#define MACSA_MCOMMS_UI_TIJ_MESSAGE_SELECTOR_DIALOG_H
 
 #include <QtGui>
 #include <QDialog>
@@ -8,12 +8,12 @@
 #include "tij/tijviewer.h"
 
 
-class MessageSelectorDialog : public QDialog, public Macsa::MComms::TijViewer
+class TijMessageSelectorDialog : public QDialog, public Macsa::MComms::TijViewer
 {
 		Q_OBJECT
 	public:
-		explicit MessageSelectorDialog(Macsa::MComms::TijController& controller, QWidget * parent = nullptr);
-		virtual ~MessageSelectorDialog();
+		explicit TijMessageSelectorDialog(Macsa::MComms::TijController& controller, QWidget * parent = nullptr);
+		virtual ~TijMessageSelectorDialog();
 		QString selectedMessage() const;
 
 		virtual void filesListChanged() override;

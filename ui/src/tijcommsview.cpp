@@ -1,10 +1,10 @@
-#include "printercommsview.h"
+#include "tijcommsview.h"
 #include <QVBoxLayout>
 #include <QFormLayout>
 
 #define TITLE_CSS "QLabel {Background-color:#333; color:#DDD; margin: 3px 3px 3px 3px;} "
 
-PrinterCommsView::PrinterCommsView(QWidget *parent):
+TijCommsView::TijCommsView(QWidget *parent):
 	QWidget(parent)
 {
 	_controller = nullptr;
@@ -14,14 +14,14 @@ PrinterCommsView::PrinterCommsView(QWidget *parent):
 }
 
 
-PrinterCommsView::~PrinterCommsView()
+TijCommsView::~TijCommsView()
 {
 	if (_controller != nullptr) {
 		delete _controller;
 	}
 }
 
-void PrinterCommsView::setController(Macsa::MComms::TijController &controller)
+void TijCommsView::setController(Macsa::MComms::TijController &controller)
 {
 	if (_controller != nullptr) {
 		delete _controller;
@@ -31,7 +31,7 @@ void PrinterCommsView::setController(Macsa::MComms::TijController &controller)
 	refresh();
 }
 
-void PrinterCommsView::refresh()
+void TijCommsView::refresh()
 {
 	if ((_controller != nullptr) && (_controller->printerStatus() != TIJViewerController::TijStatus::DISCONNECTED)) {
 		for (int i = 0; i < _ifaces.count(); ++i) {
@@ -44,7 +44,7 @@ void PrinterCommsView::refresh()
 	}
 }
 
-void PrinterCommsView::build()
+void TijCommsView::build()
 {
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setMargin(0);
@@ -65,7 +65,7 @@ void PrinterCommsView::build()
 	layout->addStretch();
 }
 
-void PrinterCommsView::clear()
+void TijCommsView::clear()
 {
 	for (int i = 0; i < _ifaces.count(); ++i) {
 		netWidget& iface = _ifaces[i];
@@ -79,7 +79,7 @@ void PrinterCommsView::clear()
 	}
 }
 
-void PrinterCommsView::refreshNetIface(int idx)
+void TijCommsView::refreshNetIface(int idx)
 {
 	if (_ifaces.count() > idx){
 		TIJViewerController::NetworkIface eth = _controller->networkIface(idx);
@@ -94,7 +94,7 @@ void PrinterCommsView::refreshNetIface(int idx)
 	}
 }
 
-void PrinterCommsView::refreshBle()
+void TijCommsView::refreshBle()
 {
 	TIJViewerController::BluetoothDevice ble = _controller->bluetooth();
 	_ble.name->setText(ble.name);
@@ -103,7 +103,7 @@ void PrinterCommsView::refreshBle()
 
 }
 
-QLabel *PrinterCommsView::getTitle(const QString &text)
+QLabel *TijCommsView::getTitle(const QString &text)
 {
 	QLabel * title = new QLabel(text, this);
 	title->setMargin(6);
@@ -111,7 +111,7 @@ QLabel *PrinterCommsView::getTitle(const QString &text)
 	return title;
 }
 
-QWidget *PrinterCommsView::buildNetworkAdapter()
+QWidget *TijCommsView::buildNetworkAdapter()
 {
 	QWidget* rootEth = new QWidget(this);
 	QFormLayout* layout  = new QFormLayout(rootEth);
@@ -138,7 +138,7 @@ QWidget *PrinterCommsView::buildNetworkAdapter()
 	return rootEth;
 }
 
-QWidget *PrinterCommsView::buildBluetoothDevice()
+QWidget *TijCommsView::buildBluetoothDevice()
 {
 	QWidget* rootBle = new QWidget(this);
 	QFormLayout* layout  = new QFormLayout(rootBle);
@@ -155,7 +155,7 @@ QWidget *PrinterCommsView::buildBluetoothDevice()
 	return rootBle;
 }
 
-QLineEdit *PrinterCommsView::createIpFormatedLineEditor(QWidget* parent)
+QLineEdit *TijCommsView::createIpFormatedLineEditor(QWidget* parent)
 {
 	QLineEdit * editor = new QLineEdit(parent);
 	editor->setInputMask("009.009.009.009");
@@ -164,7 +164,7 @@ QLineEdit *PrinterCommsView::createIpFormatedLineEditor(QWidget* parent)
 	return  editor;
 }
 
-void PrinterCommsView::onChangeConfiguration()
+void TijCommsView::onChangeConfiguration()
 {
 
 }

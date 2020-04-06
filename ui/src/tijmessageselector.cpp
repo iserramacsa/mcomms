@@ -1,10 +1,10 @@
-#include "messageselector.h"
+#include "tijmessageselector.h"
 
 using namespace Macsa;
 using namespace Macsa::MComms;
 using namespace Macsa::Printers;
 
-MessageSelectorDialog::MessageSelectorDialog(TijController& controller, QWidget *parent) :
+TijMessageSelectorDialog::TijMessageSelectorDialog(TijController& controller, QWidget *parent) :
 	QDialog(parent),
 	TijViewer(controller)
 {
@@ -16,21 +16,21 @@ MessageSelectorDialog::MessageSelectorDialog(TijController& controller, QWidget 
 	setWindowTitle("Tij User Message Selector");
 }
 
-MessageSelectorDialog::~MessageSelectorDialog()
+TijMessageSelectorDialog::~TijMessageSelectorDialog()
 {}
 
-QString MessageSelectorDialog::selectedMessage() const
+QString TijMessageSelectorDialog::selectedMessage() const
 {
 	return _selectedMessage;
 }
 
-void MessageSelectorDialog::filesListChanged()
+void TijMessageSelectorDialog::filesListChanged()
 {
 	fillTreeView();
 }
 
 #include<QDebug>
-void MessageSelectorDialog::onMessageSelected(QTreeWidgetItem *item, int column)
+void TijMessageSelectorDialog::onMessageSelected(QTreeWidgetItem *item, int column)
 {
 	Q_UNUSED(column)
 	Q_UNUSED(item)
@@ -48,7 +48,7 @@ void MessageSelectorDialog::onMessageSelected(QTreeWidgetItem *item, int column)
 	_selectedMessage = filepath;
 }
 
-void MessageSelectorDialog::fillTreeView()
+void TijMessageSelectorDialog::fillTreeView()
 {
 	_filesTree->setHeaderLabels(QStringList());
 	_filesTree->clear();
@@ -83,3 +83,4 @@ void MessageSelectorDialog::fillTreeView()
 	_filesTree->insertTopLevelItems(0, items);
 
 }
+

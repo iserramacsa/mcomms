@@ -85,14 +85,13 @@ class TIJViewerController : public QObject, public Macsa::MComms::TijViewer
 		QString id() const {return _(_controller.id());}
 		QString address() const {return _(_controller.address());}
 
-		virtual void statusChanged()	 override { /*qDebug() << " Observer: " << Macsa::MComms::TijObserver::id() << "Th: " << QThread::currentThreadId() << " " << __func__;*/ emit printerStatusChanged();	  }
-		virtual void configChanged()	 override { /*qDebug() << " Observer: " << Macsa::MComms::TijObserver::id() << "Th: " << QThread::currentThreadId() << " " << __func__;*/ emit printerConfigChanged();	  }
-		virtual void filesListChanged()  override { /*qDebug() << " Observer: " << Macsa::MComms::TijObserver::id() << "Th: " << QThread::currentThreadId() << " " << __func__;*/ emit printerFilesListChanged();  }
-		virtual void fontsChanged()		 override { /*qDebug() << " Observer: " << Macsa::MComms::TijObserver::id() << "Th: " << QThread::currentThreadId() << " " << __func__;*/ emit printerFontsChanged();      }
-		virtual void userValuesChanged() override { /*qDebug() << " Observer: " << Macsa::MComms::TijObserver::id() << "Th: " << QThread::currentThreadId() << " " << __func__;*/ emit printerUserValuesChanged(); }
-		virtual void errorsLogsChanged() override { /*qDebug() << " Observer: " << Macsa::MComms::TijObserver::id() << "Th: " << QThread::currentThreadId() << " " << __func__;*/ emit printerErrorsLogsChanged(); }
+		virtual void statusChanged()	 override { emit printerStatusChanged();	 }
+		virtual void configChanged()	 override { emit printerConfigChanged();	 }
+		virtual void filesListChanged()  override { emit printerFilesListChanged();  }
+		virtual void fontsChanged()		 override { emit printerFontsChanged();      }
+		virtual void userValuesChanged() override { emit printerUserValuesChanged(); }
+		virtual void errorsLogsChanged() override { emit printerErrorsLogsChanged(); }
 		virtual void fileChanged(const std::string& unit, const std::string& filepath) override {
-			//qDebug() << "Observer: " << Macsa::MComms::TijObserver::id() << " " << __func__ << " Unit: " << _(unit) << " File: " << _(filepath);
 			emit printerFileChanged(_(unit), _(filepath));
 		}
 

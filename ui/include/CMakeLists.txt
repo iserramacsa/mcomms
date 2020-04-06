@@ -11,12 +11,13 @@ set(MOC_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/printerslistmodel.h
 	${CMAKE_CURRENT_SOURCE_DIR}/printerconndialog.h
 	${CMAKE_CURRENT_SOURCE_DIR}/networkdialog.h
-	${CMAKE_CURRENT_SOURCE_DIR}/printerview.h
-	${CMAKE_CURRENT_SOURCE_DIR}/printerstatusview.h
-	${CMAKE_CURRENT_SOURCE_DIR}/printerconfigview.h
-	${CMAKE_CURRENT_SOURCE_DIR}/printercommsview.h
+	${CMAKE_CURRENT_SOURCE_DIR}/jetview.h
+	${CMAKE_CURRENT_SOURCE_DIR}/tijview.h
+	${CMAKE_CURRENT_SOURCE_DIR}/tijstatusview.h
+	${CMAKE_CURRENT_SOURCE_DIR}/tijconfigview.h
+	${CMAKE_CURRENT_SOURCE_DIR}/tijcommsview.h
+	${CMAKE_CURRENT_SOURCE_DIR}/tijmessageselector.h
 	${CMAKE_CURRENT_SOURCE_DIR}/printerfilesview.h
-	${CMAKE_CURRENT_SOURCE_DIR}/messageselector.h
 	)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/viewers)

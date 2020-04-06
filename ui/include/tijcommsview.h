@@ -1,5 +1,5 @@
-#ifndef PRINTER_COMMS_VIEW_H
-#define PRINTER_COMMS_VIEW_H
+#ifndef TIJ_PRINTER_COMMS_VIEW_H
+#define TIJ_PRINTER_COMMS_VIEW_H
 
 #include <QWidget>
 #include "viewers/tijviewercontroller.h"
@@ -10,7 +10,7 @@
 #include <QCheckBox>
 #include "tij/datatypes.h"
 
-class PrinterCommsView : public QWidget
+class TijCommsView : public QWidget
 {
 		Q_OBJECT
 	private:
@@ -32,8 +32,8 @@ class PrinterCommsView : public QWidget
 		};
 
 	public:
-		explicit PrinterCommsView(QWidget* parent = 0);
-		~PrinterCommsView();
+		explicit TijCommsView(QWidget* parent = 0);
+		~TijCommsView();
 		void setController(Macsa::MComms::TijController& controller);
 
 	public slots:

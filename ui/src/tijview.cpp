@@ -1,4 +1,4 @@
-#include "printerview.h"
+#include "tijview.h"
 #include "tij/datatypes.h"
 #include <QScrollArea>
 
@@ -6,7 +6,7 @@
 #define WARN_ICON	":/icons/warning.svg"
 #define INFO_ICON	":/icons/notification.svg"
 
-PrinterView::PrinterView(QWidget *parent) :
+TijView::TijView(QWidget *parent) :
 	QWidget(parent)
 {
 	ui.setupUi(this);
@@ -33,7 +33,7 @@ PrinterView::PrinterView(QWidget *parent) :
 	buildErrorsLog();
 }
 
-PrinterView::~PrinterView()
+TijView::~TijView()
 {
 	if (_controller != nullptr) {
 		delete _controller;
@@ -41,17 +41,17 @@ PrinterView::~PrinterView()
 	}
 }
 
-void PrinterView::setController(Macsa::MComms::TijController &controller)
+void TijView::setController(Macsa::MComms::TijController &controller)
 {
 	if (_controller != nullptr) {
 		delete _controller;
 		_controller = nullptr;
 	}
 	_controller = new TIJViewerController(controller);
-	_printerStatusView->setController(controller);
-	_printerConfigView->setController(controller);
-	_printerCommsView->setController(controller);
-	_printerFilesView->setController(controller);
+	_statusView->setController(controller);
+	_configView->setController(controller);
+	_commsView->setController(controller);
+	_filesView->setController(controller);
 	refresh();
 	if (!_dtTimer.isActive()) {
 		_dtTimer.start();
@@ -59,7 +59,7 @@ void PrinterView::setController(Macsa::MComms::TijController &controller)
 	connect(_controller, SIGNAL(printerStatusChanged()), SLOT(refresh()));
 }
 
-void PrinterView::refresh()
+void TijView::refresh()
 {
 	this->setEnabled(_controller != nullptr);
 	if (_controller) {
@@ -79,13 +79,13 @@ void PrinterView::refresh()
 	updateLogs();
 }
 
-void PrinterView::updateLogs()
+void TijView::updateLogs()
 {
-	if (_printerErrorsLog != nullptr)
+	if (_errorsLogTable != nullptr)
 	{
 		if (_controller) {
 			QVector<TIJViewerController::PrinterError> log = _controller->errorsLog();
-			_printerErrorsLog->setRowCount(log.count());
+			_errorsLogTable->setRowCount(log.count());
 
 			for (int i = 0; i < log.count(); i++) {
 				QTableWidgetItem* itBoard = new QTableWidgetItem(QString("%1").arg(log.at(i).boardId));
@@ -111,21 +111,21 @@ void PrinterView::updateLogs()
 				itPriority->setTextAlignment(Qt::AlignCenter);
 				QTableWidgetItem* itCode = new QTableWidgetItem(log.at(i).code);
 				int col = 0;
-				_printerErrorsLog->setItem(i, col++, itTStamp);
-				_printerErrorsLog->setItem(i, col++, itBoard);
-				_printerErrorsLog->setItem(i, col++, itType);
-				_printerErrorsLog->setItem(i, col++, itPriority);
-				_printerErrorsLog->setItem(i, col++, itCode);
+				_errorsLogTable->setItem(i, col++, itTStamp);
+				_errorsLogTable->setItem(i, col++, itBoard);
+				_errorsLogTable->setItem(i, col++, itType);
+				_errorsLogTable->setItem(i, col++, itPriority);
+				_errorsLogTable->setItem(i, col++, itCode);
 			}
 			resizeErrorsLog();
 		}
 		else {
-			_printerErrorsLog->clear();
+			_errorsLogTable->clear();
 		}
 	}
 }
 
-void PrinterView::setPrinterStatus(TIJViewerController::TijStatus status)
+void TijView::setPrinterStatus(TIJViewerController::TijStatus status)
 {
 	bool connected = false;
 	switch (status) {
@@ -164,7 +164,7 @@ void PrinterView::setPrinterStatus(TIJViewerController::TijStatus status)
 
 }
 
-void PrinterView::clear()
+void TijView::clear()
 {
 	if (_controller != nullptr) {
 		delete _controller;
@@ -180,94 +180,94 @@ void PrinterView::clear()
 	ui.lblFPGAVersion->setText("---");
 }
 
-void PrinterView::resizeEvent(QResizeEvent *event)
+void TijView::resizeEvent(QResizeEvent *event)
 {
 	QWidget::resizeEvent(event);
 	resizeErrorsLog();
 }
 
-void PrinterView::buildStatus()
+void TijView::buildStatus()
 {
 	QVBoxLayout* layout = new QVBoxLayout(ui.WidgetContentsStatus);
 	layout->setMargin(0);
 
-	_printerStatusView = new PrinterStatusView(ui.WidgetContentsStatus);
+	_statusView = new TijStatusView(ui.WidgetContentsStatus);
 	layout->setSizeConstraint(QLayout::SetMinAndMaxSize);
-	layout->addWidget(_printerStatusView);
+	layout->addWidget(_statusView);
 
 	clear();
 }
 
-void PrinterView::buildConfig()
+void TijView::buildConfig()
 {
 	QVBoxLayout* layout = new QVBoxLayout(ui.WidgetContentsConfig);
 	layout->setMargin(0);
 
-	_printerConfigView = new PrinterConfigView(ui.WidgetContentsConfig);
-	connect(_printerConfigView, SIGNAL(configChangeRequested()), SLOT(onRequestedChanges()), Qt::QueuedConnection);
+	_configView = new TijConfigView(ui.WidgetContentsConfig);
+	connect(_configView, SIGNAL(configChangeRequested()), SLOT(onRequestedChanges()), Qt::QueuedConnection);
 
 	layout->setSizeConstraint(QLayout::SetMinAndMaxSize);
-	layout->addWidget(_printerConfigView);
+	layout->addWidget(_configView);
 
 	clear();
 }
 
-void PrinterView::buildComms()
+void TijView::buildComms()
 {
 	QVBoxLayout* layout = new QVBoxLayout(ui.WidgetContentsNetwork);
 	layout->setMargin(0);
 
-	_printerCommsView = new PrinterCommsView(ui.WidgetContentsConfig);
+	_commsView = new TijCommsView(ui.WidgetContentsConfig);
 
 	layout->setSizeConstraint(QLayout::SetMinAndMaxSize);
-	layout->addWidget(_printerCommsView);
+	layout->addWidget(_commsView);
 
 	clear();
 
 }
 
-void PrinterView::buildFiles()
+void TijView::buildFiles()
 {
-	_printerFilesView = new PrinterFilesView(this);
+	_filesView = new PrinterFilesView(this);
 	QVBoxLayout *layout = new QVBoxLayout(ui.tabFiles);
 	layout->setMargin(0);
-	layout->addWidget(_printerFilesView);
+	layout->addWidget(_filesView);
 }
 
-void PrinterView::buildErrorsLog()
+void TijView::buildErrorsLog()
 {
 	QVBoxLayout* layout = new QVBoxLayout(ui.tabLogs);
 	layout->setMargin(3);
-	_printerErrorsLog = new QTableWidget(ui.tabLogs);
-	layout->addWidget(_printerErrorsLog);
+	_errorsLogTable = new QTableWidget(ui.tabLogs);
+	layout->addWidget(_errorsLogTable);
 
 	QStringList headers;
 	headers << "Timestamp" << "Board Id"  << "Type" << "Priority" << "Code";
-	_printerErrorsLog->setColumnCount(headers.count());
-	_printerErrorsLog->setHorizontalHeaderLabels(headers);
+	_errorsLogTable->setColumnCount(headers.count());
+	_errorsLogTable->setHorizontalHeaderLabels(headers);
 	resizeErrorsLog();
 }
 
-void PrinterView::resizeErrorsLog()
+void TijView::resizeErrorsLog()
 {
-	if(_printerErrorsLog != nullptr && _printerErrorsLog->rowCount()) {
+	if(_errorsLogTable != nullptr && _errorsLogTable->rowCount()) {
 	   int w = 0;
 	   int c = 0;
-	   _printerErrorsLog->setColumnWidth(c++, 100); w += 100;
-	   _printerErrorsLog->setColumnWidth(c++, 70); w += 70;
-	   _printerErrorsLog->setColumnWidth(c++, 100); w += 100;
-	   _printerErrorsLog->setColumnWidth(c++, 70); w += 70;
-	   if (_printerErrorsLog->width() > 400){
-		   w = _printerErrorsLog->width() - (w + 19);
+	   _errorsLogTable->setColumnWidth(c++, 100); w += 100;
+	   _errorsLogTable->setColumnWidth(c++, 70); w += 70;
+	   _errorsLogTable->setColumnWidth(c++, 100); w += 100;
+	   _errorsLogTable->setColumnWidth(c++, 70); w += 70;
+	   if (_errorsLogTable->width() > 400){
+		   w = _errorsLogTable->width() - (w + 19);
 	   }
 	   else {
 		   w = 400;
 	   }
-	   _printerErrorsLog->setColumnWidth(c, w);
+	   _errorsLogTable->setColumnWidth(c, w);
 	}
 }
 
-void PrinterView::onRequestLive()
+void TijView::onRequestLive()
 {
 	if (_controller) {
 		_controller->requestLive();
@@ -275,7 +275,7 @@ void PrinterView::onRequestLive()
 	refresh();
 }
 
-void PrinterView::onRequestConfig()
+void TijView::onRequestConfig()
 {
 	if (_controller) {
 		_controller->requestConfig();
@@ -283,7 +283,7 @@ void PrinterView::onRequestConfig()
 	refresh();
 }
 
-void PrinterView::onRequestStatus()
+void TijView::onRequestStatus()
 {
 	if (_controller) {
 		_controller->requestStatus();
@@ -291,7 +291,7 @@ void PrinterView::onRequestStatus()
 	refresh();
 }
 
-void PrinterView::onRequestFiles()
+void TijView::onRequestFiles()
 {
 	if (_controller) {
 		_controller->requestAllFiles();
@@ -299,7 +299,7 @@ void PrinterView::onRequestFiles()
 	refresh();
 }
 
-void PrinterView::onRequestFonts()
+void TijView::onRequestFonts()
 {
 	if (_controller) {
 		_controller->requestFontFiles();
@@ -307,7 +307,7 @@ void PrinterView::onRequestFonts()
 	refresh();
 }
 
-void PrinterView::onRequestImages()
+void TijView::onRequestImages()
 {
 	if (_controller) {
 		_controller->requestImagesFiles();
@@ -315,7 +315,7 @@ void PrinterView::onRequestImages()
 	refresh();
 }
 
-void PrinterView::onRequestMessages()
+void TijView::onRequestMessages()
 {
 	if (_controller) {
 		_controller->requestMessagesFiles();
@@ -323,7 +323,7 @@ void PrinterView::onRequestMessages()
 	refresh();
 }
 
-void PrinterView::onRequestErrorsLog()
+void TijView::onRequestErrorsLog()
 {
 	if (_controller) {
 		_controller->requestErrorsList();
@@ -332,7 +332,7 @@ void PrinterView::onRequestErrorsLog()
 
 }
 
-void PrinterView::onConnectClicked()
+void TijView::onConnectClicked()
 {
 	if (_controller != nullptr) {
 		TIJViewerController::TijStatus status = _controller->printerStatus();
@@ -346,7 +346,7 @@ void PrinterView::onConnectClicked()
 	}
 }
 
-void PrinterView::onRequestedChanges()
+void TijView::onRequestedChanges()
 {
 	if (_controller != nullptr) {
 //		_controller->updatePrinterData(); //Deprecated
@@ -354,7 +354,7 @@ void PrinterView::onRequestedChanges()
 	}
 }
 
-void PrinterView::onUpdateDateTime()
+void TijView::onUpdateDateTime()
 {
 	if (_controller) {
 		ui.lblTime->setText(_controller->printerDateTime("hh:mm:ss"));

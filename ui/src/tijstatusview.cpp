@@ -1,4 +1,4 @@
-#include "printerstatusview.h"
+#include "tijstatusview.h"
 #include "QFormLayout"
 #include "tij/datatypes.h"
 
@@ -9,7 +9,7 @@
 #define RED_COLOR	"color:#800000;"
 #define GREEN_COLOR	"color:#008000;"
 
-PrinterStatusView::PrinterStatusView(QWidget *parent) :
+TijStatusView::TijStatusView(QWidget *parent) :
 	QWidget(parent)
 {
 	_controller = nullptr;
@@ -18,14 +18,14 @@ PrinterStatusView::PrinterStatusView(QWidget *parent) :
 	this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 }
 
-PrinterStatusView::~PrinterStatusView()
+TijStatusView::~TijStatusView()
 {
 	if (_controller != nullptr) {
 		delete _controller;
 	}
 }
 
-void PrinterStatusView::setController(Macsa::MComms::TijController &controller)
+void TijStatusView::setController(Macsa::MComms::TijController &controller)
 {
 	if (_controller != nullptr) {
 		delete _controller;
@@ -36,14 +36,14 @@ void PrinterStatusView::setController(Macsa::MComms::TijController &controller)
 	refresh();
 }
 
-void PrinterStatusView::refresh()
+void TijStatusView::refresh()
 {
 	if ((_controller != nullptr) && (_controller->printerStatus() != TIJViewerController::TijStatus::DISCONNECTED)) {
-		_printerType->setText(_controller->boardType());
-		_printerAutostart->setChecked(_controller->autoStart());
-		_printerCurrentMessage->setText(_controller->currentMessage());
-		_printerBcdMode->setText(_controller->bcdMode().toString().c_str());
-		_printerBcdStatus->setText(QString("%1").arg(_controller->currentBcdCode()));
+		_type->setText(_controller->boardType());
+		_autostart->setChecked(_controller->autoStart());
+		_currentMessage->setText(_controller->currentMessage());
+		_bcdMode->setText(_controller->bcdMode().toString().c_str());
+		_bcdStatus->setText(QString("%1").arg(_controller->currentBcdCode()));
 
 		updateErrors(_controller->printerErrors());
 		QMap<QString, int> counters = _controller->counters();
@@ -60,21 +60,21 @@ void PrinterStatusView::refresh()
 }
 
 
-void PrinterStatusView::build()
+void TijStatusView::build()
 {
-	_printerType = new QLabel("---", this);
-	_printerAutostart = new QCheckBox(this);
-	_printerAutostart->setEnabled(false);
-	_printerCurrentMessage = new QLabel("---", this);
-	_printerBcdMode = new QLabel("---", this);
-	_printerBcdStatus = new QLabel("---", this);
+	_type = new QLabel("---", this);
+	_autostart = new QCheckBox(this);
+	_autostart->setEnabled(false);
+	_currentMessage = new QLabel("---", this);
+	_bcdMode = new QLabel("---", this);
+	_bcdStatus = new QLabel("---", this);
 
 	QFormLayout* layout = new QFormLayout(this);
-	layout->addRow("Type:", _printerType);
-	layout->addRow("Autostart:", _printerAutostart);
-	layout->addRow("Current Message:", _printerCurrentMessage);
-	layout->addRow("BCD Mode:", _printerBcdMode);
-	layout->addRow("BCD Status:", _printerBcdStatus);
+	layout->addRow("Type:", _type);
+	layout->addRow("Autostart:", _autostart);
+	layout->addRow("Current Message:", _currentMessage);
+	layout->addRow("BCD Mode:", _bcdMode);
+	layout->addRow("BCD Status:", _bcdStatus);
 
 	_errors = new QTableWidget(this);
 	layout->addRow("Current errors:", _errors);
@@ -109,7 +109,7 @@ void PrinterStatusView::build()
 
 }
 
-QWidget* PrinterStatusView::buildCounters()
+QWidget* TijStatusView::buildCounters()
 {
 	QWidget*  counters = new QWidget(this);
 	counters->setMaximumWidth(500);
@@ -146,20 +146,20 @@ QWidget* PrinterStatusView::buildCounters()
 	return counters;
 }
 
-QWidget *PrinterStatusView::buildInputs()
+QWidget *TijStatusView::buildInputs()
 {
 	QWidget* inputs = new QWidget(this);
 	inputs->setLayout(new QGridLayout());
 	return inputs;
 }
 
-void PrinterStatusView::printerDisconnected()
+void TijStatusView::printerDisconnected()
 {
-	_printerType->setText("---");
-	_printerAutostart->setChecked(false);
-	_printerCurrentMessage->setText("---");
-	_printerBcdMode->setText("---");
-	_printerBcdStatus->setText("---");
+	_type->setText("---");
+	_autostart->setChecked(false);
+	_currentMessage->setText("---");
+	_bcdMode->setText("---");
+	_bcdStatus->setText("---");
 	_errors->clear();
 	updateInputs(QVector<TIJViewerController::PrinterInput>());
 	updateOutputs(QVector<TIJViewerController::PrinterOutput>());
@@ -167,7 +167,7 @@ void PrinterStatusView::printerDisconnected()
 	updateErrors(std::vector<Macsa::Printers::Error>());
 }
 
-void PrinterStatusView::resizeEvent(QResizeEvent * event)
+void TijStatusView::resizeEvent(QResizeEvent * event)
 {
 	QWidget::resizeEvent(event);
 	int cols = _errors->columnCount();
@@ -184,7 +184,7 @@ void PrinterStatusView::resizeEvent(QResizeEvent * event)
 
 }
 
-void PrinterStatusView::updateInputs(const QVector<TIJViewerController::PrinterInput> &inputs)
+void TijStatusView::updateInputs(const QVector<TIJViewerController::PrinterInput> &inputs)
 {
 	if (_inputs.size() == 0){
 		int in = 0;
@@ -225,7 +225,7 @@ void PrinterStatusView::updateInputs(const QVector<TIJViewerController::PrinterI
 	}
 }
 
-void PrinterStatusView::updateOutputs(const QVector<TIJViewerController::PrinterOutput> &outputs)
+void TijStatusView::updateOutputs(const QVector<TIJViewerController::PrinterOutput> &outputs)
 {
 	if (_outputs.size() == 0){
 		int in = 0;
@@ -267,7 +267,7 @@ void PrinterStatusView::updateOutputs(const QVector<TIJViewerController::Printer
 	}
 }
 
-void PrinterStatusView::updateProperties(const QMap<QString, QString> &props)
+void TijStatusView::updateProperties(const QMap<QString, QString> &props)
 {
 	if (_props.size() == 0 && props.count()) {
 		for (QMap<QString, QString>::const_iterator it = props.begin(); it != props.end(); it++) {
@@ -288,7 +288,7 @@ void PrinterStatusView::updateProperties(const QMap<QString, QString> &props)
 
 }
 
-void PrinterStatusView::updateErrors(const std::vector<Macsa::Printers::Error>& errors)
+void TijStatusView::updateErrors(const std::vector<Macsa::Printers::Error>& errors)
 {
 	_errors->clear();
 	QStringList header;

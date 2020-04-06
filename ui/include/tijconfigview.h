@@ -1,5 +1,5 @@
-#ifndef PRINTER_CONFIG_VIEW_H
-#define PRINTER_CONFIG_VIEW_H
+#ifndef TIJ_PRINTER_CONFIG_VIEW_H
+#define TIJ_PRINTER_CONFIG_VIEW_H
 
 #include <QWidget>
 #include "viewers/tijviewercontroller.h"
@@ -13,12 +13,12 @@
 #include <QSpinBox>
 #include "tij/datatypes.h"
 
-class PrinterConfigView : public QWidget
+class TijConfigView : public QWidget
 {
 		Q_OBJECT
 	public:
-		explicit PrinterConfigView(QWidget* parent = 0);
-		~PrinterConfigView();
+		explicit TijConfigView(QWidget* parent = 0);
+		~TijConfigView();
 		void setController(Macsa::MComms::TijController& controller);
 
 	signals:
@@ -140,4 +140,4 @@ class PrinterConfigView : public QWidget
 };
 
 
-#endif //PRINTER_VIEW_H
+#endif //TIJ_PRINTER_VIEW_H

@@ -1,34 +1,34 @@
-#ifndef PRINTER_VIEW_H
-#define PRINTER_VIEW_H
+#ifndef TIJ_PRINTER_VIEW_H
+#define TIJ_PRINTER_VIEW_H
 
 #include <QWidget>
 #include <QtGui>
-#include "ui_printerview.h"
+#include "ui_tijview.h"
 #include "viewers/tijviewercontroller.h"
 #include "tij/tijcontroller.h"
-#include "printerstatusview.h"
+#include "tijstatusview.h"
+#include "tijconfigview.h"
+#include "tijcommsview.h"
 #include "printerfilesview.h"
-#include "printerconfigview.h"
-#include "printercommsview.h"
 
-class PrinterView : public QWidget
+class TijView : public QWidget
 {
 		Q_OBJECT
 	public:
-		explicit PrinterView(QWidget* parent = 0);
-		~PrinterView();
+		explicit TijView(QWidget* parent = 0);
+		~TijView();
 		void setController(Macsa::MComms::TijController& controller);
 		void clear();
 
 	private:
 		TIJViewerController* _controller;
-		PrinterStatusView*	_printerStatusView;
-		PrinterConfigView*	_printerConfigView;
-		PrinterCommsView*	_printerCommsView;
-		PrinterFilesView*	_printerFilesView;
-		QTableWidget*		_printerErrorsLog;
+		TijStatusView*		_statusView;
+		TijConfigView*	_configView;
+		TijCommsView*	_commsView;
+		PrinterFilesView*	_filesView;
+		QTableWidget*		_errorsLogTable;
 		QTimer				_dtTimer;
-		Ui::printerView ui;
+		Ui::tijView ui;
 
 		virtual void resizeEvent(QResizeEvent *);
 
@@ -58,4 +58,4 @@ class PrinterView : public QWidget
 };
 
 
-#endif //PRINTER_VIEW_H
+#endif //TIJ_PRINTER_VIEW_H

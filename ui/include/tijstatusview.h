@@ -1,5 +1,5 @@
-#ifndef PRINTER_STATUS_VIEW_H
-#define PRINTER_STATUS_VIEW_H
+#ifndef TIJ_PRINTER_STATUS_VIEW_H
+#define TIJ_PRINTER_STATUS_VIEW_H
 
 #include <QWidget>
 #include <QtGui>
@@ -11,23 +11,23 @@
 #include <QMap>
 #include <QTableWidget>
 
-class PrinterStatusView : public QWidget
+class TijStatusView : public QWidget
 {
 		Q_OBJECT
 	public:
-		explicit PrinterStatusView(QWidget* parent = 0);
-		~PrinterStatusView();
+		explicit TijStatusView(QWidget* parent = 0);
+		~TijStatusView();
 		void setController(Macsa::MComms::TijController& controller);
 
 	public slots:
 		void refresh();
 
 	private:		
-		QLabel*		_printerType;
-		QCheckBox*	_printerAutostart;
-		QLabel*		_printerCurrentMessage;
-		QLabel*		_printerBcdMode;
-		QLabel*		_printerBcdStatus;
+		QLabel*		_type;
+		QCheckBox*	_autostart;
+		QLabel*		_currentMessage;
+		QLabel*		_bcdMode;
+		QLabel*		_bcdStatus;
 
 		QTableWidget* _errors;
 

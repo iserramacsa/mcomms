@@ -1,8 +1,8 @@
-#include "printerconfigview.h"
+#include "tijconfigview.h"
 #include "QFormLayout"
 #include <QTimer>
 #include "tij/datatypes.h"
-#include "messageselector.h"
+#include "tijmessageselector.h"
 
 #include <QDebug>
 
@@ -10,7 +10,7 @@
 
 using namespace Macsa::Printers;
 
-PrinterConfigView::PrinterConfigView(QWidget *parent) :
+TijConfigView::TijConfigView(QWidget *parent) :
 	QWidget(parent)
 {
 	_controller = nullptr;
@@ -18,14 +18,14 @@ PrinterConfigView::PrinterConfigView(QWidget *parent) :
 	this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 }
 
-PrinterConfigView::~PrinterConfigView()
+TijConfigView::~TijConfigView()
 {
 	if (_controller != nullptr) {
 		delete _controller;
 	}
 }
 
-void PrinterConfigView::setController(Macsa::MComms::TijController &controller)
+void TijConfigView::setController(Macsa::MComms::TijController &controller)
 {
 	if (_controller != nullptr) {
 		delete _controller;
@@ -35,7 +35,7 @@ void PrinterConfigView::setController(Macsa::MComms::TijController &controller)
 	refresh();
 }
 
-void PrinterConfigView::refresh()
+void TijConfigView::refresh()
 {
 	if ((_controller != nullptr) && (_controller->printerStatus() != TIJViewerController::TijStatus::DISCONNECTED)) {
 		updateLoggerSettings();
@@ -52,7 +52,7 @@ void PrinterConfigView::refresh()
 	}
 }
 
-void PrinterConfigView::build()
+void TijConfigView::build()
 {
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setMargin(0);
@@ -82,7 +82,7 @@ void PrinterConfigView::build()
 	layout->addStretch();
 }
 
-QWidget *PrinterConfigView::buildLoggerSettings()
+QWidget *TijConfigView::buildLoggerSettings()
 {
 	QWidget * loggerSettings = new QWidget(this);
 	QFormLayout* layout = new QFormLayout(loggerSettings);
@@ -102,7 +102,7 @@ QWidget *PrinterConfigView::buildLoggerSettings()
 	return loggerSettings;
 }
 
-QWidget *PrinterConfigView::buildGeneralSettings()
+QWidget *TijConfigView::buildGeneralSettings()
 {
 	QWidget * generalSettings = new QWidget(this);
 	QFormLayout* layout = new QFormLayout(generalSettings);
@@ -145,7 +145,7 @@ QWidget *PrinterConfigView::buildGeneralSettings()
 	return generalSettings;
 }
 
-QWidget *PrinterConfigView::buildPrintSetup()
+QWidget *TijConfigView::buildPrintSetup()
 {
 	QWidget * printSetup = new QWidget(this);
 	QFormLayout* layout = new QFormLayout(printSetup);
@@ -233,7 +233,7 @@ QWidget *PrinterConfigView::buildPrintSetup()
 	return printSetup;
 }
 
-QWidget *PrinterConfigView::buildTriggerSetup()
+QWidget *TijConfigView::buildTriggerSetup()
 {
 	QWidget * triggerSetup = new QWidget(this);
 	QFormLayout* layout = new QFormLayout(triggerSetup);
@@ -262,7 +262,7 @@ QWidget *PrinterConfigView::buildTriggerSetup()
 	return triggerSetup;
 }
 
-QWidget *PrinterConfigView::buildDateCodesSetup()
+QWidget *TijConfigView::buildDateCodesSetup()
 {
 	QTabWidget * dateCodes = new QTabWidget(this);
 	QStringList list;
@@ -290,7 +290,7 @@ QWidget *PrinterConfigView::buildDateCodesSetup()
 	return dateCodes;
 }
 
-QWidget *PrinterConfigView::buildBcdTable()
+QWidget *TijConfigView::buildBcdTable()
 {
 	_bcdTable = new QTableWidget(this);
 	_bcdTable->setColumnCount(4);
@@ -300,7 +300,7 @@ QWidget *PrinterConfigView::buildBcdTable()
 	return _bcdTable;
 }
 
-QWidget *PrinterConfigView::buildCartridgeSetup()
+QWidget *TijConfigView::buildCartridgeSetup()
 {
 	QWidget * cartridgeSettings = new QWidget(this);
 	QFormLayout* layout = new QFormLayout(cartridgeSettings);
@@ -321,7 +321,7 @@ QWidget *PrinterConfigView::buildCartridgeSetup()
 	return cartridgeSettings;
 }
 
-QWidget *PrinterConfigView::buildIOSetup()
+QWidget *TijConfigView::buildIOSetup()
 {
 	QWidget * ioSettings = new QWidget(this);
 	QVBoxLayout* layout = new QVBoxLayout(ioSettings);
@@ -352,14 +352,14 @@ QWidget *PrinterConfigView::buildIOSetup()
 	return ioSettings;
 }
 
-void PrinterConfigView::updateLoggerSettings()
+void TijConfigView::updateLoggerSettings()
 {
 	_loggerLevel->setCurrentIndex(_controller->loggerLevel()());
 	_logsEnabled->setChecked(_controller->loggerEnabled());
 	_traceComms->setChecked(_controller->traceComms());
 }
 
-void PrinterConfigView::updateGeneralSettings()
+void TijConfigView::updateGeneralSettings()
 {
 	_butEnable->setChecked(_controller->enabled());
 	if (_controller->enabled()) {
@@ -376,7 +376,7 @@ void PrinterConfigView::updateGeneralSettings()
 	_userMessage->setText(QString("\"%1\"").arg(_controller->userMessage()));
 }
 
-void PrinterConfigView::updatePrintSetup()
+void TijConfigView::updatePrintSetup()
 {
 	_printRotated->setChecked(_controller->printRotated());
 	_nozzlesCols->setCurrentIndex(_controller->nozzlesCol()());
@@ -422,7 +422,7 @@ void PrinterConfigView::updatePrintSetup()
 
 }
 
-void PrinterConfigView::updateTriggerSetup()
+void TijConfigView::updateTriggerSetup()
 {
 	_multiprint->setChecked(_controller->shotMode()() > Macsa::Printers::SINGLE_SHOT);
 	_numPrints->setValue(_controller->shotModeNumPrints());
@@ -438,7 +438,7 @@ void PrinterConfigView::updateTriggerSetup()
 	validateTriggerSettings();
 }
 
-void PrinterConfigView::updateBcdTable()
+void TijConfigView::updateBcdTable()
 {
 	QMap<int, QString> table = _controller->bcdTable();
 	_bcdTable->setRowCount(table.count() / 2);
@@ -459,7 +459,7 @@ void PrinterConfigView::updateBcdTable()
 }
 
 using namespace Macsa::Printers::DateCode;
-void PrinterConfigView::updateDateCodes()
+void TijConfigView::updateDateCodes()
 {
 	Macsa::Printers::DateCodes dc = _controller->dateCodes();
 
@@ -503,7 +503,7 @@ void PrinterConfigView::updateDateCodes()
 
 }
 
-void PrinterConfigView::updateCartridgeSettings()
+void TijConfigView::updateCartridgeSettings()
 {
 	_autoConfig->setChecked(_controller->cartridgeAutoSetup());
 	_voltage->setValue(_controller->cartridgeFiringVoltage());
@@ -515,7 +515,7 @@ void PrinterConfigView::updateCartridgeSettings()
 	validateCartridgeSettings();
 }
 
-void PrinterConfigView::updateIOSettings()
+void TijConfigView::updateIOSettings()
 {
 	QVector<TIJViewerController::PrinterInput> inputs = _controller->inputs();
 	QVector<TIJViewerController::PrinterOutput> outputs = _controller->outputs();
@@ -534,7 +534,7 @@ void PrinterConfigView::updateIOSettings()
 
 }
 
-void PrinterConfigView::printerDisconnected()
+void TijConfigView::printerDisconnected()
 {
 	//General Settings
 	_butEnable->setText("Disconnected");
@@ -543,7 +543,7 @@ void PrinterConfigView::printerDisconnected()
 	_blockCartridge->setChecked(false);
 }
 
-QStringList PrinterConfigView::printResolutions() const
+QStringList TijConfigView::printResolutions() const
 {
 	QStringList res;
 	res << "150h x 300v dpi";
@@ -555,7 +555,7 @@ QStringList PrinterConfigView::printResolutions() const
 	return res;
 }
 
-QWidget* PrinterConfigView::buildPrintDelay(QWidget *parent, QSpinBox ** editor) const
+QWidget* TijConfigView::buildPrintDelay(QWidget *parent, QSpinBox ** editor) const
 {
 	QWidget* delay = new QWidget(parent);
 	QHBoxLayout* layout = new QHBoxLayout(delay);
@@ -572,7 +572,7 @@ QWidget* PrinterConfigView::buildPrintDelay(QWidget *parent, QSpinBox ** editor)
 	return delay;
 }
 
-QWidget *PrinterConfigView::buildCartridgeSpinBox(QWidget *parent, QDoubleSpinBox **editor, const QString &units, int min, int max, int decimals) const
+QWidget *TijConfigView::buildCartridgeSpinBox(QWidget *parent, QDoubleSpinBox **editor, const QString &units, int min, int max, int decimals) const
 {
 	QWidget* spinner = new QWidget(parent);
 	QHBoxLayout* layout = new QHBoxLayout(spinner);
@@ -590,7 +590,7 @@ QWidget *PrinterConfigView::buildCartridgeSpinBox(QWidget *parent, QDoubleSpinBo
 	return spinner;
 }
 
-QWidget *PrinterConfigView::buildDateCodeTable(QTableWidget **table, QStringList headers, QWidget *parent) const
+QWidget *TijConfigView::buildDateCodeTable(QTableWidget **table, QStringList headers, QWidget *parent) const
 {
 	(*table) = new QTableWidget(parent);
 	(*table)->setColumnCount(headers.count());
@@ -598,7 +598,7 @@ QWidget *PrinterConfigView::buildDateCodeTable(QTableWidget **table, QStringList
 	return (*table);
 }
 
-QLabel *PrinterConfigView::getTitle(const QString &text)
+QLabel *TijConfigView::getTitle(const QString &text)
 {
 	QLabel * title = new QLabel(text, this);
 	title->setMargin(6);
@@ -606,7 +606,7 @@ QLabel *PrinterConfigView::getTitle(const QString &text)
 	return title;
 }
 
-void PrinterConfigView::fillDateCodes(QTableWidget *table, const std::vector<DateCodeGeneric> &data)
+void TijConfigView::fillDateCodes(QTableWidget *table, const std::vector<DateCodeGeneric> &data)
 {
 	int row = 0;
 	table->setRowCount(static_cast<int>(data.size()));
@@ -621,7 +621,7 @@ void PrinterConfigView::fillDateCodes(QTableWidget *table, const std::vector<Dat
 	}
 }
 
-void PrinterConfigView::addInputRow(QTableWidget *table, int row, int iniCol, const TIJViewerController::PrinterInput &input)
+void TijConfigView::addInputRow(QTableWidget *table, int row, int iniCol, const TIJViewerController::PrinterInput &input)
 {
 	QTableWidgetItem * item  = new QTableWidgetItem(QString("%1").arg(input.id));
 	item->setTextAlignment(Qt::AlignCenter);
@@ -643,7 +643,7 @@ void PrinterConfigView::addInputRow(QTableWidget *table, int row, int iniCol, co
 
 }
 
-void PrinterConfigView::addOutputRow(QTableWidget *table, int row, const TIJViewerController::PrinterOutput &output)
+void TijConfigView::addOutputRow(QTableWidget *table, int row, const TIJViewerController::PrinterOutput &output)
 {
 	QTableWidgetItem * item  = new QTableWidgetItem(QString("%1").arg(output.id));
 	item->setTextAlignment(Qt::AlignCenter);
@@ -664,7 +664,7 @@ void PrinterConfigView::addOutputRow(QTableWidget *table, int row, const TIJView
 
 }
 
-void PrinterConfigView::resizeEvent(QResizeEvent *event)
+void TijConfigView::resizeEvent(QResizeEvent *event)
 {
 	QWidget::resizeEvent(event);
 	int cols = _bcdTable->columnCount();
@@ -693,7 +693,7 @@ void PrinterConfigView::resizeEvent(QResizeEvent *event)
 	resizeDateCodeTableColumns(_yearsCodes);
 }
 
-void PrinterConfigView::resizeDateCodeTableColumns(QTableWidget *table)
+void TijConfigView::resizeDateCodeTableColumns(QTableWidget *table)
 {
 	if (table->columnCount() == 2) {
 		int w = this->width() - table->columnCount() - 20;
@@ -702,7 +702,7 @@ void PrinterConfigView::resizeDateCodeTableColumns(QTableWidget *table)
 	}
 }
 
-void PrinterConfigView::validateTriggerSettings()
+void TijConfigView::validateTriggerSettings()
 {
 	_repeatPrint->setEnabled(_multiprint->isChecked());
 	_numPrints->setEnabled(_multiprint->isChecked());
@@ -717,7 +717,7 @@ void PrinterConfigView::validateTriggerSettings()
 	}
 }
 
-void PrinterConfigView::validateCartridgeSettings()
+void TijConfigView::validateCartridgeSettings()
 {
 	_voltage->setDisabled(_autoConfig->isChecked());
 	_pulseWidth->setDisabled(_autoConfig->isChecked());
@@ -725,7 +725,7 @@ void PrinterConfigView::validateCartridgeSettings()
 	_pulseTemp->setDisabled(_autoConfig->isChecked());
 }
 
-void PrinterConfigView::onStartStop()
+void TijConfigView::onStartStop()
 {
 	if (_controller) {
 		if (_controller->setEnabled(!_controller->enabled())) {
@@ -734,7 +734,7 @@ void PrinterConfigView::onStartStop()
 	}
 }
 
-void PrinterConfigView::onToggleAutoStart()
+void TijConfigView::onToggleAutoStart()
 {
 	if (_controller) {
 		if (_controller->setAutoStart(_printAutostart->isChecked())) {
@@ -743,7 +743,7 @@ void PrinterConfigView::onToggleAutoStart()
 	}
 }
 
-void PrinterConfigView::onToggleLowLevel()
+void TijConfigView::onToggleLowLevel()
 {
 	if (_controller) {
 		if (_controller->setLowLevelOutput(_lowLevelOutput->isChecked())) {
@@ -752,7 +752,7 @@ void PrinterConfigView::onToggleLowLevel()
 	}
 }
 
-void PrinterConfigView::onToggleBlockCartridge()
+void TijConfigView::onToggleBlockCartridge()
 {
 	if (_controller) {
 		if (_controller->setBlocked(_blockCartridge->isChecked())) {
@@ -761,7 +761,7 @@ void PrinterConfigView::onToggleBlockCartridge()
 	}
 }
 
-void PrinterConfigView::onToggleRotated()
+void TijConfigView::onToggleRotated()
 {
 	if (_controller) {
 		if (_controller->setPrintRotated(!_controller->enabled())) {
@@ -769,12 +769,12 @@ void PrinterConfigView::onToggleRotated()
 	}
 }
 
-void PrinterConfigView::onRequestChanges()
+void TijConfigView::onRequestChanges()
 {
 	emit configChangeRequested();
 }
 
-void PrinterConfigView::onChangeResolution(int idx)
+void TijConfigView::onChangeResolution(int idx)
 {
 	if (_controller) {
 
@@ -784,7 +784,7 @@ void PrinterConfigView::onChangeResolution(int idx)
 	}
 }
 
-void PrinterConfigView::onChangeNozzlesCols(int idx)
+void TijConfigView::onChangeNozzlesCols(int idx)
 {
 	if (_controller) {
 //		if (_controller->setPrintRotated(!_controller->enabled())) {
@@ -793,10 +793,10 @@ void PrinterConfigView::onChangeNozzlesCols(int idx)
 	}
 }
 
-void PrinterConfigView::onSelectUserMessage()
+void TijConfigView::onSelectUserMessage()
 {
 	if (_controller){
-		MessageSelectorDialog selector(_controller->controller(), this);
+		TijMessageSelectorDialog selector(_controller->controller(), this);
 		if (selector.exec()){
 			QString msg = selector.selectedMessage();
 			if (msg.length()){
@@ -807,7 +807,7 @@ void PrinterConfigView::onSelectUserMessage()
 }
 
 template<typename N>
-QStringList PrinterConfigView::getPrinterEnumOptions(const Macsa::Utils::SmartEnum<N> &e) const
+QStringList TijConfigView::getPrinterEnumOptions(const Macsa::Utils::SmartEnum<N> &e) const
 {
 	QStringList list;
 	std::vector<std::string> eList = e.stringList();
@@ -816,3 +816,4 @@ QStringList PrinterConfigView::getPrinterEnumOptions(const Macsa::Utils::SmartEn
 	}
 	return list;
 }
+

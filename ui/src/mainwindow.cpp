@@ -47,10 +47,10 @@ void MainWindow::loadPrintersList()
 void MainWindow::loadView()
 {
 	QVBoxLayout* layout = new QVBoxLayout();
-	_printerView = new PrinterView(this);
+	_tijView = new TijView(this);
 	ui.printerHolder->setLayout(layout);
-	layout->addWidget(_printerView);
-	_printerView->setEnabled(false);
+	layout->addWidget(_tijView);
+	_tijView->setEnabled(false);
 }
 
 void MainWindow::onManageNetwork()
@@ -115,12 +115,12 @@ void MainWindow::onPrinterSelected(const QModelIndex &index)
 	Macsa::MComms::TijController * controller = dynamic_cast<Macsa::MComms::TijController*>(_manager.getPrinter(row));
 	if (controller){
 		qDebug() << __func__  << " Selected printer: " << controller->id().c_str();
-		_printerView->setController(*controller);
-		_printerView->setEnabled(true);
+		_tijView->setController(*controller);
+		_tijView->setEnabled(true);
 	}
 	else {
-		_printerView->clear();
-		_printerView->setEnabled(false);
+		_tijView->clear();
+		_tijView->setEnabled(false);
 	}
 }
 
@@ -137,7 +137,7 @@ void MainWindow::refreshPrintersList()
 	}
 	_printersListModel->setStringList(list);
 	if (!list.count()) {
-		_printerView->clear();
-		_printerView->setEnabled(false);
+		_tijView->clear();
+		_tijView->setEnabled(false);
 	}
 }
