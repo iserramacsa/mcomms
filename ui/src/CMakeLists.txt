@@ -9,6 +9,7 @@ set(SOURCES ${SOURCES}
 	${CMAKE_CURRENT_SOURCE_DIR}/printerconndialog.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/networkdialog.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/jetview.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/jetstatusview.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/tijview.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/tijstatusview.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/tijconfigview.cpp

@@ -8,6 +8,7 @@
 #include "printersmanager.h"
 #include "printerslistmodel.h"
 #include "tijview.h"
+#include "jetview.h"
 
 #include <QStandardItemModel>
 #include <QProcess>
@@ -32,6 +33,7 @@ class MainWindow : public QMainWindow
 
 	private:
 		QVector<QProcess*> _emulators;
+		JetView *_jetView;
 		TijView *_tijView;
 		QStringListModel *_printersListModel;
 		Macsa::MComms::PrintersManager _manager;

@@ -6,7 +6,7 @@
 #include "ui_jetview.h"
 #include "viewers/jetviewercontroller.h"
 #include "jet/jetcontroller.h"
-//#include "printerstatusview.h"
+#include "jetstatusview.h"
 //#include "printerfilesview.h"
 //#include "printerconfigview.h"
 //#include "printercommsview.h"
@@ -22,39 +22,38 @@ class JetView : public QWidget
 
 	private:
 		JetViewerController* _controller;
-//		PrinterStatusView*	_printerStatusView;
+		JetStatusView*		_statusView;
 //		PrinterConfigView*	_printerConfigView;
 //		PrinterCommsView*	_printerCommsView;
 //		PrinterFilesView*	_printerFilesView;
-//		QTableWidget*		_printerErrorsLog;
+		QTableWidget*		_printerErrorsLog;
 		QTimer				_dtTimer;
 		Ui::jetView ui;
 
 		virtual void resizeEvent(QResizeEvent *);
 
-//		void updateLogs();
-//		void setPrinterStatus(JetViewerController::TijStatus status);
+		void updateLogs();
+		void setPrinterStatus(JetViewerController::JetStatus status);
 
-//		void buildStatus();
+		void buildStatus();
 //		void buildConfig();
 //		void buildComms();
 //		void buildFiles();
-//		void buildErrorsLog();
-//		void resizeErrorsLog();
+		void buildErrorsLog();
+		void resizeErrorsLog();
 
 	private slots:		
-//		void refresh();
-//		void onRequestLive();
-//		void onRequestConfig();
-//		void onRequestStatus();
+		void refresh();
+		void onRequestConfig();
+		void onRequestStatus();
 //		void onRequestFiles();
 //		void onRequestFonts();
 //		void onRequestImages();
 //		void onRequestMessages();
 //		void onRequestErrorsLog();
-//		void onConnectClicked();
+		void onConnectClicked();
 //		void onRequestedChanges();
-//		void onUpdateDateTime();
+		void onUpdateDateTime();
 };
 
 

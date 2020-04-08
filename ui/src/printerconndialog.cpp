@@ -48,6 +48,7 @@ QString PrinterConnectionDialog::strType() const
 	{
 		case ServerType::TIJ_EMULATOR: return "TIJ_EMULATOR";
 		case ServerType::TIJ_PRINTER: return "TIJ_PRINTER";
+		case ServerType::JET_PRINTER: return "JET_PRINTER";
 	}
 	return "";
 }
@@ -55,6 +56,11 @@ QString PrinterConnectionDialog::strType() const
 void PrinterConnectionDialog::onValidate()
 {
 	if (_type == ServerType::TIJ_PRINTER){
+		_name = ui.printerId->text();
+		_address = ui.printerAddress->text();
+		_port = static_cast<uint16_t>(ui.printerPort->value());
+	}
+	else if (_type == ServerType::JET_PRINTER){
 		_name = ui.printerId->text();
 		_address = ui.printerAddress->text();
 		_port = static_cast<uint16_t>(ui.printerPort->value());
@@ -70,7 +76,16 @@ void PrinterConnectionDialog::onValidate()
 void PrinterConnectionDialog::onChangeServerType(const QString &name)
 {
 	_type = _availableServers.value(name);
+	ui.printerId->setText(name);
 	if (_type == ServerType::TIJ_PRINTER) {
+		ui.printerAddress->setText("192.168.1.64");
+		ui.printerPort->setValue(9991);
+		ui.printerForm->setVisible(true);
+		ui.emulatorForm->setVisible(false);
+	}
+	else if (_type == ServerType::JET_PRINTER) {
+		ui.printerAddress->setText("192.168.1.212");
+		ui.printerPort->setValue(9100);
 		ui.printerForm->setVisible(true);
 		ui.emulatorForm->setVisible(false);
 	}
@@ -107,6 +122,7 @@ QStringList PrinterConnectionDialog::getAvailablePrinters()
 {
 	_availableServers.insert("TIJEmulator", ServerType::TIJ_EMULATOR);
 	_availableServers.insert("TIJPrinter", ServerType::TIJ_PRINTER);
+	_availableServers.insert("JETPrinter", ServerType::JET_PRINTER);
 //	QDir dir("./");
 //	if (dir.cd("emulators")){
 //		if (dir.cd("tij")){
