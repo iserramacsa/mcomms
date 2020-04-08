@@ -51,7 +51,7 @@ bool JetSetMessageVariable::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	if (valid){
-		parseCommandError();
+		parseCommandError(xml);
 	}
 	return valid;
 }
@@ -106,7 +106,7 @@ bool JetSetMessageVariables::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	if (valid){
-		parseCommandError();
+		parseCommandError(xml);
 	}
 	return valid;
 }
@@ -150,7 +150,7 @@ bool JetGetMessageUserFields::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	if (valid) {
-		parseCommandError();
+		parseCommandError(xml);
 		if (_error == Printers::nJetErrorCode::COMMAND_OK) {
 			for (const XMLElement* eUInput = xml->FirstChildElement(JET_USER_INPUT_TAG);
 				 eUInput != nullptr; eUInput = eUInput->NextSiblingElement((JET_USER_INPUT_TAG))){
@@ -213,7 +213,7 @@ bool JetSetMessageUserFields::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	if (valid) {
-		parseCommandError();
+		parseCommandError(xml);
 	}
 	return valid;
 }

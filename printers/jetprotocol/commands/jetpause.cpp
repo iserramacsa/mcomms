@@ -14,7 +14,7 @@ bool JetGetPause::parseRequest(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	if(valid) {
-		parseCommandError();
+		parseCommandError(xml);
 		const XMLAttribute* value = xml->FindAttribute(VALUE_ATTRIBUTE);
 		if (value != nullptr) {
 			bool paused = strToBool(value->Value());
@@ -28,7 +28,7 @@ bool JetGetPause::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	if(valid) {
-		parseCommandError();
+		parseCommandError(xml);
 	}
 	return valid;
 }
@@ -87,7 +87,7 @@ bool JetSetPause::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	if(valid){
-		parseCommandError();
+		parseCommandError(xml);
 	}
 	return valid;
 }

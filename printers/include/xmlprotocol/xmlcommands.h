@@ -22,9 +22,13 @@ namespace Macsa{
 
 			std::string getTextFromChildNode(const tinyxml2::XMLElement *parent, const std::string &child, const std::string& defaultValue="") const;
 			bool        getBoolFromChildNode(const tinyxml2::XMLElement *parent, const std::string &child, bool defaultValue = false) const;
+			bool		getBoolFromChildNodeAttribute(const tinyxml2::XMLElement *parent, const std::string &child, const std::string &attribute, bool defaultValue = false) const;
 			int         getIntFromChildNode(const tinyxml2::XMLElement *parent, const std::string &child, int defaultValue = 0) const;
 			unsigned    getUnsignedFromChildNode(const tinyxml2::XMLElement *parent, const std::string &child, unsigned defaultValue = 0)const;
+			unsigned    getUnsignedFromChildNodeAttribute(const tinyxml2::XMLElement *parent, const std::string &child, const std::string &attribute, unsigned defaultValue = 0)const;
 			double      getDoubleFromChildNode(const tinyxml2::XMLElement *parent, const std::string &child, double defaultValue = 0.0)const;
+			std::string getTextFromChildNodeAttribute(const tinyxml2::XMLElement *parent, const std::string &child, const std::string &attribute, const std::string & defaultValue = "")const;
+
 
 			std::string getTextAttribute(const tinyxml2::XMLElement *element,const std::string &attribute, const std::string &defaultValue = "") const;
 			bool        getBoolAttribute(const tinyxml2::XMLElement *element,const std::string &attribute, bool defaultValue = false) const;
@@ -55,6 +59,7 @@ namespace Macsa{
 			virtual std::string toString(bool val) const;
 			virtual std::string toString(int value) const;
 			virtual std::string toString(unsigned int value) const;
+			virtual std::string toString(uint64_t value) const;
 			virtual std::string toString(float value, int precision) const;
 			virtual std::string toString(double value, int precision) const;
 

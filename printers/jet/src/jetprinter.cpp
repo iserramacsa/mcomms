@@ -2,6 +2,7 @@
 #include <sstream>
 #include <typeinfo>
 #include <iostream>
+#include <iomanip>
 #include <algorithm>
 
 using namespace Macsa;
@@ -64,14 +65,14 @@ std::string JetPrinter::formatedDateTime(time_t time) const
 	std::stringstream dt;
 
 	struct tm *date = localtime(&time);
-	dt <<  date->tm_mday;
-	dt << (date->tm_mon + 1);
+	dt << std::setfill ('0') << std::setw (2) << date->tm_mday;
+	dt << std::setfill ('0') << std::setw (2) << (date->tm_mon + 1);
 	dt << (date->tm_year + 1900);
-	dt <<  date->tm_hour;
-	dt <<  date->tm_min;
-	dt <<  date->tm_sec;
-
-	return dt.str();
+	dt << std::setfill ('0') << std::setw (2) <<  date->tm_hour;
+	dt << std::setfill ('0') << std::setw (2) <<  date->tm_min;
+	dt << std::setfill ('0') << std::setw (2) <<  date->tm_sec;
+	std::string formated = dt.str();
+	return formated;
 }
 
 time_t JetPrinter::dateTimeFromString(const std::string& dt) const
@@ -409,12 +410,12 @@ void JetPrinter::setPrintDir(const PrintDirection &printDir)
 	_printDir = printDir;
 }
 
-unsigned int JetPrinter::sscc() const
+uint64_t JetPrinter::sscc() const
 {
 	return _sscc;
 }
 
-void JetPrinter::setSscc(unsigned int sscc)
+void JetPrinter::setSscc(uint64_t sscc)
 {
 	_sscc = sscc;
 }

@@ -39,6 +39,18 @@ bool XMLCommand::getBoolFromChildNode(const XMLElement *parent, const std::strin
 	return value;
 }
 
+bool XMLCommand::getBoolFromChildNodeAttribute(const XMLElement *parent, const std::string &child, const std::string &attribute, bool defaultValue) const
+{
+	bool value = defaultValue;
+	if (parent)	{
+		const XMLElement * node = parent->FirstChildElement(child.c_str());
+		if (node) {
+			return getBoolAttribute(node, attribute, defaultValue);
+		}
+	}
+	return value;
+}
+
 int XMLCommand::getIntFromChildNode(const XMLElement *parent, const std::string &child, int defaultValue) const
 {
 	int value = defaultValue;
@@ -69,6 +81,18 @@ unsigned XMLCommand::getUnsignedFromChildNode(const XMLElement *parent, const st
 	return value;
 }
 
+unsigned XMLCommand::getUnsignedFromChildNodeAttribute(const XMLElement *parent, const std::string &child, const std::string &attribute, unsigned defaultValue) const
+{
+	unsigned value = defaultValue;
+	if (parent)	{
+		const XMLElement * node = parent->FirstChildElement(child.c_str());
+		if (node) {
+			value = node->UnsignedAttribute(attribute.c_str(), defaultValue);
+		}
+	}
+	return value;
+}
+
 double XMLCommand::getDoubleFromChildNode(const XMLElement *parent, const std::string &child, double defaultValue) const
 {
 	double value = defaultValue;
@@ -80,6 +104,18 @@ double XMLCommand::getDoubleFromChildNode(const XMLElement *parent, const std::s
 				char* pEnd;
 				value = std::strtod(text.c_str(), &pEnd);
 			}
+		}
+	}
+	return value;
+}
+
+std::string XMLCommand::getTextFromChildNodeAttribute(const XMLElement *parent, const std::string &child, const std::string &attribute, const std::string &defaultValue) const
+{
+	std::string value = defaultValue;
+	if (parent)	{
+		const XMLElement * node = parent->FirstChildElement(child.c_str());
+		if (node) {
+			value = getTextAttribute(node, attribute, defaultValue);
 		}
 	}
 	return value;
@@ -249,6 +285,13 @@ std::string XMLCommand::toString(int value) const
 }
 
 std::string XMLCommand::toString(unsigned int value) const
+{
+	std::stringstream s;
+	s  << value;
+	return s.str();
+}
+
+std::string XMLCommand::toString(uint64_t value) const
 {
 	std::stringstream s;
 	s  << value;

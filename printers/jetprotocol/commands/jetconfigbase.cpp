@@ -204,8 +204,8 @@ void JetConfigCommand::printerCommsFromXml(const XMLElement *eComms, Macsa::Prin
 			if(newAdapter){
 				delete  eth;
 			}
+			eEth = eEth->NextSiblingElement(JET_NETWORK_ADAPTER_TAG);
 		}
-		eEth = eEth->NextSiblingElement(JET_NETWORK_ADAPTER_TAG);
 	}
 }
 

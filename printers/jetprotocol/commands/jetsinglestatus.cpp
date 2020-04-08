@@ -25,16 +25,16 @@ void JetGetSSCC::buildResponse()
 	XMLElement* cmd = newCommandWind();
 	setCommandError(_error);
 	if (cmd) {
-		cmd->SetAttribute(VALUE_ATTRIBUTE, _printer.sscc());
+		cmd->SetAttribute(VALUE_ATTRIBUTE, XMLCommand::toString(_printer.sscc()).c_str());
 	}
 }
 
 bool JetGetSSCC::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
-	parseCommandError();
+	parseCommandError(xml);
 	if (valid) {
-		unsigned int value = xml->UnsignedAttribute(VALUE_ATTRIBUTE, _printer.sscc());
+		uint64_t value = static_cast<uint64_t>(xml->Int64Attribute(VALUE_ATTRIBUTE, static_cast<int64_t>(_printer.sscc())));
 		_printer.setSscc(value);
 	}
 	return valid;
@@ -64,7 +64,7 @@ void JetIncrementSSCC::buildResponse()
 bool JetIncrementSSCC::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
-	parseCommandError();
+	parseCommandError(xml);
 	return valid;
 }
 
@@ -92,7 +92,7 @@ void JetGetDatetime::buildResponse()
 bool JetGetDatetime::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
-	parseCommandError();
+	parseCommandError(xml);
 	if (valid) {
 		std::string dt = getTextAttribute(xml, VALUE_ATTRIBUTE, _printer.formatedDateTime());
 		_printer.setDateTime(dt);
@@ -139,7 +139,7 @@ void JetSetDatetime::buildResponse()
 bool JetSetDatetime::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
-	parseCommandError();
+	parseCommandError(xml);
 	return valid;
 }
 

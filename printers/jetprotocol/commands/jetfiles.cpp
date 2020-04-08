@@ -31,7 +31,7 @@ bool JetGetFilesList::parseResponse(const XMLElement *xml)
 	bool valid = isValidWind(xml);
 
 	if (valid) {
-		parseCommandError();
+		parseCommandError(xml);
 		if (_error == nJetErrorCode::COMMAND_OK) {//JET_FILE_TAG
 			PrinterFiles* rootfs = _printer.files();
 			if (rootfs) {
@@ -139,7 +139,7 @@ bool JetGetUSBFiles::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	if (valid) {
-		parseCommandError();
+		parseCommandError(xml);
 		if (_error == Printers::nJetErrorCode::USB_NOT_CONNECTED)
 		{
 			PrinterFiles* rootfs = _printer.files();
@@ -218,7 +218,7 @@ bool JetGetFonts::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	if (valid) {
-		parseCommandError();
+		parseCommandError(xml);
 		if (_error == Printers::nJetErrorCode::COMMAND_OK)
 		{
 			PrinterFiles* rootfs = _printer.files();

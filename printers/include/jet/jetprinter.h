@@ -88,8 +88,8 @@ namespace Macsa {
 				PrintDirection printDir() const;
 				void setPrintDir(const PrintDirection &printDir);
 
-				unsigned int sscc() const;
-				void setSscc(unsigned int sscc);
+				uint64_t sscc() const;
+				void setSscc(uint64_t sscc);
 
 				bool bitmapInverted() const;
 				void setBitmapInverted(bool bmpInverted);
@@ -121,7 +121,7 @@ namespace Macsa {
 				bool _paused;
 				bool _printStatus;
 				bool _isInError;
-				unsigned int _sscc;
+				uint64_t _sscc;
 
 				std::vector<JetBoard>::iterator getBoard(JetBoardType boardType, unsigned int boardNum);
 				std::vector<JetBoard>::const_iterator getBoard(JetBoardType boardType, unsigned int boardNum) const;

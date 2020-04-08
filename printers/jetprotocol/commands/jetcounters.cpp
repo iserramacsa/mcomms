@@ -30,7 +30,7 @@ bool JetGetCounters::parseResponse(const tinyxml2::XMLElement *xml)
 	bool valid = isValidWind(xml);
 
 	if (valid) {
-		parseCommandError();
+		parseCommandError(xml);
 		if (_error == nJetErrorCode::COMMAND_OK) {
 			JetMessagesManager& manager = _printer.messageManager();
 			std::vector<Message> messages = manager.messages(manager.currentGroup());
@@ -164,7 +164,7 @@ bool JetSetCounters::parseResponse(const tinyxml2::XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	if (valid) {
-		parseCommandError();
+		parseCommandError(xml);
 	}
 	return valid;
 }
@@ -197,7 +197,7 @@ bool JetResetCounters::parseResponse(const tinyxml2::XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	if (valid) {
-		parseCommandError();
+		parseCommandError(xml);
 	}
 	return valid;
 }

@@ -19,7 +19,7 @@ bool JetSingleSetConfigBase::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	if (valid) {
-		parseCommandError();
+		parseCommandError(xml);
 	}
 	return valid;
 }
@@ -235,7 +235,7 @@ bool JetGetPrintSpeed::parseResponse(const tinyxml2::XMLElement*xml)
 {
 	bool valid = isValidWind(xml);
 	if (valid) {
-		parseCommandError();
+		parseCommandError(xml);
 		unsigned int value = xml->UnsignedAttribute(VALUE_ATTRIBUTE, 0);
 		_printer.printhead(0).encoder().setFixedSpeed(value);
 	}
@@ -267,7 +267,7 @@ bool JetGetPrintDelay::parseResponse(const tinyxml2::XMLElement*xml)
 {
 	bool valid = isValidWind(xml);
 	if (valid) {
-		parseCommandError();
+		parseCommandError(xml);
 		unsigned int value = xml->UnsignedAttribute(VALUE_ATTRIBUTE, 0);
 		_printer.printhead(0).setPrintDelay(value);
 	}
@@ -299,7 +299,7 @@ bool JetGetHorizontalResolution::parseResponse(const tinyxml2::XMLElement*xml)
 {
 	bool valid = isValidWind(xml);
 	if (valid) {
-		parseCommandError();
+		parseCommandError(xml);
 		unsigned int value = xml->UnsignedAttribute(VALUE_ATTRIBUTE, 0);
 		_printer.printhead(0).sethorizontalResolution(value);
 	}
@@ -330,7 +330,7 @@ bool JetResetInkAlarm::parseResponse(const tinyxml2::XMLElement*xml)
 {
 	bool valid = isValidWind(xml);
 	if (valid) {
-		parseCommandError();
+		parseCommandError(xml);
 	}
 	return valid;
 }

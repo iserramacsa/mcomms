@@ -37,7 +37,7 @@ bool JetGetConfig::parseResponse(const XMLElement *xml)
 	bool valid = isValidWind(xml);
 
 	if (valid) {
-		parseCommandError();
+		parseCommandError(xml);
 		if (_error == Printers::nJetErrorCode::COMMAND_OK) {
 			printheadFromXml(xml->FirstChildElement(JET_PRINTHEAD_TAG), _printer);
 			Printers::JetComms* comms = dynamic_cast<Printers::JetComms*>(_printer.comms());

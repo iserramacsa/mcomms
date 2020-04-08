@@ -45,7 +45,7 @@ bool JetSetCurrentMessage::parseResponse(const tinyxml2::XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	if(valid) {
-		parseCommandError();
+		parseCommandError(xml);
 	}
 	return valid;
 }
@@ -111,7 +111,7 @@ void JetSendMessage::buildResponse()
 bool JetSendMessage::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
-	parseCommandError();
+	parseCommandError(xml);
 	return valid;
 }
 
@@ -129,7 +129,7 @@ bool JetResetCurrentGroup::parseRequest(const XMLElement *xml)
 bool JetResetCurrentGroup::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
-	parseCommandError();
+	parseCommandError(xml);
 	return valid;
 }
 
@@ -198,7 +198,7 @@ bool JetGetMessages::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	_group = getTextAttribute(xml, MESSAGE_GROUP_ATTRIBUTE, "");
-	parseCommandError();
+	parseCommandError(xml);
 	if (_error == Printers::nJetErrorCode::COMMAND_OK) {
 		if (!_printer.messageManager().groupExist(_group)) {
 			_printer.messageManager().addNewGroup(_group);
@@ -258,7 +258,7 @@ bool JetCreateMessagesGroup::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	_group = getTextAttribute(xml, NAME_ATTRIBUTE, "");
-	parseCommandError();
+	parseCommandError(xml);
 	return valid;
 }
 
@@ -329,7 +329,7 @@ void JetSendMessageGroup::buildResponse()
 bool JetSendMessageGroup::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
-	parseCommandError();
+	parseCommandError(xml);
 	return valid;
 }
 
@@ -371,6 +371,6 @@ bool JetDeleteMessagesGroup::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	_group = getTextAttribute(xml, NAME_ATTRIBUTE, "");
-	parseCommandError();
+	parseCommandError(xml);
 	return valid;
 }

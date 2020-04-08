@@ -35,7 +35,7 @@ bool JetSetOutput::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	if(valid){
-		parseCommandError();
+		parseCommandError(xml);
 	}
 	return valid;
 }

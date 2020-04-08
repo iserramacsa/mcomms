@@ -46,7 +46,7 @@ namespace Macsa{
 				bool isValidWind(const tinyxml2::XMLElement* xml);
 
 				void setCommandError(const Printers::JetErrorCode &errorCode);
-				void parseCommandError();
+				void parseCommandError(const tinyxml2::XMLElement *wind);
 
 				virtual std::string toString() override;
 				virtual std::string toString(bool val) const override;

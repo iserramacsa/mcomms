@@ -74,11 +74,10 @@ void JetCommand::setCommandError(const Printers::JetErrorCode &errorCode)
 	}
 }
 
-void JetCommand::parseCommandError()
+void JetCommand::parseCommandError(const XMLElement* wind)
 {
 	_error = Printers::nJetErrorCode::COMMAND_UNKOWN_ERROR;
-	XMLElement* wind = _doc.FirstChildElement(JETWIND);
-	if (wind != nullptr) {
+	if (wind != nullptr && strcmp(wind->Name(), JETWIND) == 0 ) {
 		const XMLAttribute* eCode = wind->FindAttribute(ERROR_CODE_ATTRIBUTE);
 		if (eCode){
 			unsigned int error = eCode->UnsignedValue();

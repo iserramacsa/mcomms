@@ -49,7 +49,7 @@ bool JetGetNisxMessage::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	if (valid) {
-		parseCommandError();
+		parseCommandError(xml);
 		if (_error == nJetErrorCode::COMMAND_OK) {
 			_msgNum	= xml->UnsignedAttribute(MESSAGE_NUMBER_ATTRIBUTE, 0);
 			Message msg = _printer.messageManager().message(_msgNum);
@@ -92,7 +92,7 @@ bool JetSetNisxElement::parseRequest(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	if (valid){
-		parseCommandError();
+		parseCommandError(xml);
 	}
 	return valid;
 }
@@ -107,7 +107,7 @@ bool JetSetNisxElement::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	if (valid) {
-		parseCommandError();
+		parseCommandError(xml);
 	}
 	return valid;
 }

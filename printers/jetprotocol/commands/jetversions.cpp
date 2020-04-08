@@ -30,7 +30,7 @@ bool JetGetVersions::parseResponse(const XMLElement *xml)
 {
 	bool valid = isValidWind(xml);
 	if (valid) {
-		parseCommandError();
+		parseCommandError(xml);
 		if (_error == Printers::nJetErrorCode::COMMAND_OK)
 		{
 			_printer.clearLibrariesVersions();
