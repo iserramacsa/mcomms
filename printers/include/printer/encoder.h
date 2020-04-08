@@ -21,14 +21,15 @@ namespace Macsa {
 				EncoderMode() { _val = FIXED_SPEED; }
 				EncoderMode(const std::string& val){*this = val;}
 				EncoderMode(const EncoderMode& val){*this = val;}
-				virtual void operator = (const enum nEncoderMode& v){_val = v;}
-				virtual void operator = (const std::string& val){
+				virtual nEncoderMode operator = (const enum nEncoderMode& v){_val = v; return _val;}
+				virtual nEncoderMode operator = (const std::string& val){
 					if (val.compare(ENCODER_MODE_FIXED) == 0)
 						_val = FIXED_SPEED;
 					else if (val.compare(ENCODER_MODE_INTERNAL) == 0)
 						_val = INTERNAL_ENCODER;
 					else if (val.compare(ENCODER_MODE_EXTERNAL) == 0)
 						_val = EXTERNAL_ENCODER;
+					return _val;
 				}
 				std::string toString() const {
 					switch (_val) {

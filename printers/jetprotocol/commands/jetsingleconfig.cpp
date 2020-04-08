@@ -86,37 +86,6 @@ bool JetSetBitmapInverted::parseRequest(const XMLElement *xml)
 	return valid;
 }
 
-/************************   SET BITMAP INVERTED   ************************/
-JetSetPrintheadEnabled::JetSetPrintheadEnabled(Macsa::Printers::JetPrinter &printer, Macsa::Printers::PHEnableMode mode):
-	JetSingleSetConfigBase(CMD_SET_PRINTHEAD_ENABLE, printer)
-{
-	_mode = mode;
-}
-
-JetSetPrintheadEnabled::JetSetPrintheadEnabled(Macsa::Printers::JetPrinter &printer):
-	JetSingleSetConfigBase(CMD_SET_PRINTHEAD_ENABLE, printer)
-{
-	_mode = Printers::nPHEnableMode::ENABLE_BOTH;
-}
-
-void JetSetPrintheadEnabled::buildRequest()
-{
-	XMLElement* cmd = newCommandWind();
-	if (cmd) {
-		cmd->SetAttribute(VALUE_ATTRIBUTE, _mode());
-	}
-}
-
-bool JetSetPrintheadEnabled::parseRequest(const XMLElement *xml)
-{
-	bool valid = isValidWind(xml);
-	if (valid) {
-		unsigned int mode = xml->UnsignedAttribute(VALUE_ATTRIBUTE, static_cast<unsigned>(Printers::nPHEnableMode::ENABLE_BOTH));
-		_mode = static_cast<Printers::nPHEnableMode>(mode);
-	}
-	return valid;
-}
-
 /************************   SET PRINT SPEED   ************************/
 JetSetPrintSpeed::JetSetPrintSpeed(Macsa::Printers::JetPrinter &printer, unsigned int speed) :
 	JetSingleSetConfigBase(CMD_SET_PRINT_SPEED, printer)

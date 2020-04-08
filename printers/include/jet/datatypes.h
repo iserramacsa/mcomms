@@ -148,8 +148,8 @@ namespace Macsa {
 				JetPrinterType() : SmartEnum() {_val = ID_NEO_17;}
 				JetPrinterType(nJetPrinterType n) : SmartEnum() {_val = n;}
 				virtual ~JetPrinterType(){}
-				virtual void operator = (const enum nJetPrinterType& v){_val = v;}
-				virtual void operator = (const std::string& val) {
+				virtual nJetPrinterType operator = (const enum nJetPrinterType& v){_val = v; return _val;}
+				virtual nJetPrinterType operator = (const std::string& val) {
 					if(val.compare(JET_ID_NEO_17 ) == 0)
 						_val = ID_NEO_17;
 					else if(val.compare(JET_ID_NEO_36 ) == 0)
@@ -168,6 +168,7 @@ namespace Macsa {
 						_val = ID_NEO_50D;
 					else if(val.compare(JET_ID_NEO_70D) == 0)
 						_val = ID_NEO_70D;
+					return _val;
 				}
 
 				virtual std::string toString() const {
@@ -212,12 +213,13 @@ namespace Macsa {
 				JetBoardType(nJetBoardType n) : SmartEnum() {_val = n;}
 				JetBoardType(const std::string& name) : SmartEnum() {*this = name;}
 				virtual ~JetBoardType(){}
-				virtual void operator = (const enum nJetBoardType& v){_val = v;}
-				virtual void operator = (const std::string& val){
+				virtual nJetBoardType operator = (const enum nJetBoardType& v){_val = v;return _val; }
+				virtual nJetBoardType operator = (const std::string& val){
 					if (val.compare(JET_BOARD_PRINTHEAD) == 0)
 						_val = PRINTHEAD_BOARD;
 					else if (val.compare(JET_BOARD_SIGNALS) == 0)
 						_val = SIGNALS_BOARD;
+					return _val;
 				}
 				virtual std::string toString() const {
 					switch (_val) {
@@ -235,45 +237,6 @@ namespace Macsa {
 				}
 		};
 
-
-		enum nPHEnableMode{
-			ENABLE_BOTH = 0,
-			ENABLE_UPPER,
-			ENABLE_LOWER,
-		};
-		class PHEnableMode : public Utils::SmartEnum<nPHEnableMode>
-		{
-			public:
-				PHEnableMode() : SmartEnum() {_val = ENABLE_BOTH;}
-				PHEnableMode(nPHEnableMode n) : SmartEnum() {_val = n;}
-				virtual ~PHEnableMode(){}
-				virtual void operator = (const enum nPHEnableMode& v){_val = v;}
-				virtual void operator = (const std::string& val){
-					if (val.compare(PH_ENABLE_MODE_BOTH) == 0)
-						_val = ENABLE_BOTH;
-					else if (val.compare(PH_ENABLE_MODE_UPPER) == 0)
-						_val = ENABLE_UPPER;
-					else if (val.compare(PH_ENABLE_MODE_LOWER) == 0)
-						_val = ENABLE_LOWER;
-				}
-				virtual std::string toString() const {
-					switch (_val) {
-						case ENABLE_BOTH: return PH_ENABLE_MODE_BOTH;
-						case ENABLE_UPPER: return PH_ENABLE_MODE_UPPER;
-						case ENABLE_LOWER: return PH_ENABLE_MODE_LOWER;
-					}
-					return "";
-				}
-				virtual std::vector<std::string> stringList() const
-				{
-					std::vector<std::string> list;
-					list.push_back(PH_ENABLE_MODE_BOTH);
-					list.push_back(PH_ENABLE_MODE_UPPER);
-					list.push_back(PH_ENABLE_MODE_LOWER);
-					return list;
-				}
-		};
-
 		enum nOverlappingMode{
 			OVERLAPPING_BOTH = 0,
 			OVERLAPPING_UPPER,
@@ -286,8 +249,8 @@ namespace Macsa {
 				OverlappingMode() : SmartEnum() {_val = OVERLAPPING_BOTH;}
 				OverlappingMode(nOverlappingMode n) : SmartEnum() {_val = n;}
 				virtual ~OverlappingMode(){}
-				virtual void operator = (const enum nOverlappingMode& v){_val = v;}
-				virtual void operator = (const std::string& val){
+				virtual nOverlappingMode operator = (const enum nOverlappingMode& v){_val = v; return _val;}
+				virtual nOverlappingMode operator = (const std::string& val){
 					if (val.compare(OVERLAPPING_TYPE_BOTH_PH) == 0)
 						_val = OVERLAPPING_BOTH;
 					else if (val.compare(OVERLAPPING_TYPE_UPPER_PH) == 0)
@@ -296,6 +259,7 @@ namespace Macsa {
 						_val = OVERLAPPING_LOWER;
 					else if (val.compare(OVERLAPPING_TYPE_PIXELS) == 0)
 						_val = OVERLAPPING_PIXEL;
+					return _val;
 				}
 				virtual std::string toString() const {
 					switch (_val) {
@@ -327,12 +291,13 @@ namespace Macsa {
 				TriggerMode() : SmartEnum() {_val = NEW_PRINT_ON_TRIGGER;}
 				TriggerMode(nTriggerMode n) : SmartEnum() {_val = n;}
 				virtual ~TriggerMode(){}
-				virtual void operator = (const enum nTriggerMode& v){_val = v;}
-				virtual void operator = (const std::string& val){
+				virtual nTriggerMode operator = (const enum nTriggerMode& v){_val = v; return _val;}
+				virtual nTriggerMode operator = (const std::string& val){
 					if (val.compare(TRIGGER_CANCEL_PRINT) == 0)
 						_val = NEW_PRINT_ON_TRIGGER;
 					else if (val.compare(TRIGGER_SKIPPED_PRINT) == 0)
 						_val = SKIP_TRIGGER_ON_PRINTING;
+					return _val;
 				}
 				virtual std::string toString() const {
 					switch (_val) {
@@ -360,12 +325,13 @@ namespace Macsa {
 				IpVersion() : SmartEnum() {_val = IP_V4;}
 				IpVersion(nIpVersion n) : SmartEnum() {_val = n;}
 				virtual ~IpVersion(){}
-				virtual void operator = (const enum nIpVersion& v){_val = v;}
-				virtual void operator = (const std::string& val){
+				virtual nIpVersion operator = (const enum nIpVersion& v){_val = v; return _val;}
+				virtual nIpVersion operator = (const std::string& val){
 					if (val.compare(IPv4) == 0)
 						_val = IP_V4;
 					else if (val.compare(IPv6) == 0)
 						_val = IP_V6;
+					return _val;
 				}
 				virtual std::string toString() const {
 					switch (_val) {
@@ -394,12 +360,13 @@ namespace Macsa {
 				PrintDirection() : SmartEnum() {_val = PRINTDIR_LR;}
 				PrintDirection(nPrintDirection n) : SmartEnum() {_val = n;}
 				virtual ~PrintDirection(){}
-				virtual void operator = (const enum nPrintDirection& v){_val = v;}
-				virtual void operator = (const std::string& val){
+				virtual nPrintDirection operator = (const enum nPrintDirection& v){_val = v; return _val;}
+				virtual nPrintDirection operator = (const std::string& val){
 					if (val.compare(PRINTER_DIR_LR) == 0)
 						_val = PRINTDIR_LR;
 					else if (val.compare(PRINTER_DIR_RL) == 0)
 						_val = PRINTDIR_RL;
+					return _val;
 				}
 				virtual std::string toString() const {
 					switch (_val) {
@@ -431,8 +398,8 @@ namespace Macsa {
 				JetLogType() : SmartEnum() {_val = LOG_TYPE_ALL;}
 				JetLogType(nJetLogType n) : SmartEnum() {_val = n;}
 				virtual ~JetLogType(){}
-				virtual void operator = (const enum nJetLogType& v){_val = v;}
-				virtual void operator = (const std::string& val){
+				virtual nJetLogType operator = (const enum nJetLogType& v){_val = v; return _val;}
+				virtual nJetLogType operator = (const std::string& val){
 					if (val.compare(JET_LOG_TYPE_ALL) == 0)
 						_val = LOG_TYPE_ALL;
 					else if (val.compare(JET_LOG_TYPE_INFO) == 0)
@@ -443,6 +410,7 @@ namespace Macsa {
 						_val = LOG_TYPE_ERR;
 					else if (val.compare(JET_LOG_TYPE_SUCCESS) == 0)
 						_val = LOG_TYPE_SUCCESS;
+					return _val;
 				}
 				virtual std::string toString() const {
 					switch (_val) {
@@ -524,8 +492,8 @@ namespace Macsa {
 				JetErrorCode() : SmartEnum() {_val = COMMAND_UNKOWN_ERROR;}
 				JetErrorCode(nJetErrorCode n) : SmartEnum() {_val = n;}
 				virtual ~JetErrorCode(){}
-				virtual void operator = (const enum nJetErrorCode& v){_val = v;}
-				virtual void operator = (const std::string& val){
+				virtual nJetErrorCode operator = (const enum nJetErrorCode& v){_val = v; return _val;}
+				virtual nJetErrorCode operator = (const std::string& val){
 					if (val.compare(ERROR_CODE_COMMAND_OK) == 0)
 						_val = COMMAND_OK;
 					else if (val.compare(ERROR_CODE_INVALID_COMMAND) == 0)
@@ -608,6 +576,7 @@ namespace Macsa {
 						_val = NISX_PARSING_ERROR;
 					else if (val.compare(ERROR_CODE_UNKNOWN) == 0)
 						_val = COMMAND_UNKOWN_ERROR;
+					return _val;
 				}
 				virtual std::string toString() const {
 					switch (_val) {
@@ -746,8 +715,8 @@ namespace Macsa {
 				JetConfigItem() : SmartEnum() {_val = CONFIG_ITEM_INVALID;}
 				JetConfigItem(nJetConfigItem n) : SmartEnum() {_val = n;}
 				virtual ~JetConfigItem(){}
-				virtual void operator = (const enum nJetConfigItem& v){_val = v;}
-				virtual void operator = (const std::string& val){
+				virtual nJetConfigItem operator = (const enum nJetConfigItem& v){_val = v; return _val;}
+				virtual nJetConfigItem operator = (const std::string& val){
 					if (val.compare(JET_CONFIG_ITEM_PH_ID) == 0)						_val = CONFIG_ITEM_PH_ID;
 					else if (val.compare(JET_CONFIG_ITEM_PH_IP_ADDRESS) == 0)			_val = CONFIG_ITEM_PH_IP_ADDRESS;
 					else if (val.compare(JET_CONFIG_ITEM_PRINTERDIRECTION) == 0)		_val = CONFIG_ITEM_PRINTERDIRECTION;
@@ -784,6 +753,7 @@ namespace Macsa {
 					else if (val.compare(JET_CONFIG_ITEM_NET_GATEWAY_TYPE) == 0)		_val = CONFIG_ITEM_NET_GATEWAY_TYPE;
 					else if (val.compare(JET_CONFIG_ITEM_NET_DNS) == 0)					_val = CONFIG_ITEM_NET_DNS;
 					else if (val.compare(JET_CONFIG_ITEM_NET_DNS_TYPE) == 0)			_val = CONFIG_ITEM_NET_DNS_TYPE;
+					return _val;
 				}
 				virtual std::string toString() const {
 					switch (_val) {

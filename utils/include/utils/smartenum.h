@@ -71,8 +71,8 @@ namespace Macsa {
 				inline bool operator != (const SmartEnum& other) const {return _val != other._val;}
 				inline void operator =  (const SmartEnum& other){_val = other._val;}
 
-				virtual void operator =  (const N& v) = 0;
-				virtual void operator = (const std::string& val) = 0;
+				virtual N operator =  (const N& v) = 0;
+				virtual N operator = (const std::string& val) = 0;
 				virtual std::string toString() const = 0;
 				virtual std::vector<std::string> stringList() const = 0;
 

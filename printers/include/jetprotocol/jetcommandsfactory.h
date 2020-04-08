@@ -52,7 +52,6 @@ namespace Macsa {
 				JetCommand* setOutput(const Printers::JetIO& output);
 				JetCommand* setPrintDirection(Printers::PrintDirection dir);
 				JetCommand* setPrintBitmapInverted(bool inverted);
-				JetCommand* setPrintheadEnabled(Printers::PHEnableMode mode);
 				JetCommand* setPrintSpeed(unsigned int speed);
 				JetCommand* setPrintDelay(unsigned int delay);
 				JetCommand* setHorizontalResolution(unsigned int resolution);

@@ -25,12 +25,13 @@ namespace Macsa {
 		{
 			public:
 				DelayUnits() {_val = UNITS_DOTS;}
-				virtual void operator = (const enum nDelayUnits& v){_val = v;}
-				virtual void operator = (const std::string& v) {
+				virtual nDelayUnits operator = (const enum nDelayUnits& v){_val = v; return _val;}
+				virtual nDelayUnits operator = (const std::string& v) {
 					if (v.compare(DELAY_UNIT_MM) == 0)
 						_val = UNITS_MM;
 					else if (v.compare(DELAY_UNIT_DOTS) == 0)
 						_val = UNITS_DOTS;
+					return _val;
 				}
 				virtual std::string toString() const {
 					switch (_val) {
@@ -58,14 +59,15 @@ namespace Macsa {
 		{
 			public:
 				ShootingMode() : SmartEnum() {_val = SINGLE_SHOT;}
-				virtual void operator = (const enum nShootingMode& v){_val = v;}
-				virtual void operator = (const std::string& val){
+				virtual nShootingMode operator = (const enum nShootingMode& v){_val = v; return _val;}
+				virtual nShootingMode operator = (const std::string& val){
 					if (val.compare(SHOOTING_MODE_ONCE) == 0)
 						_val = SINGLE_SHOT;
 					else if (val.compare(SHOOTING_MODE_REL) == 0)
 						_val = MULTI_SHOT_REL;
 					else if (val.compare(SHOOTING_MODE_ABS) == 0)
 						_val = MULTI_SHOT_ABS;
+					return _val;
 				}
 				std::string toString() const {
 					switch (_val) {

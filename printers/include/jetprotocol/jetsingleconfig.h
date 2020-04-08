@@ -52,20 +52,6 @@ namespace Macsa {
 				bool _inverted;
 				virtual void buildRequest();
 		};
-		/**
-		 * @brief The SetPrintheadEnabled command class. Only for NEO72
-		 */
-		class JetSetPrintheadEnabled : public JetSingleSetConfigBase
-		{
-			public:
-				JetSetPrintheadEnabled(Printers::JetPrinter& printer, Printers::PHEnableMode mode);
-				JetSetPrintheadEnabled(Printers::JetPrinter& printer);
-				virtual bool parseRequest(const tinyxml2::XMLElement* xml);
-
-			private:
-				Printers::PHEnableMode _mode;
-				virtual void buildRequest();
-		};
 
 		/**
 		 * @brief The SetPrintSpeed command class

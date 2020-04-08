@@ -99,14 +99,15 @@ namespace Macsa {
 		class BCDMode : public Utils::SmartEnum<nBCDMode>
 		{
 			public:
-				virtual void operator = (const enum nBCDMode& v){_val = v;}
-				virtual void operator = (const std::string& val){
+				virtual nBCDMode operator = (const enum nBCDMode& v){_val = v; return _val;}
+				virtual nBCDMode operator = (const std::string& val){
 					if (val.compare(BCD_MODE_USER) == 0)
 						_val = USER_MODE;
 					else if (val.compare(BCD_MODE_BCD_1) == 0)
 						_val = BCD_MODE_1;
 					else if (val.compare(BCD_MODE_BCD_2) == 0)
 						_val = BCD_MODE_2;
+					return _val;
 				}
 
 				virtual std::string toString() const {
@@ -136,14 +137,15 @@ namespace Macsa {
 		class PrinterDir : public Utils::SmartEnum<nPrinterDir>
 		{
 			public:
-				virtual void operator = (const enum nPrinterDir& v){_val = v;}
-				virtual void operator = (const std::string& val){
+				virtual nPrinterDir operator = (const enum nPrinterDir& v){_val = v; return _val;}
+				virtual nPrinterDir operator = (const std::string& val){
 					if (val.compare(DIR_RIGHT_TO_LEFT) == 0)
 						_val = R2L;
 					else if (val.compare(DIR_RIGHT_TO_LEFT) == 0)
 						_val = L2R;
 					else if (val.compare(DIR_RIGHT_TO_LEFT) == 0)
 						_val = AUTO;
+					return _val;
 				}
 				virtual std::string toString() const {
 					switch (_val) {
@@ -174,14 +176,15 @@ namespace Macsa {
 		{
 			public:
 				NozzlesCol() {_val = COL_A;}
-				virtual void operator = (const enum nNozzlesCol& v){_val = v;}
-				virtual void operator = (const std::string& val){
+				virtual nNozzlesCol operator = (const enum nNozzlesCol& v){_val = v; return _val;}
+				virtual nNozzlesCol operator = (const std::string& val){
 					if (val.compare(NOZZLES_COL_A) == 0)
 						_val = COL_A;
 					else if (val.compare(NOZZLES_COL_B) == 0)
 						_val = COL_B;
 					else if (val.compare(NOZZLES_COL_BOTH) == 0)
 						_val = COL_BOTH;
+					return _val;
 				}
 				virtual std::string toString() const {
 					switch (_val) {
@@ -213,14 +216,15 @@ namespace Macsa {
 		{
 			public:
 				Photocell() {_val = PHCELL_A;}
-				virtual void operator = (const enum nPhotocell& v){_val = v;}
-				virtual void operator = (const std::string& val){
+				virtual nPhotocell operator = (const enum nPhotocell& v){_val = v; return _val;}
+				virtual nPhotocell operator = (const std::string& val){
 					if (val.compare(PHOTOCELL_A) == 0)
 						_val = PHCELL_A;
 					else if (val.compare(PHOTOCELL_B) == 0)
 						_val = PHCELL_B;
 					else if (val.compare(PHOTOCELL_EXT) == 0)
 						_val = PHCELL_EXT;
+					return _val;
 				}
 				std::string toString() const {
 					switch (_val) {
@@ -249,12 +253,13 @@ namespace Macsa {
 		{
 			public:
 				InputMode() {_val = INPUT_EDGE;}
-				virtual void operator = (const enum nInputMode& v){_val = v;}
-				virtual void operator = (const std::string& val){
+				virtual nInputMode operator = (const enum nInputMode& v){_val = v; return _val;}
+				virtual nInputMode operator = (const std::string& val){
 					if (val.compare(INPUT_MODE_EDGE) == 0)
 						_val = INPUT_EDGE;
 					else if (val.compare(INPUT_MODE_STATE) == 0)
 						_val = INPUT_STATUS;
+					return _val;
 				}
 				virtual std::string toString() const {
 					switch (_val) {
@@ -290,8 +295,8 @@ namespace Macsa {
 		{
 			public:
 				OutputType(){_val = OUTPUT_ONPULSE;}
-				virtual void operator = (const enum nOutputType& v){_val = v;}
-				virtual void operator = (const std::string& val){
+				virtual nOutputType operator = (const enum nOutputType& v){_val = v; return _val;}
+				virtual nOutputType operator = (const std::string& val){
 					if (val.compare(OUTPUT_TYPE_STATE   ) == 0)
 						_val = OUTPUT_STATE;
 					else if (val.compare(OUTPUT_TYPE_ONPULSE ) == 0)
@@ -302,6 +307,7 @@ namespace Macsa {
 						_val = OUTPUT_MAXON;
 					else if (val.compare(OUTPUT_TYPE_MAXOFF  ) == 0)
 						_val = OUTPUT_MAXOFF;
+					return _val;
 				}
 				std::string toString() const {
 					switch (_val) {
@@ -335,8 +341,8 @@ namespace Macsa {
 		class ErrorType : public Utils::SmartEnum<nErrorType>
 		{
 			public:
-				virtual void operator = (const enum nErrorType& v){_val = v;}
-				virtual void operator = (const std::string& val){
+				virtual nErrorType operator = (const enum nErrorType& v){_val = v; return _val;}
+				virtual nErrorType operator = (const std::string& val){
 					if (val.compare(ERROR_TYPE_INFO) == 0)
 						_val = INFORMATION;
 					else if (val.compare(ERROR_TYPE_WARN) == 0)
@@ -345,6 +351,7 @@ namespace Macsa {
 						_val = ERROR;
 					else
 						_val = INVALID;
+					return _val;
 				}
 				virtual std::string toString() const {
 					switch (_val) {
@@ -425,8 +432,8 @@ namespace Macsa {
 				ErrorCode() : SmartEnum() {_val = UNKOWN_ERROR;}
 				ErrorCode(nErrorCode n) : SmartEnum() {_val = n;}
 				virtual ~ErrorCode(){}
-				virtual void operator = (const enum nErrorCode& v){_val = v;}
-				virtual void operator = (const std::string& val){
+				virtual nErrorCode operator = (const enum nErrorCode& v){_val = v; return _val;}
+				virtual nErrorCode operator = (const std::string& val){
 					if (val.compare(ERROR_CODE_SUCCCESS) == 0)
 						_val = SUCCESS;
 					else if (val.compare(ERROR_CODE_FILEOT_FOUND) == 0)
@@ -511,6 +518,7 @@ namespace Macsa {
 						_val = SMC_HOST_INVALID;
 					else if (val.compare(ERROR_CODE_UNKNOWN) == 0)
 						_val = UNKOWN_ERROR;
+					return _val;
 				}
 				virtual std::string toString() const {
 					switch (_val) {
@@ -625,8 +633,8 @@ namespace Macsa {
 		{
 			public:
 				LoggerLevel(){_val = LOG_DISABLED;}
-				void operator = (const enum nLoggerLevel& v){_val = v;}
-				void operator = (const std::string& val){
+				virtual nLoggerLevel operator = (const enum nLoggerLevel& v){_val = v; return _val;}
+				virtual nLoggerLevel operator = (const std::string& val){
 					if (val.compare(LOG_LEVEL_ERROR) == 0)
 						_val = LOG_ERROR;
 					else if (val.compare(LOG_LEVEL_WARNING) == 0)
@@ -637,10 +645,11 @@ namespace Macsa {
 						_val = LOG_DEBUG;
 					else
 						_val = LOG_DISABLED;
+					return _val;
 				}
 
 
-				std::string toString() const {
+				virtual std::string toString() const {
 					switch (_val) {
 						case LOG_ERROR:		return LOG_LEVEL_ERROR;
 						case LOG_WARNING:	return LOG_LEVEL_WARNING;

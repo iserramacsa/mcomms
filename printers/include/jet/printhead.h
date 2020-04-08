@@ -113,7 +113,6 @@ namespace Macsa {
 				OverlappingMode _overlappingMode;
 				TriggerMode _printMode;
 				Encoder _encoder;
-				PHEnableMode _phMode; //Only for Neo72
 
 				bool equal(const JetPrinthead &other) const;
 				void copy (const JetPrinthead& other);

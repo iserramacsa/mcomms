@@ -68,7 +68,7 @@ namespace  Macsa {
 		#define CMD_SET_MESSAGE_USER_FIELD  "SetUserInputFields"
 		#define CMD_SET_PRINT_DIR           "PrinterDirection"
 		#define CMD_SET_PRINT_INVERT        "BitmapInverted"
-		#define CMD_SET_PRINTHEAD_ENABLE    "PrintHeadsEnabled"
+//		#define CMD_SET_PRINTHEAD_ENABLE    "PrintHeadsEnabled"	//Deprecated
 		#define CMD_GET_PRINT_SPEED         "GetPrintSpeed"
 		#define CMD_SET_PRINT_SPEED         "SetPrintSpeed"
 		#define CMD_GET_PRINT_DELAY         "GetPrintDelay"

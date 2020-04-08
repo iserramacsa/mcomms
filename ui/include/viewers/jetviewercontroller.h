@@ -82,7 +82,6 @@ class JetViewerController : public QObject, public Macsa::MComms::JetViewer
 		bool setOutput(const Macsa::Printers::JetIO& output);
 		bool setPrintDirection(Macsa::Printers::PrintDirection dir);
 		bool setPrintBitmapInverted(bool inverted);
-		bool setPrintheadMode(Macsa::Printers::PHEnableMode mode);
 		bool setPrintSpeed(unsigned int speed);
 		bool setPrintDelay(unsigned int delay);
 		bool setHorizontalResolution(unsigned int resolution);

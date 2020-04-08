@@ -28,7 +28,7 @@ JetView::JetView(QWidget *parent) :
 	connect(&_dtTimer, SIGNAL(timeout()), SLOT(onUpdateDateTime()));
 
 	buildStatus();
-//	buildConfig();
+	buildConfig();
 //	buildComms();
 //	buildFiles();
 	buildErrorsLog();
@@ -50,9 +50,9 @@ void JetView::setController(Macsa::MComms::JetController &controller)
 	}
 	_controller = new JetViewerController(controller);
 	_statusView->setController(controller);
-//	_printerConfigView->setController(controller);
-//	_printerCommsView->setController(controller);
-//	_printerFilesView->setController(controller);
+	_configView->setController(controller);
+//	_commsView->setController(controller);
+//	_filesView->setController(controller);
 	refresh();
 	if (!_dtTimer.isActive()) {
 		_dtTimer.start();
@@ -194,19 +194,18 @@ void JetView::buildStatus()
 	clear();
 }
 
-//void JetView::buildConfig()
-//{
-//	QVBoxLayout* layout = new QVBoxLayout(ui.WidgetContentsConfig);
-//	layout->setMargin(0);
+void JetView::buildConfig()
+{
+	QVBoxLayout* layout = new QVBoxLayout(ui.WidgetContentsConfig);
+	layout->setMargin(0);
 
-//	_printerConfigView = new PrinterConfigView(ui.WidgetContentsConfig);
-//	connect(_printerConfigView, SIGNAL(configChangeRequested()), SLOT(onRequestedChanges()), Qt::QueuedConnection);
+	_configView = new JetConfigView(ui.WidgetContentsConfig);
 
-//	layout->setSizeConstraint(QLayout::SetMinAndMaxSize);
-//	layout->addWidget(_printerConfigView);
+	layout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+	layout->addWidget(_configView);
 
-//	clear();
-//}
+	clear();
+}
 
 //void JetView::buildComms()
 //{
@@ -329,14 +328,6 @@ void JetView::onConnectClicked()
 		refresh();
 	}
 }
-
-//void JetView::onRequestedChanges()
-//{
-//	if (_controller != nullptr) {
-////		_controller->updatePrinterData(); //Deprecated
-//		refresh();
-//	}
-//}
 
 void JetView::onUpdateDateTime()
 {

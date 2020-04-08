@@ -225,11 +225,6 @@ JetCommand *JetCommandsFactory::setPrintBitmapInverted(bool inverted)
 	return new JetSetBitmapInverted(_printer, inverted);
 }
 
-JetCommand *JetCommandsFactory::setPrintheadEnabled(PHEnableMode mode)
-{
-	return new JetSetPrintheadEnabled(_printer, mode);
-}
-
 JetCommand *JetCommandsFactory::setPrintSpeed(unsigned int speed)
 {
 	return new JetSetPrintSpeed(_printer, speed);
@@ -347,8 +342,6 @@ JetCommand *JetCommandsFactory::getCommand(XMLElement *eCmd)
 			return new JetSetPrintDirection(_printer);
 		else if (command == CMD_SET_PRINT_INVERT)
 			return new JetSetBitmapInverted(_printer);
-		else if (command == CMD_SET_PRINTHEAD_ENABLE)
-			return new JetSetPrintheadEnabled(_printer);
 		else if (command == CMD_SET_PRINT_SPEED)
 			return new JetSetPrintSpeed(_printer);
 		else if (command == CMD_SET_PRINT_DELAY)

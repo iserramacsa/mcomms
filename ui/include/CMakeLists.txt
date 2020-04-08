@@ -13,6 +13,7 @@ set(MOC_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/networkdialog.h
 	${CMAKE_CURRENT_SOURCE_DIR}/jetview.h
 	${CMAKE_CURRENT_SOURCE_DIR}/jetstatusview.h
+	${CMAKE_CURRENT_SOURCE_DIR}/jetconfigview.h
 	${CMAKE_CURRENT_SOURCE_DIR}/tijview.h
 	${CMAKE_CURRENT_SOURCE_DIR}/tijstatusview.h
 	${CMAKE_CURRENT_SOURCE_DIR}/tijconfigview.h

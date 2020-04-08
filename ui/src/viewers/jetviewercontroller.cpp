@@ -182,11 +182,6 @@ bool JetViewerController::setPrintBitmapInverted(bool inverted)
 	return _controller.setPrintBitmapInverted(inverted);
 }
 
-bool JetViewerController::setPrintheadMode(PHEnableMode mode)
-{
-	return _controller.setPrintheadEnabled(mode);
-}
-
 bool JetViewerController::setPrintSpeed(unsigned int speed)
 {
 	return _controller.setPrintSpeed(speed);

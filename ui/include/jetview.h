@@ -7,8 +7,8 @@
 #include "viewers/jetviewercontroller.h"
 #include "jet/jetcontroller.h"
 #include "jetstatusview.h"
+#include "jetconfigview.h"
 //#include "printerfilesview.h"
-//#include "printerconfigview.h"
 //#include "printercommsview.h"
 
 class JetView : public QWidget
@@ -23,9 +23,9 @@ class JetView : public QWidget
 	private:
 		JetViewerController* _controller;
 		JetStatusView*		_statusView;
-//		PrinterConfigView*	_printerConfigView;
-//		PrinterCommsView*	_printerCommsView;
-//		PrinterFilesView*	_printerFilesView;
+		JetConfigView*		_configView;
+//		PrinterCommsView*	_commsView;
+//		PrinterFilesView*	_filesView;
 		QTableWidget*		_printerErrorsLog;
 		QTimer				_dtTimer;
 		Ui::jetView ui;
@@ -36,7 +36,7 @@ class JetView : public QWidget
 		void setPrinterStatus(JetViewerController::JetStatus status);
 
 		void buildStatus();
-//		void buildConfig();
+		void buildConfig();
 //		void buildComms();
 //		void buildFiles();
 		void buildErrorsLog();
@@ -52,7 +52,6 @@ class JetView : public QWidget
 //		void onRequestMessages();
 //		void onRequestErrorsLog();
 		void onConnectClicked();
-//		void onRequestedChanges();
 		void onUpdateDateTime();
 };
 

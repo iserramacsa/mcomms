@@ -53,7 +53,6 @@ namespace Macsa {
 				bool setOutput(const Printers::JetIO& output);
 				bool setPrintDirection(Printers::PrintDirection dir);
 				bool setPrintBitmapInverted(bool inverted);
-				bool setPrintheadEnabled(Printers::PHEnableMode mode);
 				bool setPrintSpeed(unsigned int speed);
 				bool setPrintDelay(unsigned int delay);
 				bool setHorizontalResolution(unsigned int resolution);

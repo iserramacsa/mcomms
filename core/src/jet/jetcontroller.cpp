@@ -180,11 +180,6 @@ bool JetController::setPrintBitmapInverted(bool inverted)
 	return send(_factory.setPrintBitmapInverted(inverted));
 }
 
-bool JetController::setPrintheadEnabled(Printers::PHEnableMode mode)
-{
-	return send(_factory.setPrintheadEnabled(mode));
-}
-
 bool JetController::setPrintSpeed(unsigned int speed)
 {
 	return send(_factory.setPrintSpeed(speed));
@@ -340,8 +335,6 @@ void JetController::checkCommand(const std::string &command, const std::map<std:
 		else if (command == CMD_SET_PRINT_DIR)
 			return;
 		else if (command == CMD_SET_PRINT_INVERT)
-			return;
-		else if (command == CMD_SET_PRINTHEAD_ENABLE)
 			return;
 		else if (command == CMD_SET_PRINT_SPEED)
 			return;
