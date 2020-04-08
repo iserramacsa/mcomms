@@ -12,7 +12,7 @@ namespace Macsa {
 				JetObserver(JetNotifier* controller);
 
 				virtual void statusChanged();
-//				virtual void ioStatusChanged();
+				virtual void datetimeChanged(const time_t &);
 				virtual void configChanged();
 				virtual void filesListChanged();
 				virtual void fontsChanged();

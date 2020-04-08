@@ -9,10 +9,17 @@ JetNotifier::JetNotifier()
 {
 
 }
+
 void JetNotifier::notifyStatusChanged()
 {
 	std::function<void (JetObserver *)> func = &JetObserver::statusChanged;
 	notifyObservers(func);
+}
+
+void JetNotifier::notifyDatetimeChanged(const time_t& dt)
+{
+	std::function<void (JetObserver *, const time_t&)> func = &JetObserver::datetimeChanged;
+	notifyObservers(func, dt);
 }
 
 void JetNotifier::notifyConfigChanged()

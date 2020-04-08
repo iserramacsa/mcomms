@@ -11,6 +11,8 @@ JetObserver::JetObserver(JetNotifier *controller) :
 
 void JetObserver::statusChanged() {}
 
+void JetObserver::datetimeChanged(const time_t&){}
+
 void JetObserver::configChanged() {}
 
 void JetObserver::filesListChanged() {}

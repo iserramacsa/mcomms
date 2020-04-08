@@ -93,7 +93,7 @@ std::vector<std::string> JetViewer::printerEthernetIfaces() const
 }
 
 /**************** Printer base getters ****************/
-time_t JetViewer::printerDateTime() const
+time_t JetViewer::dateTime() const
 {
 	return jetPrinter().dateTime();
 }
@@ -116,7 +116,12 @@ JetViewer::JetPrinterStatus JetViewer::printerStatus() const
 			status = JetPrinterStatus::STOPPED;
 		}
 		else {
-			status = JetPrinterStatus::RUNNING;
+			if (printer.printStatus()) {
+				status = JetPrinterStatus::PRINTING;
+			}
+			else {
+				status = JetPrinterStatus::RUNNING;
+			}
 		}
 	}
 	else if (_controller.status() == NetworkNode::nNodeStatus::CONNECTING) {
@@ -143,24 +148,24 @@ std::map<std::string, std::string> JetViewer::installedLibrariesVersions() const
 }
 
 /**************** Printer status ****************/
-int JetViewer::printerId() const
+int JetViewer::id() const
 {
 	return jetPrinter().id();
 }
 
-Printers::PrintDirection JetViewer::printerPrintDirection() const
+Printers::PrintDirection JetViewer::printDirection() const
 {
 	return jetPrinter().printDir();
 }
-unsigned int JetViewer::printerSscc() const
+uint64_t JetViewer::sscc() const
 {
 	return jetPrinter().sscc();
 }
-bool JetViewer::printerBitmapInverted() const
+bool JetViewer::bitmapInverted() const
 {
 	return jetPrinter().bitmapInverted();
 }
-bool JetViewer::printerIsInError() const
+bool JetViewer::isInError() const
 {
 	return jetPrinter().isInError();
 }
@@ -175,43 +180,43 @@ JetPrinter::logsList JetViewer::printerLogs() const
 	return jetPrinter().logs();
 }
 
-bool JetViewer::printerPrintStatus() const
+bool JetViewer::printStatus() const
 {
 	return jetPrinter().printStatus();
 }
 
-JetPrinter::tanksMap JetViewer::printerInkTanks() const
+JetPrinter::tanksMap JetViewer::inkTanks() const
 {
 	return jetPrinter().inkTanks();
 }
 
-unsigned int JetViewer::printTankLevel(unsigned int id) const
+unsigned int JetViewer::tankLevel(unsigned int id) const
 {
 	return jetPrinter().tankLevel(id);
 }
 
 /**************** Printer Messages ****************/
-std::string JetViewer::printerCurrentMessage() const
+std::string JetViewer::currentMessage() const
 {
 	return jetPrinter().messageManager().currentMessage();
 }
 
-int JetViewer::printerCurrentMessageNum() const
+int JetViewer::currentMessageNum() const
 {
 	return jetPrinter().messageManager().currentMessageNumber();
 }
 
-std::string JetViewer::printerCurrentMessageGroup() const
+std::string JetViewer::currentMessageGroup() const
 {
 	return jetPrinter().messageManager().currentGroup();
 }
 
-std::vector<std::string> JetViewer::printerMessageGroups() const
+std::vector<std::string> JetViewer::messageGroups() const
 {
 	return jetPrinter().messageManager().groups();
 }
 
-JetViewer::countersMap JetViewer::printerMessagesCounters() const
+JetViewer::countersMap JetViewer::messagesCounters() const
 {
 	countersMap counters;
 	const Printers::JetMessagesManager& manager = jetPrinter().messageManager();
@@ -222,6 +227,12 @@ JetViewer::countersMap JetViewer::printerMessagesCounters() const
 		counters.insert(std::pair<unsigned int, unsigned int>(message.number(), message.counter()));
 	}
 	return counters;
+}
+
+/**************** Printer Configuration getters ****************/
+bool JetViewer::paused() const
+{
+	return jetPrinter().paused();
 }
 
 JetPrinthead JetViewer::printerPrinthead(unsigned int id)

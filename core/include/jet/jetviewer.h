@@ -18,6 +18,7 @@ namespace Macsa {
 					STOPPED,
 					ERROR,
 					RUNNING,
+					PRINTING
 				};
 
 				using countersMap = std::map<unsigned int, unsigned int>;
@@ -41,7 +42,7 @@ namespace Macsa {
 				std::vector<std::string> printerEthernetIfaces() const;
 
 				//Printer base getters
-				std::time_t printerDateTime() const;
+				std::time_t dateTime() const;
 				std::string printerType() const;
 				JetPrinterStatus printerStatus() const;
 
@@ -51,25 +52,29 @@ namespace Macsa {
 				std::map<std::string, std::string> installedLibrariesVersions() const;
 
 				//Jet Status parameters
-				int printerId() const;
-				Printers::PrintDirection printerPrintDirection() const;
-				unsigned int printerSscc() const;
-				bool printerBitmapInverted() const;
-				bool printerIsInError() const;
+				int id() const;
+				Printers::PrintDirection printDirection() const;
+				uint64_t sscc() const;
+				bool bitmapInverted() const;
+				bool isInError() const;
 				Printers::JetPrinter::logsList printerLogs(time_t from, time_t to) const;
 				Printers::JetPrinter::logsList printerLogs() const;
-				bool printerPrintStatus() const;
-				Printers::JetPrinter::tanksMap printerInkTanks() const;
-				unsigned int printTankLevel(unsigned int id) const;
+				bool printStatus() const;
+				Printers::JetPrinter::tanksMap inkTanks() const;
+				unsigned int tankLevel(unsigned int id) const;
 
 				//messages manager
-				std::string printerCurrentMessage() const;
-				int printerCurrentMessageNum() const;
-				std::string printerCurrentMessageGroup() const;
-				std::vector<std::string> printerMessageGroups() const;
+				std::string currentMessage() const;
+				int currentMessageNum() const;
+				std::string currentMessageGroup() const;
+				std::vector<std::string> messageGroups() const;
 //				std::vector<Message> messages(const std::string& group) const;	//Required??
 //				Message message(unsigned int num) const;						//Required??
-				countersMap printerMessagesCounters() const;
+				countersMap messagesCounters() const;
+
+				//configuration
+				bool paused() const;
+
 
 				//Printhead
 				Printers::JetPrinthead printerPrinthead(unsigned int id = 0);

@@ -23,6 +23,7 @@ bool JetMonitor::connect()
 {
 	bool connected = PrinterController::connect();
 	if (connected) {
+		initPrinter();
 		start();
 	}
 	return connected;

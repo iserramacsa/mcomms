@@ -7,8 +7,12 @@ using namespace Macsa::Printers;
 using namespace Macsa::Network;
 using namespace Macsa::JetProtocol;
 
-#define TRACE_TX 0
-#define TRACE_RX 0
+#define TRACE_TX 1
+#define TRACE_RX 1
+
+#if TRACE_TX || TRACE_RX
+#include <iostream>
+#endif
 
 JetController::JetController(const std::string& id, const std::string& address) :
 	PrinterController(id, address, JET_PROTOCOL_TCP_PORT),
@@ -17,6 +21,15 @@ JetController::JetController(const std::string& id, const std::string& address) 
 
 JetController::~JetController()
 {}
+
+void JetController::initPrinter()
+{
+	getConfig();
+	getStatus();
+	getFiles();
+	getFonts();
+	getPrinterLogs(0, _printer.dateTime());
+}
 
 /**********  Status related commands  **********/
 bool JetController::getCounters()
@@ -246,6 +259,9 @@ bool JetController::send(XMLCommand *cmd)
 		{
 			std::string resp = "";
 			_lastSentStatus = Network::NetworkNode::receivePacket(resp, JET_PROTOCOL_TCP_PORT);
+#if TRACE_RX
+			std::cout << __func__ << " RX: " << resp << std::endl;
+#endif
 			if(_lastSentStatus == ISocket::FRAME_SUCCESS)
 			{
 				std::lock_guard<std::mutex> lock(_mutex);
@@ -254,9 +270,6 @@ bool JetController::send(XMLCommand *cmd)
 					checkCommand(jetCommand->commandName(), jetCommand->attributes());
 				}
 			}
-#if TRACE_RX
-			std::cout << __func__ << " RX: " << resp << std::endl;
-#endif
 		}
 		delete cmd;
 	}
@@ -270,10 +283,14 @@ void JetController::checkCommand(const std::string &command, const std::map<std:
 			return;
 		else if (command == CMD_GET_SSCC)
 			return;
-		else if (command == CMD_GET_STATUS)
+		else if (command == CMD_GET_STATUS) {
+			JetNotifier::notifyStatusChanged();
 			return;
-		else if (command == CMD_GET_DATETIME)
+		}
+		else if (command == CMD_GET_DATETIME) {
+			JetNotifier::notifyDatetimeChanged(_printer.dateTime());
 			return;
+		}
 		else if (command == CMD_GET_LOGS)
 			return;
 		else if (command == CMD_GET_PAUSE)
@@ -332,8 +349,10 @@ void JetController::checkCommand(const std::string &command, const std::map<std:
 			return;
 		else if (command == CMD_SET_HOR_RESOLUTION )
 			return;
-		else if (command == CMD_SET_CONFIG)
+		else if (command == CMD_SET_CONFIG){
+			JetNotifier::notifyConfigChanged();
 			return;
+		}
 		else if (command == CMD_GET_PRINT_SPEED)
 			return;
 		else if (command == CMD_GET_PRINT_DELAY)

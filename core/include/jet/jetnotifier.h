@@ -11,7 +11,7 @@ namespace Macsa {
 			public:
 				JetNotifier();
 				void notifyStatusChanged();
-//				void notifyIOStatusChanged();
+				void notifyDatetimeChanged(const time_t &);
 				void notifyConfigChanged();
 				void notifyFilesListChanged();
 				void notifyFontsChanged();

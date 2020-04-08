@@ -15,6 +15,8 @@ namespace Macsa {
 				virtual ~JetController() override;
 				virtual Printers::Printer* printer() override {return &_printer;}
 
+				void initPrinter();
+
 				//Status
 				bool getCounters();
 				bool getSSCC();
