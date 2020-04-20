@@ -1,7 +1,8 @@
 #include "gtest/gtest.h"
-#include "printermonitor.h"
+#include "tij/tijmonitor.h"
 
 using namespace Macsa;
+using namespace Macsa::MComms;
 //using ::testing::Return;
 
 
@@ -29,7 +30,7 @@ class PrinterMonitorUT: public ::testing::Test {
 		}
 		// put in any custom data members that you need
 	protected:
-		PrinterMonitor* monitor;
+		TijMonitor* monitor;
 };
 ///
 /// \brief Simple setup teardown test to detect memory leaks on test class

@@ -6,7 +6,7 @@
 #include <vector>
 #include <stdint.h>
 
-#include "datatypes.h"
+#include "../tij/datatypes.h"
 #include "datecodes.h"
 #include "shotmode.h"
 #include "inputs.h"
@@ -14,7 +14,7 @@
 #include "encoder.h"
 #include "cartridge.h"
 #include "errors.h"
-#include "messagemanager.h"
+#include "tij/messagemanager.h"
 #include <mutex>
 namespace Macsa {
 	namespace Printers {
@@ -65,13 +65,13 @@ namespace Macsa {
 				virtual uint8_t currentBcdCode() const;
 				virtual void setBcdTable(const BCDTable& bcdTable);
 				virtual void setBcdMode(const BCDMode &mode);
-				virtual void setBcdMode(const BCDMode_n &mode);
+				virtual void setBcdMode(const nBCDMode &mode);
 				virtual void setBcdMode(const std::string &mode);
 				virtual void setBcdCurrent(uint8_t current);
 
 				virtual PrinterDir printDirection() const;
 				virtual void setPrinterDirection(const PrinterDir &printDirection);
-				virtual void setPrinterDirection(const PrinterDir_n &printDirection);
+				virtual void setPrinterDirection(const nPrinterDir &printDirection);
 				virtual void setPrinterDirection(const std::string &printDirection);
 
 				virtual bool printRotated() const;
@@ -79,7 +79,7 @@ namespace Macsa {
 
 				virtual NozzlesCol nozzlesCol() const;
 				virtual void setNozzlesCol(const NozzlesCol &nozzlesCol);
-				virtual void setNozzlesCol(const NozzlesCol_n &nozzlesCol);
+				virtual void setNozzlesCol(const nNozzlesCol &nozzlesCol);
 				virtual void setNozzlesCol(const std::string &nozzlesCol);
 
 				virtual ShotMode shotMode() const;
@@ -90,7 +90,7 @@ namespace Macsa {
 
 				virtual Photocell photocell() const;
 				virtual void setPhotocell(const Photocell& photocell);
-				virtual void setPhotocell(const Photocell_n& photocell);
+				virtual void setPhotocell(const nPhotocell& photocell);
 				virtual void setPhotocell(const std::string & photocell);
 
 				virtual countersMap counters() const;

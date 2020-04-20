@@ -30,7 +30,7 @@ void Output::setType(const OutputType &type)
 	_type = type;
 }
 
-void Output::setType(OutputType_n type)
+void Output::setType(nOutputType type)
 {
 	_type = type;
 }

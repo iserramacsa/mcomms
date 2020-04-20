@@ -15,6 +15,7 @@ namespace  Macsa {
 #define ATTRIBUTE_NAME		"Name"
 #define ATTRIBUTE_CODE		"Code"
 #define ATTRIBUTE_KEY		"Key"
+#define ATTRIBUTE_BOARD_ID	"BoardId"
 
 #define MWIND				"WIND"
 #define MWIND_ID_ATTR		ATTRIBUTE_ID
@@ -146,6 +147,7 @@ namespace  Macsa {
 #define MPRINTER_DATECODE_CODE			"CODE"
 #define MPRINTER_DATECODE_INTERVAL_ATTR		"IntervalStart"
 
+#define MSET_CURRENT_MESSAGE			"SETCURRENTMESSAGE"
 
 #define FONTS_FILTER	".ttf"
 #define NISX_FILTER		".nisx"
@@ -194,7 +196,7 @@ namespace  Macsa {
 
 #define MERRORS_LOGS			"GETERRORLOG"
 #define MERRORS_LOGS_ITEM			"ITEM"
-#define MERRORS_LOGS_BOARD_ATTR			"BoardId"
+#define MERRORS_LOGS_BOARD_ATTR			ATTRIBUTE_BOARD_ID
 #define MERRORS_LOGS_TSTAMP_ATTR	    "When"
 #define MERRORS_LOGS_TYPE_ATTR		    "Type"
 #define MERRORS_LOGS_PRIO_ATTR		    "Priority"

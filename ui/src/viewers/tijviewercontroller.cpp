@@ -1,89 +1,64 @@
 #include "viewers/tijviewercontroller.h"
-#include "tijprintermonitor.h"
+#include "tij/tijmonitor.h"
 #include <QDateTime>
 #include <QVector>
 #include "printer/board.h"
 
 using namespace Macsa;
+using namespace Macsa::MComms;
 using namespace Macsa::Printers;
 
 TIJViewerController::TIJViewerController(TijController &controller, QObject *parent) :
 	QObject(parent),
-	TijObserver(&controller),
+	TijViewer(controller),
 	_controller(controller)
 {}
 
 #include <iostream>
-void TIJViewerController::updatePrinterData()
-{
-	if (_controller.getLive() == ErrorCode_n::SUCCESS) {
-		if (_controller.isStatusChanged())
-			_controller.updateStatus();
 
-		if (_controller.isConfigChanged())
-			_controller.updateConfig();
-
-		if (_controller.isFilesChanged())
-			_controller.updateFilesList();
-
-		if (_controller.isFontsChanged())
-			_controller.updateFontsList();
-
-		if (_controller.isUserValuesChanged())
-			std::cout << "Printer user values changed!" << std::endl;
-//			_controller.updateUserValues();
-
-		if (_controller.isErrorsLogsChanged())
-			_controller.updateErrorsList();
-
-		if (_controller.isInError())
-			std::cout << "Printer is in error!" << std::endl;
-	}
-}
-
-bool TIJViewerController::requestLive()
-{
-	return _controller.getLive() == ErrorCode_n::SUCCESS;
+bool TIJViewerController::requestLive() {
+	_controller.getLive();
+	return true;
 }
 
 bool TIJViewerController::requestStatus()
 {
-	return _controller.updateStatus() == ErrorCode_n::SUCCESS;
+	return _controller.updateStatus();
 }
 
 bool TIJViewerController::requestConfig()
 {
-	return _controller.updateConfig() == ErrorCode_n::SUCCESS;
+	return _controller.updateConfig();
 }
 
 bool TIJViewerController::requestErrorsList()
 {
-	return _controller.updateErrorsList() == ErrorCode_n::SUCCESS;
+	return _controller.updateErrorsList();
 }
 
 bool TIJViewerController::requestAllFiles()
 {
-	return _controller.updateFilesList() == ErrorCode_n::SUCCESS;
+	return _controller.updateFilesList();
 }
 
 bool TIJViewerController::requestFontFiles()
 {
-	return _controller.updateFontsList() == ErrorCode_n::SUCCESS;
+	return _controller.updateFontsList();
 }
 
 bool TIJViewerController::requestMessagesFiles()
 {
-	return _controller.updateMessagesList() == ErrorCode_n::SUCCESS;
+	return _controller.updateMessagesList();
 }
 
 bool TIJViewerController::requestImagesFiles()
 {
-	return _controller.updateImagesList() == ErrorCode_n::SUCCESS;
+	return _controller.updateImagesList();
 }
 
 bool TIJViewerController::requestFileContent(const std::string &filepath, bool rawMode)
 {
-	return (_controller.updateFile(filepath, rawMode) == ErrorCode_n::SUCCESS);
+	return (_controller.updateFile(filepath, rawMode));
 }
 
 std::vector<uint8_t> TIJViewerController::getFileContent(const std::string &filepath)
@@ -211,19 +186,9 @@ bool TIJViewerController::loggerEnabled() const
 	return value;
 }
 
-TIJViewerController::TijStatus TIJViewerController::printerStatus() const
-{
-	return _controller.printerStatus();
-}
-
 QString TIJViewerController::boardType() const
 {
-	std::string value = "---";
-	const Board* board = tijPrinterBoard();
-	if (board) {
-		value = board->type();
-	}
-
+	std::string value = (printerType().length() ? printerType() : "---");
 	return _(value);
 }
 
@@ -325,6 +290,11 @@ bool TIJViewerController::blocked() const
 bool TIJViewerController::setBlocked(bool blocked)
 {
 	return (_controller.setCartridgeBlocked(blocked) == Printers::SUCCESS);
+}
+
+bool TIJViewerController::setBcdMode(const BCDMode &mode)
+{
+	return (_controller.setBcdMode(mode) == Printers::SUCCESS);
 }
 
 QString TIJViewerController::currentMessage() const
@@ -438,7 +408,7 @@ QString TIJViewerController::nozzlesColStr() const
 NozzlesCol TIJViewerController::nozzlesCol() const
 {
 	NozzlesCol value;
-	value = NozzlesCol_n::COL_A;
+	value = nNozzlesCol::COL_A;
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		value = board->nozzlesCol();
@@ -449,7 +419,7 @@ NozzlesCol TIJViewerController::nozzlesCol() const
 ShootingMode TIJViewerController::shotMode() const
 {
 	ShootingMode value;
-	value = ShootingMode_n::SINGLE_SHOT;
+	value = nShootingMode::SINGLE_SHOT;
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		value = board->shotMode().mode();
@@ -514,7 +484,7 @@ QString TIJViewerController::encoderModeStr() const
 EncoderMode TIJViewerController::encoderMode() const
 {
 	EncoderMode value;
-	value = EncoderMode_n::FIXED_SPEED;
+	value = nEncoderMode::FIXED_SPEED;
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		value = board->encoder().mode();
@@ -566,7 +536,7 @@ QString TIJViewerController::photocellStr() const
 Photocell TIJViewerController::photocell() const
 {
 	Macsa::Printers::Photocell value;
-	value = Macsa::Printers::Photocell_n::PHCELL_A;
+	value = Macsa::Printers::nPhotocell::PHCELL_A;
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		value = board->photocell();
@@ -771,38 +741,6 @@ TIJViewerController::PrinterOutput TIJViewerController::output(unsigned int idx)
 	const Board* board = tijPrinterBoard();
 	if (board) {
 		value = printerOutputToView(board->output(idx));
-	}
-	return value;
-}
-
-QVector<TIJViewerController::PrinterError> TIJViewerController::errors() const
-{
-	QVector<PrinterError> values;
-	const Board* board = tijPrinterBoard();
-	if (board) {
-		std::vector<Error> errors = board->errors();
-		for (std::vector<Error>::const_iterator it = errors.begin(); it != errors.end(); it++) {
-			PrinterError err;
-			err.timestamp = QDateTime::fromTime_t(static_cast<uint>((*it).timestamp()));
-			err.code = _((*it).code().toString());
-			err.type = _((*it).type().toString());
-			err.priority = (*it).priority();
-			values.push_back(err);
-		}
-	}
-	return values;
-}
-
-TIJViewerController::PrinterError TIJViewerController::error(unsigned int idx) const
-{
-	PrinterError value;
-	const Board* board = tijPrinterBoard();
-	if (board) {
-		Error perror = board->error(idx);
-		value.timestamp = QDateTime::fromTime_t(static_cast<uint>(perror.timestamp()));
-		value.code = _(perror.code().toString());
-		value.type = _(perror.type().toString());
-		value.priority = perror.priority();
 	}
 	return value;
 }

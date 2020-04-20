@@ -1,5 +1,5 @@
-#ifndef PRINTER_CONTROLLER_H
-#define PRINTER_CONTROLLER_H
+#ifndef MACSA_MCOMMS_PRINTER_CONTROLLER_H
+#define MACSA_MCOMMS_PRINTER_CONTROLLER_H
 
 #include <string>
 
@@ -9,21 +9,24 @@
 #include "mprotocol/mcommands.h"
 
 namespace Macsa {
-	class PrinterController : public Network::NetworkNode {
-		public:
-			PrinterController(const std::string& id, const std::string& address, uint16_t port);
-			~PrinterController();
-			virtual bool connect();
-			virtual bool disconnect();
+	namespace MComms {
+		class PrinterController : public Network::NetworkNode {
+			public:
+				PrinterController(const std::string& id, const std::string& address, uint16_t port);
+				virtual ~PrinterController();
+				virtual bool connect();
+				virtual bool disconnect();
+				virtual bool reconnect();
 
-			virtual Printers::Printer* printer() = 0;
+				virtual Printers::Printer* printer() = 0;
 
-		protected:
-			virtual bool send(MProtocol::MCommand *cmd, Printers::ErrorCode& err) = 0;
+			protected:
+				virtual bool send(Macsa::XMLCommand *cmd) = 0;
 
-		private:
-			uint16_t _printerPort;
-	};
+			private:
+				uint16_t _printerPort;
+		};
+	}
 }
 
 #endif //PRINTER_CONTROLLER_H

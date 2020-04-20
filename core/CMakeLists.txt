@@ -14,9 +14,13 @@ message("PROJECT_BINARY_DIR: " ${PROJECT_BINARY_DIR})
 
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/../toolchain/cmake/macsa.cmake)	#configuration for macsa tij projects
+include(${CMAKE_CURRENT_SOURCE_DIR}/../toolchain/cmake/macsa.cmake)	#configuration for macsa magnetiq projects
 include(${CMAKE_CURRENT_SOURCE_DIR}/../toolchain/cmake/test.cmake)  #configuration test enabled and GTest requiered configuration
 set (UTILS_DIR	${CMAKE_CURRENT_SOURCE_DIR}/../utils)
+
+
+option(INCLUDE_TIJ_LIBS "Add Tij library" ON)
+option(INCLUDE_JET_LIBS "Add Jet library" ON)
 
 if(UNIX)
 	if (${BUILD_SHARED_LIBS})
@@ -75,10 +79,37 @@ if (${BUILD_SHARED_LIBS} OR ${BUILD_STATIC_LIBS})
 	message("lib" ${PROJECT_NAME} " creating targets")
 	set(SOVERSION ${MCOMMS_CORE_VERSION})
 
+	link_directories(
+		${PROJECT_BINARY_DIR}/network
+	)
+	set(TARGET_LINK_LIBS
+		${PROJECT_BINARY_DIR}/network/libMNetwork.a
+		)
+	if (${INCLUDE_TIJ_LIBS})
+		link_directories(
+			${PROJECT_BINARY_DIR}/printers/tij
+		)
+		set(TARGET_LINK_LIBS ${TARGET_LINK_LIBS}
+			${PROJECT_BINARY_DIR}/../printers/tij/libTijPrinter.a
+			)
+		endif()
+	if (${INCLUDE_JET_LIBS})
+		link_directories(
+			${PROJECT_BINARY_DIR}/printers/jet
+		)
+		set(TARGET_LINK_LIBS ${TARGET_LINK_LIBS}
+			${PROJECT_BINARY_DIR}/../printers/jet/libJetPrinter.a
+			)
+	endif()
+
+
 	if (${BUILD_SHARED_LIBS})
 		add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
 		set_target_properties(${PROJECT_NAME}
 			PROPERTIES SOVERSION ${SOVERSION})
+		target_link_libraries(${PROJECT_NAME} ${EXTERNAL_LIBS})
+		install(TARGETS ${PROJECT_NAME}
+			LIBRARY DESTINATION ${LIB_PREFIX}/lib)
 	endif()
 
 
@@ -86,25 +117,21 @@ if (${BUILD_SHARED_LIBS} OR ${BUILD_STATIC_LIBS})
 		add_library(${PROJECT_NAME}-static STATIC ${SOURCES} ${HEADERS})
 		set_target_properties(${PROJECT_NAME}-static
 				PROPERTIES SOVERSION ${SOVERSION} OUTPUT_NAME ${PROJECT_NAME})
+		target_link_libraries(${PROJECT_NAME}-static  ${EXTERNAL_LIBS} ${TARGET_LINK_LIBS})
+		install(TARGETS ${PROJECT_NAME}-static
+			LIBRARY DESTINATION ${LIB_PREFIX}/lib)
 	endif()
 
-	link_directories(
-		${PROJECT_BINARY_DIR}/network
-		${PROJECT_BINARY_DIR}/printers/tij
-	)
-
-	target_link_libraries(${PROJECT_NAME} ${EXTERNAL_LIBS})
-	install(TARGETS ${PROJECT_NAME}
-		LIBRARY DESTINATION ${LIB_PREFIX}/lib)
 
 	if (${ENABLE_TESTS} AND SRC_TEST)
 		set(PROJECT_TEST_NAME ${PROJECT_NAME}CoreTest)
-		link_directories(${PROJECT_BINARY_DIR}
-			${PROJECT_BINARY_DIR}/network
-			${PROJECT_BINARY_DIR}/printers/tij
-			)
+#		link_directories(${PROJECT_BINARY_DIR}
+#			${PROJECT_BINARY_DIR}/network
+#			${PROJECT_BINARY_DIR}/printers/tij
+#			${PROJECT_BINARY_DIR}/printers/jet
+#			)
 		add_executable(${PROJECT_TEST_NAME} ${SRC_TEST} ${HDRS_TEST})
-		target_link_libraries(${PROJECT_TEST_NAME} ${EXTERNAL_LIBS} MComms MNetwork TijLibrary)
+		target_link_libraries(${PROJECT_TEST_NAME} ${EXTERNAL_LIBS} MComms MNetwork TijPrinter JetPrinter)
 		add_test(${PROJECT_NAME} ${PROJECT_TEST_NAME})
 
 	endif()

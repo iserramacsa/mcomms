@@ -3,6 +3,9 @@
 #include <iostream>
 #include <sstream>
 
+using namespace Macsa;
+using namespace Macsa::MComms;
+
 ClientManager::ClientManager(Printers::TijPrinter& printer) :
 	Network::MNetwork (),
 	_printer(printer)

@@ -15,26 +15,22 @@ Version | Date | Edited by | Changes
 
 ### Index of content
 1. [Introduction](#introduction)
-1. [Commands](#Files-management)
-    
+1. [Commands](#protocol-commands)
     2.1. [Files management](#Files-management)
-    
-    - [Get files list](#get-files-list)
-    - [Copy file](#copy-file)
-    - [Move file](#move-file)
-    - [Delete file](#delete-file)
-    - [Get file](#get-file)
-    - [Set file](#set-file)
-    - [Get message value](#get-message-value)
-    - [Set message value](#set-message-value)
-    - [Get message data source](#get-message-data-source)
-    - [Set message data source](#set-message-data-source)
-    
+        - [Get files list](#get-files-list)
+        - [Copy file](#copy-file)
+        - [Move file](#move-file)
+        - [Delete file](#delete-file)
+        - [Get file](#get-file)
+        - [Set file](#set-file)
+        - [Get message value](#get-message-value)
+        - [Set message value](#set-message-value)
+        - [Get message data source](#get-message-data-source)
+		- [Set message data source](#set-message-data-source)
     2.2. [Status and configuration](#status-and-configuration)
-    
-    - [Get status](#get-status)
-    - [Get IO status](#get-io-status)
-    - [Get errors list](#get-errors)
+        - [Get status](#get-status)
+        - [Get IO status](#get-io-status)
+        - [Get errors list](#get-errors)
 1. [Data types](#data-types)
 1. [Error codes](#error-codes)
 
@@ -56,6 +52,470 @@ This protocol uses xml as a language to create the payload. Payloads sent and re
     </COMMAND_NAME>
 </WIND>
 ```
+## Protocol Commands
+### Files management
+The protocol has the capability to send and receive files inside the payload using the following commands. 
+
+In order to reference files through this protocol all files must be defined with two strings *logical drive* (`<UNIT name="//" />`) and *logical path* (`<FILE path="//messages/CQ.nisx" />` or `<FILE Path="USB//messages/CQ.nisx"/>`).
+
+The protocol is **not** the responsible of how drives and files are mapped. The logical path mapping depends on the code implementation.
+
+**idTIJ project implementation**
+
+In idTIJ project the drives contains subfolders in order to allocate and organize all different type of files.
+
+__drive //__
+
+- messages
+- fonts
+- images
+
+**TIJ project current used drives implementation**
+
+Logical drive|Description|Mount point
+-------------|-----------|-------------
+//| Internal storage | /home/root
+USB//| External storage | /home/root/usb
+
+---
+### Get files list
+This command request for a list of files with a desired extension. 
+
+**Attributes:**
+
+- Type: This attribute a defines the extension of the files requested. This attribute is a comma separated string (`type=".jpg,.png"`).
+
+Currently supported extensions:
+
+Type of file|Supported extension
+-|-
+Messages | .nisx
+Fonts| .ttf
+Images | .bmp, .jpg, .png
+
+**Request**
+
+```xml
+<WIND id="[Command ID]">
+    <GETFILESLIST type="[requested type]"/>
+</WIND>
+```
+**Response**
+
+In the response will be two type of tags inside `<GETFILESLIST>` command:
+
+The `<UNIT>` tag returns one by one the name of the [logical drive](#files-management) available on the printer in the **"Name"** attribute.  
+The `<FILE>` tag returns one by one all the files, of the requested type, that can be found in the listed units.
+```xml
+<WIND id="[Command ID]">
+    <GETFILESLIST type="[requested type]">
+        <UNIT Name="[Logical Active Unit Name]"/> <!-- one item for each active drive -->
+        <FILE Path="[Logical File Path]"/> <!-- one item for each file-->
+    </GETFILESLIST>
+</WIND>
+```
+---
+### Copy file
+This command is used to copy a file and create a new one with the same content.
+**Request**
+```xml
+<WIND id="[Command ID]">
+    <COPYFILE SourceFilePath="[Logical File Path]" TargetFilePath="[Logical File Path]"/>
+</WIND>
+```
+**Response**
+```xml
+<WIND id="[Command ID]">
+    <ERROR Code="[Error Code]"/>
+    <COPYFILE/>
+</WIND>
+```
+---
+
+### Move file
+This command moves the content of file into another file. The source file must exist in the "SourceFilePath" and the content will be moved into "TargetFilePath".
+**Request**
+```xml
+<WIND id="[Command ID]">
+    <MOVEFILE SourceFilePath="[Logical File Path]" TargetFilePath="[Logical File Path]"/>
+</WIND> 
+```
+**Response**
+```xml
+<WIND id="[Command ID]">
+    <ERROR Code="[Error Code]"/>
+    <MOVEFILE/>
+</WIND>
+```
+---
+### Delete file
+This command deletes the file stored at filepath.
+**Request**
+```xml
+<WIND id="[Command ID]">
+    <DELETEFILE FilePath="[Logical File Path]"/>
+</WIND> 
+```
+**Response**
+```xml
+<WIND id="[Command ID]">
+    <ERROR Code="[Error Code]"/>
+    <DELETEFILE/>
+</WIND> 
+```
+---
+### Get file
+Normally, content file is getting coded in base64 but also it allows to get content file without coding, in raw.
+It depends on the bool param _Raw_. If Raw is true, it gets the content file in raw within **CDATA** section at the response.
+
+**Request**
+```xml
+<WIND id="[Command ID]">
+    <GETFILE FilePath="[Logical File Path]" Raw="[Bool]">
+</WIND>
+```
+**Response**
+```xml
+<WIND id="[Command ID]">
+    <ERROR Code="[Error Code]"/>
+    <GETFILE FilePath="[Logical File Path]">
+        <CONTENT>[File Content]</CONTENT>
+    </GETFILE>
+</WIND> 
+```
+---
+### Set file
+Normally, content file is setting coded in base64 but also it allows to set content file without coding, in raw.
+It depends on the bool param **_Raw_**. If Raw is true, it needs to set the content file in raw within **CDATA** section at the Request.
+**Request**
+
+```xml
+<WIND id="[Command ID]">
+    <SETFILE FilePath="[Logical File Path]" Type="[Message Type]" Raw="[bool]">
+        <CONTENT>[File Content]</CONTENT>
+    </SETFILE>
+</WIND>
+```
+**Response**
+```xml
+<WIND id="[Command ID]">
+    <ERROR Code="[Error Code]"/>
+    <SETFILE FilePath="[Logical File Path]"/>
+</WIND>
+```
+---
+### Get Message values
+The command returns the user data fields values in the requested file.
+**Request**
+
+```xml
+<WIND id="[Command ID]">
+    <GETMESSAGEVALUES FilePath="[Logical File Path]"/>
+</WIND>
+```
+**Response**
+The response will return a list of the user data fields of the requested message file. 
+__Attributes:__ 
+- __Name:__ Name of the field inside the message file.
+- __Value:__ Current value of the user data field.
+```xml
+<WIND id="[Command ID]">
+    <ERROR Code="[Error Code]"/>
+    <GETMESSAGEVALUES FilePath="[Logical File Path]">
+        <UI_FIELD Name="[User Field Name]" Value="[User Field Value]"/>
+    </GETMESSAGEVALUES>
+</WIND>
+```
+---
+### Set Message value
+This command allows the user to change one or more  values of the user data fields.
+The user data fields must by entered one by one in his own `<UI_FIELD>` tag.
+__Attributes:__
+
+- **FilePath:** Filepath of the file to set.
+- **Name:** Name of the field inside the message file.
+- **Value:** Value to set the user field.
+
+**Request**
+
+```xml
+<WIND id="[Command ID]">
+    <SETMESSAGEVALUES FilePath="[Logical File Path]">
+        <UI_FIELD Name="[User Field Name]" Value="[User Field Value]"/>
+    </SETMESSAGEVALUES>
+</WIND>
+```
+**Response**
+```xml
+<WIND id="[Command ID]">
+    <ERROR Code="[Error Code]"/>
+    <SETMESSAGEVALUES/>
+</WIND>
+```
+---
+### Get message data source
+
+This command is an expanded form of the [GETMESSAGEVALUES](#get-message-values) command and allows to get all fields with variable _data source_ of a requested message.
+
+**Request**
+
+```xml
+<WIND id="[Command ID]">
+    <GETMESSAGEDATASOURCE FilePath="[Logical File Path]" FieldType="" />
+</WIND>
+```
+**Response**
+The response returns  a list of different tags depending on _datasource_ type:
+
+FieldType | Description
+-|-
+"" | All types
+"user"|User fields 
+"date"|Date & time fields
+"counter"|Counters fields
+```xml
+<WIND id="[Command ID]">
+    <ERROR Code="[Error Code]"/>
+    <GETMESSAGEDATASOURCE FilePath="[Logical File Path]" FieldType="">
+        <DATETIME Name="[User Field Name]" Format="[date and time format]" DayOffset="[Offset Days]" MonthOffset="[Offset Months]" YearsOffset="[Offset Years]" SoD="[Hour - Start of day]"/>
+        <COUNTER  Name="[User Field Name]" LeadingZeros="Leading zeros" Min="[Minimum value]" Max="[Maximum value]" Repeat="[Repeat counter]" Step="[Counter step]"/>
+        <UI_FIELD Name="[User Field Name]" Value="[User Field Value]"/>
+    </GETMESSAGEDATASOURCE>
+</WIND>
+```
+---
+### Set message data source
+Like the previous command, this command acts over the message variable fields but this allows the client to modify part or all the fields with variable _data source_.
+
+**Request**
+
+```xml
+<WIND id="[Command ID]">
+    <SETMESSAGEDATASOURCE FilePath="[Logical File Path]" FieldType="">
+        <DATETIME Name="[User Field Name]" 
+                  Format="[date and time format]" 
+                  DayOffset="[Offset Days]" 
+                  MonthOffset="[Offset Months]" 
+                  YearsOffset="[Offset Years]" 
+                  SoD="[Hour - Start of day]"/>
+        <COUNTER Name="[User Field Name]" 
+                 LeadingZeros="Leading zeros" 
+                 Min="[Minimum value]" 
+                 Max="[Maximum value]" 
+                 Repeat="[Repeat counter]"
+                 Step="[Counter step]"/>
+        <UI_FIELD Name="[User Field Name]" Value="[User Field Value]"/>
+    </SETMESSAGEDATASOURCE>
+</WIND>
+```
+**Response**
+
+```xml
+<WIND id="[Command ID]">
+    <ERROR Code="[Error Code]"/>
+    <SETMESSAGEDATASOURCE />
+</WIND>
+```
+---
+
+## Status and configuration
+
+### Get Status
+Get Status command return all available status parameters and information:
+
+- Date and Time
+- Software versions.
+- Printer's boards status parameters.
+    - Board type _(SM200 by default)_.
+    - Printing status:
+        - Is printing now 
+        - Printing process is enabled.
+    - Message related status parameters 
+        - Current message.
+        - BCD mode and status.
+    - Counters.
+    - Errors.
+    - IO status.
+    - Properties map.
+
+**Request**
+```xml
+<WIND id="[Command ID]">
+    <STATUS/>
+</WIND>
+```
+**Response**
+```xml
+<WIND id="[Command ID]">
+    <ERROR Code="[Error Code]"/>
+    <STATUS>
+        <DATETIME>[Date Time]</DATETIME>
+        <VERSIONS>
+            <CONTROLLER>[Firmware controller]</CONTROLLER>
+            <FPGA>[Firmware FPGA]</FPGA>
+            <API>[API Version]</API>
+        </VERSIONS>
+        <BOARDS>
+            <BOARD id="[Board Id]">
+                <TYPE>[Board Type]</TYPE>
+                <PRINTING>[Printing Status]</PRINTING>
+                <ENABLED>[Printhead Enabled]</ENABLED>
+                <CURRENT_MESSAGE FilePath="[Logical File Path]"/>
+                <BCD_MODE>[BcdMode value]</BCD_MODE>
+                <BCD_STATUS>[BCD Value]</BCD_STATUS>
+                <COUNTERS>
+                    <COUNTER id="[Counter Id]" Value="[Counter Value]"/>
+                <COUNTERS/>
+                <ERRORS>
+                    <ERROR Type="[Printer Error Type]" 
+                           Priority="[Printer Error Priority]" 
+                           ErrorCode="[Printer Error Code]"/>
+                </ERRORS>
+                <INPUTS>
+                    <INPUT id="[Input Id]" 
+                           Descriptor="[Input Descriptor]" 
+                           Value="[Input Value]"/>
+                </INPUTS>
+                <OUTPUTS>
+                    <OUTPUT id="[Output Id]" 
+                            Descriptor="[Output Descriptor]" 
+                            Value="[Output Value]"/>
+                <OUTPUTS>
+                <PROPERTIES>
+                    <PROPERTY Key="[Property Key]" Value="[Property Values]"/>
+                </PROPERTIES>
+            </BOARD>
+        </BOARDS>
+    </STATUS>
+</WIND>
+```
+
+---
+### Get IO Status
+Simplified status command to get only *Inputs* and *Outputs* status.
+**Request**
+
+```xml
+<WIND id="[Command ID]">
+    <IOSTATUS/>
+</WIND>
+```
+**Response**
+```xml
+<WIND id="[Command ID]">
+    <ERROR Code="[Error Code]"/>
+    <IOSTATUS>
+        <BOARDS>
+            <BOARD id="[Board Id]">
+                <ERROR Type="[Printer Error Type]" 
+                       Priority="[Printer Error Priority]"
+                       ErrorCode="[Printer Error Code]"/>
+            </BOARD>
+        </BOARDS>
+    </IOSTATUS>
+</WIND>
+```
+
+---
+### Get Errors
+Simplified status command to get *errors* list.  See [error codes](#error-codes) for further information.
+**Request**
+
+```xml
+<WIND id="[Command ID]">
+    <GETERRORS/>
+</WIND>
+```
+**Response**
+
+```xml
+<WIND id="[Command ID]">
+    <ERROR Code="[Error Code]"/>
+    <GETERRORS>
+        <BOARDS>
+            <BOARD id="[Board Id]">
+                <INPUTS>
+                    <INPUT id="[Input Id]" 
+                           Descriptor="[Input Descriptor]" 
+                           Value="[Input Value]"/>
+                </INPUTS>
+                <OUTPUTS>
+                    <OUTPUT id="[Output Id]" 
+                            Descriptor="[Output Descriptor]" 
+                            Value="[Output Value]"/>
+                <OUTPUTS>
+            </BOARD>
+        </BOARDS>
+    </GETERRORS>
+</WIND>
+```
+
+---
+### Get Configuration
+Lorem ipsum:
+# TODO
+---
+### Set Configuration
+Lorem ipsum:
+# TODO
+---
+### Set Current Message
+Lorem ipsum:
+# TODO
+---
+### Set Counters
+Lorem ipsum:
+# TODO
+---
+### Set Output
+Lorem ipsum:
+# TODO
+---
+### Set Input
+Lorem ipsum:
+# TODO
+---
+### Set BCD Value
+Lorem ipsum:
+# TODO
+---
+### Get Errors log
+Lorem ipsum:
+# TODO
+---
+## Live Command
+**`<LIVE>`** is a convenience command to monitor the printer and reduce the data traffic between the printer and the TCP client. 
+**Request**
+
+```xml
+<WIND id="[Command ID]">
+    <LIVE/>
+</WIND>
+```
+**Response**
+
+```xml
+<WIND id="[Command Id]">
+	<ERROR Code="Error Code"/>
+	<LIVE DateTime="[Date Time]" 
+          StatusChanged="[StatusChanged Value]" 
+          ConfigChanged="[ConfigChanged Value]" 
+          FilesChanged="[Files Changed]"  
+          FontsChanged="[Files Changed]" 
+          HaveError="[Have Errors]" >
+		<BOARDS>
+			<BOARD id="[Board Id]" enabled="[value]" printing="[value]" >
+				<COUNTERS total="[value]" user="[value]"/>
+				<PRINT_SPEED value="[Actual print speed]"/>
+				<NUM_PRINTS_REMAIN Value="[Num prints remaining]"/>	
+			</BOARD>
+		</BOARDS>
+	</LIVE>
+</WIND>
+```
+
+# TODO
+---
 
 
 
@@ -125,10 +585,10 @@ Input filter value | unsigned int | To define input filter in miliseconds
 Output type | enum | Enum with all types of possible outputs (see [Output types](#output-types)) 
 Output time value | unsigned int | Time in miliseconds that an output is active
 Initial value | bool | **IDK, To set output state by default? TO REVIEW**
-Status changed value | bool | To notify that status changed (see [Live protocol](#live-protocol)) 
-Config changed value | bool | To notify that configuration changed (see [Live protocol](#live-protocol)) 
-Files changed | bool | To notify that files changed (see [Live protocol](#live-protocol)) 
-Have errors | bool | To notify the error state (see [Live protocol](#live-protocol)) 
+Status changed value | bool | To notify that status changed (see [Live command](#live-command)) 
+Config changed value | bool | To notify that configuration changed (see [Live command](#live-command)) 
+Files changed | bool | To notify that files changed (see [Live command](#live-command)) 
+Have errors | bool | To notify the error state (see [Live command](#live-command)) 
 Nozzle columns | enum | To select which nozzle column is used to print (see [Nozzle columns](#nozzle-columns))
 
 ---
@@ -142,7 +602,6 @@ Value | Name | Description
 3 | Firmware | Binary file (FPGA firmware)
 
 #### Printer error types
-
 Value| Name|Description
 -|-|-|
 0| Information | Information message. 
@@ -161,7 +620,7 @@ Value | Name | Description
 -|-|-
 FTC1 | Photocell 1 | Internal photocell 1.
 FTC2 | Photocell 2 | Internal photocell 2.
-FTCEXT | External photocell | External photocell. **TO REVIEW _Description="" XYDebugSetupPrinthead="23  De moment només interna o externa"_**
+FTCEXT | External photocell | External photocell. 
 
 #### Photocell Mode
 Value | Name | Description
@@ -231,356 +690,6 @@ MultiShotRelative | Relative multi shot | More than one shot per trigger: first 
 MultiShotAbsolute |Absolute multi shot | More than one shot per trigger. Every delay is an absolute time since trigger's signal.  **Not implemented yet** 
 
 ---
-## Files management
-The protocol has the capability to send and receive files inside the payload using the following commands. 
-
-In order to reference files through this protocol all files must be defined with two strings *logical drive* (`<UNIT name="//" />`) and *logical path* (`<FILE path="//messages/CQ.nisx" />` or `<FILE Path="USB//messages/CQ.nisx"/>`).
-
-The protocol is **not** the responsible of how drives and files are mapped. The logical path mapping depends on the code implementation.
-
-**idTIJ project implementation**
-
-In idTIJ project the drives contains subfolders in order to allocate and organize all different type of files.
-
-__drive //__
-
-- messages
-- fonts
-- images
-
-**TIJ project current used drives implementation**
-
-Logical drive|Description|Mount point
--------------|-----------|-------------
-//| Internal storage | /home/root
-USB//| External storage | /home/root/usb
-
----
-### Get files list
-This command request for a list of files with a desired extension. In order to define what kind of files are requested the extension is the **"type"** attribute. This attribute is a comma separated string (`type=".jpg,.png"`).
-
-The idTIJ project currently support the file extensions defined in the table below.
-
-Type of file|Supported extension
-------------|-------------------
-Messages | .nisx
-Fonts| .ttf
-Images | .bmp, .jpg, .png
-
-**Request**
-```xml
-<WIND id="[Command ID]">
-    <GETFILESLIST type="[requested type]"/>
-</WIND>
-```
-**Response**
-```xml
-<WIND id="[Command ID]">
-    <GETFILESLIST type="[requested type]">
-        <UNIT Name="[Logical Active Unit Name]"/> <!-- one item for each active drive -->
-        <FILE Path="[Logical File Path]"/> <!-- one item for each file-->
-    </GETFILESLIST>
-</WIND>
-```
----
-### Copy file
-
-**Request**
-```xml
-<WIND id="[Command ID]">
-    <COPYFILE SourceFilePath="[Logical File Path]" TargetFilePath="[Logical File Path]"/>
-</WIND>
-```
-**Response**
-```xml
-<WIND id="[Command ID]">
-    <ERROR Code="[Error Code]"/>
-    <COPYFILE/>
-</WIND>
-```
----
-
-### Move file
-
-**Request**
-```xml
-<WIND id="[Command ID]">
-    <MOVEFILE SourceFilePath="[Logical File Path]" TargetFilePath="[Logical File Path]"/>
-</WIND> 
-```
-**Response**
-```xml
-<WIND id="[Command ID]">
-    <ERROR Code="[Error Code]"/>
-    <MOVEFILE/>
-</WIND>
-```
----
-### Delete file
-
-**Request**
-```xml
-<WIND id="[Command ID]">
-    <DELETEFILE FilePath="[Logical File Path]"/>
-</WIND> 
-```
-**Response**
-```xml
-<WIND id="[Command ID]">
-    <ERROR Code="[Error Code]"/>
-    <DELETEFILE/>
-</WIND> 
-```
----
-### Get file
-Normally, content file is getting coded in base64 but also it allows to get content file without coding, in raw.
-It depends on the bool param _Raw_. If Raw is true, it gets the content file in raw within **CDATA** section at the response.
-
-**Request**
-```xml
-<WIND id="[Command ID]">
-    <GETFILE FilePath="[Logical File Path]" Raw="[Bool]">
-</WIND>
-```
-**Response**
-```xml
-<WIND id="[Command ID]">
-    <ERROR Code="[Error Code]"/>
-    <GETFILE FilePath="[Logical File Path]">
-        <CONTENT>[File Content]</CONTENT>
-    </GETFILE>
-</WIND> 
-```
----
-### Set file
-Normally, content file is setting coded in base64 but also it allows to set content file without coding, in raw.
-It depends on the bool param **_Raw_**. If Raw is true, it needs to set the content file in raw within **CDATA** section at the Request.
-**Request**
-
-```xml
-<WIND id="[Command ID]">
-    <SETFILE FilePath="[Logical File Path]" Type="[Message Type]" Raw="[bool]">
-        <CONTENT>[File Content]</CONTENT>
-    </SETFILE>
-</WIND>
-```
-**Response**
-```xml
-<WIND id="[Command ID]">
-    <ERROR Code="[Error Code]"/>
-    <SETFILE FilePath="[Logical File Path]"/>
-</WIND>
-```
----
-### Get Message value
-
-**Request**
-```xml
-<WIND id="[Command ID]">
-    <GETMESSAGEVALUES FilePath="[Logical File Path]"/>
-</WIND>
-```
-**Response**
-```xml
-<WIND id="[Command ID]">
-    <ERROR Code="[Error Code]"/>
-    <GETMESSAGEVALUES FilePath="[Logical File Path]">
-        <UI_FIELD Name="[User Field Name]" Value="[User Field Value]"/>
-    </GETMESSAGEVALUES>
-</WIND>
-```
----
-### Set Message value
-
-**Request**
-```xml
-<WIND id="[Command ID]">
-    <SETMESSAGEVALUES FilePath="[Logical File Path]">
-        <UI_FIELD Name="[User Field Name]" Value="[User Field Value]"/>
-    </SETMESSAGEVALUES>
-</WIND>
-```
-**Response**
-```xml
-<WIND id="[Command ID]">
-    <ERROR Code="[Error Code]"/>
-    <SETMESSAGEVALUES/>
-</WIND>
-```
----
-### Get message data source
-
-This command allows the client to get all fields with variable _datasource_ of a requested message.
-
-In the response, the client can find a list of different tags depending on _datasource_ type:
-
-FieldType | Description
--|-
-"" | All types
-"user"|User fields 
-"date"|Date & time fields
-"counter"|Counters fields
-
-**Request**
-```xml
-<WIND id="[Command ID]">
-    <GETMESSAGEDATASOURCE FilePath="[Logical File Path]" FieldType="" />
-</WIND>
-```
-**Response**
-
-```xml
-<WIND id="[Command ID]">
-    <ERROR Code="[Error Code]"/>
-    <GETMESSAGEDATASOURCE FilePath="[Logical File Path]" FieldType="">
-        <DATETIME Name="[User Field Name]" Format="[date and time format]" DayOffset="[Offset Days]" MonthOffset="[Offset Months]" YearsOffset="[Offset Years]" SoD="[Hour - Start of day]"/>
-        <COUNTER  Name="[User Field Name]" LeadingZeros="Leading zeros" Min="[Minimum value]" Max="[Maximum value]" Repeat="[Repeat counter]" Step="[Counter step]"/>
-        <UI_FIELD Name="[User Field Name]" Value="[User Field Value]"/>
-    </GETMESSAGEDATASOURCE>
-</WIND>
-```
----
-### Set message data source
-Like the previous command, this command acts over the message variable fields but this allows the client to modify part or all the fields with variable _datasource_.
-
-**Request**
-
-```xml
-<WIND id="[Command ID]">
-    <SETMESSAGEDATASOURCE FilePath="[Logical File Path]" FieldType="">
-        <DATETIME Name="[User Field Name]" Format="[date and time format]" DayOffset="[Offset Days]" MonthOffset="[Offset Months]" YearsOffset="[Offset Years]" SoD="[Hour - Start of day]"/>
-        <COUNTER  Name="[User Field Name]" LeadingZeros="Leading zeros" Min="[Minimum value]" Max="[Maximum value]" Repeat="[Repeat counter]" Step="[Counter step]"/>
-        <UI_FIELD Name="[User Field Name]" Value="[User Field Value]"/>
-    </SETMESSAGEDATASOURCE>
-</WIND>
-```
-**Response**
-
-```xml
-<WIND id="[Command ID]">
-    <ERROR Code="[Error Code]"/>
-    <SETMESSAGEDATASOURCE />
-</WIND>
-```
----
-
-## Status and configuration
-
-### Get Status
-Get Status command return all available status parameters and information:
-
-- Date and Time
-- Software versions.
-- Printers (Boards).
-    - Printer status (Board).
-        - Board type _(SM200 by default)_.
-        - Printing status.
-        - Printing enabled.
-        - Current message.
-        - BCD mode and status.
-        - Counters.
-        - Errors.
-        - IO status.
-        - Properties map.
-
-**Request**
-```xml
-<WIND id="[Command ID]">
-    <STATUS/>
-</WIND>
-```
-**Response**
-```xml
-<WIND id="[Command ID]">
-    <ERROR Code="[Error Code]"/>
-    <STATUS>
-        <DATETIME>[Date Time]</DATETIME>
-        <VERSIONS>
-            <CONTROLLER>[Firmware controller]</CONTROLLER>
-            <FPGA>[Firmware FPGA]</FPGA>
-            <API>[API Version]</API>
-        </VERSIONS>
-        <BOARDS>
-            <BOARD id="[Board Id]">
-                <TYPE>[Board Type]</TYPE>
-                <PRINTING>[Printing Status]</PRINTING>
-                <ENABLED>[Printhead Enabled]</ENABLED>
-                <CURRENT_MESSAGE FilePath="[Logical File Path]"/>
-                <BCD_MODE>[BcdMode value]</BCD_MODE>
-                <BCD_STATUS>[BCD Value]</BCD_STATUS>
-                <COUNTERS>
-                    <COUNTER id="[Counter Id]" Value="[Counter Value]"/>
-                <COUNTERS/>
-                <ERRORS>
-                    <ERROR Type="[Printer Error Type]" Priority="[Printer Error Priority]" ErrorCode="[Printer Error Code]"/>
-                </ERRORS>
-                <INPUTS>
-                    <INPUT id="[Input Id]" Descriptor="[Input Descriptor]" Value="[Input Value]"/>
-                </INPUTS>
-                <OUTPUTS>
-                    <OUTPUT id="[Output Id]" Descriptor="[Output Descriptor]" Value="[Output Value]"/>
-                <OUTPUTS>
-                <PROPERTIES>
-                    <PROPERTY Key="[Property Key]" Value="[Property Values]"/>
-                </PROPERTIES>
-            </BOARD>
-        </BOARDS>
-    </STATUS>
-</WIND>
-```
----
-### Get IO Status
-Specific command to get only *Inputs* and *Outputs* status.
-**Request**
-```xml
-<WIND id="[Command ID]">
-    <IOSTATUS/>
-</WIND>
-```
-**Response**
-```xml
-<WIND id="[Command ID]">
-    <ERROR Code="[Error Code]"/>
-    <IOSTATUS>
-        <BOARDS>
-            <BOARD id="[Board Id]">
-                <ERROR Type="[Printer Error Type]" Priority="[Printer Error Priority]" ErrorCode="[Printer Error Code]"/>
-            </BOARD>
-        </BOARDS>
-    </IOSTATUS>
-</WIND>
-```
----
-### Get Errors
-Specific command to get *errors* list.  See [error codes](#error-codes) for further information.
-**Request**
-
-```xml
-<WIND id="[Command ID]">
-    <GETERRORS/>
-</WIND>
-```
-**Response**
-
-```xml
-<WIND id="[Command ID]">
-    <ERROR Code="[Error Code]"/>
-    <GETERRORS>
-        <BOARDS>
-            <BOARD id="[Board Id]">
-                <INPUTS>
-                    <INPUT id="[Input Id]" Descriptor="[Input Descriptor]" Value="[Input Value]"/>
-                </INPUTS>
-                <OUTPUTS>
-                    <OUTPUT id="[Output Id]" Descriptor="[Output Descriptor]" Value="[Output Value]"/>
-                <OUTPUTS>
-            </BOARD>
-        </BOARDS>
-    </GETERRORS>
-</WIND>
-```
----
-
 ## Error codes
 
 The response frames always contain and error code. The currently implemented errors in **idTij** Project are defined below:

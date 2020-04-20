@@ -1,7 +1,8 @@
 #include "gtest/gtest.h"
-#include "tijprintercontroller.h"
+#include "tij/tijcontroller.h"
 
 using namespace Macsa;
+using namespace Macsa::MComms;
 
 #define PRINTER_ID		"tijPrinter"
 #define PRINTER_ADDR	"127.0.0.1"

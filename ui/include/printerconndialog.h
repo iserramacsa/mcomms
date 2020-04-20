@@ -14,7 +14,8 @@ class PrinterConnectionDialog : public QDialog
 		enum class ServerType
 		{
 			TIJ_EMULATOR = 0,
-			TIJ_PRINTER
+			TIJ_PRINTER,
+			JET_PRINTER
 		};
 	public:
 		explicit PrinterConnectionDialog(QWidget * parent = nullptr);

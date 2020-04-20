@@ -2,6 +2,7 @@
 #include "printersmanager.h"
 
 using namespace Macsa;
+using namespace Macsa::MComms;
 //using ::testing::Return; // include gmock
 
 

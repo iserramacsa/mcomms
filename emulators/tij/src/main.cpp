@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
 
 	QApplication app(argc, argv);
 	Macsa::Printers::TIJEmulator emulator;
-	ClientManager manager(emulator);
+	Macsa::MComms::ClientManager manager(emulator);
 	EmulatorWindow win(emulator);
 
 	int result = 1;

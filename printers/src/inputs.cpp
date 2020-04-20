@@ -8,9 +8,6 @@ Input::Input(uint32_t id) :
 	IOBase (id)
 {}
 
-Input::~Input()
-{}
-
 InputMode Input::mode() const
 {
 	return _mode;
@@ -21,7 +18,7 @@ void Input::setMode(const InputMode& mode)
 	_mode = mode;
 }
 
-void Input::setMode(InputMode_n mode)
+void Input::setMode(nInputMode mode)
 {
 	_mode = mode;
 }

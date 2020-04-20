@@ -9,17 +9,17 @@
 #include "network/networkobserver.h"
 #include "network/nodeobserver.h"
 
-typedef Macsa::Network::NetworkNode::NodeStatus_n NodeStatus;
+typedef Macsa::Network::NetworkNode::nNodeStatus NodeStatus;
 
 class PrinterItem : public QFrame, public Macsa::Network::NodeObserver
 {
 		Q_OBJECT
 	public:
-		explicit PrinterItem(Macsa::PrinterController* printer, Macsa::PrintersManager& manager, QWidget * parent = nullptr);
+		explicit PrinterItem(Macsa::MComms::PrinterController* printer, Macsa::MComms::PrintersManager& manager, QWidget * parent = nullptr);
 
 	private:
-		Macsa::PrinterController* _printer;
-		Macsa::PrintersManager& _manager;
+		Macsa::MComms::PrinterController* _printer;
+		Macsa::MComms::PrintersManager& _manager;
 		QLabel* _status;
 		QPushButton* _connect;
 
@@ -34,7 +34,7 @@ class NetworkDialog : public QDialog, public Macsa::Network::NetworkObserver
 {
 		Q_OBJECT
 	public:
-		explicit NetworkDialog(Macsa::PrintersManager& manager, QWidget * parent = nullptr);
+		explicit NetworkDialog(Macsa::MComms::PrintersManager& manager, QWidget * parent = nullptr);
 
 	signals:
 		void refresh();
@@ -46,7 +46,7 @@ class NetworkDialog : public QDialog, public Macsa::Network::NetworkObserver
 		void refreshPrintersList();
 
 	private:
-		Macsa::PrintersManager& _manager;
+		Macsa::MComms::PrintersManager& _manager;
 		Ui::networkDialog ui;
 		QVBoxLayout* _printersList;
 		QVector<PrinterItem*> _items;

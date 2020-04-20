@@ -104,7 +104,7 @@ namespace Macsa {
 					_port  = 0;
 					_status = UNKNOWN;
 				}
-				virtual ~ISocket(){;}
+				virtual ~ISocket(){}
 				virtual inline uint16_t port() const {return _port;}
 				virtual inline nSocketType type() const {return  _type;}
 				virtual std::string address() const = 0;
@@ -141,6 +141,20 @@ namespace Macsa {
 						_status = status;
 					}
 				}
+#ifdef DEBUG
+				std::string strStatus() const {
+					switch (_status) {
+						case ERROR: 	return "ERROR";
+						case CREATED: 	return "CREATED";
+						case INITIATED: return "INITIATED";
+						case BINDED: 	return "BINDED";
+						case LISTENING: return "LISTENING";
+						case CONNECTED: return "CONNECTED";
+						case READY:	 	return "READY";
+						default:		return "UNKNOWN";
+					}
+				}
+#endif
 
 			private:
 				nSocketStatus	_status;

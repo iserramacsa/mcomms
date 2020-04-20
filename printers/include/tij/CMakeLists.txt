@@ -2,16 +2,15 @@
 #  tij Printer Includes  #
 ##########################
 
-set(HEADERS_LIB
-	${CMAKE_CURRENT_SOURCE_DIR}tijcomms.h
-	${CMAKE_CURRENT_SOURCE_DIR}/tijprinter.h
-	)
-
 set(SOURCES ${SOURCES}
 	PARENT_SCOPE
 	)
 
-set(_HDRS ${HDRS}
-	${HEADERS_LIB}
+set(HEADERS ${HEADERS}
+	${CMAKE_CURRENT_SOURCE_DIR}/tijcomms.h
+	${CMAKE_CURRENT_SOURCE_DIR}/datatypes.h
+	${CMAKE_CURRENT_SOURCE_DIR}/messagemanager.h
+	${CMAKE_CURRENT_SOURCE_DIR}/tijprinter.h
+
 	PARENT_SCOPE
 	)

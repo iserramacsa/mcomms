@@ -2,7 +2,7 @@
 #define INPUTS_H
 
 #include "iobase.h"
-#include "datatypes.h"
+#include "tij/datatypes.h"
 
 namespace Macsa {
 	namespace Printers {
@@ -10,11 +10,10 @@ namespace Macsa {
 		{
 			public:
 				Input(uint32_t id);
-				virtual ~Input();
 
 				InputMode mode() const;
 				void setMode(const InputMode& mode);
-				void setMode(InputMode_n mode);
+				void setMode(nInputMode mode);
 				void setMode(const std::string& mode);
 
 				bool inverted() const;

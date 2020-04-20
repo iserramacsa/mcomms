@@ -6,10 +6,13 @@
 #include "mprotocol/mstatus.h"
 #include "mprotocol/merrorslogs.h"
 #include "mprotocol/mmessagevalues.h"
+#include "mprotocol/mcurrentmessage.h"
 #include "mprotocol/mupdate.h"
 
 using namespace tinyxml2;
 using namespace Macsa::MProtocol;
+
+#define CLOSE_WIND "</" MWIND ">"
 
 MCommandsFactory::MCommandsFactory(Printers::TijPrinter &printer, LiveFlags &liveFlags) :
 	_printer(printer),
@@ -24,7 +27,7 @@ MCommandsFactory::~MCommandsFactory()
 	_doc.Clear();
 }
 
-bool MCommandsFactory::parseResponse(const std::string &frame, MCommand * cmd)
+bool MCommandsFactory::parseResponse(const std::string &rx, MCommand * cmd)
 {
 	bool valid = false;
 
@@ -32,8 +35,14 @@ bool MCommandsFactory::parseResponse(const std::string &frame, MCommand * cmd)
 		_doc.Clear();
 	}
 
-	if (frame.length())
+	if (rx.length())
 	{
+		size_t close = rx.find(CLOSE_WIND);
+		if (close != rx.npos) {
+			close += sizeof (CLOSE_WIND);
+		}
+		std::string frame = rx.substr(0, close);
+
 		_doc.Parse(frame.c_str());
 		XMLElement* wind = _doc.FirstChildElement();
 		if(isWindValid(wind))
@@ -77,22 +86,35 @@ bool MCommandsFactory::parseRequest(const std::string &frame, Macsa::MProtocol::
 	return valid;
 }
 
+// ==============  LIVE Commands  ============== //
 MCommand *MCommandsFactory::getLiveCommand()
 {
 	return new MLive(_printer, _liveFlags);
 }
 
+// =============  STATUS Commands  ============= //
 MCommand *MCommandsFactory::getStatusCommand()
 {
 	return  new MGetStatus(_printer);
 }
 
+MCommand *MCommandsFactory::getIOStatusCommand()
+{
+	return new MGetIOStatus(_printer);
+}
+
+MCommand *MCommandsFactory::getCurrentErrors()
+{
+	return new MGetErrors(_printer);
+}
+
+// =============  CONFIG Commands  ============= //
 MCommand *MCommandsFactory::getConfigCommand()
 {
 	return new MGetConfig(_printer);
 }
 
-MCommand *MCommandsFactory::setDateTimeCommand(time_t dateTime)
+MCommand *MCommandsFactory::setDateTimeCommand(const time_t & dateTime)
 {
 	Macsa::Printers::TijPrinter printer = _printer;
 	printer.setDateTime(dateTime);
@@ -111,6 +133,12 @@ MCommand *MCommandsFactory::setConfigBoard(const Macsa::Printers::Board &board)
 	return nullptr;
 }
 
+MCommand *MCommandsFactory::setCurrentMessage(const std::string &filepath)
+{
+	return new MSetCurrentMessage(_printer, filepath);
+}
+
+// =============  FILES Commands  ============= //
 MCommand *MCommandsFactory::getFontsCommand()
 {
 	return new MGetFilesList(_printer, FONTS_FILTER);
@@ -136,34 +164,55 @@ MCommand *MCommandsFactory::getFileContent(const std::string &filePath, bool raw
 	return new MGetFile(_printer, filePath, rawMode);
 }
 
+MCommand *MCommandsFactory::getMsgUserValues(const std::string &filePath)
+{
+	return new MGetMessageValues(_printer, filePath);
+}
+
+MCommand *MCommandsFactory::getMsgDataSources(const std::string &filePath)
+{
+	return new MGetMessageDataSource(_printer, filePath);
+}
+
+// =============  ERROR HISTORY Commands  ============= //
 MCommand *MCommandsFactory::getErrorsList()
 {
 	return new MErrorsLogs(_printer);
 }
 
-MCommand *MCommandsFactory::getCurrentErrors()
-{
-	return new MGetErrors(_printer);
-}
 
+// =============  Handler  ============= //
 MCommand *MCommandsFactory::getCommand(XMLElement *eCmd)
 {
 	MCommand * cmd = nullptr;
 	if (eCmd != nullptr) {
 		std::string cmdName = eCmd->Name();
 
+		// ==============  LIVE Commands  ============== //
 		if (cmdName == MLIVE) {
 			cmd = new MLive(_printer, _liveFlags);
 		}
+		// =============  STATUS Commands  ============= //
 		else if (cmdName == MSTATUS){
 			cmd = new MGetStatus(_printer);
 		}
+		else if (cmdName == MIOSTATUS){
+			cmd = new MGetIOStatus(_printer);
+		}
+		else if (cmdName == MERRORS_GET) {
+			cmd = new MGetErrors(_printer);
+		}
+		// =============  CONFIG Commands  ============= //
 		else if (cmdName == MCONFIG_GET) {
 			cmd = new MGetConfig(_printer);
 		}
 		else if (cmdName == MCONFIG_SET) {
 			cmd = new MSetConfig(_printer);
 		}
+		else if (cmdName == MSET_CURRENT_MESSAGE) {
+			cmd = new MSetCurrentMessage(_printer);
+		}
+		// =============  FILES Commands  ============= //
 		else if (cmdName == MFILES_GET_LIST) {
 			cmd = new MGetFilesList(_printer);
 		}
@@ -182,9 +231,23 @@ MCommand *MCommandsFactory::getCommand(XMLElement *eCmd)
 		else if (cmdName == MFILES_SET) {
 			cmd = new MGetFile(_printer);
 		}
+		else if (cmdName == MMESSAGE_USER_FIELD_GET) {
+			cmd = new MGetMessageValues(_printer);
+		}
+		else if (cmdName == MMESSAGE_USER_FIELD_SET) {
+			cmd = new MSetMessageValues(_printer);
+		}
+		else if (cmdName == MMESSAGE_DATA_SOURCE_GET) {
+			cmd = new MGetMessageDataSource(_printer);
+		}
+		else if (cmdName == MMESSAGE_DATA_SOURCE_SET) {
+			cmd = new MSetMessageDataSource(_printer);
+		}
+		// =============  ERROR HISTORY Commands  ============= //
 		else if (cmdName == MERRORS_LOGS) {
 			cmd = new MErrorsLogs(_printer);
 		}
+		// =============  UPDATE Commands  ============= //
 		else if (cmdName == MUPDATE) {
 			cmd = new MUpdate(_printer);
 		}

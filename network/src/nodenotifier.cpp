@@ -6,13 +6,10 @@
 using namespace Macsa;
 using namespace Macsa::Network;
 
-NodeNotifier::NodeNotifier()
-{}
-
 void NodeNotifier::notifyStatusChanged(const int &status)
 {
-	const NetworkNode::NodeStatus_n nodeStatus = static_cast<const NetworkNode::NodeStatus_n>(status);
-	std::function<void(NodeObserver*, const NetworkNode::NodeStatus_n &)> func = &NodeObserver::nodeStatusChanged;
+	const NetworkNode::nNodeStatus nodeStatus = static_cast<const NetworkNode::nNodeStatus>(status);
+	std::function<void(NodeObserver*, const NetworkNode::nNodeStatus &)> func = &NodeObserver::nodeStatusChanged;
 	notifyObservers(func, nodeStatus);
 }
 

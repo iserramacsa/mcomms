@@ -8,11 +8,17 @@ set(SOURCES ${SOURCES}
 	${CMAKE_CURRENT_SOURCE_DIR}/printerslistmodel.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/printerconndialog.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/networkdialog.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/printerview.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/printerstatusview.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/printerconfigview.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/printercommsview.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/printerfilesview.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/jetview.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/jetstatusview.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/jetconfigview.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/jetfilesview.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/jetmsgmanager.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/tijview.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/tijstatusview.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/tijconfigview.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/tijcommsview.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/tijmessageselector.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/tijfilesview.cpp
 	#	${CMAKE_CURRENT_SOURCE_DIR}/
 	)
 

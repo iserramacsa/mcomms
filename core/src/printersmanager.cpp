@@ -1,6 +1,6 @@
 #include "printersmanager.h"
-#include "tijprintercontroller.h"
-#include "tijprintermonitor.h"
+#include "tij/tijcontroller.h"
+#include "tij/tijmonitor.h"
 
 #include <cstdint>
 
@@ -8,6 +8,7 @@
 #define DISCOVER_MSG "WHO ARE YOU?"
 
 using namespace Macsa;
+using namespace Macsa::MComms;
 using namespace Macsa::Network;
 using namespace std::chrono;
 
@@ -27,7 +28,7 @@ bool PrintersManager::addTijPrinter(const std::string name, const std::string &a
 	bool added;
 	TijController* controller = nullptr;
 	if (monitorize){
-		controller = new TijPrinterMonitor(name, address);
+		controller = new TijMonitor(name, address);
 	}
 	else {
 		controller = new TijController(name, address);
@@ -43,7 +44,28 @@ bool PrintersManager::addTijPrinter(const std::string name, const std::string &a
 	return added;
 }
 
-bool PrintersManager::removeTijPrinter(const std::string name)
+bool PrintersManager::addJetPrinter(const std::string name, const std::string &address, bool monitorize)
+{
+	bool added;
+	JetController* controller = nullptr;
+	if (monitorize){
+		controller = new JetMonitor(name, address);
+	}
+	else {
+		controller = new JetController(name, address);
+	}
+
+	added = addNewNode(controller);
+	if (added) {
+		controller->connect();
+	}
+	else {
+		delete controller;
+	}
+	return added;
+}
+
+bool PrintersManager::removePrinter(const std::string name)
 {
 	return removeNode(name);
 }

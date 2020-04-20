@@ -14,7 +14,7 @@ namespace Macsa {
 				MCommandsFactory(Printers::TijPrinter& printer, LiveFlags& _liveFlags);
 				~MCommandsFactory();
 
-				bool parseResponse(const std::string &frame, MCommand *cmd);
+				bool parseResponse(const std::string &rx, MCommand *cmd);
 				bool parseRequest(const std::string &frame, MCommand **cmd);
 
 //				//SERVER
@@ -24,12 +24,14 @@ namespace Macsa {
 				MCommand *getLiveCommand();
 				//Status
 				MCommand* getStatusCommand();
+				MCommand* getIOStatusCommand();
 				MCommand* getCurrentErrors();
 
 				//Config
 				MCommand* getConfigCommand();
-				MCommand* setDateTimeCommand(time_t dateTime);
+				MCommand* setDateTimeCommand(const time_t &dateTime);
 				MCommand* setConfigBoard(const Printers::Board& board);
+				MCommand* setCurrentMessage(const std::string& filepath);
 
 				//Files
 				MCommand* getFontsCommand();
@@ -37,7 +39,8 @@ namespace Macsa {
 				MCommand* getImagesCommand();
 				MCommand* getAllFilesCommand();
 				MCommand* getFileContent(const std::string &filePath, bool rawMode = false);
-
+				MCommand* getMsgUserValues(const std::string &filePath);
+				MCommand* getMsgDataSources(const std::string &filePath);
 
 				// Log
 				MCommand* getErrorsList();

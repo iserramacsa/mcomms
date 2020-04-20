@@ -1,7 +1,8 @@
-#include "tijprintercontroller.h"
+#include "tij/tijcontroller.h"
 #include "mprotocol/mcommandsfactory.h"
 
 using namespace Macsa;
+using namespace Macsa::MComms;
 using namespace Macsa::Network;
 
 PrinterController::PrinterController(const std::string &id, const std::string &address, uint16_t port) :
@@ -22,4 +23,9 @@ bool PrinterController::connect()
 bool PrinterController::disconnect()
 {
 	return NetworkNode::disconnect(_printerPort);
+}
+
+bool PrinterController::reconnect()
+{
+	return NetworkNode::reconnect(ISocket::TCP_SOCKET, _printerPort);
 }

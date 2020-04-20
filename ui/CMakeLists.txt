@@ -39,7 +39,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src			${PROJECT_BINARY_DIR}/ui/src)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include		${PROJECT_BINARY_DIR}/ui/include)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/resources		${PROJECT_BINARY_DIR}/ui/resources)
 add_subdirectory(${PROJECT_SOURCE_DIR}/../core				${PROJECT_BINARY_DIR}/core)
-add_subdirectory(${PROJECT_SOURCE_DIR}/../emulators/tij		${PROJECT_BINARY_DIR}/emulators/tij)
+#add_subdirectory(${PROJECT_SOURCE_DIR}/../emulators/tij		${PROJECT_BINARY_DIR}/emulators/tij)
 
 set(SOURCES ${SOURCES})
 set(HEADERS ${HEADERS})
@@ -50,6 +50,7 @@ set(INCLUDES ${INCLUDES}
 	${PROJECT_SOURCE_DIR}/../network/include
 	${PROJECT_SOURCE_DIR}/../printers/include
 	${PROJECT_SOURCE_DIR}/../printers/tij/include
+	${PROJECT_SOURCE_DIR}/../printers/jet/include
 	${LIB_PREFIX}/include
 	${UTILS_DIR}/include
 )
@@ -70,11 +71,11 @@ QT4_WRAP_CPP( MOC_SRCS ${HEADERS} )
 ###########################
 ## Install targets
 ###########################
-
 link_directories(
 	${PROJECT_BINARY_DIR}/core
 	${PROJECT_BINARY_DIR}/network
 	${PROJECT_BINARY_DIR}/printers/tij
+	${PROJECT_BINARY_DIR}/printers/jet
 	)
 
 # compile
@@ -84,4 +85,13 @@ elseif(UNIX)
 	add_executable( ${PROJECT_NAME} ${SOURCES} ${MOC_SRCS} ${RES_SOURCES} ${UI_HEADERS} )
 endif()
 # build it (link libraries)
-target_link_libraries( ${PROJECT_NAME} ${QT_LIBRARIES} MComms MNetwork TijLibrary)
+if (${BUILD_STATIC_LIBS})
+	target_link_libraries( ${PROJECT_NAME} ${QT_LIBRARIES} ${EXTERNAL_LIBS}
+		${PROJECT_BINARY_DIR}/core/libMComms.a
+		${PROJECT_BINARY_DIR}/core/network/libMNetwork.a
+		${PROJECT_BINARY_DIR}/printers/tij/libTijPrinter.a
+		${PROJECT_BINARY_DIR}/printers/jet/libJetPrinter.a
+		${LIB_PREFIX}/lib/libtinyxml2.a)
+else()
+	target_link_libraries( ${PROJECT_NAME} ${QT_LIBRARIES} MComms MNetwork TijPrinter JetPrinter)
+endif()

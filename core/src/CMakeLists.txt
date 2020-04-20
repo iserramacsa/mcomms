@@ -1,6 +1,6 @@
-##########################
-#	 MComms Sources		 #
-##########################
+##################################
+#	 Printers core Sources		 #
+##################################
 
 if (${ENABLE_TESTS})
 	add_subdirectory(test)
@@ -12,14 +12,17 @@ if (${ENABLE_TESTS})
 	)
 endif()
 
+if (${INCLUDE_TIJ_LIBS})
+	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tij)
+endif()
+if (${INCLUDE_JET_LIBS})
+	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/jet)
+endif()
+
 set(SOURCES ${SOURCES}
-    ${CMAKE_CURRENT_SOURCE_DIR}/printersmanager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/printermonitor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/printercontroller.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tijprintermonitor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tijprintercontroller.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/tijobserver.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/tijnotifier.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/printersmanager.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/printercontroller.cpp
+
 	${CMAKE_CURRENT_SOURCE_DIR}/clientmanager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/clientHandler.cpp
     PARENT_SCOPE

@@ -15,10 +15,10 @@ using namespace Macsa::Printers;
 #endif
 
 
-int TijPrinter::versionMajor()	  { return TIJ_LIBRARY_VERSION_MAJOR;}
-int TijPrinter::versionMinor()	  { return TIJ_LIBRARY_VERSION_MINOR;}
-int TijPrinter::versionRevision() { return TIJ_LIBRARY_VERSION_PATCH;}
-std::string TijPrinter::version() { return TIJ_LIBRARY_VERSION_STR;  }
+int TijPrinter::libraryVersionMajor()	  { return TIJ_LIBRARY_VERSION_MAJOR;}
+int TijPrinter::libraryVersionMinor()	  { return TIJ_LIBRARY_VERSION_MINOR;}
+int TijPrinter::libraryVersionRevision() { return TIJ_LIBRARY_VERSION_PATCH;}
+std::string TijPrinter::libraryVersion() { return TIJ_LIBRARY_VERSION_STR;  }
 
 
 TijPrinter::TijPrinter() :
