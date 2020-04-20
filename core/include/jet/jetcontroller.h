@@ -69,16 +69,17 @@ namespace Macsa {
 				bool setNisXElement(const std::string& filename,  const std::string& content);
 
 			protected:
+				Printers::JetPrinter _printer;
 				using nFrameStatus=Network::ISocket::nSocketFrameStatus;
 				JetProtocol::JetCommandsFactory _factory;
 				nFrameStatus _lastSentStatus;
 
 				virtual bool send(XMLCommand *cmd);
 				virtual void checkCommand(const std::string& command, const std::map<std::string, std::string> &attributes);
+				virtual void updateMessageGroups();
 
 			private:
 				std::mutex _mutex;
-				Printers::JetPrinter _printer;
 		};
 	}
 }

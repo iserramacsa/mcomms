@@ -101,6 +101,16 @@ bool TijController::setUserMessage(const std::string &filepath)
 	return  send(_factory.setCurrentMessage(filepath));
 }
 
+bool TijController::setBcdMode(const Printers::BCDMode &mode)
+{
+	Printers::Board board(0, &_printer);
+	if (getBaseBoard(board)){
+		board.setBcdMode(mode);
+		return changeBoardConfig(board);
+	}
+	return false;
+}
+
 bool TijController::updateFilesList()
 {
 	return  send(_factory.getAllFilesCommand());

@@ -20,3 +20,5 @@ void JetObserver::filesListChanged() {}
 void JetObserver::fontsChanged() {}
 
 void JetObserver::errorsLogsChanged() {}
+
+void JetObserver::fileGroupChanged(const std::string &/*group*/){}

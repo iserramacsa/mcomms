@@ -90,6 +90,7 @@ namespace Macsa {
 				bool groupExist(const std::string& group) const;
 				bool addNewGroup(const std::string& group);
 				JetMessagesGroup* group(const std::string& group);
+				bool deleteGroup(const std::string& group);
 
 				int currentMessageNumber() const;
 				std::string currentMessage() const;
@@ -98,6 +99,7 @@ namespace Macsa {
 				void setMessageCounter(unsigned int messageNumber, unsigned int counter);
 				void setMessageContent(const Message& msg);
 
+				void clear();
 
 				inline bool operator == (const JetMessagesManager& other) const {return equal(other);}
 				inline bool operator != (const JetMessagesManager& other) const {return !equal(other);}

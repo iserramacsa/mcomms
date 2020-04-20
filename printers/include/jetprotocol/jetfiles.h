@@ -21,7 +21,7 @@ namespace Macsa {
 				virtual void buildResponse();
 
 				virtual void parseDirectory(const tinyxml2::XMLElement* xmlNode, Printers::Directory *directory);
-				virtual void parseSubdirectory(const tinyxml2::XMLElement* xmlNode, Printers::Directory *parent);
+				virtual void parseSubdirectories(const tinyxml2::XMLElement* xmlNode, Printers::Directory *parent);
 				virtual void parseFiles(const tinyxml2::XMLElement* xmlNode, Printers::Directory *directory);
 		};
 

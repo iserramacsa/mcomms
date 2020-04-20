@@ -220,6 +220,7 @@ QWidget *TijConfigView::buildPrintSetup()
 	_bcdMode = new QComboBox(printSetup);
 	_bcdMode->addItems(getPrinterEnumOptions(Macsa::Printers::BCDMode()));
 	_bcdMode->setMaximumWidth(100);
+	connect(_bcdMode, SIGNAL(currentIndexChanged(int)), this, SLOT(onBcdModeChanged(int)));
 
 	layout->addRow("Print Rotated:", _printRotated);
 	layout->addRow("Resolution:", resolution);
@@ -790,6 +791,17 @@ void TijConfigView::onChangeNozzlesCols(int idx)
 //		if (_controller->setPrintRotated(!_controller->enabled())) {
 //			QTimer::singleShot(1000, this, SLOT(onRequestChanges()));
 //		}
+	}
+}
+
+void TijConfigView::onBcdModeChanged(int idx)
+{
+	if (_controller) {
+		BCDMode mode;
+		mode = static_cast<const enum nBCDMode>(idx);
+		if (_controller->printerBCDMode() != mode){
+			_controller->setBcdMode(mode);
+		}
 	}
 }
 

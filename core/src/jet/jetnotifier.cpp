@@ -46,3 +46,9 @@ void JetNotifier::notifyErrorsLogsChanged()
 	notifyObservers(func);
 }
 
+void JetNotifier::notifyFileGroupChanged(const std::string &group)
+{
+	std::function<void (JetObserver *, const std::string&)> func = &JetObserver::fileGroupChanged;
+	notifyObservers(func, group);
+}
+

@@ -1,5 +1,5 @@
-#ifndef PRINTER_FILES_VIEW_H
-#define PRINTER_FILES_VIEW_H
+#ifndef PRINTER_TIJ_FILES_VIEW_H
+#define PRINTER_TIJ_FILES_VIEW_H
 
 #include <QWidget>
 #include <QtGui>
@@ -7,12 +7,12 @@
 #include "viewers/tijviewercontroller.h"
 #include "tij/tijcontroller.h"
 
-class PrinterFilesView : public QWidget
+class TijFilesView : public QWidget
 {
 		Q_OBJECT
 	public:
-		explicit PrinterFilesView(QWidget* parent = 0);
-		~PrinterFilesView();
+		explicit TijFilesView(QWidget* parent = 0);
+		~TijFilesView();
 		void setController(Macsa::MComms::TijController& controller);
 		void clear();
 

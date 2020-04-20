@@ -228,7 +228,7 @@ void TijView::buildComms()
 
 void TijView::buildFiles()
 {
-	_filesView = new PrinterFilesView(this);
+	_filesView = new TijFilesView(this);
 	QVBoxLayout *layout = new QVBoxLayout(ui.tabFiles);
 	layout->setMargin(0);
 	layout->addWidget(_filesView);

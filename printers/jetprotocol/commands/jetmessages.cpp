@@ -200,6 +200,8 @@ bool JetGetMessages::parseResponse(const XMLElement *xml)
 	_group = getTextAttribute(xml, MESSAGE_GROUP_ATTRIBUTE, "");
 	parseCommandError(xml);
 	if (_error == Printers::nJetErrorCode::COMMAND_OK) {
+		_attributes.clear();
+		_attributes.insert(std::pair<std::string, std::string>(MESSAGE_GROUP_ATTRIBUTE, _group));
 		if (!_printer.messageManager().groupExist(_group)) {
 			_printer.messageManager().addNewGroup(_group);
 		}

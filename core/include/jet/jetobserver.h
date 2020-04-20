@@ -18,7 +18,7 @@ namespace Macsa {
 				virtual void fontsChanged();
 //				virtual void userValuesChanged();
 				virtual void errorsLogsChanged();
-//				virtual void fileChanged(const std::string& unit, const std::string& filepath);
+				virtual void fileGroupChanged(const std::string& group);
 		};
 	}
 }

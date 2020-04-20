@@ -56,10 +56,10 @@ void JetConfigView::build()
 	layout->addSpacing(10);
 	layout->addWidget(getTitle("Print Setup"));
 	layout->addWidget(buildPrintSetup());
-	layout->addSpacing(10);
+//	layout->addSpacing(10);
 //	layout->addWidget(getTitle("IO Setup"));
 //	layout->addWidget(buildIOSetup());
-//	layout->addStretch();
+	layout->addStretch();
 }
 
 QWidget *JetConfigView::buildGeneralSettings()
@@ -128,10 +128,11 @@ QWidget *JetConfigView::buildPrintSetup()
 	//Print direction
 	_printDirection = new QComboBox(printSetup);
 	_printDirection->addItems(getPrinterEnumOptions(Macsa::Printers::PrintDirection()));
-	_printDirection->setMaximumWidth(100);
+	_printDirection->setMaximumWidth(110);
 
 	_horizontalResolution = new QSpinBox(printSetup);
 	_horizontalResolution->setRange(100, 600);
+	_horizontalResolution->setMaximumWidth(80);
 
 	//Encoder
 	_encoderMode = new QComboBox(printSetup);
@@ -155,25 +156,27 @@ QWidget *JetConfigView::buildPrintSetup()
 	feLayout->addStretch();
 		//External
 	QWidget *externalEncoder = new QWidget(printSetup);
-	QHBoxLayout* eeLayout = new QHBoxLayout(externalEncoder);
+	QFormLayout* eeLayout = new QFormLayout(externalEncoder);
 	eeLayout->setMargin(0);
 	eeLayout->setSpacing(6);
 	_encoderPulses = new QSpinBox(externalEncoder);
 	_encoderPulses->setRange(0, 99999);
+	_encoderPulses->setMaximumWidth(80);
 	_encoderWheel = new QSpinBox(externalEncoder);
 	_encoderWheel->setRange(0, 200);
+	_encoderWheel->setMaximumWidth(80);
 	_encoderAbcPitch = new QSpinBox(externalEncoder);
-	_encoderWheel->setRange(0, 200);
-	eeLayout->addWidget(new QLabel("Pulses:"));
-	eeLayout->addWidget(_encoderPulses);
-	eeLayout->addSpacing(15);
-	eeLayout->addWidget(new QLabel("Wheel diameter:"));
-	eeLayout->addWidget(_encoderWheel);
-	eeLayout->addWidget(new QLabel("mm"));
-	eeLayout->addSpacing(15);
-	eeLayout->addWidget(new QLabel("ABC Pitch:"));
-	eeLayout->addWidget(_encoderAbcPitch);
-	eeLayout->addStretch();
+	_encoderAbcPitch->setRange(0, 200);
+	_encoderAbcPitch->setMaximumWidth(80);
+	eeLayout->addItem(new QSpacerItem(0, 15));
+	eeLayout->addRow("Pulses:", _encoderPulses);
+	QWidget * wheel = new QWidget(externalEncoder);
+	QHBoxLayout* lWheel = new QHBoxLayout(wheel);
+	lWheel->setMargin(0);
+	lWheel->addWidget(_encoderWheel);
+	lWheel->addWidget(new QLabel("mm"));
+	eeLayout->addRow("Wheel diameter:", wheel);
+	eeLayout->addRow("ABC Pitch:", _encoderAbcPitch);
 
 	layout->addRow("Print Rotated:", _printInverted);
 	layout->addRow("H Resolution:", _horizontalResolution);
@@ -239,6 +242,7 @@ void JetConfigView::updatePrintSetup()
 	_fixedSpeed->setValue(static_cast<int>(_controller->printerPrinthead().encoder().fixedSpeed()));
 	_encoderWheel->setValue(static_cast<int>(_controller->printerPrinthead().encoder().diameter()));
 	_encoderPulses->setValue(static_cast<int>(_controller->printerPrinthead().encoder().resolution()));
+	_encoderAbcPitch->setValue(static_cast<int>(_controller->printerPrinthead().encoder().abcPitch()));
 	_printDirection->setCurrentIndex(_controller->printDirection()());
 }
 

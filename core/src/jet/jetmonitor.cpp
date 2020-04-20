@@ -1,4 +1,5 @@
 #include "jet/jetmonitor.h"
+#include "jetprotocol/jetprotocol.h"
 #include <iostream>
 
 
@@ -106,6 +107,93 @@ bool JetMonitor::sendCmd(Macsa::JetProtocol::JetCommand *cmd)
 	}
 
 	return success;
+}
+
+void JetMonitor::checkCommand(const std::string &command, const std::map<std::string, std::string> &attributes)
+{
+	JetController::checkCommand(command, attributes);
+	if (command.length())
+	{
+		if (command == CMD_SET_COUNTERS) {
+			getCounters();
+			return;
+		}
+		else if (command == CMD_RESET_COUNTERS) {
+			getCounters();
+			return;
+		}
+		else if (command == CMD_GET_USB_MSG) {
+			return;
+		}
+		else if (command == CMD_GET_FILES_LIST) {
+			updateMessageGroups();
+			return;
+		}
+		else if (command == CMD_RESET_MESSAGES) {
+			getMessagesGroup(_printer.messageManager().currentGroup());
+			return;
+		}
+		else if (command == CMD_CREATE_MESSAGE_GROUP) {
+			getFiles();
+			return;
+		}
+		else if (command == CMD_DELETE_MESSAGE_GROUP) {
+			getFiles();
+			return;
+		}
+		else if (command == CMD_SET_PAUSE) {
+			getPause();
+			return;
+		}
+		else if (command == CMD_SET_DATETIME){
+			getDateTime();
+			return;
+		}
+		else if (command == CMD_INC_SSCC){
+			getSSCC();
+			return;
+		}
+		else if (command == CMD_SET_PRINT_DIR) {
+			// Get Print Dir by Attribute?
+			return;
+		}
+		else if (command == CMD_SET_PRINT_INVERT){
+			// Get Print Inverted by attribute?
+			return;
+		}
+		else if (command == CMD_SET_PRINT_SPEED){
+			getPrintSpeed();
+			return;
+		}
+		else if (command == CMD_SET_PRINT_DELAY){
+			getPrintDelay();
+			return;
+		}
+		else if (command == CMD_SET_HOR_RESOLUTION ) {
+			getHorizontalResolution();
+			return;
+		}
+		else if (command == CMD_SET_CONFIG) {
+			getConfig();
+			return;
+		}
+		else if (command == CMD_RESET_INK_ALARM){
+			// ???
+			return;
+		}
+//		else if (command == CMD_GET_NISX_MESSAGE)
+//			return;
+//		else if (command == CMD_SET_NISX_MESSAGE)
+//			return;
+	}
+}
+
+void JetMonitor::updateMessageGroups()
+{
+	std::vector<std::string> groups = _printer.messageManager().groups();
+	for (std::vector<std::string>::const_iterator it = groups.begin(); it != groups.end(); it++) {
+		getMessagesGroup(*it);
+	}
 }
 
 void JetMonitor::start()

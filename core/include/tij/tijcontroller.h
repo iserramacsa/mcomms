@@ -37,7 +37,7 @@ namespace Macsa {
 				bool setCartridgeBlocked(bool blocked);
 				bool setPrintRotated(bool rotated);
 				bool setUserMessage(const std::string& filepath);
-
+				bool setBcdMode(const Printers::BCDMode& mode);
 				//Files
 				bool updateFilesList();
 				bool updateFontsList();

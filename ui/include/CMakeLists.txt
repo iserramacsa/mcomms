@@ -14,12 +14,14 @@ set(MOC_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/jetview.h
 	${CMAKE_CURRENT_SOURCE_DIR}/jetstatusview.h
 	${CMAKE_CURRENT_SOURCE_DIR}/jetconfigview.h
+	${CMAKE_CURRENT_SOURCE_DIR}/jetfilesview.h
+	${CMAKE_CURRENT_SOURCE_DIR}/jetmsgmanager.h
 	${CMAKE_CURRENT_SOURCE_DIR}/tijview.h
 	${CMAKE_CURRENT_SOURCE_DIR}/tijstatusview.h
 	${CMAKE_CURRENT_SOURCE_DIR}/tijconfigview.h
 	${CMAKE_CURRENT_SOURCE_DIR}/tijcommsview.h
 	${CMAKE_CURRENT_SOURCE_DIR}/tijmessageselector.h
-	${CMAKE_CURRENT_SOURCE_DIR}/printerfilesview.h
+	${CMAKE_CURRENT_SOURCE_DIR}/tijfilesview.h
 	)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/viewers)

@@ -55,7 +55,7 @@ std::vector<std::string> JetViewer::printerSubdirectories(const std::string &dri
 	return subdirectories;
 }
 
-const Printers::Directory *JetViewer::printerSubdirectory(const std::string &drive, const std::string &directory) const
+const Printers::Directory *JetViewer::printerDirectory(const std::string &drive, const std::string &directory) const
 {
 	const Printers::Directory *	dir = nullptr;
 	if (jetPrinter().files()) {
@@ -214,6 +214,11 @@ std::string JetViewer::currentMessageGroup() const
 std::vector<std::string> JetViewer::messageGroups() const
 {
 	return jetPrinter().messageManager().groups();
+}
+
+std::vector<Message> JetViewer::messages(const std::string &group) const
+{
+	return jetPrinter().messageManager().messages(group);
 }
 
 JetViewer::countersMap JetViewer::messagesCounters() const

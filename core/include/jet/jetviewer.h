@@ -34,7 +34,7 @@ namespace Macsa {
 				std::vector<std::string> printerFiles(const std::string& drive, const std::string& directory) const;
 
 				const Printers::Drive* printerDrive(const std::string& drive) const;
-				const Printers::Directory* printerSubdirectory(const std::string& drive, const std::string& directory) const;
+				const Printers::Directory* printerDirectory(const std::string& drive, const std::string& directory) const;
 				const Printers::File* printerFile(const::std::string path) const;
 
 				//Ethernet connections
@@ -68,7 +68,7 @@ namespace Macsa {
 				int currentMessageNum() const;
 				std::string currentMessageGroup() const;
 				std::vector<std::string> messageGroups() const;
-//				std::vector<Message> messages(const std::string& group) const;	//Required??
+				std::vector<Printers::Message> messages(const std::string& group) const;
 //				Message message(unsigned int num) const;						//Required??
 				countersMap messagesCounters() const;
 

@@ -29,9 +29,11 @@ JetView::JetView(QWidget *parent) :
 
 	buildStatus();
 	buildConfig();
+	buildMessageManager();
 //	buildComms();
-//	buildFiles();
+	buildFiles();
 	buildErrorsLog();
+	setPrinterStatus(JetViewerController::JetStatus::DISCONNECTED);
 }
 
 JetView::~JetView()
@@ -51,8 +53,9 @@ void JetView::setController(Macsa::MComms::JetController &controller)
 	_controller = new JetViewerController(controller);
 	_statusView->setController(controller);
 	_configView->setController(controller);
+	_messageManager->setController(controller);
 //	_commsView->setController(controller);
-//	_filesView->setController(controller);
+	_filesView->setController(controller);
 	refresh();
 	if (!_dtTimer.isActive()) {
 		_dtTimer.start();
@@ -207,6 +210,18 @@ void JetView::buildConfig()
 	clear();
 }
 
+void JetView::buildMessageManager()
+{
+	QVBoxLayout* layout = new QVBoxLayout(ui.WidgetContentsMessages);
+	layout->setMargin(0);
+
+	_messageManager = new JetMessageManager(ui.WidgetContentsMessages);
+
+	layout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+	layout->addWidget(_messageManager);
+	clear();
+}
+
 //void JetView::buildComms()
 //{
 //	QVBoxLayout* layout = new QVBoxLayout(ui.WidgetContentsNetwork);
@@ -221,13 +236,13 @@ void JetView::buildConfig()
 
 //}
 
-//void JetView::buildFiles()
-//{
-//	_printerFilesView = new PrinterFilesView(this);
-//	QVBoxLayout *layout = new QVBoxLayout(ui.tabFiles);
-//	layout->setMargin(0);
-//	layout->addWidget(_printerFilesView);
-//}
+void JetView::buildFiles()
+{
+	_filesView = new JetFilesView(this);
+	QVBoxLayout *layout = new QVBoxLayout(ui.tabFiles);
+	layout->setMargin(0);
+	layout->addWidget(_filesView);
+}
 
 void JetView::buildErrorsLog()
 {
@@ -320,12 +335,13 @@ void JetView::onConnectClicked()
 	if (_controller != nullptr) {
 		JetViewerController::JetStatus status = _controller->printerStatus();
 		if (status == JetViewerController::JetStatus::DISCONNECTED){
-			_controller->controller().connect();
+			if (_controller->controller().connect()){
+				refresh();
+			}
 		}
 		else {
 			_controller->controller().disconnect();
 		}
-		refresh();
 	}
 }
 

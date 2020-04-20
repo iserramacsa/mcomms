@@ -25,6 +25,8 @@ namespace Macsa {
 				virtual void run();
 				virtual bool send(XMLCommand *cmd) override;
 				virtual bool sendCmd(JetProtocol::JetCommand *cmd);
+				virtual void checkCommand(const std::string& command, const std::map<std::string, std::string> &attributes);
+				virtual void updateMessageGroups();
 
 			private:
 				int _reconnections;

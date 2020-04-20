@@ -133,6 +133,7 @@ class TijConfigView : public QWidget
 		void onRequestChanges();
 		void onChangeResolution(int idx);
 		void onChangeNozzlesCols(int idx);
+		void onBcdModeChanged(int idx);
 		void onSelectUserMessage();
 
 		void validateTriggerSettings();

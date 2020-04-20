@@ -330,6 +330,17 @@ JetMessagesGroup * JetMessagesManager::group(const std::string &group)
 	return pGroup;
 }
 
+bool JetMessagesManager::deleteGroup(const std::string &group)
+{
+	std::vector<JetMessagesGroup>::iterator it = findGroup(group);
+	if (it != _messageGroups.end()) {
+		(*it).clear();
+		_messageGroups.erase(it);
+		return true;
+	}
+	return false;
+}
+
 int JetMessagesManager::currentMessageNumber() const
 {
 	if (_currentGroup) {
@@ -372,6 +383,12 @@ void JetMessagesManager::setMessageContent(const Message &msg)
 	if (_currentGroup){
 		_currentGroup->setMessageContent(msg);
 	}
+}
+
+void JetMessagesManager::clear()
+{
+	_currentGroup = nullptr;
+	_messageGroups.clear();
 }
 
 bool JetMessagesManager::equal(const JetMessagesManager &other) const

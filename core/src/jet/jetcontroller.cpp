@@ -14,6 +14,9 @@ using namespace Macsa::JetProtocol;
 #include <iostream>
 #endif
 
+#define DEFAULT_DRIVE		""
+#define MESSAGES_DIRECTORY	"messages"
+
 JetController::JetController(const std::string& id, const std::string& address) :
 	PrinterController(id, address, JET_PROTOCOL_TCP_PORT),
 	_factory(_printer)
@@ -296,8 +299,11 @@ void JetController::checkCommand(const std::string &command, const std::map<std:
 			return;
 		else if (command == CMD_GET_USB_MSG)
 			return;
-		else if (command == CMD_GET_FILES_LIST)
+		else if (command == CMD_GET_FILES_LIST){
+			updateMessageGroups();
+			JetNotifier::notifyFilesListChanged();
 			return;
+		}
 		else if (command == CMD_GET_PRINTER_VERSIONS)
 			return;
 		else if (command == CMD_GET_INSTALLED_FONTS)
@@ -308,8 +314,14 @@ void JetController::checkCommand(const std::string &command, const std::map<std:
 			return;
 		else if (command == CMD_RESET_MESSAGES)
 			return;
-		else if (command == CMD_GET_MESSAGES)
+		else if (command == CMD_GET_MESSAGES){
+			std::string group = "";
+			if (attributes.size()){
+				group = attributes.at(MESSAGE_GROUP_ATTRIBUTE);
+			}
+			JetNotifier::notifyFileGroupChanged(group);
 			return;
+		}
 		else if (command == CMD_CREATE_MESSAGE_GROUP)
 			return;
 		else if (command == CMD_SEND_MESSAGE_TO_GROUP)
@@ -342,23 +354,47 @@ void JetController::checkCommand(const std::string &command, const std::map<std:
 			return;
 		else if (command == CMD_SET_HOR_RESOLUTION )
 			return;
-		else if (command == CMD_SET_CONFIG){
-			JetNotifier::notifyConfigChanged();
+		else if (command == CMD_SET_CONFIG)
 			return;
-		}
 		else if (command == CMD_GET_PRINT_SPEED)
 			return;
 		else if (command == CMD_GET_PRINT_DELAY)
 			return;
 		else if (command == CMD_GET_HOR_RESOLUTION )
 			return;
-		else if (command == CMD_GET_CONFIG)
+		else if (command == CMD_GET_CONFIG){
+			JetNotifier::notifyConfigChanged();
 			return;
+		}
 		else if (command == CMD_RESET_INK_ALARM)
 			return;
 		else if (command == CMD_GET_NISX_MESSAGE)
 			return;
 		else if (command == CMD_SET_NISX_MESSAGE)
 			return;
+	}
+}
+
+void JetController::updateMessageGroups()
+{
+	PrinterFiles* files = _printer.files();
+	if (files && files->getDirectory(DEFAULT_DRIVE, MESSAGES_DIRECTORY) != nullptr) {
+		JetMessagesManager manager = _printer.messageManager();
+		const Printers::Directory* dir = files->getDirectory(DEFAULT_DRIVE, MESSAGES_DIRECTORY);
+		std::vector<std::string> printergroups = dir->getSubdirectoriesList();
+		std::vector<std::string> managergroups = manager.groups();
+		for (std::vector<std::string>::const_iterator it = managergroups.begin(); it != managergroups.end(); it++){
+			if ((*it).size() && std::find(printergroups.begin(), printergroups.end(), (*it)) == printergroups.end()) {
+				manager.deleteGroup(*it);
+			}
+		}
+		for (std::vector<std::string>::const_iterator it = printergroups.begin(); it != printergroups.end(); it++){
+			if (!manager.groupExist(*it)) {
+				manager.addNewGroup(*it);
+			}
+		}
+	}
+	else {
+		_printer.messageManager().clear();
 	}
 }

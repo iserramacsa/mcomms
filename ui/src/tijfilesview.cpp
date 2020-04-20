@@ -1,6 +1,6 @@
-#include "printerfilesview.h"
+#include "tijfilesview.h"
 
-PrinterFilesView::PrinterFilesView(QWidget *parent) :
+TijFilesView::TijFilesView(QWidget *parent) :
 	QWidget(parent)
 {
 	ui.setupUi(this);
@@ -18,14 +18,14 @@ PrinterFilesView::PrinterFilesView(QWidget *parent) :
 	clear();
 }
 
-PrinterFilesView::~PrinterFilesView()
+TijFilesView::~TijFilesView()
 {
 	if (_controller != nullptr) {
 		delete _controller;
 	}
 }
 
-void PrinterFilesView::setController(Macsa::MComms::TijController &controller)
+void TijFilesView::setController(Macsa::MComms::TijController &controller)
 {
 	if (_controller != nullptr) {
 		delete _controller;
@@ -37,12 +37,12 @@ void PrinterFilesView::setController(Macsa::MComms::TijController &controller)
 	refresh();
 }
 
-void PrinterFilesView::clear()
+void TijFilesView::clear()
 {
 	_treeFiles->clear();
 }
 
-void PrinterFilesView::refresh()
+void TijFilesView::refresh()
 {
 	_treeFiles->clear();
 	if (_controller != nullptr)
@@ -77,7 +77,7 @@ void PrinterFilesView::refresh()
 	}
 }
 
-void PrinterFilesView::AddFilesChild(QTreeWidgetItem *item, const QString &folder, std::vector<std::string> files)
+void TijFilesView::AddFilesChild(QTreeWidgetItem *item, const QString &folder, std::vector<std::string> files)
 {
 	if (files.size()) {
 		QTreeWidgetItem* fItem = new QTreeWidgetItem();
@@ -99,7 +99,7 @@ void PrinterFilesView::AddFilesChild(QTreeWidgetItem *item, const QString &folde
 	}
 }
 
-void PrinterFilesView::onFileChanged(const QString &unit, const QString &filePath)
+void TijFilesView::onFileChanged(const QString &unit, const QString &filePath)
 {
 	QString pwd = filePath;
 	pwd.replace("//", "/");
@@ -111,12 +111,12 @@ void PrinterFilesView::onFileChanged(const QString &unit, const QString &filePat
 	refresh();
 }
 
-void PrinterFilesView::onRequestFiles()
+void TijFilesView::onRequestFiles()
 {
 	_controller->requestAllFiles();
 }
 
-void PrinterFilesView::onRequestFile(QTreeWidgetItem *item, int)
+void TijFilesView::onRequestFile(QTreeWidgetItem *item, int)
 {
 	if (!item->childCount()){
 		QString path = QString("/%1.%2").arg(item->text(0)).arg(item->text(1));

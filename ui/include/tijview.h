@@ -9,7 +9,7 @@
 #include "tijstatusview.h"
 #include "tijconfigview.h"
 #include "tijcommsview.h"
-#include "printerfilesview.h"
+#include "tijfilesview.h"
 
 class TijView : public QWidget
 {
@@ -25,7 +25,7 @@ class TijView : public QWidget
 		TijStatusView*		_statusView;
 		TijConfigView*	_configView;
 		TijCommsView*	_commsView;
-		PrinterFilesView*	_filesView;
+		TijFilesView*	_filesView;
 		QTableWidget*		_errorsLogTable;
 		QTimer				_dtTimer;
 		Ui::tijView ui;

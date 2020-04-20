@@ -292,6 +292,11 @@ bool TIJViewerController::setBlocked(bool blocked)
 	return (_controller.setCartridgeBlocked(blocked) == Printers::SUCCESS);
 }
 
+bool TIJViewerController::setBcdMode(const BCDMode &mode)
+{
+	return (_controller.setBcdMode(mode) == Printers::SUCCESS);
+}
+
 QString TIJViewerController::currentMessage() const
 {
 	std::string value = "---";

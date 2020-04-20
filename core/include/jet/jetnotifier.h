@@ -17,7 +17,7 @@ namespace Macsa {
 				void notifyFontsChanged();
 //				void notifyUserValuesChanged();
 				void notifyErrorsLogsChanged();
-//				void notifyFileChanged(const std::string &unit, const std::string &filepath);
+				void notifyFileGroupChanged(const std::string& group);
 
 		};
 	}

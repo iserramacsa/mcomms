@@ -23,6 +23,7 @@ class JetViewerController : public QObject, public Macsa::MComms::JetViewer
 		void printerFontsChanged();
 //		void printerUserValuesChanged();
 		void printerErrorsLogsChanged();
+		void printerFileGroupChanged(QString group);
 //		void printerFileChanged(const QString& unit, const QString& filepath);
 
 	public:
@@ -40,10 +41,9 @@ class JetViewerController : public QObject, public Macsa::MComms::JetViewer
 		virtual void filesListChanged()  override { emit printerFilesListChanged();  }
 		virtual void fontsChanged()		 override { emit printerFontsChanged();      }
 		virtual void errorsLogsChanged() override { emit printerErrorsLogsChanged(); }
-//		virtual void userValuesChanged() override { emit printerUserValuesChanged(); }
-//		virtual void fileChanged(const std::string& unit, const std::string& filepath) override {
-//			emit printerFileChanged(_(unit), _(filepath));
-//		}
+		virtual void fileGroupChanged(const std::string& group) override{
+			emit printerFileGroupChanged(_(group));
+		}
 
 	public slots:
 		//Status commands

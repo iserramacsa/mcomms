@@ -140,6 +140,7 @@ class TIJViewerController : public QObject, public Macsa::MComms::TijViewer
 		bool blocked() const;
 		bool setBlocked(bool blocked);
 
+		bool setBcdMode(const Macsa::Printers::BCDMode& mode);
 
 		QString currentMessage() const;
 		QString userMessage() const;

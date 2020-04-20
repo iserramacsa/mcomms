@@ -78,12 +78,12 @@ void JetGetFilesList::parseDirectory(const XMLElement *xmlNode, Directory *direc
 {
 	if (xmlNode && directory) {
 		directory->clear();
-		parseSubdirectory(xmlNode, directory);
+		parseSubdirectories(xmlNode, directory);
 		parseFiles(xmlNode, directory);
 	}
 }
 
-void JetGetFilesList::parseSubdirectory(const XMLElement *xmlNode, Directory *parent)
+void JetGetFilesList::parseSubdirectories(const XMLElement *xmlNode, Directory *parent)
 {
 	if (xmlNode && parent) {
 		for (const XMLElement* eSubdirectory = xmlNode->FirstChildElement(JET_DIRECTORY_TAG); eSubdirectory != nullptr;
@@ -106,7 +106,7 @@ void JetGetFilesList::parseFiles(const XMLElement *xmlNode, Directory *directory
 		for (const XMLElement* eFile = xmlNode->FirstChildElement(JET_FILE_TAG); eFile != nullptr;
 			 eFile = eFile->NextSiblingElement(JET_FILE_TAG))
 		{
-			std::string filename = getTextAttribute(xmlNode, NAME_ATTRIBUTE, "");
+			std::string filename = getTextAttribute(eFile, NAME_ATTRIBUTE, "");
 			directory->addEmptyFile(filename);
 		}
 	}
