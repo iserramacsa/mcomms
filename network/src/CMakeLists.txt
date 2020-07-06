@@ -38,7 +38,7 @@ if (UNIX OR APPLE)
 	)
 else()
 	set(SOURCES ${SOURCES}
-		${CMAKE_CURRENT_SOURCE_DIR}/winsockets.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/winsocket.cpp
 		)
 	set(HEADERS ${HEADERS}
 		${CMAKE_CURRENT_SOURCE_DIR}/unixsocket.h

@@ -10,6 +10,7 @@ namespace Macsa {
 		{
 			public:
 				NetworkObserver(NetworkNotifier* subject);
+				virtual ~NetworkObserver(){}
 				virtual void nodeDiscovered(const std::string& name, const std::string& addr){}
 				virtual void datagramReceived(const std::string& addr, const std::string& datagram){}
 		};

@@ -21,12 +21,13 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/../toolchain/cmake/test.cmake)  #configurati
 #set (ADD_OBSERVER_PATTERN ON)
 set (UTILS_DIR	${CMAKE_CURRENT_SOURCE_DIR}/../utils)
 
-if(UNIX)
+if (WIN32)
+    set (EXTERNAL_LIBS ${EXTERNAL_LIBS})
+elseif(UNIX)
 	if (${BUILD_SHARED_LIBS})
 		add_compile_options(-fPIC)
 	endif()
-	set(EXTERNAL_LIBS	${EXTERNAL_LIBS}
-						-pthread)
+        set(EXTERNAL_LIBS ${EXTERNAL_LIBS} -pthread)
 endif()
 
 set(NETWORK_LIB_VERSION_MAJOR 1)
@@ -81,7 +82,6 @@ if (${BUILD_SHARED_LIBS} OR ${BUILD_STATIC_LIBS})
 		set_target_properties(${PROJECT_NAME}
 			PROPERTIES SOVERSION ${SOVERSION})
 		target_link_libraries(${PROJECT_NAME} ${EXTERNAL_LIBS})
-		install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${LIB_PREFIX}/lib)
 	endif()
 
 	if (${BUILD_STATIC_LIBS})
@@ -89,15 +89,13 @@ if (${BUILD_SHARED_LIBS} OR ${BUILD_STATIC_LIBS})
 		set_target_properties(${PROJECT_NAME}-static
 				PROPERTIES SOVERSION ${SOVERSION} OUTPUT_NAME ${PROJECT_NAME})
 		target_link_libraries(${PROJECT_NAME}-static ${EXTERNAL_LIBS})
-		install(TARGETS ${PROJECT_NAME}-static	LIBRARY DESTINATION ${LIB_PREFIX}/lib)
 	endif()
 
 
 	if (${ENABLE_TESTS})
 		message("Adding ${PROJECT_NAME} tests" )
-		set(PROJECT_TEST_NAME ${PROJECT_NAME}Tests)
+		set(PROJECT_TEST_NAME ${PROJECT_NAME}Tests)	
 		link_directories(${PROJECT_BINARY_DIR})
-
 		add_executable(${PROJECT_TEST_NAME} ${SRC_TEST} ${HDRS_TEST})
 		target_link_libraries(${PROJECT_TEST_NAME} ${EXTERNAL_LIBS} MNetwork)
 		add_test(${PROJECT_NAME} ${PROJECT_TEST_NAME})
