@@ -1,6 +1,6 @@
 #include "printersmanager.h"
-#include "tijcontroller.h"
-#include "tijmonitor.h"
+#include "tij/tijcontroller.h"
+#include "tij/tijmonitor.h"
 
 #include <cstdint>
 
@@ -44,7 +44,28 @@ bool PrintersManager::addTijPrinter(const std::string name, const std::string &a
 	return added;
 }
 
-bool PrintersManager::removeTijPrinter(const std::string name)
+bool PrintersManager::addJetPrinter(const std::string name, const std::string &address, bool monitorize)
+{
+	bool added;
+	JetController* controller = nullptr;
+	if (monitorize){
+		controller = new JetMonitor(name, address);
+	}
+	else {
+		controller = new JetController(name, address);
+	}
+
+	added = addNewNode(controller);
+	if (added) {
+		controller->connect();
+	}
+	else {
+		delete controller;
+	}
+	return added;
+}
+
+bool PrintersManager::removePrinter(const std::string name)
 {
 	return removeNode(name);
 }

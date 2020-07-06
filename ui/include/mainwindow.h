@@ -7,7 +7,8 @@
 #include "ui_mainwindow.h"
 #include "printersmanager.h"
 #include "printerslistmodel.h"
-#include "printerview.h"
+#include "tijview.h"
+#include "jetview.h"
 
 #include <QStandardItemModel>
 #include <QProcess>
@@ -32,7 +33,8 @@ class MainWindow : public QMainWindow
 
 	private:
 		QVector<QProcess*> _emulators;
-		PrinterView *_printerView;
+		JetView *_jetView;
+		TijView *_tijView;
 		QStringListModel *_printersListModel;
 		Macsa::MComms::PrintersManager _manager;
 		Ui::MainWindow ui;

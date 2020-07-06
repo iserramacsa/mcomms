@@ -1,8 +1,11 @@
 ##########################
 #   MProtocol Includes   #
 ##########################
+set(SOURCES ${SOURCES}
+	PARENT_SCOPE
+	)
 
-set(HEADERS_LIB
+set(HEADERS ${HEADERS}
 	${CMAKE_CURRENT_SOURCE_DIR}/mcommandsfactory.h
 	${CMAKE_CURRENT_SOURCE_DIR}/mcommands.h
 	${CMAKE_CURRENT_SOURCE_DIR}/mconfigbase.h
@@ -15,13 +18,5 @@ set(HEADERS_LIB
 	${CMAKE_CURRENT_SOURCE_DIR}/mprotocol.h
 	${CMAKE_CURRENT_SOURCE_DIR}/mstatus.h
 	${CMAKE_CURRENT_SOURCE_DIR}/mupdate.h
-	)
-
-set(SOURCES ${SOURCES}
-	PARENT_SCOPE
-	)
-
-set(_HDRS ${HDRS}
-	${HEADERS_LIB}
 	PARENT_SCOPE
 	)

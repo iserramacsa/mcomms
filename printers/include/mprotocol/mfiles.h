@@ -23,7 +23,7 @@ namespace Macsa {
 				virtual void buildRequest();
 				virtual void buildResponse();
 
-				void splitFilePwd(const std::string& pwd, std::string& drive, std::string& folder, std::string& file);
+				void splitFilePwd(const std::string& pwd, std::string& drive, std::string& directory, std::string& file);
 				void insertFileToPrinterData(const std::string& pwd);
 		};
 

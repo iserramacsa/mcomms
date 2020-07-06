@@ -13,7 +13,7 @@ namespace Macsa {
 		class PrinterController : public Network::NetworkNode {
 			public:
 				PrinterController(const std::string& id, const std::string& address, uint16_t port);
-				virtual ~PrinterController() override;
+				virtual ~PrinterController();
 				virtual bool connect();
 				virtual bool disconnect();
 				virtual bool reconnect();
@@ -21,7 +21,7 @@ namespace Macsa {
 				virtual Printers::Printer* printer() = 0;
 
 			protected:
-				virtual bool send(MProtocol::MCommand *cmd) = 0;
+				virtual bool send(Macsa::XMLCommand *cmd) = 0;
 
 			private:
 				uint16_t _printerPort;

@@ -1,4 +1,4 @@
-#include "tijcontroller.h"
+#include "tij/tijcontroller.h"
 #include "mprotocol/mcommandsfactory.h"
 
 using namespace Macsa;

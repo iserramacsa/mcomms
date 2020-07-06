@@ -2,7 +2,7 @@
 #define INPUTS_H
 
 #include "iobase.h"
-#include "datatypes.h"
+#include "tij/datatypes.h"
 
 namespace Macsa {
 	namespace Printers {

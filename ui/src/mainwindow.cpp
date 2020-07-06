@@ -9,6 +9,9 @@
 #define EMULATORS_PATH	"./emulators"
 #define EMULATOR_TIJ	EMULATORS_PATH "/tij/TIJEmulator"
 
+using namespace Macsa;
+using namespace Macsa::MComms;
+
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent)
 {
@@ -47,10 +50,14 @@ void MainWindow::loadPrintersList()
 void MainWindow::loadView()
 {
 	QVBoxLayout* layout = new QVBoxLayout();
-	_printerView = new PrinterView(this);
+	layout->setMargin(0);
+	layout->setSpacing(0);
+	_tijView = new TijView(this);
+	_jetView = new JetView(this);
 	ui.printerHolder->setLayout(layout);
-	layout->addWidget(_printerView);
-	_printerView->setEnabled(false);
+	layout->addWidget(_tijView);
+	layout->addWidget(_jetView);
+	onPrinterSelected(QModelIndex());
 }
 
 void MainWindow::onManageNetwork()
@@ -69,22 +76,22 @@ void MainWindow::onAddPrinter()
 		QString name = dialog->name();
 		QString address = dialog->address();
 		uint16_t port = dialog->port();
-		qDebug() << __func__  << " Type: " << dialog->strType() << " id: " << name << " - "  << address;
-		switch (dialog->serverType())
-		{
-			case PrinterConnectionDialog::ServerType::TIJ_EMULATOR:
-				{
-					QProcess* emulator = new QProcess();
-					emulator->start(EMULATOR_TIJ, QStringList() << "-p" << QString("%1").arg(port));
-					_emulators.push_back(emulator);
-				}
-				break;
-			default:
-			//case PrinterConnectionDialog::ServerType::TIJ_PRINTER:
-				break;
+//		qDebug() << __func__  << " Type: " << dialog->strType() << " id: " << name << " - "  << address;
+		const bool monitorize = true;
+		bool refresh = false;
+		if (dialog->serverType() == PrinterConnectionDialog::ServerType::JET_PRINTER){
+			refresh = _manager.addJetPrinter(name.toStdString(), address.toStdString(), monitorize);
 		}
-		bool monitorize = true;
-		if (_manager.addTijPrinter(name.toStdString(), address.toStdString(), monitorize)) {
+		else {
+			if(dialog->serverType() == PrinterConnectionDialog::ServerType::TIJ_EMULATOR)
+			{
+				QProcess* emulator = new QProcess();
+				emulator->start(EMULATOR_TIJ, QStringList() << "-p" << QString("%1").arg(port));
+				_emulators.push_back(emulator);
+			}
+			refresh = _manager.addTijPrinter(name.toStdString(), address.toStdString(), monitorize);
+		}
+		if(refresh){
 			refreshPrintersList();
 			if (_printersListModel->stringList().count() == 1) {
 				onPrinterSelected(_printersListModel->index(0));
@@ -97,11 +104,11 @@ void MainWindow::onDelPrinter()
 {
 	int row = ui.listPrinters->currentIndex().row();
 	if (row >= 0) {
-		Macsa::MComms::TijController * controller = dynamic_cast<Macsa::MComms::TijController*>(_manager.getPrinter(row));
+		MComms::PrinterController * controller = _manager.getPrinter(static_cast<uint>(row));
 		if (controller != nullptr) {
 			controller->disconnect();
 			QString name = QString("%1: %2").arg(controller->id().c_str()).arg(controller->address().c_str());
-			_manager.removeTijPrinter(controller->id().c_str());
+			_manager.removePrinter(controller->id().c_str());
 
 			refreshPrintersList();
 		}
@@ -112,15 +119,30 @@ void MainWindow::onPrinterSelected(const QModelIndex &index)
 {
 	int row = index.row();
 
-	Macsa::MComms::TijController * controller = dynamic_cast<Macsa::MComms::TijController*>(_manager.getPrinter(row));
-	if (controller){
-		qDebug() << __func__  << " Selected printer: " << controller->id().c_str();
-		_printerView->setController(*controller);
-		_printerView->setEnabled(true);
+	MComms::PrinterController* controller = _manager.getPrinter(static_cast<uint>(row));
+
+	if(controller != nullptr) {
+		Printers::Printer* printer = controller->printer();
+		if (printer) {
+			if (printer->type() == "idjet" && dynamic_cast<MComms::JetController*>(controller)){
+				_jetView->setController(*(dynamic_cast<MComms::JetController*>(controller)));
+				_jetView->setEnabled(true);
+				_jetView->setVisible(true);
+				_tijView->setVisible(false);
+			}
+			else if (printer->type() == "SM200" && dynamic_cast<MComms::TijController*>(controller)) {
+				_tijView->setController(*(dynamic_cast<MComms::TijController*>(controller)));
+				_tijView->setEnabled(true);
+				_tijView->setVisible(true);
+				_jetView->setVisible(false);
+			}
+		}
 	}
 	else {
-		_printerView->clear();
-		_printerView->setEnabled(false);
+		_tijView->clear();
+		_tijView->setVisible(false);
+		_jetView->clear();
+		_jetView->setVisible(false);
 	}
 }
 
@@ -129,7 +151,7 @@ void MainWindow::refreshPrintersList()
 {
 	_printersListModel->setStringList(QStringList());
 	QStringList list;
-	for (int p = 0; p < static_cast<int>(_manager.size()); p++) {
+	for (uint p = 0; p < _manager.size(); p++) {
 		const Macsa::MComms::PrinterController* controller = _manager.getPrinter(p);
 		if (controller != nullptr){
 			list << QString("%1: %2").arg(controller->id().c_str()).arg(controller->address().c_str());
@@ -137,7 +159,7 @@ void MainWindow::refreshPrintersList()
 	}
 	_printersListModel->setStringList(list);
 	if (!list.count()) {
-		_printerView->clear();
-		_printerView->setEnabled(false);
+		_tijView->clear();
+		_tijView->setEnabled(false);
 	}
 }

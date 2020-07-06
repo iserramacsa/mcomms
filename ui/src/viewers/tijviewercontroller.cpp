@@ -1,5 +1,5 @@
 #include "viewers/tijviewercontroller.h"
-#include "tijmonitor.h"
+#include "tij/tijmonitor.h"
 #include <QDateTime>
 #include <QVector>
 #include "printer/board.h"
@@ -290,6 +290,11 @@ bool TIJViewerController::blocked() const
 bool TIJViewerController::setBlocked(bool blocked)
 {
 	return (_controller.setCartridgeBlocked(blocked) == Printers::SUCCESS);
+}
+
+bool TIJViewerController::setBcdMode(const BCDMode &mode)
+{
+	return (_controller.setBcdMode(mode) == Printers::SUCCESS);
 }
 
 QString TIJViewerController::currentMessage() const

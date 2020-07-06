@@ -17,11 +17,11 @@ using namespace std;
 //#define TRACE	std::cout << __FILE__ <<  ":" << __LINE__ << "::" << __FUNCTION__ << std::endl;
 #if __cplusplus >= 201103L
 	using citDrive  = std::map<std::string, Drive*>::const_iterator;
-	using citFolder = std::map<std::string, Folder*>::const_iterator;
+	using citDirectory = std::map<std::string, Directory*>::const_iterator;
 	using citFile	= std::map<std::string, File*>::const_iterator;
 #else
 	typedef std::map<std::string, Drive*>::const_iterator citDrive;
-	typedef std::map<std::string, Folder*>::const_iterator citFolder;
+	typedef std::map<std::string, Directory*>::const_iterator citDirectory;
 	typedef std::map<std::string, File*>::const_iterator citFile;
 #endif
 
@@ -159,18 +159,18 @@ std::vector<string> PrinterFiles::getDrives() const
 	return getItemsList(_drives);
 }
 
-std::vector<string> PrinterFiles::getFolders(const string &drive) const
+std::vector<string> PrinterFiles::getDirectories(const string &drive) const
 {
 	Drive* d = getItem(drive, _drives);
 	if (d != nullptr){
-		return d->getFoldersList();
+		return d->getDirectoriesList();
 	}
 	return std::vector<string>();
 }
 
-std::vector<string> PrinterFiles::getFiles(const string &drive, const string &folder) const
+std::vector<string> PrinterFiles::getFiles(const string &drive, const string &directory) const
 {
-	const Folder* f = getFolder(drive, folder);
+	const Directory* f = getDirectory(drive, directory);
 	if (f != nullptr){
 		return f->getFilesList();
 	}
@@ -221,18 +221,23 @@ const Drive *PrinterFiles::getDrive(const string &drive) const
 	return getItem(drive, _drives);
 }
 
-const Folder *PrinterFiles::getFolder(const string &drive, const string &folder) const
+Drive *PrinterFiles::getDrive(const string &drive)
+{
+	return getItem(drive, _drives);
+}
+
+const Directory *PrinterFiles::getDirectory(const string &drive, const string &directory) const
 {
 	const Drive * d = getItem(drive, _drives);
 	if (d != nullptr){
-		return d->getFolder(folder);
+		return d->getDirectory(directory);
 	}
 	return nullptr;
 }
 
-const File *PrinterFiles::getFile(const string &drive, const string &folder, const string &filename) const
+const File *PrinterFiles::getFile(const string &drive, const string &directory, const string &filename) const
 {
-	const Folder * f = getFolder(drive, folder);
+	const Directory * f = getDirectory(drive, directory);
 	if (f != nullptr){
 		return f->getFile(filename);
 	}
@@ -242,10 +247,10 @@ const File *PrinterFiles::getFile(const string &drive, const string &folder, con
 const File *PrinterFiles::getFile(const string &filepath) const
 {
 	string drive = "//";
-	string folder = "";
+	string directory = "";
 	string filename = "";
-	splitFilepath(filepath, drive, folder, filename);
-	return getFile(drive, folder, filename);
+	splitFilepath(filepath, drive, directory, filename);
+	return getFile(drive, directory, filename);
 }
 
 bool PrinterFiles::driveExist(const string &drive) const
@@ -253,14 +258,14 @@ bool PrinterFiles::driveExist(const string &drive) const
 	return (getItem(drive, _drives) != nullptr);
 }
 
-bool PrinterFiles::folderExist(const string &drive, const string &folder) const
+bool PrinterFiles::directoryExist(const string &drive, const string &directory) const
 {
-	return ((getFolder(drive, folder)) != nullptr);
+	return ((getDirectory(drive, directory)) != nullptr);
 }
 
-bool PrinterFiles::fileExist(const string &drive, const string &folder, const string &filename) const
+bool PrinterFiles::fileExist(const string &drive, const string &directory, const string &filename) const
 {
-	return (getFile(drive, folder, filename) != nullptr);
+	return (getFile(drive, directory, filename) != nullptr);
 }
 
 bool PrinterFiles::clear()
@@ -273,51 +278,51 @@ bool PrinterFiles::addNewDrive(const string &drive)
 	return (insertNewItem(drive, _drives, this) != nullptr);
 }
 
-bool PrinterFiles::addNewFolder(const string &drive, const string &folder)
+bool PrinterFiles::addNewDirectory(const string &drive, const string &directory)
 {
 	bool added = false;
 	Drive* d = getItem(drive, _drives);
 	if (d != nullptr) {
-		added = d->addEmptyFolder(folder);
+		added = d->addEmptyDirectory(directory);
 	}
 	return added;
 }
 
-bool PrinterFiles::addNewFile(const std::string& drive, const std::string& folder, const std::string& filename)
+bool PrinterFiles::addNewFile(const std::string& drive, const std::string& directory, const std::string& filename)
 {
 	bool added = false;
 	Drive * d = getItem(drive, _drives);
 	if (d != nullptr){
-		added = d->addNewFile(folder, filename);
+		added = d->addNewFile(directory, filename);
 	}
 	return added;
 }
 
-bool PrinterFiles::addFile(const string &drive, const string &folder, const string &filename, const std::vector<uint8_t> &data)
+bool PrinterFiles::addFile(const string &drive, const string &directory, const string &filename, const std::vector<uint8_t> &data)
 {
 	bool added = false;
 	Drive * d = getItem(drive, _drives);
 	if (d != nullptr){
-		added = d->addFile(folder, filename, data);
+		added = d->addFile(directory, filename, data);
 	}
 	return added;
 }
 
-bool PrinterFiles::setFile(const string &drive, const string &folder, const string &filename, const std::vector<uint8_t> &data)
+bool PrinterFiles::setFile(const string &drive, const string &directory, const string &filename, const std::vector<uint8_t> &data)
 {
 	bool success = false;
 	Drive * d = getItem(drive, _drives);
 	if (d != nullptr){
-		success = d->setFileData(folder, filename, data);
+		success = d->setFileData(directory, filename, data);
 	}
 	return success;
 }
 
 bool PrinterFiles::setFile(const string &filepath, const std::vector<uint8_t> &data)
 {
-	string drive = "", folder = "", filename = "";
-	splitFilepath(filepath, drive, folder, filename);
-	return setFile(drive, folder, filename, data);
+	string drive = "", directory = "", filename = "";
+	splitFilepath(filepath, drive, directory, filename);
+	return setFile(drive, directory, filename, data);
 }
 
 bool PrinterFiles::clearDrive(const string &drive)
@@ -331,12 +336,12 @@ bool PrinterFiles::clearDrive(const string &drive)
 	return success;
 }
 
-bool PrinterFiles::clearFolder(const string &drive, const string &folder)
+bool PrinterFiles::clearDirectory(const string &drive, const string &directory)
 {
 	bool success = false;
 	Drive * d = getItem(drive, _drives);
 	if (d != nullptr){
-		success = d->clearFolder(folder);
+		success = d->clearDirectory(directory);
 	}
 
 	return success;
@@ -347,22 +352,22 @@ bool PrinterFiles::deleteDrive(const string &drive)
 	return deleteItem(drive, _drives);
 }
 
-bool PrinterFiles::deleteFolder(const string &drive, const string &folder)
+bool PrinterFiles::deleteDirectory(const string &drive, const string &directory)
 {
 	bool success = false;
 	Drive * d = getItem(drive, _drives);
 	if (d != nullptr){
-		success =  d->deleteFolder(folder);
+		success =  d->deleteDirectory(directory);
 	}
 	return success;
 }
 
-bool PrinterFiles::deleteFile(const string &drive, const string &folder, const string &filename)
+bool PrinterFiles::deleteFile(const string &drive, const string &directory, const string &filename)
 {
 	bool success = false;
 	Drive * d = getItem(drive, _drives);
 	if (d != nullptr){
-		success =  d->deleteFile(folder, filename);
+		success =  d->deleteFile(directory, filename);
 	}
 	return success;
 }
@@ -372,30 +377,30 @@ Drive *PrinterFiles::removeDrive(const string &drive)
 	return removeItem(drive, _drives);
 }
 
-Folder* PrinterFiles::removeFolder(const string &drive, const string &folder)
+Directory* PrinterFiles::removeDirectory(const string &drive, const string &directory)
 {
 	Drive * d = getItem(drive, _drives);
-	Folder* f = nullptr;
+	Directory* f = nullptr;
 	if (d != nullptr){
-		f = d->removeFolder(folder);
+		f = d->removeDirectory(directory);
 	}
 	return f;
 }
 
-File *PrinterFiles::removeFile(const string &drive, const string &folder, const string &filename)
+File *PrinterFiles::removeFile(const string &drive, const string &directory, const string &filename)
 {
 	Drive * d = getItem(drive, _drives);
 	File* f = nullptr;
 	if (d != nullptr){
-		f = d->removeFile(folder, filename);
+		f = d->removeFile(directory, filename);
 	}
 	return f;
 }
 
-void PrinterFiles::splitFilepath(const string &pwd, string &drive, vector<string> &folders, string &file) const
+void PrinterFiles::splitFilepath(const string &pwd, string &drive, vector<string> &directories, string &file) const
 {
 	drive.clear();
-	folders.clear();
+	directories.clear();
 	file.clear();
 	string path;
 
@@ -407,22 +412,22 @@ void PrinterFiles::splitFilepath(const string &pwd, string &drive, vector<string
 	}
 
 	while ((slash = path.find_last_of(SLASH_CHAR)) != file.npos) {
-		folders.push_back(path.substr(0, slash));
+		directories.push_back(path.substr(0, slash));
 		path = path.substr(slash + 1);
 	}
 	file = path;
 }
 
-void PrinterFiles::splitFilepath(const string &pwd, string &drive, string &folder, string &file) const
+void PrinterFiles::splitFilepath(const string &pwd, string &drive, string &directory, string &file) const
 {
-	vector<string> folders;
-	splitFilepath(pwd, drive, folders, file);
-	folder = "";
-	for (uint i = 0; i < folders.size(); i++) {
+	vector<string> directories;
+	splitFilepath(pwd, drive, directories, file);
+	directory = "";
+	for (uint i = 0; i < directories.size(); i++) {
 		if (i) {
-			folder += "/";
+			directory += "/";
 		}
-		folder += folders.at(i);
+		directory += directories.at(i);
 	}
 
 }
@@ -464,48 +469,48 @@ void PrinterFiles::setFilesManager(IFilesManager *filesManager)
 	_filesManager = filesManager;
 }
 
-bool PrinterFiles::renameFolder(const string &drive, const string &oldfolder, const string &newFolder)
+bool PrinterFiles::renameDirectory(const string &drive, const string &olddirectory, const string &newDirectory)
 {
 	bool success = false;
 	Drive * d = getItem(drive, _drives);
 	if (d != nullptr){
-		success = d->renameFolder(oldfolder, newFolder);
+		success = d->renameDirectory(olddirectory, newDirectory);
 	}
 	return success;
 }
 
-bool PrinterFiles::renameFile(const string &drive, const string &folder, const string &oldName, const string &newName)
+bool PrinterFiles::renameFile(const string &drive, const string &directory, const string &oldName, const string &newName)
 {
 	bool success = false;
 	Drive * d = getItem(drive, _drives);
 	if (d != nullptr){
-		success = d->renameFile(folder, oldName, newName);
+		success = d->renameFile(directory, oldName, newName);
 	}
 	return success;
 }
 
-bool PrinterFiles::moveFile(const string &oldDrive, const string &oldFolder, const string &oldName, const string &newDrive, const string &newFolder, const string &newName)
+bool PrinterFiles::moveFile(const string &oldDrive, const string &oldDirectory, const string &oldName, const string &newDrive, const string &newDirectory, const string &newName)
 {
 	bool success = false;
 	Drive * dOld = getItem(oldDrive, _drives);
 	Drive * dNew = getItem(newDrive, _drives);
 
-	bool validParams = (dOld != nullptr && dOld->getFile(oldFolder, oldName) != nullptr &&
-						dNew != nullptr && dNew->getFolder(newFolder) != nullptr &&
-						dNew->getFile(newFolder, newName) == nullptr);
+	bool validParams = (dOld != nullptr && dOld->getFile(oldDirectory, oldName) != nullptr &&
+						dNew != nullptr && dNew->getDirectory(newDirectory) != nullptr &&
+						dNew->getFile(newDirectory, newName) == nullptr);
 
 	if (validParams)
 	{
-		File* file = dOld->removeFile(oldFolder, oldName);
+		File* file = dOld->removeFile(oldDirectory, oldName);
 		if (oldName.compare(newName) != 0) {
 			file->setName(newName);
 		}
-		if (dNew->addFile(newFolder, file)){
+		if (dNew->addFile(newDirectory, file)){
 			success = true;
 		}
 		else {
 			file->setName(oldName);
-			dOld->addFile(oldFolder, file);
+			dOld->addFile(oldDirectory, file);
 		}
 	}
 	return success;
@@ -549,7 +554,7 @@ void PrinterFiles::clearFilesOfType(const string &drive, const string &extension
 			const File * file = *it;
 #endif
 			if (extension.compare(file->extension()) == 0) {
-				d->deleteFile(file->folder(), file->name());
+				d->deleteFile(file->directory(), file->name());
 			}
 		}
 	}
@@ -561,7 +566,7 @@ void PrinterFiles::clearFilesOfType(const string &drive, const std::vector<strin
 	if (d) {
 		for (auto& file : d->getFiles()) {
 			if (std::find(extensions.begin(), extensions.end(), file->extension()) != extensions.end()) {
-				d->deleteFile(file->folder(), file->name());
+				d->deleteFile(file->directory(), file->name());
 			}
 		}
 	}
@@ -572,7 +577,7 @@ Drive::Drive(const string &name, const PrinterFiles *parent) :
 	_name(name)
 {
 	_parent = parent;
-	_folders.clear();
+	_directories.clear();
 }
 
 Drive::~Drive()
@@ -585,14 +590,24 @@ std::string Drive::name() const
 	return _name;
 }
 
-std::vector<string> Drive::getFoldersList() const
+std::string Drive::description() const
 {
-	return getItemsList(_folders);
+	return _description;
 }
 
-std::vector<string> Drive::getFilesList(const string &folder) const
+void Drive::setDescription(const std::string &description)
 {
-	Folder* f = getItem(folder, _folders);
+	_description = description;
+}
+
+std::vector<string> Drive::getDirectoriesList() const
+{
+	return getItemsList(_directories);
+}
+
+std::vector<string> Drive::getFilesList(const string &directory) const
+{
+	Directory* f = getItem(directory, _directories);
 	if (f != nullptr){
 		return f->getFilesList();
 	}
@@ -604,46 +619,68 @@ std::vector<const File *> Drive::getFiles() const
 {
 	//TODO: add C++98 compatibility
 	std::vector<const File *>files;
-	for (auto& folder : _folders) {
-		std::vector<const File *> currentFolder = folder.second->getFiles();
+	for (auto& directory : _directories) {
+		std::vector<const File *> currentDirectory = directory.second->getFiles();
 		files.insert(files.end(),
-					 std::make_move_iterator(currentFolder.begin()),
-					 std::make_move_iterator(currentFolder.end()));
+					 std::make_move_iterator(currentDirectory.begin()),
+					 std::make_move_iterator(currentDirectory.end()));
 	}
 	return files;
 }
 
-const Folder *Drive::getFolder(const string &folder) const
+const Directory *Drive::getDirectory(const string &directory) const
 {
-	if (_folders.size()){
-		return getItem(folder, _folders);
-	}
-	else {
-		return nullptr;
-	}
+	return getItem(directory, _directories);
 }
 
-const File *Drive::getFile(const string &folder, const string &file) const
+Directory *Drive::getDirectory(const string &directory)
+{
+	return getItem(directory, _directories);
+}
+
+const File *Drive::getFile(const string &directory, const string &file) const
 {
 	const File * f = nullptr;
-	Folder * pFolder = getItem(folder, _folders);
-	if (pFolder != nullptr){
-		f = pFolder->getFile(file);
+	Directory * pDirectory = getItem(directory, _directories);
+	if (pDirectory != nullptr){
+		f = pDirectory->getFile(file);
 	}
 
 	return f;
 }
 
-bool Drive::clear()
+const File *Drive::getFile(const string &pwd) const
 {
-
-	return FileSystemAbstract::clear(_folders);
+	const File * f = nullptr;
+	if (_parent) {
+		std::string drive, file;
+		std::vector<std::string> directories;
+		_parent->splitFilepath(pwd, drive, directories, file);
+		if(directories.size()){
+			Directory * pDirectory = getItem(directories.at(0), _directories);
+			for (unsigned int d = 1; d < directories.size(); d++) {
+				pDirectory = pDirectory->getSubdirectory(directories.at(d));
+				if (pDirectory == nullptr) {
+					break;
+				}
+			}
+			if (pDirectory != nullptr) {
+				f = pDirectory->getFile(file);
+			}
+		}
+	}
+	return f;
 }
 
-bool Drive::clearFolder(const string &folder)
+bool Drive::clear()
+{
+	return FileSystemAbstract::clear(_directories);
+}
+
+bool Drive::clearDirectory(const string &directory)
 {
 	bool success = false;
-	Folder * f = getItem(folder, _folders);
+	Directory * f = getItem(directory, _directories);
 	if (f != nullptr){
 		success = f->clear();
 	}
@@ -651,67 +688,67 @@ bool Drive::clearFolder(const string &folder)
 	return success;
 }
 
-bool Drive::addEmptyFolder(const string &folder)
+bool Drive::addEmptyDirectory(const string &directory)
 {
-	return (insertNewItem(folder, _folders, this) != nullptr);
+	return (insertNewItem(directory, _directories, this) != nullptr);
 }
 
-bool Drive::addNewFile(const string &folder, const string &filename)
+bool Drive::addNewFile(const string &directory, const string &filename)
 {
-	Folder* f = getItem(folder, _folders);
+	Directory* f = getItem(directory, _directories);
 	if (f != nullptr) {
 		return f->addEmptyFile(filename);
 	}
 	return false;
 }
 
-bool Drive::addFile(const string &folder, const string &filename, const std::vector<uint8_t> &data)
+bool Drive::addFile(const string &directory, const string &filename, const std::vector<uint8_t> &data)
 {
-	Folder* f = getItem(folder, _folders);
+	Directory* f = getItem(directory, _directories);
 	if (f != nullptr) {
 		return f->addFile(filename, data);
 	}
 	return false;
 }
 
-bool Drive::addFile(const string &folder, File *file)
+bool Drive::addFile(const string &directory, File *file)
 {
-	Folder* f = getItem(folder, _folders);
+	Directory* f = getItem(directory, _directories);
 	if (f != nullptr) {
 		return f->addFile(file);
 	}
 	return false;
 }
 
-bool Drive::setFileData(const string &folder, const string &filename, const std::vector<uint8_t> &data)
+bool Drive::setFileData(const string &directory, const string &filename, const std::vector<uint8_t> &data)
 {
-	Folder* f = getItem(folder, _folders);
+	Directory* f = getItem(directory, _directories);
 	if (f != nullptr) {
 		return f->setFileData(filename, data);
 	}
 	return false;
 }
 
-bool Drive::renameFolder(const string &oldfolder, const string &newFolder)
+bool Drive::renameDirectory(const string &olddirectory, const string &newDirectory)
 {
 	bool success = false;
-	Folder* f = removeItem(oldfolder, _folders);
+	Directory* f = removeItem(olddirectory, _directories);
 	if (f != nullptr) {
-		f->setName(newFolder);
-		_folders.insert(pair<string, Folder*>(newFolder, f));
+		f->setName(newDirectory);
+		_directories.insert(pair<string, Directory*>(newDirectory, f));
 		success = true;
 	}
 	return success;
 }
 
-Folder *Drive::removeFolder(const string &folder)
+Directory *Drive::removeDirectory(const string &directory)
 {
-	return removeItem(folder, _folders);
+	return removeItem(directory, _directories);
 }
 
-File *Drive::removeFile(const string &folder, const string &filename)
+File *Drive::removeFile(const string &directory, const string &filename)
 {
-	Folder* f = getItem(folder, _folders);
+	Directory* f = getItem(directory, _directories);
 	if (f != nullptr) {
 		return f->removeFile(filename);
 	}
@@ -720,12 +757,12 @@ File *Drive::removeFile(const string &folder, const string &filename)
 
 bool Drive::equal(const FileSystemAbstract &other) const
 {
-	bool equal = false;
-	try {
-		const Drive& drive = dynamic_cast<const Drive&>(other);
-
-		equal = (_name == drive._name);
-		equal &= compare(_folders, drive._folders);
+    bool equal = false;
+    try {
+        const Drive& drive = dynamic_cast<const Drive&>(other);
+        
+        equal = (_name == drive._name);
+		equal &= compare(_directories, drive._directories);
 	}
 	catch(std::bad_cast exp) {
 		std::cout << __func__ <<"Caught bad cast" << std::endl;
@@ -737,30 +774,30 @@ bool Drive::equal(const FileSystemAbstract &other) const
 void Drive::copy(const Drive &other)
 {
 	clear();
-	for (std::map<std::string, Folder*>::const_iterator folder = other._folders.begin(); folder != other._folders.end(); folder++)
+	for (std::map<std::string, Directory*>::const_iterator directory = other._directories.begin(); directory != other._directories.end(); directory++)
 	{
-		if (folder->second){
-			Folder* f = new Folder(folder->first, this);
-			(*f) = (*(folder->second));
-			_folders.insert(pair<string, Folder*>(folder->first, f));
+		if (directory->second){
+			Directory* f = new Directory(directory->first, this);
+			(*f) = (*(directory->second));
+			_directories.insert(pair<string, Directory*>(directory->first, f));
 		}
 	}
 }
 
-bool Drive::renameFile(const string &folder, const string &oldName, const string &newName)
+bool Drive::renameFile(const string &directory, const string &oldName, const string &newName)
 {
-	Folder* f = getItem(folder, _folders);
+	Directory* f = getItem(directory, _directories);
 	if (f != nullptr) {
 		return f->renameFile(oldName, newName);
 	}
 	return false;
 }
 
-bool Drive::moveFile(const string &oldFolder, const string &oldName, const string & newFolder, const string &newName)
+bool Drive::moveFile(const string &oldDirectory, const string &oldName, const string & newDirectory, const string &newName)
 {
 	bool success = false;
-	Folder* fOld = getItem(oldFolder, _folders);
-	Folder* fNew = getItem(newFolder, _folders);
+	Directory* fOld = getItem(oldDirectory, _directories);
+	Directory* fNew = getItem(newDirectory, _directories);
 	if (fOld != nullptr && fNew != nullptr && fNew->getFile(newName) == nullptr)
 	{
 		File* file = fOld->removeFile(oldName);
@@ -779,69 +816,102 @@ bool Drive::moveFile(const string &oldFolder, const string &oldName, const strin
 	return success;
 }
 
-bool Drive::moveFile(const string &oldFolder, const string &newFolder, const string &filename)
+bool Drive::moveFile(const string &oldDirectory, const string &newDirectory, const string &filename)
 {
-	return moveFile(oldFolder, filename, newFolder, filename);
+	return moveFile(oldDirectory, filename, newDirectory, filename);
 }
 
-bool Drive::deleteFolder(const string &folder)
+bool Drive::deleteDirectory(const string &directory)
 {
-	return deleteItem(folder, _folders);
+	return deleteItem(directory, _directories);
 }
 
-bool Drive::deleteFile(const string &folder, const string &file)
+bool Drive::deleteFile(const string &directory, const string &file)
 {
 	bool success = false;
-	Folder* f = getItem(folder, _folders);
+	Directory* f = getItem(directory, _directories);
 	if (f != nullptr) {
 		success = f->deleteFile(file);
 	}
 	return success;
 }
 
-//====== Folder definitions ======//
-Folder::Folder(const string &name, const Drive *parent) :
+//====== Directory definitions ======//
+Directory::Directory(const string &name, const Drive *parent) :
 	_parent(parent),
+	_parentDirectory(nullptr),
+	_name(name)
+{
+	_subdirectories.clear();
+	_files.clear();
+}
+
+Directory::Directory(const string &name, const Directory *parent) :
+	_parent(nullptr),
+	_parentDirectory(parent),
 	_name(name)
 {
 	_files.clear();
 }
 
-Folder::~Folder()
+Directory::~Directory()
 {
 	clear();
 }
 
-string Folder::pwd() const
+string Directory::pwd() const
 {
 	string pwd = _name;
 	if (_parent) {
 		pwd = _parent->name() + "/" + pwd;
 	}
+	else if (_parentDirectory)  {
+		pwd = _parentDirectory->name() + "/" + pwd;
+	}
 	return pwd;
 }
 
-string Folder::name() const
+string Directory::name() const
 {
 	return _name;
 }
 
-std::vector<string> Folder::getFilesList() const
+std::vector<string> Directory::getFilesList() const
 {
 	return getItemsList(_files);
 }
 
-void Folder::setName(const std::string &name)
+std::vector<string> Directory::getSubdirectoriesList() const
+{
+	return getItemsList(_subdirectories);
+}
+
+const Directory *Directory::getSubdirectory(const string &name) const
+{
+	return getItem(name, _subdirectories);
+}
+
+Directory *Directory::getSubdirectory(const string &name)
+{
+	return getItem(name, _subdirectories);
+}
+
+bool Directory::addSubdirectory(const string &name)
+{
+	return (insertNewItem(name, _subdirectories, this) != nullptr);
+}
+
+void Directory::setName(const std::string &name)
 {
 	_name = name;
 }
 
-const File *Folder::getFile(const string &filename) const
+const File *Directory::getFile(const string &filename) const
 {
 	return getItem(filename, _files);
 }
 
-std::vector<const File *> Folder::getFiles() const
+std::vector<const File *> Directory::getFiles() const
 {
 	std::vector<const File *> files;
 	files.clear();
@@ -851,7 +921,7 @@ std::vector<const File *> Folder::getFiles() const
 	return files;
 }
 
-std::vector<uint8_t> Folder::getFileContent(const string &filename) const
+std::vector<uint8_t> Directory::getFileContent(const string &filename) const
 {
 	const File * f = getFile(filename);
 	if (f != nullptr) {
@@ -860,17 +930,22 @@ std::vector<uint8_t> Folder::getFileContent(const string &filename) const
 	return std::vector<uint8_t>();
 }
 
-bool Folder::clear()
+bool Directory::clear()
 {
-	return FileSystemAbstract::clear(_files);
+	if (FileSystemAbstract::clear(_subdirectories)) {
+		return FileSystemAbstract::clear(_files);
+	}
+	else {
+		return false;
+	}
 }
 
-bool Folder::addEmptyFile(const string &file)
+bool Directory::addEmptyFile(const string &file)
 {
 	return (insertNewItem(file, _files, this) != nullptr);
 }
 
-bool Folder::addFile(const string &file, const std::vector<uint8_t> &data)
+bool Directory::addFile(const string &file, const std::vector<uint8_t> &data)
 {
 	bool success = false;
 	File* f = insertNewItem(file, _files, this);
@@ -881,7 +956,7 @@ bool Folder::addFile(const string &file, const std::vector<uint8_t> &data)
 	return success;
 }
 
-bool Folder::addFile(File *file)
+bool Directory::addFile(File *file)
 {
 	bool success = false;
 	if (getItem(file->name(), _files) == nullptr) {
@@ -891,7 +966,7 @@ bool Folder::addFile(File *file)
 	return success;
 }
 
-bool Folder::setFileData(const string &file, const std::vector<uint8_t> &data)
+bool Directory::setFileData(const string &file, const std::vector<uint8_t> &data)
 {
 	bool success = false;
 	File* f = getItem(file, _files);
@@ -901,17 +976,17 @@ bool Folder::setFileData(const string &file, const std::vector<uint8_t> &data)
 	return success;
 }
 
-File *Folder::removeFile(const string &file)
+File *Directory::removeFile(const string &file)
 {
 	return removeItem(file, _files);
 }
 
-bool Folder::deleteFile(const string &file)
+bool Directory::deleteFile(const string &file)
 {
 	return deleteItem(file, _files);
 }
 
-bool Folder::renameFile(const string &oldName, const string &newName)
+bool Directory::renameFile(const string &oldName, const string &newName)
 {
 	bool success = false;
 	if  (oldName.compare(newName) != 0) {
@@ -926,18 +1001,22 @@ bool Folder::renameFile(const string &oldName, const string &newName)
 	return success;
 }
 
-bool Folder::equal(const FileSystemAbstract &other) const
+bool Directory::equal(const FileSystemAbstract &other) const
 {
 	bool equal = false;
 
 	try
 	{
-		const Folder& folder = dynamic_cast<const Folder&>(other);
-
-		equal =  (_parent->name().compare(folder._parent->name()) == 0);
+		const Directory& directory = dynamic_cast<const Directory&>(other);
+		if (_parent != nullptr && directory._parent != nullptr){
+			equal =  (_parent->name()  == directory._parent->name());
+		}
+		else if (_parentDirectory != nullptr && directory._parentDirectory != nullptr) {
+			equal =  (_parentDirectory->name()  == directory._parentDirectory->name());
+		}
 		if(equal){
-			equal &= (_name == folder._name);
-			equal &= compare(_files, folder._files);
+			equal &= (_name == directory._name);
+			equal &= compare(_files, directory._files);
 		}
 
 	}
@@ -950,7 +1029,7 @@ bool Folder::equal(const FileSystemAbstract &other) const
 
 }
 
-void Folder::copy(const Folder &other)
+void Directory::copy(const Directory &other)
 {
 	clear();
 	_name = other._name;
@@ -967,7 +1046,7 @@ void Folder::copy(const Folder &other)
 }
 
 //====== Files definitions ======//
-File::File(const string &filename, const Folder *parent) :
+File::File(const string &filename, const Directory *parent) :
 	_parent(parent),
 	_name(filename)
 {
@@ -993,7 +1072,7 @@ string File::pwd() const
 	return pwd;
 }
 
-string File::folder() const
+string File::directory() const
 {
 	if (_parent) {
 		return  _parent->name();

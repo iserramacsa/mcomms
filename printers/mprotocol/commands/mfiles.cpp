@@ -2,7 +2,7 @@
 #include "mprotocol/mprotocol.h"
 #include "printer/files.h"
 #include "mtools.h"
-#include "base64.h"
+#include "utils/base64.h"
 
 #include <sstream>
 
@@ -128,20 +128,20 @@ std::string MGetFilesList::filter() const
 void MGetFilesList::insertFileToPrinterData(const std::string &pwd)
 {
 	std::string drive, folder, file;
-	std::vector<std::string>folders;
-	_printer.files()->splitFilepath(pwd, drive, folders, file);
+	std::vector<std::string>directory;
+	_printer.files()->splitFilepath(pwd, drive, directory, file);
 
 	if (!_printer.files()->driveExist(drive)) {
 		_printer.files()->addNewDrive(drive);
 	}
-	for (uint i = 0; i < folders.size(); i++){
+	for (uint i = 0; i < directory.size(); i++){
 		if (i > 0) {
 			folder += "/";
 		}
-		folder += folders.at(i);
+		folder += directory.at(i);
 	}
-	if (!_printer.files()->folderExist(drive, folder)) {
-		_printer.files()->addNewFolder(drive, folder);
+	if (!_printer.files()->directoryExist(drive, folder)) {
+		_printer.files()->addNewDirectory(drive, folder);
 	}
 	_printer.files()->addNewFile(drive, folder, file);
 }
