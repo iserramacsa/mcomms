@@ -2,10 +2,13 @@
 #define MACSA_MNETWORK_WINDOWS_SOCKET_H
 
 #include "network/isocket.h"
-#include <winsock.h>
+#include <winsock2.h>
+
+#pragma comment(lib,"ws2_32.lib")
 
 namespace Macsa {
 	namespace Network {
+
 		class WinSocket : public ISocket
 		{
 			public:
@@ -28,8 +31,9 @@ namespace Macsa {
 
 			protected:
 				struct sConnection {
-						int			fd;
-//						sockaddr_in	addr;
+					SOCKET		fd;
+					sockaddr_in	addr;
+					int			addrLen;
 				};
 
 			protected:
@@ -37,14 +41,17 @@ namespace Macsa {
 //				WinSocket* socketFromConnection(sConnection& conn);
 
 			private:
+				WSADATA _wsaData;
 				sConnection _sock;
 
-//				bool createSocket(int& fd, nSocketType type);
+				void initWinSocket();
+
+				bool createSocket(SOCKET& fd, nSocketType type);
 //				bool initSocket(struct sockaddr_in& socket, const char *addr, uint16_t port);
 //				bool initSocket(struct sockaddr_in& socket, const char *addr, const char *port);
 //				bool setAddress(struct sockaddr_in& socket,  const char *addr = "");
 //				void clearSocket(struct sockaddr_in& socket);
-//				bool setSocketOption(int &fd, int optName, int &optValue);
+				bool setSocketOption(SOCKET &fd, int optName, int &optValue);
 //				bool waitForRead(int fd, int timeout, bool& expired);
 //				bool waitForWrite(int fd, int timeout, bool& expired);
 //				bool connect(int fd, const struct sockaddr_in& socket);
