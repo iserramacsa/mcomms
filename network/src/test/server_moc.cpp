@@ -68,7 +68,7 @@ void ServerMockable::stop()
 			_server->close();
 			if (_server->type() == ISocket::TCP_SOCKET) {
 				if(_cv.wait_for(lock, std::chrono::milliseconds(500)) == std::cv_status::timeout) {
-					std::cout << __PRETTY_FUNCTION__ << ": Waiting for close server timed out" << std::endl;
+					std::cout << __FUNCTION__ << ": Waiting for close server timed out" << std::endl;
 				}
 			}
 		}

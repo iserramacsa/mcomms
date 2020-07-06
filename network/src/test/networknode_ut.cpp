@@ -46,7 +46,7 @@ class MNetworkNodeUT: public ::testing::Test {
 				   delete _node;
 			   }
 		   } catch (std::exception e) {
-			   std::cout << __PRETTY_FUNCTION__ << " exception: " << e.what() << std::endl;
+			   std::cout << __FUNCTION__ << " exception: " << e.what() << std::endl;
 		   }
 	   }
 
