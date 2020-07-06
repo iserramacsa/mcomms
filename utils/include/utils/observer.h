@@ -39,7 +39,7 @@ namespace Macsa {
 					_target(target)
 				{
 					if (_target != nullptr) {
-						_target->attach(static_cast<T*>(this));
+						_target->attach(reinterpret_cast<T*>(this));
 					}
 				}
 				///
@@ -47,7 +47,7 @@ namespace Macsa {
 				///
 				virtual ~Observer() {
 					if (_target != nullptr) {
-						_target->detach(static_cast<T*>(this));
+						_target->detach(reinterpret_cast<T*>(this));
 					}
 				}
 				///
@@ -182,7 +182,9 @@ namespace Macsa {
 					auto predicate = [&](T* observer) {
 						bool found = false;
 						if (target != nullptr && observer != nullptr) {
-							found = ((*target) == (*observer));
+							const Observer<T>* t = reinterpret_cast<const Observer<T>*>(target);
+							const Observer<T>* o = reinterpret_cast<const Observer<T>*>(observer);
+							found = (*t == *o);
 						}
 						return found;
 					};
